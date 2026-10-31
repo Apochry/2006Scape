@@ -27,6 +27,7 @@ public final class VoidGear {
 		for (int w : new int[] { STARFALL_HALBERD, RIMECLEAVER, KINGS_SCEPTRE, DUSKYEW_SHORTBOW, CAGED_STAR_STAFF }) {
 			targetSlots[w] = ItemConstants.WEAPON;
 		}
+		VoidArmoury.slots(targetSlots);
 		for (int[] set : new int[][] { LADDER, STARMETAL_SET, VOIDSTEEL_SET }) {
 			for (int w : set) {
 				targetSlots[w] = ItemConstants.WEAPON;
@@ -36,7 +37,7 @@ public final class VoidGear {
 
 	/** Sets the player's level requirements for one of the saga's items; false if it isn't one. */
 	public static boolean requirements(Player p, int id) {
-		if (VoidArsenal.requirements(p, id)) {
+		if (VoidArsenal.requirements(p, id) || VoidArmoury.requirements(p, id)) {
 			return true;
 		}
 		for (int w : WARDEN_SET) {

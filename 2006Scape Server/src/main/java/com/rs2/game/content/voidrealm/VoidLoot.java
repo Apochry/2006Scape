@@ -22,7 +22,10 @@ import com.rs2.util.Misc;
  * </pre>
  * The weapon ladder (VoidArsenal) has a few rungs here: the Wolfbone shortbow and Barrowstone warhammer in the low
  * band's gear, the Silkwood wand and Scarglass dagger in the middle band's, and the Gravewarden 2h sword and Riftglass
- * halberd on the bonus roll; the high band's bonus roll can also give a starmetal dagger, sword or spear.
+ * halberd on the bonus roll; the high band's bonus roll can also give a starmetal dagger, sword or spear. Of the armour
+ * sets (VoidArmoury), Oathsworn boots and gauntlets are middle-band gear, Scarweave hat, boots and gloves high-band
+ * gear, and the Scarweave robe top and bottom the high band's bonus roll. The Thane's oathsworn have their own table
+ * (npcdrops.json): their plate.
  *
  * <p>Tables come in three bands by combat level: under 30, 30-49, and 50 and over. Bosses and quest fights keep their
  * own hand-made tables (in npcdrops.json), as do harmless animals (under combat 15).
@@ -56,18 +59,19 @@ public final class VoidLoot {
 					{ 843, 1, 1 }, { WOLFBONE_SHORTBOW, 1, 1 }, { BARROWSTONE_WARHAMMER, 1, 1 } },
 			{ { 1329, 1, 1 }, { 1121, 1, 1 }, { 1145, 1, 1 }, { 1183, 1, 1 }, { 1301, 1, 1 }, { 853, 1, 1 },
 					{ WARDEN_HELM, 1, 1 }, { WARDEN_BOOTS, 1, 1 }, { WARDEN_GAUNTLETS, 1, 1 }, { SILKWOOD_WAND, 1, 1 },
-					{ SCARGLASS_DAGGER, 1, 1 } },
+					{ SCARGLASS_DAGGER, 1, 1 }, { OATHSWORN_SET[4], 1, 1 }, { OATHSWORN_SET[5], 1, 1 } },
 			{ { 1123, 1, 1 }, { 1073, 1, 1 }, { 1161, 1, 1 }, { 1199, 1, 1 }, { 1147, 1, 1 }, { 1213, 1, 1 }, { 857, 1, 1 },
-					{ WARDEN_BODY, 1, 1 }, { WARDEN_LEGS, 1, 1 } } };
+					{ WARDEN_BODY, 1, 1 }, { WARDEN_LEGS, 1, 1 }, { SCARWEAVE_SET[0], 1, 1 }, { SCARWEAVE_SET[4], 1, 1 },
+					{ SCARWEAVE_SET[5], 1, 1 } } };
 	private static final int[][][] BONUS = {
 			{ { 1329, 1, 1 }, { 1183, 1, 1 }, { 1159, 1, 1 } },
 			{ { 1333, 1, 1 }, { 1147, 1, 1 }, { 1113, 1, 1 }, { WARDEN_BODY, 1, 1 }, { GRAVEWARDEN_2H, 1, 1 } },
 			{ { 1079, 1, 1 }, { 1163, 1, 1 }, { 1215, 1, 1 }, { 1149, 1, 1 }, { RIFTGLASS_HALBERD, 1, 1 }, { STARMETAL_SET[0], 1, 1 },
-					{ STARMETAL_SET[1], 1, 1 }, { STARMETAL_SET[8], 1, 1 } } };
+					{ STARMETAL_SET[1], 1, 1 }, { STARMETAL_SET[8], 1, 1 }, { SCARWEAVE_SET[1], 1, 1 }, { SCARWEAVE_SET[2], 1, 1 } } };
 
 	/** Bosses and minibosses (hand-made tables), and the adds summoned in boss fights (bones only). */
 	private static final int[] CURATED = { BARROW_THANE, HOLLOW_MATRIARCH, RIMECLAW, BROODMOTHER, HOLLOW_HERALD,
-			RIMEBOUND_SENTINEL, SIR_VAELRIC, THE_STARLESS, STARLESS_SPAWN, HOLLOW_KNIGHT };
+			RIMEBOUND_SENTINEL, SIR_VAELRIC, THE_STARLESS, STARLESS_SPAWN, HOLLOW_KNIGHT, THANE_OATHSWORN };
 
 	/** Whether this kill uses Nythera's loot (rather than the npc's own 1-in-N drops). */
 	public static boolean applies(int npcType, int x, int y) {

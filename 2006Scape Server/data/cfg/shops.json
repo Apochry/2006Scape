@@ -12419,6 +12419,26 @@
       {
         "itemId": 8008,
         "itemAmount": 1
+      },
+      {
+        "itemId": 8074,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 8075,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 8076,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 8077,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 8078,
+        "itemAmount": 2
       }
     ]
   },

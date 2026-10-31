@@ -309,6 +309,60 @@ final class VoidRealmGenerator {
 		weaponItems(items, WeaponSets.STARMETAL_SET);
 		weaponItems(items, WeaponSets.VOIDSTEEL_SET);
 		weaponItems(items, GodWeapons.GOD); // ladder ranks 31-45, 8053-8067
+		armourItems(items); // the armour sets, from 8068
+	}
+
+	/**
+	 * The armour sets of ArmourSets, in set then slot order. Each piece clones the stock item its worn meshes were cut
+	 * from (so the slot data and offsets match), takes the decorated male and female models (ops 23-26), and an
+	 * inventory model in that item's frame, with the camera pulled back only if the decorations would spill out of
+	 * the sprite. The helms keep a recolour so the chathead (still the stock head) takes the set's colours.
+	 */
+	void armourItems(ConfigDefinitions.Table items) throws java.io.IOException {
+		ArmourSets as = new ArmourSets(new ArmourForge(forge));
+		int[] share = { 15, 30, 22, 20, 7, 6 };
+		for (ArmourSets.Style st : ArmourSets.SETS) {
+			for (int s = 0; s < 6; s++) {
+				if (!ArmourSets.has(st, s)) {
+					continue;
+				}
+				int[] b = ArmourSets.base(st, s);
+				ModelData[] male = as.worn(st, s, false), female = as.worn(st, s, true);
+				ModelData invModel = as.inventory(st, s);
+				ConfigDefinitions.Definition d = g.item(items, b[4], st.ids[s]);
+				int[] cam = ArmourSets.fitCamera(ModelPreview.itemCam(d), invModel);
+				d.name(st.names[s]).examine(st.examines[s]).cost(st.level * st.level * 50 * share[s] / 100).remove(40).remove(41);
+				if (s == ArmourSets.HELM) {
+					List<Integer> from = new ArrayList<>(), to = new ArrayList<>();
+					for (int c : new java.util.TreeSet<>(forge.read(b[0]).colors)) {
+						int n = as.recolour(st, s, c);
+						if (n != c && !male[0].colors.contains(c) && !female[0].colors.contains(c)) { // never touch the new models
+							from.add(c);
+							to.add(n);
+						}
+					}
+					d.recolor(from.stream().mapToInt(Integer::intValue).toArray(), to.stream().mapToInt(Integer::intValue).toArray());
+				}
+				d.shorts(1, forge.pack(invModel));
+				for (int k = 0; k < 5; k++) {
+					d.shorts(4 + k, cam[k]);
+				}
+				dress(d, 23, 24, male);
+				dress(d, 25, 26, female);
+			}
+		}
+	}
+
+	/** Sets an item's main and second worn model (keeping the main op's offset byte), or drops the second. */
+	private void dress(ConfigDefinitions.Definition d, int op, int secondOp, ModelData[] worn) throws java.io.IOException {
+		int model = forge.pack(worn[0]);
+		byte[] old = d.get(op);
+		d.set(op, new byte[] { (byte) (model >> 8), (byte) model, old == null ? 0 : old[2] });
+		if (worn[1] == null) {
+			d.remove(secondOp);
+		} else {
+			d.shorts(secondOp, forge.pack(worn[1]));
+		}
 	}
 
 	void weaponItems(ConfigDefinitions.Table items, LadderWeapons.Rung[] rungs) throws java.io.IOException {

@@ -606,6 +606,34 @@ dressed by a `Style` (palette plus design flags), so a starmetal scimitar and a 
 weapon in two metals. Previews: `ModelPreview data/cache outDir S1` (or `S2`) writes `S1-NN-name.png` and
 `S1-sheet.png`.
 
+## Armour sets
+
+Six matched sets climb with the weapons. Each is tied to a place or a chapter of the story. Plate has a full helm,
+platebody, platelegs, kiteshield, boots and gauntlets. Hide has a coif, body, chaps, boots and vambraces. Robes have a
+hat, robe top, robe bottom, boots and gloves. Hide and robes have no shield. Every piece is cut from the stock piece
+of the same kind (rune plate, green d'hide, mystic) on both the male and female bodies, so it sits and animates like
+the stock item. Each set then adds its own decoration (horns, fur, crystal, pauldrons, emblems) on top. On the female
+tops the bare-midriff band of the stock meshes is filled in. Whether a body hides the arms, or a helm the face, comes
+from the name, as for stock items. Defence bonuses below are stab / slash / crush / magic / ranged.
+
+| # | Set (ids) | Wear | Look and story | Pieces: key bonuses | Source |
+|---|---|---|---|---|---|
+| 1 | **Oathsworn plate** (8068-8073) | Defence 40 | Old-kingdom bronze from the barrows: ram's-horn helm, oath-rune on the chest. Rune-equivalent | helm 32/34/29/-1/31; body 86/84/76/-6/84 +2 prayer; legs 54/52/50/-4/52; kite 50/52/46/-1/50; boots 13/14/15; gauntlets +4 attack, +2 str | Thane's oathsworn (the Ashes of the Crown guard: boots and gauntlets 1/20, helm 1/25, legs and kite 1/30, body 1/40); the **Barrow Thane** (helm 1/20, legs and kite 1/25, body 1/35); boots and gauntlets in the 30-49 gear roll |
+| 2 | **Duskstalker hide** (8074-8078) | Ranged 50 (body and chaps also Defence 40) | Hunter's leathers from the Hollow Scar's wolves: wolf-eared coif, fur mantle and fangs. Between green and blue d'hide | coif +7 ranged; body +28 ranged, 46/40/52/50/48; chaps +16 ranged; boots +4; vambraces +11 ranged | **Sly Nettle** (shop 356, Smugglers' Cove) sells every piece; the Hollow Matriarch drops the body (1/25) |
+| 3 | **Scarweave robes** (8079-8083) | Magic 60, Defence 20 | The Hollow Herald's weave: crystal-tipped hat, shard mantle, a burning scar down the robe. Just past mystic | hat +6 magic; top +25 magic; bottom +19 magic; boots +6; gloves +6 | The **Hollow Herald** (top and bottom 1/4, hat 1/3); hat, boots and gloves in the 50+ gear roll; top and bottom in the 50+ bonus roll |
+| 4 | **Starmetal plate** (8084-8089) | Defence 60 | The fallen star, faced over rune. Crested helm with a star spray, star pauldrons. Dragon-equivalent | helm 40/42/37/0/40; body 100/96/90/-4/98; legs 66/64/60/-2/64; kite 62/64/58/0/62; boots 16/17/18; gauntlets +6 attack, +4 str | Use a **rune** piece (leather gloves for the gauntlets) on **Gatehold's anvil** with a hammer and starmetal (2 helm, 4 body, 3 legs, 3 kite, 1 boots, 1 gauntlets), Smithing 65, after Heartforged |
+| 5 | **Voidsteel plate** (8090-8095) | Defence 75 | Starmetal pushed through the Starless Gate. Horned helm, the white eye on the chest, burning violet edges | helm 50/52/46/2/50 +2 str; body 120/116/110/4/118 +4 str, +3 prayer; legs 80/78/74/2/78; kite 76/78/72/4/76; boots 20/21/22 +2 str; gauntlets +9 attack, +7 str | Use a **starmetal** piece on the **Starless Gate** with Starless shards (same counts), Smithing 80, after The Hollow King |
+| 6 | **Heartfire regalia** (8096-8101) | Defence 90 | Aurel's Royal Guard plate, re-lit: white and gold, a crown of flame with a halo, winged pauldrons, the sun on the chest. The best armour in the game | helm 60/62/56/6/60 +4 str, +4 prayer; body 140/136/130/10/138 +6 str, +6 prayer; legs 94/92/88/6/92; kite 90/92/86/8/90; boots 24/25/26 +3 str; gauntlets +12 attack, +10 str | Use a **Royal guard** piece on the **Starless Gate** with its matching voidsteel piece and twice the shards. Needs every quest in the saga, 25 Starless kills and Smithing 90 |
+
+Plate weighs on the caster's hand (a magic penalty, and a third of it to ranged); hide and robes do not.
+
+The models live in `tools/mapgen/ArmourSets.java`, one `Style` per set: palette, motif, ids, names and examines.
+`ArmourPreview data/cache outDir set [slot...|full]` writes one card per piece (the inventory icon, then the piece
+worn on the male and female bodies, front and back), `A1-01-oathsworn-helm.png` and so on, and `A1-full-...png` for
+the whole set. If a piece's decorations would spill out of its 32x32 sprite, the inventory camera is pulled back
+(`ArmourSets.fitCamera`). The generator does the same, so the game shows what the preview shows. Wield levels,
+slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour n` puts set n into your inventory.
+
 ## Where things live
 
 | What | Where |
@@ -623,6 +651,7 @@ weapon in two metals. Previews: `ModelPreview data/cache outDir S1` (or `S2`) wr
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | The weapon ladder (items 8001-8030, and the god tier 8053-8067), the Starless shard (8031), the starmetal and voidsteel sets (8032-8052): rules, recipes, effects, `::vt weapons`/`sets`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`, `WeaponSets.java`, `GodWeapons.java`; `tools/mapgen/ModelPreview.java` |
+| The armour sets (items 8068-8101): slots, wield levels, recipes, `::vt armour`; models; offline previews | `game/content/voidrealm/VoidArmoury.java`; `tools/mapgen/ArmourSets.java`; `tools/mapgen/ArmourPreview.java` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
 Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
@@ -646,6 +675,7 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
 | `::vt weapons [from to]` | put the weapon ladder (ranks 1-45, or from-to; `31 45` is the god tier) into your inventory |
 | `::vt sets 1` / `::vt sets 2` | put the starmetal (1) or voidsteel (2) set into your inventory, with 10 starmetal or 10 Starless shards |
+| `::vt armour n` | put armour set n into your inventory (1 Oathsworn, 2 Duskstalker, 3 Scarweave, 4 starmetal, 5 voidsteel, 6 Heartfire) |
 
 ## Ideas for what comes next
 

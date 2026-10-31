@@ -81,9 +81,10 @@ for i, bones in ((3868, 2859), (3869, 526), (3882, 592), (3883, 532), (3884, 526
 # the three bosses: always good loot, and a rare unique each
 boss_drops = {
     3876: [(532, 0, 1, 1), (995, 0, 800, 2000), (1319, 15, 1, 1), (1333, 10, 1, 1), (1127, 20, 1, 1), (1163, 12, 1, 1),
-           (565, 3, 20, 40), (2440, 6, 1, 1), (7969, 11, 1, 1), (8015, 15, 1, 1)],  # ... Barrowsteel, Oathsworn battleaxe
+           (565, 3, 20, 40), (2440, 6, 1, 1), (7969, 11, 1, 1), (8015, 15, 1, 1),
+           (8068, 19, 1, 1), (8070, 24, 1, 1), (8071, 24, 1, 1), (8069, 34, 1, 1)],  # ... Barrowsteel, Oathsworn battleaxe and plate
     3877: [(532, 0, 1, 1), (995, 0, 1200, 3000), (1617, 4, 1, 2), (1615, 30, 1, 1), (564, 3, 30, 60), (3024, 5, 1, 2),
-           (1213, 10, 1, 1), (1149, 12, 1, 1), (7968, 11, 1, 1), (8018, 13, 1, 1)],  # ... Hollowheart amulet and shortbow
+           (1213, 10, 1, 1), (1149, 12, 1, 1), (7968, 11, 1, 1), (8018, 13, 1, 1), (8075, 24, 1, 1)],  # ... Hollowheart amulet and shortbow, Duskstalker body
     3878: [(532, 0, 1, 1), (995, 0, 1500, 4000), (451, 2, 1, 2), (2363, 6, 1, 1), (560, 3, 30, 60), (385, 2, 3, 6),
            (1079, 12, 1, 1), (1201, 12, 1, 1), (7970, 11, 1, 1), (8016, 13, 1, 1)],  # ... Frostbound, Frostfang spear
 }
@@ -99,12 +100,16 @@ drops = [x for x in drops if x['id'] not in (3880, 3881)]
 drops.append({'id': 3880, 'items': [{'item_id': 526, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [300, 900]},
     {'item_id': 1617, 'chance': 8, 'amounts': [1, 1]}, {'item_id': 2434, 'chance': 4, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 60, 'amounts': [1, 1]}]})
 drops.append({'id': 3881, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [2500, 5000]},
-    {'item_id': 565, 'chance': 0, 'amounts': [40, 80]}, {'item_id': 1319, 'chance': 3, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 4, 'amounts': [1, 1]}]})
+    {'item_id': 565, 'chance': 0, 'amounts': [40, 80]}, {'item_id': 8080, 'chance': 3, 'amounts': [1, 1]}, {'item_id': 8081, 'chance': 3, 'amounts': [1, 1]},
+    {'item_id': 8079, 'chance': 2, 'amounts': [1, 1]},  # the Herald's Scarweave
+    {'item_id': 1319, 'chance': 3, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 4, 'amounts': [1, 1]}]})
 def droptable(i, items):
     global drops
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
 droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (8022, 15, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])  # sentinel: Rimecleaver, Rimeheart staff, water runes, rune legs
+droptable(3884, [(526, 0, 1, 1), (995, 0, 120, 400), (8072, 19, 1, 1), (8073, 19, 1, 1), (8068, 24, 1, 1), (8070, 29, 1, 1),
+                 (8071, 29, 1, 1), (8069, 39, 1, 1), (1123, 25, 1, 1), (2353, 3, 2, 5)])  # Thane's oathsworn: its own plate
 droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
 # the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
 droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (8031, 0, 1, 2), (7983, 11, 1, 1), (7984, 11, 1, 1),
@@ -264,6 +269,53 @@ god = [
 ]
 for i, wb in enumerate(god):
     uniques[8053 + i] = wb
+# the six armour sets (ArmourSets / VoidArmoury), slot order helm, body, legs, shield, boots, gloves (None = no piece).
+# Plate follows rune (Defence 40) -> dragon (60) and on; the hide and robes follow d'hide and mystic.
+A, DEF = (lambda st, sl, cr, mg, rg: {DS: st, DSL: sl, DC: cr, DM: mg, DR: rg}), None
+def plate(d, mpen, extra=None):
+    out = {k: v for k, v in d.items() if v}
+    if mpen:
+        out[M] = -mpen
+        out[R] = -(mpen // 3)
+    out.update(extra or {})
+    return out
+armour = {
+    8068: (2.7, plate(A(32, 34, 29, -1, 31), 6, {P: 1})),                         # Oathsworn full helm
+    8069: (9.5, plate(A(86, 84, 76, -6, 84), 30, {P: 2})),                        # Oathsworn platebody
+    8070: (9.0, plate(A(54, 52, 50, -4, 52), 21, {P: 1})),                        # Oathsworn platelegs
+    8071: (5.4, plate(A(50, 52, 46, -1, 50), 8)),                                  # Oathsworn kiteshield
+    8072: (1.0, plate(A(13, 14, 15, 0, 0), 3)),                                    # Oathsworn boots
+    8073: (0.5, plate(A(9, 9, 9, 2, 6), 0, {S: 4, SL: 4, C: 4, ST: 2})),            # Oathsworn gauntlets
+    8074: (0.9, {R: 7, DS: 5, DSL: 7, DC: 9, DM: 5, DR: 6}),                        # Duskstalker coif
+    8075: (6.0, {M: -15, R: 28, DS: 46, DSL: 40, DC: 52, DM: 50, DR: 48}),          # Duskstalker body
+    8076: (5.0, {M: -10, R: 16, DS: 26, DSL: 22, DC: 29, DM: 27, DR: 25}),          # Duskstalker chaps
+    8077: (0.5, {R: 4, DS: 5, DSL: 5, DC: 6, DM: 4, DR: 5}),                         # Duskstalker boots
+    8078: (0.3, {M: -10, R: 11, DS: 3, DSL: 3, DC: 4, DM: 3, DR: 4}),               # Duskstalker vambraces
+    8079: (0.4, {M: 6, DM: 6}),                                                    # Scarweave hat
+    8080: (1.8, {M: 25, DS: 4, DSL: 4, DC: 4, DM: 25}),                             # Scarweave robe top
+    8081: (1.4, {M: 19, DS: 3, DSL: 3, DC: 3, DM: 19}),                             # Scarweave robe bottom
+    8082: (0.3, {M: 6, DM: 6}),                                                    # Scarweave boots
+    8083: (0.3, {M: 6, DM: 6}),                                                    # Scarweave gloves
+    8084: (2.5, plate(A(40, 42, 37, 0, 40), 6, {P: 1})),                           # Starmetal full helm
+    8085: (9.0, plate(A(100, 96, 90, -4, 98), 30, {P: 2})),                        # Starmetal platebody
+    8086: (8.5, plate(A(66, 64, 60, -2, 64), 21, {P: 1})),                         # Starmetal platelegs
+    8087: (5.0, plate(A(62, 64, 58, 0, 62), 8, {P: 1})),                           # Starmetal kiteshield
+    8088: (1.0, plate(A(16, 17, 18, 0, 0), 3)),                                    # Starmetal boots
+    8089: (0.5, plate(A(12, 12, 12, 3, 8), 0, {S: 6, SL: 6, C: 6, ST: 4})),         # Starmetal gauntlets
+    8090: (2.5, plate(A(50, 52, 46, 2, 50), 6, {ST: 2, P: 2})),                    # Voidsteel full helm
+    8091: (9.0, plate(A(120, 116, 110, 4, 118), 30, {ST: 4, P: 3})),              # Voidsteel platebody
+    8092: (8.5, plate(A(80, 78, 74, 2, 78), 21, {ST: 2, P: 2})),                   # Voidsteel platelegs
+    8093: (5.0, plate(A(76, 78, 72, 4, 76), 8, {P: 2})),                           # Voidsteel kiteshield
+    8094: (1.0, plate(A(20, 21, 22, 1, 2), 3, {ST: 2})),                           # Voidsteel boots
+    8095: (0.5, plate(A(15, 15, 15, 4, 10), 0, {S: 9, SL: 9, C: 9, ST: 7})),        # Voidsteel gauntlets
+    8096: (2.5, plate(A(60, 62, 56, 6, 60), 4, {ST: 4, P: 4})),                    # Heartfire full helm
+    8097: (9.0, plate(A(140, 136, 130, 10, 138), 20, {ST: 6, P: 6})),             # Heartfire platebody
+    8098: (8.5, plate(A(94, 92, 88, 6, 92), 14, {ST: 4, P: 3})),                   # Heartfire platelegs
+    8099: (5.0, plate(A(90, 92, 86, 8, 90), 4, {P: 4})),                           # Heartfire kiteshield
+    8100: (1.0, plate(A(24, 25, 26, 2, 4), 2, {ST: 3, P: 1})),                     # Heartfire boots
+    8101: (0.5, plate(A(18, 18, 18, 6, 12), 0, {S: 12, SL: 12, C: 12, ST: 10, P: 2})),  # Heartfire gauntlets
+}
+uniques.update(armour)
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re
 txt = open(cfg + 'ItemDefinitions.json').read()
@@ -300,7 +352,8 @@ shop(354, "Quarrywright's Picks", [(1265, 10), (1267, 8), (1269, 6), (1273, 4), 
 shop(355, 'The Last Hearth', [(2003, 20), (2289, 10), (1993, 15), (1917, 20), (1891, 10), (2327, 15), (1985, 10),
                               (2011, 10), (379, 20), (373, 15), (1971, 30)])
 shop(356, "Nettle's Hold", [(954, 10), (301, 10), (311, 5), (1623, 5), (1621, 3), (1619, 2), (1617, 1),
-                            (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2), (8008, 1)])
+                            (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2), (8008, 1),
+                            (8074, 2), (8075, 1), (8076, 1), (8077, 2), (8078, 2)])  # ... and the Duskstalker hide
 # the Warden's armoury: Dorrin opens it once you've held the gate (the gauntlets only come off the Hollowed)
 shop(357, "The Warden's Armoury", [(7985, 3), (7986, 2), (7987, 2), (7988, 3), (7977, 1), (1163, 2), (1079, 1), (1201, 1),
                                    (4131, 2), (2363, 4), (8011, 2), (8012, 1), (8013, 2)])
