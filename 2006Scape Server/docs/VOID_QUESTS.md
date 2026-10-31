@@ -106,21 +106,21 @@ for the next quests. Until then the countryside already has people and wildlife 
 
 | Place | Where | Who and what |
 |---|---|---|
-| **Netwright's Landing** | lake's east shore (1459, 2712) | **Bram Netwright** fishes off a jetty. A shack, rowboats, nets, a spit-roast. He sells tackle and buys fish (shop 350). Net/bait spots in the lake, lure/bait spots along the river. |
-| **Tollan's Croft** | hills between the crater and the Broken Gate (1522, 2662) | **Marta Tollan**'s farmhouse. Flax, wheat and cabbages you can pick, a well, hay, a scarecrow, sheep (shearable), cows and chickens. She sells bread, eggs, milk, wool, shears and the like (shop 351). |
-| **Hob's camp** | edge of the western forest (1446, 2652) | **Hob Ashby** the woodcutter: tents, a cookfire, stumps and stacked timber. |
+| **Netwright's Landing** | lake's east shore (1459, 2712) | **Bram Netwright** fishes off a jetty. A shack, rowboats, nets drying, a spit-roast. He sells tackle and buys fish (shop 350). Net/bait spots in the lake, lure/bait spots along the river. |
+| **Tollan's Croft** | hills between the crater and the Broken Gate (1522, 2662) | **Marta Tollan**'s farmhouse. Flax, wheat and cabbages you can pick in fenced fields, a well, hay, a scarecrow, a sheep pen (shearable), a cow pasture and chickens loose in the yard. She sells bread, eggs, milk, wool, shears and the like (shop 351). |
+| **Hob's camp** | edge of the western forest (1446, 2652) | **Hob Ashby** the woodcutter: two tents facing a cookfire with logs to sit on, a woodpile and chopping block, a half-loaded cart, and stumps on the forest side. |
 | **The Scar Watch** | west edge of the Hollow Scar (1574, 2741) | **Warden Kael**. She pays a bounty for every 10 **Hollowed wolves** (combat 34) and **Hollow husks** (combat 41) you kill in the Scar: 750 coins and 1,500 Slayer XP, repeatable. The tally (`Player.hollowKills`) is saved. |
-| The roads | | **Wandering pilgrims** rest along the way. A signpost stands at the Broken Gate. |
+| The roads | | **Wandering pilgrims** rest along the way. A signpost stands where the roads part at the Broken Gate. |
 
 ### Places to visit
 
 | Place | Where | What's there |
 |---|---|---|
-| **Gatehold** | west of the Broken Gate (1497, 2713) | The outpost. A watch-house and store-house, an open-air **bank** (three booths and a banker), a **furnace and anvil**, a range, a well, a market stall and guards. **Captain Ysolde** points you at the three dungeons and pays for each boss you kill. **Pell the Trader** runs a general store (shop 352). **Dorrin Anvilhand** sells bars, hammers and mithril/adamant armour (shop 353). |
-| **Tess's quarry** | foothills north-east of the Gate (1532, 2765) | A sunken pit with iron, coal, silver, gold and mithril. **Tess Quarryhand** sells pickaxes up to adamant (shop 354). |
+| **Gatehold** | west of the Broken Gate (1497, 2713) | The outpost. A watch-house and store-house, an open-air **bank** (three booths and a banker), a **furnace and anvil**, a range, a well, a market stall and guards. Two banners in the Wardens' night-blue and star flank the bank. **Captain Ysolde** points you at the three dungeons and pays for each boss you kill. **Pell the Trader** runs a general store (shop 352). **Dorrin Anvilhand** sells bars, hammers and mithril/adamant armour (shop 353). |
+| **Tess's quarry** | foothills north-east of the Gate (1532, 2765) | A sunken pit, its ore (iron, coal, silver, gold and mithril) worked out of the walls; Tess camps on the rim. **Tess Quarryhand** sells pickaxes up to adamant (shop 354). |
 | **The Last Hearth** | where the north road comes off the pass (1483, 2808) | An inn and a stable-house, with tables out front and a fire. **Morra** sells food and drink (shop 355) and passes on rumours about the dungeons. |
 | **Smugglers' Cove** | south coast (1470, 2619) | A smugglers' ship run aground, tents, contraband, pirates and bandits. **Sly Nettle** fences rope, gems, runes and the odd bit of rune (shop 356). Lobster/swordfish (cage, harpoon) and shark (net, harpoon) spots in the shallows. |
-| **Silkwood** | west of the river (1390, 2668) | Four **magic trees** and two yews in a hushed clearing guarded by giant spiders. A plank **bridge** crosses the river from Hob's camp (y 2653). |
+| **Silkwood** | west of the river (1390, 2668) | Four **magic trees** and two yews in a hushed clearing, webs strung between them, guarded by giant spiders. A plank **bridge** crosses the river from Hob's camp (y 2653). |
 
 ### Dungeons
 
@@ -366,6 +366,32 @@ Code: `GearQuest.java` (dialogue 20600+: Dorrin, Kael, Maelis, the star, the sen
 (slots, levels, weapon tabs). Flags: `gateFlags` bit 3 = Kael's task taken, bit 4 = the bow handed over, and
 `gateKills` counts the fifty. `forgeFlags` bit 8 = the mace handed over.
 
+### Building the world
+
+The sites are composed, not scattered: every camp has a reason for each thing in it, and pieces that never belonged
+out in the open are replaced with hand-built ones (`tools/mapgen/WorldProps.java`, objects 15018-15031):
+
+| Piece | Object | Replaces |
+|---|---|---|
+| **Canvas tent** (2x2): poles, sagging ridge, guy ropes and pegs, the door flaps tied back | 15018 | the stock "tent", which renders as a black slab |
+| **Hearth stones** under every campfire, and a **cooking tripod** with a pot where someone cooks | 15019, 15020 | the bare stock fire and the indoor fireplace "cooking pot" |
+| **Log seat** by the fires | 15021 | |
+| **Gatehold banner**: night-blue with the Wardens' star, on a pole with a crossbar | 15022 | the stock flagpoles at the bank |
+| **Standing stones** of the old circle (three variants) | 15023-15025 | stock stones that read as grey blobs |
+| **The Broken Gate**: a full-height tower with the arch's springing, a tower broken at half height, the fallen arch half burying the vault hatch, and the curtain wall stepping down away from it | 15026-15028, 15030-15031 | three loose pillars and rubble |
+| **Black flag** on a ship's spar in a cairn | 15029 | Skullbrine's flags, which had no pole |
+
+Other rules the generator follows:
+- `tent()`, `campfire()`, `seat()` and `fence()` place these pieces. Tents face their fire; seats face the fire.
+- `fence()` runs a wall along each side of a rectangle (west and east sides on the inside tiles, north and south on the
+  row just outside, so the corners never share a tile) and leaves a one-tile gap to walk in. Fenced areas go into
+  `keepClear`, which keeps trees, rocks and wildlife out. The Gate and its approach and the barrow's approach are
+  kept clear the same way.
+- Loose rocks are stock boulders 6950 (1x1) and 444 (2x2) rather than 5604, which carries a ring of grass round its foot.
+- The barrow's graves stand in two rows either side of the approach, all facing the door.
+- Thin hand-built pieces (flags, flaps) are two-sided. Where the client's painter's sort would paint one face over
+  another (a tent's doorway against its end wall), face priorities fix the order (`WorldProps.priority`).
+
 ### Terrain smoothing
 
 All map generators share `CursedIslandGenerator.smoothGrid`. It softens overlay edges the way Jagex's maps do:
@@ -417,6 +443,7 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 | The Starless | `game/content/voidrealm/StarlessBoss.java` |
 | The saga's gear: armoury, recipes, Kael's task, repeatable star and sentinel, effects | `GearQuest.java`, `VoidGear.java`; models in `tools/mapgen/ArmourForge.java`, `QuestWeapons.java`, `VoidEffects.java` |
 | Hand-built models (Barrowsteel, Emberbrand, barricades, star, altar, gate, pillars, the Starless) | `tools/mapgen/ModelForge.java` |
+| Hand-built scenery (tents, hearths, seats, banners, standing stones, the Broken Gate, the black flag) | `tools/mapgen/WorldProps.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |

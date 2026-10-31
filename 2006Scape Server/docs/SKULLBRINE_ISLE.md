@@ -15,6 +15,10 @@ to another world. The Void quest series opens it: see [VOID_QUESTS.md](VOID_QUES
   cage. The shacks are copied from Mos Le'Harmless. Mad Pete keeps shop here.
 - **Graveyard of the drowned** (west), a **swamp** (east) and a **sea serpent's skeleton** on
   the east beach.
+- **The west beach**: a net/bait (shrimp) fishing spot just offshore at (1978, 2895), a beached row boat, nets drying,
+  and one bare dead tree you can chop for firewood.
+- The *Drowned Maiden*'s black flag flies from a ship's spar stepped in a cairn: at the jetty end, in the town, in the
+  graveyard and on the skull's crown.
 - Black volcanic sand, ash and dead grass, withered palms, Morytanian trees and giant mushrooms.
   Green ghostfire torches and lamps are the island's signature light.
 
@@ -69,7 +73,7 @@ dialogue and kill. See [VOID_QUESTS.md](VOID_QUESTS.md).
 
 The island, dungeon, new NPCs (ids 3852-3857), new items (7956-7958, and dragon ore/bar 7959-7960)
 and new scenery (objects 14974-14985: ghostfire, ghostfire torches and lamps, bone fangs, the serpent skull
-and ribs, black flags, withered palms, dragon rocks) are written into `data/cache` by
+and ribs, withered palms, dragon rocks; the black flag on its pole is object 15029, built in `WorldProps`) are written into `data/cache` by
 `CursedIslandGenerator`. To change the layout, edit that class, then rebuild from the
 original cache so old map data doesn't pile up in `main_file_cache.dat`:
 

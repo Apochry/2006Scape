@@ -81,7 +81,12 @@ public final class VoidConstants {
 	/* the later quests and the Starless (all with hand-built models) */
 	public static final int BROKEN_BARRICADE = 15010, SPIKED_BARRICADE = 15011, FALLEN_STAR = 15012, RIME_ALTAR = 15013,
 			STARLESS_GATE = 15014, STAR_PILLAR = 15015, STAR_PILLAR_LIT = 15016;
-	// (15017 is Skullbrine's dormant portal, SkullbrineConstants.VOID_PORTAL: the next new object is 15018)
+	// (15017 is Skullbrine's dormant portal, SkullbrineConstants.VOID_PORTAL)
+	/* scenery with hand-built models (tools.mapgen.WorldProps): camp furniture, flags, the old circle and the Gate */
+	public static final int CAMP_TENT = 15018, FIRE_RING = 15019, COOK_FIRE_RING = 15020, LOG_SEAT = 15021, GATEHOLD_BANNER = 15022,
+			MENHIR = 15023, MENHIR_2 = 15024, MENHIR_3 = 15025, GATE_TOWER = 15026, GATE_TOWER_BROKEN = 15027, FALLEN_MASONRY = 15028,
+			PIRATE_FLAG = 15029, GATE_WALL = 15030, GATE_WALL_LOW = 15031;
+	// (the next new object is 15032)
 
 	/* ---------------- Hold the Gate ---------------- */
 	/** The three broken barricades across the Scar road north-east of the Gate. */
