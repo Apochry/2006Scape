@@ -16649,5 +16649,41 @@
     "name": "Squire",
     "combat": 0,
     "id": 3790
+  },
+  {
+    "hitpoints": 0,
+    "name": "Bosun Grimsby",
+    "combat": 0,
+    "id": 3852
+  },
+  {
+    "hitpoints": 0,
+    "name": "Mad Pete",
+    "combat": 0,
+    "id": 3853
+  },
+  {
+    "hitpoints": 40,
+    "name": "Cursed pirate",
+    "combat": 34,
+    "id": 3854
+  },
+  {
+    "hitpoints": 30,
+    "name": "Drowned deckhand",
+    "combat": 24,
+    "id": 3855
+  },
+  {
+    "hitpoints": 80,
+    "name": "Cursed first mate",
+    "combat": 62,
+    "id": 3856
+  },
+  {
+    "hitpoints": 0,
+    "name": "Ghost of Captain Blackbrine",
+    "combat": 0,
+    "id": 3857
   }
 ]

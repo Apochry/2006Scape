@@ -2,6 +2,7 @@ package com.rs2.game.content.quests;
 
 import com.rs2.game.content.quests.impl.BlackKnightsFortress;
 import com.rs2.game.content.quests.impl.CooksAssistant;
+import com.rs2.game.content.quests.impl.CurseOfSkullbrine;
 import com.rs2.game.content.quests.impl.DoricsQuest;
 import com.rs2.game.content.quests.impl.GertrudesCat;
 import com.rs2.game.content.quests.impl.ImpCatcher;
@@ -24,7 +25,7 @@ import com.rs2.game.players.Player;
 
 public class QuestAssistant {
 
-	public static final int MAXIMUM_QUESTPOINTS = 26;
+	public static final int MAXIMUM_QUESTPOINTS = 26 + CurseOfSkullbrine.QUEST_POINTS;
 
 	public static void sendStages(Player player) {
 		player.getPacketSender().sendString("QP: " + player.questPoints + " ", 3985);
@@ -133,6 +134,7 @@ public class QuestAssistant {
 		} else {
 			player.getPacketSender().sendString("@yel@Shield of Arrav", 7345);
 		}
+		player.getPacketSender().sendString(CurseOfSkullbrine.questListName(player), Quests.CURSE_OF_SKULLBRINE.getStringId());
 		if (player.lostCity == 0) {
 			player.getPacketSender().sendString("Lost City", 7367);
 		} else if (player.lostCity == 3) {
@@ -167,7 +169,7 @@ public class QuestAssistant {
 		CABIN(68102, 17510, "Cabin Fever", false), 
 		CLOCK(28185, 7353, "Clock Tower", false), 
 		DEATH(32246, 8438, "Death Plateau", false), 
-		CREATURE(47097, 12129, "Creature of Fenkenstrain", false), 
+		CURSE_OF_SKULLBRINE(47097, 12129, CurseOfSkullbrine.NAME, true), // uses the unused Creature of Fenkenstrain slot
 		DESERT_TREASURE(50052, 12852, "Desert Treasure", false), 
 		DRUDIC_RITUAL(28187, 7355, "Drudic Ritual", false), 
 		DWARF_CANNON(28188, 7356, "Dwarf Cannon", false), 
@@ -332,6 +334,9 @@ public class QuestAssistant {
 			break;
 		case 28199:
 			LostCity.showInformation(player);
+			break;
+		case 47097:
+			CurseOfSkullbrine.showInformation(player);
 			break;
 
 

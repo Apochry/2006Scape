@@ -1,5 +1,6 @@
 package com.rs2.game.items;
 
+import com.rs2.game.content.skullbrine.SkullbrineIsle;
 import com.rs2.Constants;
 import com.rs2.event.impl.ItemOnItemEvent;
 import com.rs2.game.content.skills.cooking.Cooking;
@@ -47,6 +48,9 @@ public class UseItem {
 			c.getPlayerAssistant().playerWalk(objectX, objectY);
 		}
 		if (!c.getItemAssistant().playerHasItem(itemId, 1)) {
+			return;
+		}
+		if (SkullbrineIsle.itemOnObject(c, objectID, objectX, objectY, itemId)) {
 			return;
 		}
 		if (itemId == Ectofuntus.BUCKET) {

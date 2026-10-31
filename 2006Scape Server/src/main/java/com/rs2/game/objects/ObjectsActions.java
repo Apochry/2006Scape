@@ -1,5 +1,6 @@
 package com.rs2.game.objects;
 
+import com.rs2.game.content.skullbrine.SkullbrineIsle;
 import com.rs2.Constants;
 import com.rs2.GameEngine;
 import com.rs2.event.CycleEvent;
@@ -62,6 +63,9 @@ public class ObjectsActions {
             return;
         }
         if (player.stopPlayerPacket) {
+            return;
+        }
+        if (SkullbrineIsle.firstClickObject(player, objectType, objectX, objectY)) {
             return;
         }
         if (player.getGnomeStrongHold().gnomeCourse(objectType)) {

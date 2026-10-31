@@ -1,5 +1,6 @@
 package com.rs2.net.packets.impl;
 
+import com.rs2.game.content.skullbrine.SkullbrineIsle;
 import com.rs2.Constants;
 import com.rs2.GameEngine;
 import com.rs2.event.impl.ItemFirstClickEvent;
@@ -40,6 +41,9 @@ public class ClickItem implements PacketType {
 			return;
 		}
 		player.post(new ItemFirstClickEvent(itemId));
+		if (SkullbrineIsle.clickItem(player, itemId)) {
+			return;
+		}
 		GodBooks.sendPreachOptions(player, itemId);
 		if (itemId == 6) {
 			player.getCannon().placeCannon();

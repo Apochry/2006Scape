@@ -1,5 +1,6 @@
 package com.rs2.game.dialogues;
 
+import com.rs2.game.content.skullbrine.SkullbrineIsle;
 import com.rs2.Constants;
 import com.rs2.game.bots.Bot;
 import com.rs2.game.bots.BotHandler;
@@ -16,6 +17,9 @@ import com.rs2.game.players.Player;
 public class DialogueOptions {
 	
 	public static void handleDialogueOptions(Player player, int buttonId) {
+		if (SkullbrineIsle.handleOption(player, buttonId)) {
+			return;
+		}
 		switch (buttonId) {
 		case 9167:
 			switch (player.dialogueAction) {

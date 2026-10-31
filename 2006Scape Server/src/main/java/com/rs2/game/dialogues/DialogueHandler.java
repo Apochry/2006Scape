@@ -1,5 +1,6 @@
 package com.rs2.game.dialogues;
 
+import com.rs2.game.content.skullbrine.SkullbrineIsle;
 import com.rs2.Constants;
 import com.rs2.GameEngine;
 import com.rs2.game.bots.Bot;
@@ -44,6 +45,9 @@ public class DialogueHandler {
 	}
 
 	public void sendDialogues(int dialogue, int npcId) {
+		if (SkullbrineIsle.sendDialogue(player, dialogue, npcId)) {
+			return;
+		}
 		player.talkingNpc = npcId;
 		switch (dialogue) {
 			case 0:

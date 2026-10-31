@@ -731,6 +731,17 @@ public class Commands implements PacketType {
 
     public static void adminCommands(Player player, String playerCommand, String[] arguments) {
         switch (playerCommand.toLowerCase()) {
+            case "island": // Skullbrine Isle jetty
+                player.getPlayerAssistant().movePlayer(com.rs2.game.content.skullbrine.SkullbrineConstants.DOCK_X,
+                        com.rs2.game.content.skullbrine.SkullbrineConstants.DOCK_Y, 0);
+                break;
+            case "skullbrine": // set Curse of Skullbrine quest stage, e.g. ::skullbrine 3
+                if (arguments.length == 1) {
+                    player.skullbrine = Integer.parseInt(arguments[0]);
+                    com.rs2.game.content.quests.QuestAssistant.sendStages(player);
+                }
+                player.getPacketSender().sendMessage("Curse of Skullbrine stage: " + player.skullbrine);
+                break;
             case "clearbank":
                 player.getItemAssistant().clearBank();
                 break;

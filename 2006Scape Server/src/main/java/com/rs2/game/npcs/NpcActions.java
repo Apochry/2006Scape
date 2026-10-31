@@ -1,5 +1,6 @@
 package com.rs2.game.npcs;
 
+import com.rs2.game.content.skullbrine.SkullbrineIsle;
 import com.rs2.Constants;
 import com.rs2.game.content.StaticNpcList;
 import com.rs2.game.content.quests.QuestAssistant;
@@ -27,6 +28,9 @@ public class NpcActions {
         player.clickNpcType = 0;
         player.rememberNpcIndex = player.npcClickIndex;
         player.npcClickIndex = 0;
+        if (SkullbrineIsle.firstClickNpc(player, npcType)) {
+            return;
+        }
         Shops.dialogueShop(player, npcType);
         if (Fishing.fishingNPC(player, npcType)) {
             Fishing.fishingNPC(player, 1, npcType);
@@ -950,6 +954,9 @@ public class NpcActions {
         player.clickNpcType = 0;
         player.rememberNpcIndex = player.npcClickIndex;
         player.npcClickIndex = 0;
+        if (SkullbrineIsle.secondClickNpc(player, npcType)) {
+            return;
+        }
         Shops.openShop(player, npcType);
         if (Fishing.fishingNPC(player, npcType)) {
             Fishing.fishingNPC(player, 2, npcType);
