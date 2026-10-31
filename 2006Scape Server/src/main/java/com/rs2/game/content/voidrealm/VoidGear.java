@@ -27,10 +27,19 @@ public final class VoidGear {
 		for (int w : new int[] { STARFALL_HALBERD, RIMECLEAVER, KINGS_SCEPTRE, DUSKYEW_SHORTBOW, CAGED_STAR_STAFF }) {
 			targetSlots[w] = ItemConstants.WEAPON;
 		}
+		VoidArmoury.slots(targetSlots);
+		for (int[] set : new int[][] { LADDER, STARMETAL_SET, VOIDSTEEL_SET }) {
+			for (int w : set) {
+				targetSlots[w] = ItemConstants.WEAPON;
+			}
+		}
 	}
 
 	/** Sets the player's level requirements for one of the saga's items; false if it isn't one. */
 	public static boolean requirements(Player p, int id) {
+		if (VoidArsenal.requirements(p, id) || VoidArmoury.requirements(p, id)) {
+			return true;
+		}
 		for (int w : WARDEN_SET) {
 			if (id == w) {
 				p.defenceLevelReq = 30;
@@ -65,9 +74,9 @@ public final class VoidGear {
 		return false;
 	}
 
-	/** The attack-style tab for the saga's melee weapons; false to let the generic rules decide. */
+	/** The attack-style tab for the saga's weapons (and the ladder's); false to let the generic rules decide. */
 	public static boolean sendWeapon(Player p, int weapon, String name) {
-		int tab;
+		int tab = VoidArsenal.tab(weapon);
 		switch (weapon) {
 		case STARFALL_HALBERD:
 			tab = 8460; // jab, swipe, fend
@@ -79,7 +88,9 @@ public final class VoidGear {
 			tab = 3796; // pound, pummel, spike, block
 			break;
 		default:
-			return false;
+			if (tab < 0) {
+				return false;
+			}
 		}
 		p.getPacketSender().setSidebarInterface(0, tab);
 		p.getPacketSender().sendFrame246(tab + 1, 200, weapon);

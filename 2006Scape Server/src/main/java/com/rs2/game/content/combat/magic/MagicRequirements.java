@@ -9,20 +9,26 @@ public class MagicRequirements {
 
 	public static boolean wearingStaff(Player player, int runeId) {
 		int wep = player.playerEquipment[player.playerWeapon];
+		if (com.rs2.game.content.voidrealm.VoidArsenal.freeRune(wep, runeId)) { // the god tier's staves and wand
+			return true;
+		}
 		switch (runeId) {
 		case 554: // Fire runes
 			if (wep == 1387 || wep == 1393 || wep == 1401 || wep == 3053 || wep == 3054
-					|| wep == com.rs2.game.content.voidrealm.VoidConstants.CAGED_STAR_STAFF) { // the caged star burns for ever
+					|| wep == com.rs2.game.content.voidrealm.VoidConstants.CAGED_STAR_STAFF // the caged star burns for ever
+					|| wep == com.rs2.game.content.voidrealm.VoidConstants.FIRST_STAR_STAFF) { // and so does the first one
 				return true;
 			}
 			break;
 		case 555: // Water runes
-			if (wep == 1383 || wep == 1395 || wep == 1403 || wep == 6562 || wep == 6563) {
+			if (wep == 1383 || wep == 1395 || wep == 1403 || wep == 6562 || wep == 6563
+					|| wep == com.rs2.game.content.voidrealm.VoidConstants.RIMEHEART_STAFF) { // the Rimeheart is the water
 				return true;
 			}
 			break;
 		case 556: // Air runes
-			if (wep == 1381 || wep == 1397 || wep == 1405) {
+			if (wep == 1381 || wep == 1397 || wep == 1405
+					|| wep == com.rs2.game.content.voidrealm.VoidConstants.FIRST_STAR_STAFF) { // a star needs no air to burn in
 				return true;
 			}
 			break;

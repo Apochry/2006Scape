@@ -6,7 +6,10 @@ import static com.rs2.game.content.StaticItemList.*;
 
 public class RangeData {
 
-	public final static int[] BOWS = { 9185,LONGBOW,OAK_LONGBOW,WILLOW_LONGBOW,MAPLE_LONGBOW,YEW_LONGBOW,MAGIC_LONGBOW,SHORTBOW,OAK_SHORTBOW,WILLOW_SHORTBOW,MAPLE_SHORTBOW,YEW_SHORTBOW,MAGIC_SHORTBOW,NEW_CRYSTAL_BOW,CRYSTAL_BOW_FULL,CRYSTAL_BOW_910,CRYSTAL_BOW_810,CRYSTAL_BOW_710,CRYSTAL_BOW_610,CRYSTAL_BOW_510,CRYSTAL_BOW_410,CRYSTAL_BOW_310,CRYSTAL_BOW_210,CRYSTAL_BOW_110,SEERCULL,KARILS_CROSSBOW,KARILS_XBOW_100,KARILS_XBOW_75,KARILS_XBOW_50,KARILS_XBOW_25, com.rs2.game.content.voidrealm.VoidConstants.DUSKYEW_SHORTBOW
+	public final static int[] BOWS = { 9185,LONGBOW,OAK_LONGBOW,WILLOW_LONGBOW,MAPLE_LONGBOW,YEW_LONGBOW,MAGIC_LONGBOW,SHORTBOW,OAK_SHORTBOW,WILLOW_SHORTBOW,MAPLE_SHORTBOW,YEW_SHORTBOW,MAGIC_SHORTBOW,NEW_CRYSTAL_BOW,CRYSTAL_BOW_FULL,CRYSTAL_BOW_910,CRYSTAL_BOW_810,CRYSTAL_BOW_710,CRYSTAL_BOW_610,CRYSTAL_BOW_510,CRYSTAL_BOW_410,CRYSTAL_BOW_310,CRYSTAL_BOW_210,CRYSTAL_BOW_110,SEERCULL,KARILS_CROSSBOW,KARILS_XBOW_100,KARILS_XBOW_75,KARILS_XBOW_50,KARILS_XBOW_25, com.rs2.game.content.voidrealm.VoidConstants.DUSKYEW_SHORTBOW,
+			com.rs2.game.content.voidrealm.VoidConstants.WOLFBONE_SHORTBOW, com.rs2.game.content.voidrealm.VoidConstants.WARDEN_LONGBOW, com.rs2.game.content.voidrealm.VoidConstants.HOLLOWHEART_SHORTBOW,
+			com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW, com.rs2.game.content.voidrealm.VoidConstants.VOIDSTEEL_LONGBOW,
+			com.rs2.game.content.voidrealm.VoidConstants.DAWNBRINGER_LONGBOW, com.rs2.game.content.voidrealm.VoidConstants.NIGHTFALL_SHORTBOW
 	};
 	public final static int[] ARROWS = { BRONZE_ARROW,BRONZE_ARROWP,IRON_ARROW,IRON_ARROWP,STEEL_ARROW,STEEL_ARROWP,MITHRIL_ARROW,MITHRIL_ARROWP,ADAMANT_ARROW,ADAMANT_ARROWP,RUNE_ARROW,RUNE_ARROWP,BOLT_RACK,9140,9141,9142,9143,9144,9240,9241,9242,9243,9244,9245,BROAD_ARROWS,BROAD_ARROWS_4160,BROAD_ARROWS_4172
 	};
@@ -72,6 +75,10 @@ public class RangeData {
 			case MAPLE_LONGBOW:
 			case YEW_LONGBOW:
 			case MAGIC_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.WARDEN_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.VOIDSTEEL_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.DAWNBRINGER_LONGBOW:
 				return true;
 		}
 		return false;
@@ -89,6 +96,7 @@ public class RangeData {
 
 			case OAK_SHORTBOW:
 			case OAK_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.WOLFBONE_SHORTBOW:
 				return IRON_ARROW;
 
 			case WILLOW_LONGBOW:
@@ -97,15 +105,21 @@ public class RangeData {
 
 			case MAPLE_LONGBOW:
 			case MAPLE_SHORTBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.WARDEN_LONGBOW:
 				return MITHRIL_ARROW;
 
 			case YEW_LONGBOW:
 			case YEW_SHORTBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.HOLLOWHEART_SHORTBOW:
 				return ADAMANT_ARROW;
 
 			case MAGIC_LONGBOW:
 			case MAGIC_SHORTBOW:
 			case com.rs2.game.content.voidrealm.VoidConstants.DUSKYEW_SHORTBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.VOIDSTEEL_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.DAWNBRINGER_LONGBOW:
+			case com.rs2.game.content.voidrealm.VoidConstants.NIGHTFALL_SHORTBOW:
 				if (c.playerEquipment[c.playerArrows] == RUNE_ARROW) {
 					return RUNE_ARROW;
 				} else if (c.playerEquipment[c.playerArrows] == BROAD_ARROWS_4172) {

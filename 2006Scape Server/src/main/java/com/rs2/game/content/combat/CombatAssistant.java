@@ -298,6 +298,7 @@ public class CombatAssistant {
 				guthansEffect = true;
 			}
 		}
+		com.rs2.game.content.voidrealm.VoidArsenal.onMeleeHit(player, NpcHandler.npcs[i], damage);
 		if (player.fightMode == 3 && NpcHandler.npcs[i].npcType != PHEASANT && NpcHandler.npcs[i].npcType != PHEASANT_2460 && NpcHandler.npcs[i].npcType != PHEASANT_2461 && NpcHandler.npcs[i].npcType != PHEASANT_2462) {
 			player.getPlayerAssistant().addSkillXP(damage * CombatConstants.MELEE_EXP_RATE / 3, 0);
 			player.getPlayerAssistant().addSkillXP(damage * CombatConstants.MELEE_EXP_RATE / 3, 1);

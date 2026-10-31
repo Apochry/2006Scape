@@ -20,8 +20,20 @@ import com.rs2.util.Misc;
  *    5%      gear around the monster's level (including the Warden's armour, for the middle band)
  *   +1%      an independent bonus roll: gear that's unusually good for the monster's level
  * </pre>
+ * The weapon ladder (VoidArsenal) has a few rungs here: the Wolfbone shortbow and Barrowstone warhammer in the low
+ * band's gear, the Silkwood wand and Scarglass dagger in the middle band's, and the Gravewarden 2h sword and Riftglass
+ * halberd on the bonus roll; the high band's bonus roll can also give a starmetal dagger, sword or spear. Of the armour
+ * sets (VoidArmoury), Oathsworn boots and gauntlets are middle-band gear, Scarweave hat, boots and gloves high-band
+ * gear, and the Scarweave robe top and bottom the high band's bonus roll. The Thane's oathsworn have their own table
+ * (npcdrops.json): their plate.
  *
- * Tables come in three bands by combat level: under 30, 30-49, and 50 and over. Bosses and quest fights keep their
+ * <p>The low armour sets: a Gatehold recruit's helm, boots and gloves and a Woodsman's hood, boots and vambraces are
+ * low-band gear (the recruit's chainbody and the Woodsman's jerkin its bonus roll); a Warden initiate's helm, shield,
+ * boots and gauntlets are middle-band gear (the platebody and platelegs its bonus roll). Two dungeons keep their own:
+ * half of every gear or bonus roll in the Sunken Barrow is Barrowbronze, and half of one in Hollowdeep is Veilsworn
+ * (the small pieces as gear, the body and legs as the bonus).
+ *
+ * <p>Tables come in three bands by combat level: under 30, 30-49, and 50 and over. Bosses and quest fights keep their
  * own hand-made tables (in npcdrops.json), as do harmless animals (under combat 15).
  */
 public final class VoidLoot {
@@ -50,19 +62,33 @@ public final class VoidLoot {
 			{ { 1619, 1, 1 }, { 1617, 1, 1 }, { 995, 1000, 2500 }, { STARMETAL, 1, 2 }, { 451, 1, 1 } } };
 	private static final int[][][] GEAR = {
 			{ { 1325, 1, 1 }, { 1157, 1, 1 }, { 1069, 1, 1 }, { 1193, 1, 1 }, { 1115, 1, 1 }, { 1295, 1, 1 }, { 1141, 1, 1 },
-					{ 843, 1, 1 } },
+					{ 843, 1, 1 }, { WOLFBONE_SHORTBOW, 1, 1 }, { BARROWSTONE_WARHAMMER, 1, 1 }, { RECRUIT_SET[0], 1, 1 },
+					{ RECRUIT_SET[4], 1, 1 }, { RECRUIT_SET[5], 1, 1 }, { WOODSMAN_SET[0], 1, 1 }, { WOODSMAN_SET[4], 1, 1 },
+					{ WOODSMAN_SET[5], 1, 1 } },
 			{ { 1329, 1, 1 }, { 1121, 1, 1 }, { 1145, 1, 1 }, { 1183, 1, 1 }, { 1301, 1, 1 }, { 853, 1, 1 },
-					{ WARDEN_HELM, 1, 1 }, { WARDEN_BOOTS, 1, 1 }, { WARDEN_GAUNTLETS, 1, 1 } },
+					{ WARDEN_HELM, 1, 1 }, { WARDEN_BOOTS, 1, 1 }, { WARDEN_GAUNTLETS, 1, 1 }, { SILKWOOD_WAND, 1, 1 },
+					{ SCARGLASS_DAGGER, 1, 1 }, { OATHSWORN_SET[4], 1, 1 }, { OATHSWORN_SET[5], 1, 1 }, { INITIATE_SET[0], 1, 1 },
+					{ INITIATE_SET[3], 1, 1 }, { INITIATE_SET[4], 1, 1 }, { INITIATE_SET[5], 1, 1 } },
 			{ { 1123, 1, 1 }, { 1073, 1, 1 }, { 1161, 1, 1 }, { 1199, 1, 1 }, { 1147, 1, 1 }, { 1213, 1, 1 }, { 857, 1, 1 },
-					{ WARDEN_BODY, 1, 1 }, { WARDEN_LEGS, 1, 1 } } };
+					{ WARDEN_BODY, 1, 1 }, { WARDEN_LEGS, 1, 1 }, { SCARWEAVE_SET[0], 1, 1 }, { SCARWEAVE_SET[4], 1, 1 },
+					{ SCARWEAVE_SET[5], 1, 1 } } };
 	private static final int[][][] BONUS = {
-			{ { 1329, 1, 1 }, { 1183, 1, 1 }, { 1159, 1, 1 } },
-			{ { 1333, 1, 1 }, { 1147, 1, 1 }, { 1113, 1, 1 }, { WARDEN_BODY, 1, 1 } },
-			{ { 1079, 1, 1 }, { 1163, 1, 1 }, { 1215, 1, 1 }, { 1149, 1, 1 } } };
+			{ { 1329, 1, 1 }, { 1183, 1, 1 }, { 1159, 1, 1 }, { RECRUIT_SET[1], 1, 1 }, { WOODSMAN_SET[1], 1, 1 } },
+			{ { 1333, 1, 1 }, { 1147, 1, 1 }, { 1113, 1, 1 }, { WARDEN_BODY, 1, 1 }, { GRAVEWARDEN_2H, 1, 1 },
+					{ INITIATE_SET[1], 1, 1 }, { INITIATE_SET[2], 1, 1 } },
+			{ { 1079, 1, 1 }, { 1163, 1, 1 }, { 1215, 1, 1 }, { 1149, 1, 1 }, { RIFTGLASS_HALBERD, 1, 1 }, { STARMETAL_SET[0], 1, 1 },
+					{ STARMETAL_SET[1], 1, 1 }, { STARMETAL_SET[8], 1, 1 }, { SCARWEAVE_SET[1], 1, 1 }, { SCARWEAVE_SET[2], 1, 1 } } };
+
+	/** The Sunken Barrow's and Hollowdeep's own gear and bonus tables (half of each such roll there comes from these). */
+	private static final int[][] BARROW_GEAR = { { BARROWBRONZE_SET[0], 1, 1 }, { BARROWBRONZE_SET[3], 1, 1 },
+			{ BARROWBRONZE_SET[4], 1, 1 }, { BARROWBRONZE_SET[5], 1, 1 } };
+	private static final int[][] BARROW_BONUS = { { BARROWBRONZE_SET[1], 1, 1 }, { BARROWBRONZE_SET[2], 1, 1 } };
+	private static final int[][] HOLLOWDEEP_GEAR = { { VEILSWORN_SET[0], 1, 1 }, { VEILSWORN_SET[4], 1, 1 }, { VEILSWORN_SET[5], 1, 1 } };
+	private static final int[][] HOLLOWDEEP_BONUS = { { VEILSWORN_SET[1], 1, 1 }, { VEILSWORN_SET[2], 1, 1 } };
 
 	/** Bosses and minibosses (hand-made tables), and the adds summoned in boss fights (bones only). */
 	private static final int[] CURATED = { BARROW_THANE, HOLLOW_MATRIARCH, RIMECLAW, BROODMOTHER, HOLLOW_HERALD,
-			RIMEBOUND_SENTINEL, SIR_VAELRIC, THE_STARLESS, STARLESS_SPAWN, HOLLOW_KNIGHT };
+			RIMEBOUND_SENTINEL, SIR_VAELRIC, THE_STARLESS, STARLESS_SPAWN, HOLLOW_KNIGHT, THANE_OATHSWORN };
 
 	/** Whether this kill uses Nythera's loot (rather than the npc's own 1-in-N drops). */
 	public static boolean applies(int npcType, int x, int y) {
@@ -81,12 +107,15 @@ public final class VoidLoot {
 	public static void roll(Player p, int npcType, int x, int y) {
 		int level = NpcHandler.getNpcListCombat(npcType);
 		int band = level < 30 ? 0 : level < 50 ? 1 : 2;
-		int[][][] tier = TIERS[tier()];
+		int t = tier(), dungeon = nytheraDungeon(x, y);
+		int[][][] tier = TIERS[t];
 		if (tier != null) {
-			drop(p, tier[band], x, y);
+			int[][] own = t == 4 ? (dungeon == BARROW_REGION_X ? BARROW_GEAR : dungeon == HOLLOWDEEP_REGION_X ? HOLLOWDEEP_GEAR : null) : null;
+			drop(p, own != null && Misc.random(1) == 0 ? own : tier[band], x, y);
 		}
 		if (bonus()) {
-			drop(p, BONUS[band], x, y);
+			int[][] own = dungeon == BARROW_REGION_X ? BARROW_BONUS : dungeon == HOLLOWDEEP_REGION_X ? HOLLOWDEEP_BONUS : null;
+			drop(p, own != null && Misc.random(1) == 0 ? own : BONUS[band], x, y);
 		}
 	}
 

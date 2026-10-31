@@ -466,6 +466,230 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 - Monsters built on the stock zombie rig looked broken: it has only five animations, which fling its limbs about. The
   Drowned deckhand (pirate), Hollow husk (man) and Hollow ravager (thug) now use human rigs.
 
+## The weapon ladder
+
+Thirty hand-built weapons, each a step cooler than the last. They run from Bram's fish knife, through a blade the
+Starless sheds like a scale, to the last light there was before the dark. The low rungs are plain iron, wood and twine in the old-school style. Gatehold's blue
+and the Wardens' star come in through the middle. The first violet appears at the Scarglass dagger (35). From the Wand of the Scar (50) up, the
+edges and cores glow. From 23 up most have special attacks that throw the saga's own spotanims. The last five
+(26-30) leave violet behind for gold and white: the sun, the first star, a king's crown and the last light, the things
+the Starless ate. Models are in
+`tools/mapgen/LadderWeapons.java`. Rules (levels, tabs, recipes, `::vt weapons`) are in
+`game/content/voidrealm/VoidArsenal.java`, and bonuses are in `tools/nythera_data.py`. Item ids run from 8001 to 8030 in rank order.
+The god tier, ranks 31-45 (items 8053-8067), has its own section below.
+
+| # | Weapon | Type | Wield | Key bonuses | Where from |
+|---|---|---|---|---|---|
+| 1 | Netwright's gutting dagger | dagger | Attack 1 | +5 stab, +4 str | Bram's tackle shop (350) |
+| 2 | Hob's felling axe | axe | Attack 3 | +7 slash, +8 str | Pell's store (352) |
+| 3 | Pilgrim's staff | staff | Magic 5 | +6 magic, +9 crush | Pell's store |
+| 4 | Militia spear | spear | Attack 5 | +12 all, +11 str | Dorrin's forge (353) |
+| 5 | Wolfbone shortbow | shortbow (iron arrows) | Ranged 5 | +12 ranged | Pell's store; Nythera gear drop, under 30 |
+| 6 | Watchman's sword | sword | Attack 10 | +16 stab, +14 str | Dorrin's forge |
+| 7 | Steelcap mace | mace | Attack 15 | +19 crush, +17 str, +2 prayer | Dorrin's forge |
+| 8 | Smuggler's scimitar | scimitar | Attack 20 | +25 slash, +24 str | Sly Nettle (356) |
+| 9 | Barrowstone warhammer | warhammer | Attack 25, Str 20 | +32 crush, +33 str | Nythera gear drop, under 30 (the Barrow's skeletons) |
+| 10 | Silkwood wand | wand | Magic 25 | +12 magic | Nythera gear drop, 30-49 |
+| 11 | Gatehold longsword | longsword | Attack 30 | +41 slash, +42 str | Warden's armoury (357) |
+| 12 | Warden's halberd | halberd | Attack 30, Str 30 | +50 slash, +50 str | Warden's armoury |
+| 13 | Warden's longbow | longbow (mithril arrows) | Ranged 30 | +38 ranged | Warden's armoury |
+| 14 | Scarglass dagger | dagger | Attack 35 | +31 stab, +29 str | Nythera gear drop, 30-49 |
+| 15 | Oathsworn battleaxe | battleaxe | Attack 40 | +52 slash, +62 str | the Barrow Thane, about 1/16 |
+| 16 | Frostfang spear | spear | Attack 40 | +41 all, +45 str | Rimeclaw, about 1/14 |
+| 17 | Gravewarden 2h sword | 2h sword | Attack 45, Str 40 | +74 slash, +76 str | Nythera bonus roll, 30-49 |
+| 18 | Hollowheart shortbow | shortbow (adamant arrows) | Ranged 45 | +60 ranged | the Hollow Matriarch, about 1/14 |
+| 19 | Wand of the Scar | wand | Magic 50 | +15 magic, +10 magic def | **recipe**: use a Silkwood wand on a waystone with 1 starmetal and 25 cosmic runes (Crafting 50, after Ashes of the Crown) |
+| 20 | Gravestar warhammer | warhammer | Attack 55, Str 50 | +64 crush, +68 str | **recipe**: use a Barrowstone warhammer on Gatehold's anvil with 2 starmetal and a hammer (Smithing 55, after Heartforged) |
+| 21 | Riftglass halberd | halberd | Attack 60, Str 40 | +90 slash, +88 str | Nythera bonus roll, 50+ |
+| 22 | Rimeheart staff | staff | Magic 65, Attack 40 | +18 magic, +44 crush; **never needs water runes** | the Rimebound sentinel, about 1/16 |
+| 23 | Nightglass scimitar | scimitar | Attack 70 | +72 slash, +72 str; special **Rend** | the Starless, about 1/24 |
+| 24 | Crownbreaker mace | mace | Attack 75 | +84 crush, +78 str, +6 prayer; special **Shatter** | the Starless, about 1/32 |
+| 25 | Starless longsword | longsword | Attack 80 | +90 slash, +70 stab, +92 str; special **Eclipse** | the Starless, about 1/64 |
+| 26 | Eventide longbow | longbow (rune arrows) | Ranged 85 | +92 ranged; special **Starshot** | the Starless, about 1/80 |
+| 27 | Sunspear | spear | Attack 85 | +86 all, +94 str; special **Sunburst** | the Starless, about 1/96 |
+| 28 | Staff of the first star | staff | Magic 90, Attack 50 | +26 magic, +26 magic def, +50 crush; **never needs fire or air runes** | the Starless, about 1/112 |
+| 29 | Kingsbane battleaxe | battleaxe | Attack 90, Str 80 | +104 slash, +96 crush, +118 str; special **Regicide** | the Starless, about 1/128 |
+| 30 | Last Light 2h sword | 2h sword | Attack 99, Str 90 | +124 slash, +108 crush, +128 str, +6 prayer; special **Last Light** | **recipe**: use the Starless longsword on the Starless Gate with 5 Starless shards, after 25 Starless kills |
+
+Boss drops roll in table order and stop at the first hit. The ladder weapon rolls straight after the boss's own
+unique, so "about 1/N" is a little under 1/N.
+
+**Specials.** These use the stock spec bars: the longsword/scimitar tab's bar, which the Emberbrand also uses, and the mace tab's bar.
+- **Rend** (Nightglass scimitar, 50%): 115% damage, 135% accuracy, the dragon scimitar's swing. The target gets the
+  void impact.
+- **Shatter** (Crownbreaker mace, 50%): 140% damage, 120% accuracy, the dragon mace's blow. A falling star lands on
+  the target.
+- **Eclipse** (Starless longsword, 60%): 135% damage, 130% accuracy, the dragon longsword's cleave. The eclipse ring
+  closes on the target.
+- **Starshot** (Eventide longbow, 50%): 125% damage, 115% accuracy, through the magic longbow's own special path
+  (one shot, its projectile and draw).
+- **Sunburst** (Sunspear, 50%): 130% damage, 125% accuracy, the dragon spear's lunge; the heart-fire bursts on the
+  target. It uses the spear tab's generic bar.
+- **Regicide** (Kingsbane battleaxe, 50%): the dragon battleaxe's rampage, hotter: Strength +20% instead of +15%,
+  with the heart-fire on the wielder and "No more kings!".
+- **Last Light** (Last Light 2h sword, 60%): 150% damage, 120% accuracy, a 2h cleave; the eclipse falls on the target
+  and the heart-fire flares on the wielder.
+- **Twin fang** (voidsteel dagger, 25%): the dragon dagger's double stab, at 115% damage and 120% accuracy.
+
+**How they're built.** Each weapon is one frame placed into the inventory and wielded pose of a comparable cache
+item, as in `QuestWeapons`. The ladder adds nine poses read off the cache: longsword, sword, dagger, scimitar, warhammer,
+spear, 2h sword, magic longbow and master wand. Their coordinates are in the class comment. The wielded pose keeps
+the base's skin label: 27 for the longsword, spear, warhammer, mace and bows, and 50 for the dagger, sword, scimitar, 2h sword, battleaxe,
+halberd, staff and wand. The stock attack, stand and walk animations then move them. Names keep the stock words
+(dagger, scimitar, 2h sword, longbow...), because attack speed, animations and two-handedness come from the name.
+`VoidArsenal` sets each one's tab explicitly. No crossbow: the engine only fires bolt racks from Karil's crossbow,
+and stock bolts aren't wired up.
+
+**Previewing without the game.** `tools/mapgen/ModelPreview` renders each rung offline: flat-shaded, painter-sorted,
+with the client's item-sprite camera for the icon. It draws the base item's own icon beside it to check the fit, and the
+wielded model on the default body with the hand ringed at (-30, -97, 0). It also writes a contact sheet. From
+`2006Scape Server`:
+`java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.ModelPreview data/cache outDir [S1|S2|G] [rank...]`.
+
+### The god tier (31-45)
+
+Fifteen weapons above everything else. Each belongs to one of the world's powers: the stars and the First Star, the
+Starless, the void and the Scar, Aurel's heart-fire, the Hollow King, the Wardens' founders and the old kingdom's
+crown. They need 85-99 and are a clear step past Last Light and the voidsteel set. The numbers stay where the
+engine's max-hit formulas stay sane: strength bonus tops out at 155, ranged at 112 and magic at 40. The silhouettes
+are the biggest yet: oversized blades, parts that float free of the weapon (separate pieces in the same model), crowns
+of spikes, glowing cores and layered bands, all on dark bodies so the bright accents read. Models are in
+`tools/mapgen/GodWeapons.java`.
+
+| # | Weapon | Type | Wield | Key bonuses | Special / effect | Where from |
+|---|---|---|---|---|---|---|
+| 31 | Wardensoath 2h sword | 2h sword | Attack 85, Str 80 | +130 slash, +112 crush, +132 str | **Oath of the Wall** (50%): 135% dmg, 135% acc, a falling star on the target; heals you by the damage dealt | the Starless, about 1/150 |
+| 32 | Heart of Aurel longsword | longsword | Attack 86 | +104 slash, +82 stab, +108 str | **Kindling** (50%): 140% dmg, 125% acc, heart-fire on both; **on hit** (1 in 5): heart-fire mends you by a quarter of the hit | **recipe**: Emberbrand + voidsteel longsword + 6 shards (Smithing 80) |
+| 33 | Scarmaw halberd | halberd | Attack 87, Str 80 | +124 slash, +96 stab, +120 str | **Devour** (50%): 135% dmg, 125% acc, void impact; heals you by the damage dealt | the Starless, about 1/180 |
+| 34 | Hollow Crown warhammer | warhammer | Attack 88, Str 85 | +112 crush, +116 str, +4 prayer | **Kneel** (50%): 145% dmg, 120% acc, void impact | **recipe**: Hollow King's mace + voidsteel warhammer + 6 shards (Smithing 82) |
+| 35 | Dawnbringer longbow | longbow (rune arrows) | Ranged 88 | +104 ranged | **First Light** (50%): the magic longbow's special path | the Starless, about 1/200 |
+| 36 | Wand of the Unmade | wand | Magic 88 | +32 magic, +18 magic def | **never needs chaos or death runes** | **recipe**: Wand of the Scar + voidsteel dagger + 6 shards (Crafting 85) |
+| 37 | Spear of the First Star | spear | Attack 90 | +100 all, +110 str | **Starfall** (50%): 140% dmg, 130% acc, a falling star | **recipe**: Sunspear + voidsteel spear + 8 shards (Smithing 85) |
+| 38 | Crownfire scimitar | scimitar | Attack 90 | +112 slash, +112 str | **Coronation** (50%): 130% dmg, 145% acc, heart-fire; **on hit** (1 in 5): restores prayer | the Starless, about 1/220 |
+| 39 | Gatebreaker battleaxe | battleaxe | Attack 91, Str 85 | +122 slash, +112 crush, +136 str | **Breach** (50%): the rampage, Strength +20% and Attack +10% | **recipe**: Kingsbane battleaxe + voidsteel battleaxe + 8 shards (Smithing 88) |
+| 40 | Nightfall shortbow | shortbow (rune arrows) | Ranged 92 | +112 ranged | **Nightfall** (55%): the magic shortbow's special path | the Starless, about 1/250 |
+| 41 | Riftcaller staff | staff | Magic 93, Attack 50 | +34 magic, +30 magic def, +56 crush | **never needs earth or water runes** | **recipe**: Riftglass halberd + Rimeheart staff + 8 shards (Crafting 90, 50 Starless kills) |
+| 42 | Sunfall 2h sword | 2h sword | Attack 94, Str 90 | +140 slash, +122 crush, +144 str | **Sunfall** (60%): 155% dmg, 120% acc, a falling star on the target, heart-fire on you | the Starless, about 1/280 |
+| 43 | Black Sun warhammer | warhammer | Attack 95, Str 92 | +128 crush, +134 str, +6 prayer | **Black Sun** (60%): 150% dmg, 120% acc, the eclipse; heals you by the damage dealt; **on hit** (1 in 6): the dark feeds you a third of the hit | **recipe**: Crownbreaker mace + voidsteel mace + 10 shards (Smithing 90, 50 kills) |
+| 44 | Crown of Stars staff | staff | Magic 96, Attack 60 | +40 magic, +36 magic def, +60 crush | **never needs any elemental rune** | **reward**: use the Staff of the first star on the Starless Gate with every quest in the saga finished, 50 Starless kills and 10 shards |
+| 45 | Godsfall 2h sword | 2h sword | Attack 99, Str 99 | +150 slash, +132 crush, +155 str, +10 all defence, +8 prayer | **Godsfall** (70%): 160% dmg, 130% acc, the eclipse on the target, heart-fire on you; heals you by the damage dealt; **on hit** (1 in 5): eclipse, a quarter of the hit as hitpoints and some prayer | **the final recipe**: Last Light + Wardensoath + Sunfall + 25 shards (Smithing 90, 100 Starless kills) |
+
+**Getting them.** Everything here is endgame:
+- **Drops.** Six come from the Starless's table (`npcdrops.json`, 3889), after its own uniques and the ladder's top
+  rungs. Rolls stop at the first hit, so each "about 1/N" is a little rarer than 1/N in practice.
+- **Recipes.** Seven are recipes at the Starless Gate, after The Hollow King. Each combines a voidsteel weapon (or
+  another rare drop) with the ladder weapon it grows out of and Starless shards (`VoidArsenal.GOD_RECIPES`). Use the
+  first item named on the gate.
+- **The Crown of Stars staff** is the reward for finishing everything: Echoes of the Void, Beyond the Veil, Ashes of the
+  Crown, Hold the Gate, Heartforged and The Hollow King, plus 50 Starless kills.
+- **Godsfall** ends the chain. It eats Last Light (itself a recipe) and two god-tier greatswords.
+
+**How the effects work.**
+- **Specials** use the existing system: `Specials.specialAttack` entries, the stock buttons and bars, and the saga's
+  spotanims 667-671. No new spotanims, so the spotanim count is unchanged.
+- **The heal-on-hit effect** is the special system's own effect 4. The saga's specials now carry their effect into
+  combat; stock specials are untouched.
+- **Warhammers and halberds** sit on the mace and spear tabs, because those tabs have spec buttons.
+- **On-hit effects** are melee against monsters only (`VoidArsenal.onMeleeHit`, called from `applyNpcMeleeDamage`).
+- **Free runes** are `VoidArsenal.FREE_RUNES`, asked by `MagicRequirements.wearingStaff`.
+
+## Starmetal and voidsteel: two new tiers
+
+Rune and dragon are sets: every shape in one metal, one look, and a clear step between them. Nythera adds two more,
+each a complete set of ten (dagger, sword, longsword, scimitar, mace, warhammer, battleaxe, 2h sword, spear and
+halberd), and voidsteel adds a longbow. No crossbows (see above), and no starmetal bow: the Duskyew shortbow already
+fills that tier.
+
+- **Starmetal (Attack 50), between rune and dragon.** The fallen star that Dorrin learns to work in Heartforged. It is
+  harder than rune, but it is still metal from *this* sky, so it stops short of dragon. Pale silver-lilac blades with
+  bright honed edges, night-blue grips wound with starmetal, star-pointed pommels and guards, and a violet star-shard
+  fuller or gem as the one accent. It is clean, straight and heraldic: the Wardens' look. **Source:** use a rune weapon on
+  Gatehold's anvil with starmetal and a hammer (Smithing 60, after Heartforged). It takes 1 starmetal for the dagger,
+  sword, mace and spear, 2 for the longsword and scimitar, and 3 for the warhammer, battleaxe, 2h sword and halberd.
+  The weapon and the starmetal are used up. Also from Nythera's high-band bonus roll (dagger, sword, spear) and the
+  Starless (longsword, about 1/30).
+- **Voidsteel (Attack 70), above dragon.** Starmetal pushed through the Starless Gate and bitten by the dark behind
+  it. The Starless is what crowned Aurel and what ate the stars, so its metal outranks anything a dragon breathes on.
+  It is near-black violet whose every edge burns. Guards sweep forward like horns, barbs run down the backs of the blades,
+  pommels are hooked, and a single white eye sits where starmetal had its shard. It is menacing and asymmetric: the
+  Starless's look. **Source:** use a starmetal weapon (or, for the longbow, a magic longbow) on the Starless Gate with
+  Starless shards, in the same counts as above (3 for the bow), at Smithing 75, after The Hollow King. Starless shards
+  come from the Starless (1-2 on every kill) and its spawn (about 1/4). The voidsteel dagger also drops from the
+  Starless (about 1/40).
+
+Within each set the stats mirror rune and dragon. The dagger is weakest and quickest, the sword and scimitar come
+next, and the longsword, mace and spear sit in the middle. The warhammer and battleaxe hit harder and slower, and the
+2h sword and halberd are strongest and slowest. Each voidsteel piece is about as far past its starmetal twin as dragon
+is past rune. Attack speed comes from the name, as for the ladder.
+
+| Piece | Starmetal (8032-8041): stab / slash / crush, str | Voidsteel (8042-8052): stab / slash / crush, str |
+|---|---|---|
+| dagger | 33 / 18 / -4, 32 | 48 / 32 / -4, 47 (special **Twin fang**) |
+| sword | 46 / 34 / -2, 47 | 62 / 46 / -2, 63 |
+| longsword | 48 / 58 / -2, 60 | 66 / 78 / -2, 80 |
+| scimitar | 8 / 56 / -2, 55 | 10 / 76 / -2, 75 |
+| mace | 30 / -2 / 50, 46, +4 prayer | 48 / -2 / 70, 64, +6 prayer |
+| warhammer | -4 / -4 / 64, 60 | -4 / -4 / 82, 80 |
+| battleaxe | -2 / 59 / 54, 74 | -2 / 80 / 74, 95 |
+| 2h sword | -4 / 80 / 65, 82 | -4 / 102 / 90, 104 |
+| spear | 46 / 46 / 46, 51 | 62 / 62 / 62, 68 |
+| halberd (also Str 45 / Str 60) | 58 / 80 / 0, 78 | 80 / 106 / 0, 99 |
+| longbow (Ranged 70, rune arrows) | - | +82 ranged |
+
+Both sets are built from one parametric family in `tools/mapgen/WeaponSets.java`. Every shape is written once and
+dressed by a `Style` (palette plus design flags), so a starmetal scimitar and a voidsteel scimitar are visibly the same
+weapon in two metals. Previews: `ModelPreview data/cache outDir S1` (or `S2`) writes `S1-NN-name.png` and
+`S1-sheet.png`.
+
+## Armour sets
+
+Fourteen matched sets climb with the weapons: six for the saga (Defence 40 and up) and eight humbler ones for the
+early game (levels 10-40, below). Each is tied to a place or a chapter of the story. Plate has a full helm,
+platebody, platelegs, kiteshield, boots and gauntlets. Hide has a coif, body, chaps, boots and vambraces. Robes have a
+hat, robe top, robe bottom, boots and gloves. Hide and robes have no shield. Every piece is cut from the stock piece
+of the same kind (rune plate, green d'hide, mystic; for the low sets also the med helm, chainbody and sq shield, and
+the leather cowl, body and chaps) on both the male and female bodies, so it sits and animates like
+the stock item. Each set then adds its own decoration (horns, fur, crystal, pauldrons, emblems) on top. On the female
+tops the bare-midriff band of the stock meshes is filled in. Whether a body hides the arms, or a helm the face, comes
+from the name, as for stock items. Defence bonuses below are stab / slash / crush / magic / ranged.
+
+| # | Set (ids) | Wear | Look and story | Pieces: key bonuses | Source |
+|---|---|---|---|---|---|
+| 1 | **Oathsworn plate** (8068-8073) | Defence 40 | Old-kingdom bronze from the barrows: ram's-horn helm, oath-rune on the chest. Rune-equivalent | helm 32/34/29/-1/31; body 86/84/76/-6/84 +2 prayer; legs 54/52/50/-4/52; kite 50/52/46/-1/50; boots 13/14/15; gauntlets +4 attack, +2 str | Thane's oathsworn (the Ashes of the Crown guard: boots and gauntlets 1/20, helm 1/25, legs and kite 1/30, body 1/40); the **Barrow Thane** (helm 1/20, legs and kite 1/25, body 1/35); boots and gauntlets in the 30-49 gear roll |
+| 2 | **Duskstalker hide** (8074-8078) | Ranged 50 (body and chaps also Defence 40) | Hunter's leathers from the Hollow Scar's wolves: wolf-eared coif, fur mantle and fangs. Between green and blue d'hide | coif +7 ranged; body +28 ranged, 46/40/52/50/48; chaps +16 ranged; boots +4; vambraces +11 ranged | **Sly Nettle** (shop 356, Smugglers' Cove) sells every piece; the Hollow Matriarch drops the body (1/25) |
+| 3 | **Scarweave robes** (8079-8083) | Magic 60, Defence 20 | The Hollow Herald's weave: crystal-tipped hat, shard mantle, a burning scar down the robe. Just past mystic | hat +6 magic; top +25 magic; bottom +19 magic; boots +6; gloves +6 | The **Hollow Herald** (top and bottom 1/4, hat 1/3); hat, boots and gloves in the 50+ gear roll; top and bottom in the 50+ bonus roll |
+| 4 | **Starmetal plate** (8084-8089) | Defence 60 | The fallen star, faced over rune. Crested helm with a star spray, star pauldrons. Dragon-equivalent | helm 40/42/37/0/40; body 100/96/90/-4/98; legs 66/64/60/-2/64; kite 62/64/58/0/62; boots 16/17/18; gauntlets +6 attack, +4 str | Use a **rune** piece (leather gloves for the gauntlets) on **Gatehold's anvil** with a hammer and starmetal (2 helm, 4 body, 3 legs, 3 kite, 1 boots, 1 gauntlets), Smithing 65, after Heartforged |
+| 5 | **Voidsteel plate** (8090-8095) | Defence 75 | Starmetal pushed through the Starless Gate. Horned helm, the white eye on the chest, burning violet edges | helm 50/52/46/2/50 +2 str; body 120/116/110/4/118 +4 str, +3 prayer; legs 80/78/74/2/78; kite 76/78/72/4/76; boots 20/21/22 +2 str; gauntlets +9 attack, +7 str | Use a **starmetal** piece on the **Starless Gate** with Starless shards (same counts), Smithing 80, after The Hollow King |
+| 6 | **Heartfire regalia** (8096-8101) | Defence 90 | Aurel's Royal Guard plate, re-lit: white and gold, a crown of flame with a halo, winged pauldrons, the sun on the chest. The best armour in the game | helm 60/62/56/6/60 +4 str, +4 prayer; body 140/136/130/10/138 +6 str, +6 prayer; legs 94/92/88/6/92; kite 90/92/86/8/90; boots 24/25/26 +3 str; gauntlets +12 attack, +10 str | Use a **Royal guard** piece on the **Starless Gate** with its matching voidsteel piece and twice the shards. Needs every quest in the saga, 25 Starless kills and Smithing 90 |
+
+Plate weighs on the caster's hand (a magic penalty, and a third of it to ranged); hide and robes do not.
+
+### The low sets (levels 10-40)
+
+Four melee, two ranged, two magic, between the stock bronze-to-adamant tiers. They are plainer than the saga's sets:
+cloth, leather, chain and a single emblem rather than wings and fire. Chain is lighter than plate, with less defence
+and a smaller magic penalty. Chain sets have a med helm, chainbody, platelegs, sq shield, boots and gloves; the
+Warden initiate's is full plate. The models are in `tools/mapgen/LowArmour.java`.
+
+| # | Set (ids) | Wear | Look and story | Pieces: key bonuses | Source |
+|---|---|---|---|---|---|
+| 7 | **Gatehold recruit** (8102-8107) | Defence 10 | The Wardens' issue for new hands on the wall: iron mail, a night-blue tabard with the gate's star, a blue sq shield. Iron-to-steel | med helm 9/10/8; chainbody 22/31/37; legs 20/19/18; shield 14/15/13; boots 3/3/4; gloves +1 attack, 2/2/2 | **Dorrin's Forge** (353) sells it all. Or use an **iron** med helm, chainbody, platelegs or sq shield on **Gatehold's anvil** with a hammer and an iron bar (Smithing 10). Helm, boots and gloves in the under-30 gear roll, the chainbody its bonus roll |
+| 8 | **Woodsman** (8108-8112) | Ranged 15 | A forester's greens: a feathered hood, a jerkin with a quiver strap, patched chaps. Leather to studded | hood +2 ranged; jerkin +6 ranged, 12/16/14/6/16; chaps +4 ranged; boots +1; vambraces +4 ranged | **Pell's Provisions** (352). Hood, boots and vambraces in the under-30 gear roll, the jerkin its bonus roll |
+| 9 | **Croftwise** (8113-8117) | Magic 20 | A hedge-witch's homespun: a straw-coloured pointed hat, a green shawl with a herb pouch, a green-hemmed robe. Just past wizard robes | hat +3 magic; top +10; bottom +7; boots +2; gloves +2 | **Marta Tollan** (Tollan's Croft, shop 351) |
+| 10 | **Rattlebone** (8118-8123) | Defence 25 | Cursed Island pirate salvage: rusty mail with a ribcage and a red rag, horned helm, a crossbones shield. Steel-to-mithril | med helm 14/15/12; chainbody 30/40/46 +1 str; legs 28/26/25; shield 21/22/19; boots 5/6/7; gloves +2 attack, +1 str | **Mad Pete's Salvage** (349) sells the helm, shield, boots and gloves; **cursed pirates** drop helm, boots and gloves (1/40 each) and the shield (1/60); the **cursed first mate** drops the chainbody and legs (1/12 each) |
+| 11 | **Blackbrine** (8124-8128) | Ranged 30 (body and chaps also Defence 20) | Captain Blackbrine's crew's hide: a red bandana coif, a black hide coat with a red sash and brass buckles. Studded to green d'hide | coif +3 ranged; body +13 ranged, 24/30/34/18/30; chaps +7 ranged; boots +2; vambraces +6 ranged | **Sly Nettle** (356) sells coif, chaps, boots and vambraces; the body only drops, from the **cursed first mate** (1/16) |
+| 12 | **Warden initiate** (8129-8134) | Defence 30 | The Wardens' first plate: pale steel with a night-blue tabard and star, a blue-and-star kiteshield. Mithril-to-adamant | full helm 20/22/17; body 66/64/56 +1 prayer; legs 34/32/30; kite 30/32/28; boots 8/9/10; gauntlets +3 attack, +1 str | **The Warden's Armoury** (357, after Hold the Gate). Helm, kite, boots and gauntlets in the 30-49 gear roll; body and legs its bonus roll |
+| 13 | **Barrowbronze** (8135-8140) | Defence 35 | Verdigrised bronze from the Sunken Barrow's dead: scale mail, a crested helm, a sun-disc shield. Adamant-like, +prayer | med helm 24/26/21 +1 prayer; chainbody 42/56/62 +2 prayer; legs 40/38/36 +1 prayer; shield 34/36/32; boots 10/11/12; gloves +4 attack, +2 str | Only in the **Sunken Barrow**: half its monsters' gear rolls (helm, shield, boots, gloves) and half their bonus rolls (chainbody, legs) |
+| 14 | **Veilsworn** (8141-8145) | Magic 40, Defence 10 | The Hollowdeep cult's ash-and-violet robes: a violet-tipped hat, the white eye on the chest, a frayed hem. Wizard to mystic | hat +5 magic; top +20; bottom +15; boots +4; gloves +4 | Only in **Hollowdeep**: half its monsters' gear rolls (hat, boots, gloves) and half their bonus rolls (top, bottom) |
+
+The models live in `tools/mapgen/ArmourSets.java`, one `Style` per set: palette, motif, ids, names and examines.
+`ArmourPreview data/cache outDir set [slot...|full]` writes one card per piece (the inventory icon, then the piece
+worn on the male and female bodies, front and back), `A1-01-oathsworn-helm.png` and so on, and `A1-full-...png` for
+the whole set. If a piece's decorations would spill out of its 32x32 sprite, the inventory camera is pulled back
+(`ArmourSets.fitCamera`). The generator does the same, so the game shows what the preview shows. Wield levels,
+slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour n` puts set n (1-14) into your
+inventory.
+
 ## Where things live
 
 | What | Where |
@@ -485,6 +709,8 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 | The world gate: declared areas, the gate, provenance, the one regen command, the stamp and hooks | `tools/mapgen/WorldAreas.java`, `WorldGate.java`, `Origin.java`, `tools/regen-world.sh`, `tools/worldgate.files`, `tools/worldgate.stamp`, `.claude/hooks/worldgate.sh` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
+| The weapon ladder (items 8001-8030, and the god tier 8053-8067), the Starless shard (8031), the starmetal and voidsteel sets (8032-8052): rules, recipes, effects, `::vt weapons`/`sets`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`, `WeaponSets.java`, `GodWeapons.java`; `tools/mapgen/ModelPreview.java` |
+| The armour sets (items 8068-8145): slots, wield levels, recipes, `::vt armour`; models; offline previews | `game/content/voidrealm/VoidArmoury.java`; `tools/mapgen/ArmourSets.java` (the saga's six) and `tools/mapgen/LowArmour.java` (the eight low sets); `tools/mapgen/ArmourPreview.java`; drops in `VoidLoot.java` and `tools/nythera_data.py` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
 Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
@@ -506,6 +732,9 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt list` | list NPCs spawned for you |
 | `::vt loot rolls npcId` | tally Nythera's loot tiers over `rolls` rolls, and drop ten real rolls at your feet |
 | `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
+| `::vt weapons [from to]` | put the weapon ladder (ranks 1-45, or from-to; `31 45` is the god tier) into your inventory |
+| `::vt sets 1` / `::vt sets 2` | put the starmetal (1) or voidsteel (2) set into your inventory, with 10 starmetal or 10 Starless shards |
+| `::vt armour n` | put armour set n into your inventory (1 Oathsworn, 2 Duskstalker, 3 Scarweave, 4 starmetal, 5 voidsteel, 6 Heartfire, 7 Gatehold recruit, 8 Woodsman, 9 Croftwise, 10 Rattlebone, 11 Blackbrine, 12 Warden initiate, 13 Barrowbronze, 14 Veilsworn) |
 
 ## Ideas for what comes next
 

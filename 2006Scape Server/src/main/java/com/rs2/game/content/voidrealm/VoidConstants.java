@@ -54,6 +54,74 @@ public final class VoidConstants {
 	/* the saga's weapons */
 	public static final int STARFALL_HALBERD = 7996, RIMECLEAVER = 7997, KINGS_SCEPTRE = 7998, DUSKYEW_SHORTBOW = 7999,
 			CAGED_STAR_STAFF = 8000;
+	/* the weapon ladder (VoidArsenal): twenty-five weapons, each a step past the last, in rank order */
+	public static final int GUTTING_DAGGER = 8001, FELLING_AXE = 8002, PILGRIM_STAFF = 8003, MILITIA_SPEAR = 8004,
+			WOLFBONE_SHORTBOW = 8005, WATCHMAN_SWORD = 8006, STEELCAP_MACE = 8007, SMUGGLER_SCIMITAR = 8008,
+			BARROWSTONE_WARHAMMER = 8009, SILKWOOD_WAND = 8010, GATEHOLD_LONGSWORD = 8011, WARDEN_HALBERD = 8012,
+			WARDEN_LONGBOW = 8013, SCARGLASS_DAGGER = 8014, OATHSWORN_BATTLEAXE = 8015, FROSTFANG_SPEAR = 8016,
+			GRAVEWARDEN_2H = 8017, HOLLOWHEART_SHORTBOW = 8018, SCAR_WAND = 8019, GRAVESTAR_WARHAMMER = 8020,
+			RIFTGLASS_HALBERD = 8021, RIMEHEART_STAFF = 8022, NIGHTGLASS_SCIMITAR = 8023, CROWNBREAKER_MACE = 8024,
+			STARLESS_LONGSWORD = 8025;
+	/* the ladder's last five, beyond the Starless (Attack/Ranged/Magic 82-99) */
+	public static final int EVENTIDE_LONGBOW = 8026, SUNSPEAR = 8027, FIRST_STAR_STAFF = 8028, KINGSBANE_BATTLEAXE = 8029,
+			LAST_LIGHT_2H = 8030;
+	/** A shard of the Starless itself: it drops one every kill. Quenches starmetal into voidsteel, and feeds the Last Light. */
+	public static final int STARLESS_SHARD = 8031;
+	/** The two sets' pieces that the combat code names directly (switch cases need constants). */
+	public static final int STARMETAL_DAGGER = 8032, VOIDSTEEL_DAGGER = 8042, VOIDSTEEL_LONGBOW = 8052;
+	/*
+	 * Two weapon tiers, each a full family like rune and dragon, in the same order: dagger, sword, longsword, scimitar,
+	 * mace, warhammer, battleaxe, 2h sword, spear, halberd (and voidsteel adds a longbow). Starmetal (Attack 50) sits
+	 * between rune and dragon; voidsteel (Attack 70) above dragon.
+	 */
+	public static final int[] STARMETAL_SET = { 8032, 8033, 8034, 8035, 8036, 8037, 8038, 8039, 8040, 8041 };
+	public static final int[] VOIDSTEEL_SET = { 8042, 8043, 8044, 8045, 8046, 8047, 8048, 8049, 8050, 8051, 8052 };
+	/*
+	 * The god tier (ladder ranks 31-45, Attack/Ranged/Magic 85-99): weapons of the world's powers - the First Star, the
+	 * Starless, the void and the Scar, Aurel's heart-fire, the Hollow King, the Wardens' founders, the old crown.
+	 */
+	public static final int WARDENSOATH_2H = 8053, HEART_OF_AUREL = 8054, SCARMAW_HALBERD = 8055, HOLLOW_CROWN_WARHAMMER = 8056,
+			DAWNBRINGER_LONGBOW = 8057, UNMADE_WAND = 8058, FIRST_STAR_SPEAR = 8059, CROWNFIRE_SCIMITAR = 8060,
+			GATEBREAKER_BATTLEAXE = 8061, NIGHTFALL_SHORTBOW = 8062, RIFTCALLER_STAFF = 8063, SUNFALL_2H = 8064,
+			BLACK_SUN_WARHAMMER = 8065, CROWN_OF_STARS_STAFF = 8066, GODSFALL_2H = 8067;
+	public static final int[] GOD_TIER = { WARDENSOATH_2H, HEART_OF_AUREL, SCARMAW_HALBERD, HOLLOW_CROWN_WARHAMMER,
+			DAWNBRINGER_LONGBOW, UNMADE_WAND, FIRST_STAR_SPEAR, CROWNFIRE_SCIMITAR, GATEBREAKER_BATTLEAXE, NIGHTFALL_SHORTBOW,
+			RIFTCALLER_STAFF, SUNFALL_2H, BLACK_SUN_WARHAMMER, CROWN_OF_STARS_STAFF, GODSFALL_2H };
+	/*
+	 * Six armour sets (ArmourSets / VoidArmoury), each in slot order: helm, body, legs, shield, boots, gloves (-1 where a
+	 * set has no shield). Oathsworn plate (Defence 40), Duskstalker hide (Ranged 50), Scarweave robes (Magic 60),
+	 * starmetal plate (Defence 60), voidsteel plate (Defence 75), Heartfire regalia (Defence 90).
+	 */
+	public static final int[] OATHSWORN_SET = { 8068, 8069, 8070, 8071, 8072, 8073 };
+	public static final int[] DUSKSTALKER_SET = { 8074, 8075, 8076, -1, 8077, 8078 };
+	public static final int[] SCARWEAVE_SET = { 8079, 8080, 8081, -1, 8082, 8083 };
+	public static final int[] STARMETAL_ARMOUR = { 8084, 8085, 8086, 8087, 8088, 8089 };
+	public static final int[] VOIDSTEEL_ARMOUR = { 8090, 8091, 8092, 8093, 8094, 8095 };
+	public static final int[] HEARTFIRE_SET = { 8096, 8097, 8098, 8099, 8100, 8101 };
+	/*
+	 * Eight low sets (LowArmour / VoidArmoury), levels 10-40: Gatehold recruit's chain (Defence 10), Woodsman's leathers
+	 * (Ranged 15), Croftwise robes (Magic 20), Rattlebone scrap (Defence 25), Blackbrine leathers (Ranged 30), Warden
+	 * initiate's plate (Defence 30), Barrowbronze (Defence 35), Veilsworn robes (Magic 40).
+	 */
+	public static final int[] RECRUIT_SET = { 8102, 8103, 8104, 8105, 8106, 8107 };
+	public static final int[] WOODSMAN_SET = { 8108, 8109, 8110, -1, 8111, 8112 };
+	public static final int[] CROFTWISE_SET = { 8113, 8114, 8115, -1, 8116, 8117 };
+	public static final int[] RATTLEBONE_SET = { 8118, 8119, 8120, 8121, 8122, 8123 };
+	public static final int[] BLACKBRINE_SET = { 8124, 8125, 8126, -1, 8127, 8128 };
+	public static final int[] INITIATE_SET = { 8129, 8130, 8131, 8132, 8133, 8134 };
+	public static final int[] BARROWBRONZE_SET = { 8135, 8136, 8137, 8138, 8139, 8140 };
+	public static final int[] VEILSWORN_SET = { 8141, 8142, 8143, -1, 8144, 8145 };
+	public static final int[][] ARMOUR_SETS = { OATHSWORN_SET, DUSKSTALKER_SET, SCARWEAVE_SET, STARMETAL_ARMOUR, VOIDSTEEL_ARMOUR, HEARTFIRE_SET,
+			RECRUIT_SET, WOODSMAN_SET, CROFTWISE_SET, RATTLEBONE_SET, BLACKBRINE_SET, INITIATE_SET, BARROWBRONZE_SET, VEILSWORN_SET };
+	public static final int[] LADDER = { GUTTING_DAGGER, FELLING_AXE, PILGRIM_STAFF, MILITIA_SPEAR, WOLFBONE_SHORTBOW,
+			WATCHMAN_SWORD, STEELCAP_MACE, SMUGGLER_SCIMITAR, BARROWSTONE_WARHAMMER, SILKWOOD_WAND, GATEHOLD_LONGSWORD,
+			WARDEN_HALBERD, WARDEN_LONGBOW, SCARGLASS_DAGGER, OATHSWORN_BATTLEAXE, FROSTFANG_SPEAR, GRAVEWARDEN_2H,
+			HOLLOWHEART_SHORTBOW, SCAR_WAND, GRAVESTAR_WARHAMMER, RIFTGLASS_HALBERD, RIMEHEART_STAFF, NIGHTGLASS_SCIMITAR,
+			CROWNBREAKER_MACE, STARLESS_LONGSWORD, EVENTIDE_LONGBOW, SUNSPEAR, FIRST_STAR_STAFF, KINGSBANE_BATTLEAXE, LAST_LIGHT_2H,
+			WARDENSOATH_2H, HEART_OF_AUREL, SCARMAW_HALBERD, HOLLOW_CROWN_WARHAMMER, DAWNBRINGER_LONGBOW, UNMADE_WAND, FIRST_STAR_SPEAR,
+			CROWNFIRE_SCIMITAR, GATEBREAKER_BATTLEAXE, NIGHTFALL_SHORTBOW, RIFTCALLER_STAFF, SUNFALL_2H, BLACK_SUN_WARHAMMER,
+			CROWN_OF_STARS_STAFF, GODSFALL_2H };
+	// (the next new item is 8146)
 	public static final int[] WARDEN_SET = { WARDEN_HELM, WARDEN_BODY, WARDEN_LEGS, WARDEN_BOOTS, WARDEN_GAUNTLETS };
 	public static final int[] ROYAL_SET = { ROYAL_HELM, ROYAL_BODY, ROYAL_LEGS, ROYAL_KITESHIELD, ROYAL_BOOTS, ROYAL_GAUNTLETS };
 

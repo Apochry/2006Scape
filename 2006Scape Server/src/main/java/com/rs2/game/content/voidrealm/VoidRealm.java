@@ -657,7 +657,7 @@ public final class VoidRealm {
 			digGrave(p, graveAt(x, y));
 			return true;
 		}
-		return false;
+		return VoidArsenal.itemOnObject(p, objectId, x, y, itemId) || VoidArmoury.itemOnObject(p, objectId, x, y, itemId);
 	}
 
 	private static int graveAt(int x, int y) {
@@ -1358,6 +1358,16 @@ public final class VoidRealm {
 					}
 				}
 			}
+			break;
+		case "weapons": // ::vt weapons [from to] - the weapon ladder (ranks 1-30) into your inventory
+			VoidArsenal.spawnAll(p, a.length > 1 ? n[1] : 1, a.length > 2 ? n[2] : LADDER.length);
+			break;
+		case "armour": // ::vt armour 1-14 - an armour set (1-6 the saga's: Oathsworn ... Heartfire; 7-14 the low sets: recruit ... Veilsworn)
+			VoidArmoury.spawnSet(p, a.length > 1 ? n[1] : 1);
+			break;
+		case "sets": // ::vt sets 1|2 - the starmetal (1) or voidsteel (2) set, and some metal to work
+			VoidArsenal.spawnSet(p, a.length > 1 ? n[1] : 1);
+			p.getItemAssistant().addItem(a.length > 1 && n[1] == 2 ? STARLESS_SHARD : STARMETAL, 10);
 			break;
 		case "list":
 			for (Npc npc : NpcHandler.npcs) {
