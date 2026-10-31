@@ -1692,6 +1692,8 @@ public abstract class Player {
 	public boolean isMining;
 	/** Void quest series: the voidlings from the vein are all dead (not saved). */
 	public int voidlingsLeft;
+	/** Hollowed wolves and husks killed since Warden Kael last paid (saved). */
+	public int hollowKills;
 	public boolean voidVeinCleared;
 	/** When a grave last grabbed this player (Echoes of the Void). */
 	public long lastGraveGrab;

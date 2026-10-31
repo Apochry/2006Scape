@@ -75,6 +75,9 @@ public final class SkullbrineIsle {
 	}
 
 	public static boolean secondClickNpc(Player player, int npcType) {
+		if (VoidRealm.secondClickNpc(player, npcType)) {
+			return true;
+		}
 		if (npcType == MAD_PETE) {
 			player.getShopAssistant().openShop(SALVAGE_SHOP);
 			return true;

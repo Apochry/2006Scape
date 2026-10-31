@@ -12017,5 +12017,97 @@
         "itemAmount": 2
       }
     ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "Netwright's Tackle",
+    "id": 350,
+    "items": [
+      {
+        "itemId": 303,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 307,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 309,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 313,
+        "itemAmount": 500
+      },
+      {
+        "itemId": 314,
+        "itemAmount": 1000
+      },
+      {
+        "itemId": 305,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 333,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 329,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 351,
+        "itemAmount": 5
+      }
+    ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "Tollan's Croft",
+    "id": 351,
+    "items": [
+      {
+        "itemId": 2309,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1965,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 1927,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1944,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 1759,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 1735,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 1925,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1931,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1942,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 952,
+        "itemAmount": 3
+      }
+    ]
   }
 ]

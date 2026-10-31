@@ -27,7 +27,7 @@ final class VoidRealmGenerator {
 
 	/* ---------- floors (flo index + 1) ---------- */
 	static final int GRASS_A = 48, GRASS_B = 49, GRASS_C = 50, GRASS_D = 63, GRASS_E = 64, FOREST_FLOOR = 57, SLOPE = 58,
-			MOUNTAIN = 56, SAND_FLOOR = 68, STONE_ROAD = 10, DIRT_ROAD = 81, CRYPT_PURPLE = 116, VOID_BLACK = 37;
+			MOUNTAIN = 56, SAND_FLOOR = 68, STONE_ROAD = 10, DIRT_ROAD = 81, CRYPT_PURPLE = 116, VOID_BLACK = 37, MUD_FIELD = 131;
 
 	/* ---------- scenery ---------- */
 	static final int TREE = 1276, TREE_2 = 1278, OAK = 1281, WILLOW = 1308, MAPLE = 1307, YEW = 1309, EVERGREEN = 1315,
@@ -45,7 +45,9 @@ final class VoidRealmGenerator {
 		ConfigDefinitions.Definition seer = g.npc(npcs, 176, SEER_ILSABET).name("Seer Ilsabet")
 				.examine("Her eyes are the colour of the portal's light.").npcActions("Talk-to", null, null, null, null)
 				.set(60, npcs.decode(611).get(60)); // the Varrock witch's chathead - the cloned witch has none
-		tintNpc(seer, 50, 4, 0.9, 6, c -> (c >> 7 & 7) >= 1 && (c >> 10) != 7 && (c >> 10) != 8); // robes, not skin
+		// robes and hat only: leave skin (hues 4, 7, 8, and 26, which the witch's own recolour turns into skin), lips (1),
+		// hair (6) and eyes (42) alone
+		tintNpc(seer, 50, 4, 0.9, 6, c -> (c >> 7 & 7) >= 1 && java.util.Arrays.binarySearch(new int[] { 1, 4, 6, 7, 8, 26, 42 }, c >> 10) < 0);
 		g.ghostly(g.npc(npcs, 1612, HOLLOW_WRAITH), npcs, 1612, 50, 4, 0.75, 14).name("Hollow wraith")
 				.examine("Something wearing the shape of a drowned man.").shorts(95, 30);
 		g.ghostly(g.npc(npcs, 2263, VOIDLING), npcs, 2263, 52, 6, 0.6, 8).name("Voidling")
@@ -56,6 +58,22 @@ final class VoidRealmGenerator {
 				.shorts(98, 118);
 		g.npc(npcs, 14, OREN).name("Oren the Wanderer").examine("A weathered old man in travel-stained robes.")
 				.npcActions("Talk-to", null, null, null, null).set(60, npcs.decode(455).get(60)); // Kaqemeex's chathead
+		// the people of Nythera's camps (ids must stay contiguous after Oren)
+		g.npc(npcs, 219, BRAM).name("Bram Netwright").examine("His hands smell of lake-weed and pipe smoke.")
+				.npcActions("Talk-to", "Trade", null, null, null);
+		g.npc(npcs, 5, MARTA).name("Marta Tollan").examine("She looks like she could wrestle a ram. She probably has.")
+				.npcActions("Talk-to", "Trade", null, null, null);
+		g.npc(npcs, 231, HOB).name("Hob Ashby").examine("A woodcutter with arms like oak limbs.")
+				.npcActions("Talk-to", null, null, null, null);
+		g.npc(npcs, 649, KAEL).name("Warden Kael").examine("She hasn't taken her eyes off the Scar since you arrived.")
+				.npcActions("Talk-to", null, null, null, null);
+		g.npc(npcs, 222, PILGRIM).name("Wandering pilgrim").examine("Walking somewhere slowly, and in no hurry to arrive.")
+				.npcActions("Talk-to", null, null, null, null);
+		// what the Scar does to living things
+		g.ghostly(g.npc(npcs, 142, HOLLOWED_WOLF), npcs, 142, 50, 4, 0.55, 4).name("Hollowed wolf")
+				.examine("Its eyes are empty. Something else is looking out of them.").shorts(95, 34);
+		g.ghostly(g.npc(npcs, 75, HOLLOW_HUSK), npcs, 75, 50, 3, 0.6, 6).name("Hollow husk")
+				.examine("Whoever this was, the Scar emptied them out and kept walking them around.").shorts(95, 41);
 	}
 
 	void items(ConfigDefinitions.Table items) throws java.io.IOException {
@@ -106,7 +124,21 @@ final class VoidRealmGenerator {
 			models[body.length + i] = (h[1 + i * 2] & 0xFF) << 8 | h[2 + i * 2] & 0xFF;
 		}
 		int[][] t = ConfigDefinitions.tint(g.cache, models, hue, sat, light, add, filter);
-		d.recolor(t[0], t[1]);
+		// keep the definition's own recolours for colours the tint leaves alone (e.g. a placeholder that becomes skin)
+		byte[] own = d.get(40);
+		java.util.List<int[]> pairs = new ArrayList<>();
+		for (int i = 0; i < t[0].length; i++) {
+			pairs.add(new int[] { t[0][i], t[1][i] });
+		}
+		if (own != null) {
+			for (int k = 0; k < (own[0] & 0xFF); k++) {
+				int from = (own[1 + k * 4] & 0xFF) << 8 | own[2 + k * 4] & 0xFF, to = (own[3 + k * 4] & 0xFF) << 8 | own[4 + k * 4] & 0xFF;
+				if (pairs.stream().noneMatch(pr -> pr[0] == from)) {
+					pairs.add(new int[] { from, to });
+				}
+			}
+		}
+		d.recolor(pairs.stream().mapToInt(pr -> pr[0]).toArray(), pairs.stream().mapToInt(pr -> pr[1]).toArray());
 	}
 
 	void locs(ConfigDefinitions.Table locs) throws java.io.IOException {
@@ -218,8 +250,9 @@ final class VoidRealmGenerator {
 					double d = Math.hypot(x - cx, y - cy);
 					if (d > 4.6 && d < 5.8) {
 						r.overlay[0][x][y] = CRYPT_PURPLE; // a ring of violet light around the centre
-					} else if (noise(x * 5 + 3, y * 5) > 0.55) {
-						r.overlay[0][x][y] = SHADOW_ROCK;
+					} else {
+						// black stone, scarred with darker glassy patches
+						r.overlay[0][x][y] = noise(x * 5 + 3, y * 5) > -0.15 ? VOID_BLACK : SHADOW_ROCK;
 					}
 					if (Math.hypot(x - cx, y - cy) > 11) {
 						r.settings[0][x][y] = MapRegion.BLOCKED; // the islets are out of reach
@@ -405,8 +438,10 @@ final class VoidRealmGenerator {
 		ruins();
 		scarScenery();
 		ores();
+		camps();
 		vegetation();
 		smoothOverlays();
+		wildlife();
 	}
 
 	void terrain(int x, int y) {
@@ -582,7 +617,7 @@ final class VoidRealmGenerator {
 				for (int y = NY0 + 2; y < NY0 + NSIZE - 2; y++) {
 					double inland = coast(x, y);
 					if (inland < 1 || blocked(x, y) || !free(x, y, 0) || crater(x, y) > 0 || scar(x, y) > 0.3
-							|| Math.hypot(x - OREN_X, y - OREN_Y) < 6) {
+							|| Math.hypot(x - OREN_X, y - OREN_Y) < 6 || nearCamp(x, y)) {
 						continue;
 					}
 					if (pass == 0) {
@@ -647,6 +682,268 @@ final class VoidRealmGenerator {
 		} else if (roll < 110) {
 			g.object(LONG_GRASS, x, y, TYPE_GROUND_DECOR, rot);
 		}
+	}
+
+	/* ====================================================================== */
+	/*                       CAMPS - the lived-in bits                        */
+	/* ====================================================================== */
+
+	static final int ROW_BOAT = 2515, FISHING_NET = 969, NET_DRYING = 14972, CRATE = 9533, CRATES = 9535, BARREL = 9519,
+			STACKED_BARRELS = 4641, FLAX = 2646, CABBAGE = 1161, WHEAT = 313, SCARECROW = 297, HAYSTACK = 10086,
+			HAY_BALES = 10084, WELL = 884, TROUGH = 2044, CART = 307, PLOUGH = 296, LOG_PILE = 309, AXE_LOGS = 5582,
+			STUMP = 1341, BEDROLL = 2379, SIGNPOST = 1033, FLAGPOLE = 3680, SPIT_ROAST = 4267, SACKS = 7512,
+			WOOD_FLOOR = 5, TRODDEN = 96;
+
+	static final int[][] CAMPS = { { FISH_CAMP_X, FISH_CAMP_Y, 9 }, { CROFT_X, CROFT_Y, 13 }, { WOOD_CAMP_X, WOOD_CAMP_Y, 7 },
+			{ WATCH_X, WATCH_Y, 6 } };
+
+	boolean nearCamp(int x, int y) {
+		for (int[] c : CAMPS) {
+			if (Math.hypot(x - c[0], y - c[1]) < c[2]) {
+				return true;
+			}
+		}
+		return Math.hypot(x - GATE_X, y - GATE_Y) < 5;
+	}
+
+	/** Clears scenery around a camp, eases the ground towards level and wears a little path into the grass. */
+	void site(int cx, int cy, int r) {
+		int sum = 0, n = 0;
+		for (int x = cx - 2; x <= cx + 2; x++) {
+			for (int y = cy - 2; y <= cy + 2; y++) {
+				sum += g.heightAt(x, y);
+				n++;
+			}
+		}
+		int level = sum / n;
+		for (int x = cx - r; x <= cx + r; x++) {
+			for (int y = cy - r; y <= cy + r; y++) {
+				double d = Math.hypot(x - cx, y - cy);
+				if (d > r || g.overlayAt(x, y) == WATER) {
+					continue;
+				}
+				g.removeObjectsAt(x, y);
+				double t = Math.min(1, Math.max(0, (r - d) / (r * 0.5)));
+				g.setHeight(x, y, (int) Math.round(g.heightAt(x, y) * (1 - t) + level * t));
+				if (d < r * 0.55 && fbm(x / 2.0, y / 2.0, 97) > -0.1) {
+					g.setUnderlay(x, y, TRODDEN);
+				}
+			}
+		}
+	}
+
+	void camps() {
+		fishingCamp();
+		croft();
+		woodCamp();
+		scarWatch();
+		// a waymarker where the roads part at the Broken Gate
+		g.removeObjectsAt(GATE_X + 4, GATE_Y + 3);
+		g.object(SIGNPOST, GATE_X + 4, GATE_Y + 3, TYPE_SCENERY, 1);
+	}
+
+	/** Netwright's landing: a shack, a jetty out into the lake, boats, nets and the day's catch. */
+	void fishingCamp() {
+		int cx = FISH_CAMP_X, cy = FISH_CAMP_Y;
+		site(cx, cy, 9);
+		g.stampBuilding(3670, 2963, 3678, 2972, cx + 2, cy - 3); // a fisher's shack, door to the south
+		// the jetty: from the shore out over the water
+		int x = cx - 2;
+		while (x > cx - 30 && g.overlayAt(x, cy) != WATER) {
+			x--;
+		}
+		int shore = x + 1, end = x - 5;
+		for (int jx = shore; jx >= end; jx--) {
+			for (int jy = cy; jy <= cy + 1; jy++) {
+				MapRegion r = g.regionAt(jx, jy);
+				r.overlay[0][jx & 63][jy & 63] = WOOD_FLOOR;
+				r.settings[0][jx & 63][jy & 63] = 0;
+				r.height[0][jx & 63][jy & 63] = Math.max(3, g.heightAt(jx, jy));
+				g.removeObjectsAt(jx, jy);
+			}
+		}
+		System.out.println("Fishing camp: jetty " + shore + ".." + end + " at y " + cy + "-" + (cy + 1) + ", spots at "
+				+ (end - 1) + "," + cy + " and " + (shore - 2) + "," + (cy + 3) + " and " + (shore - 2) + "," + (cy - 2));
+		g.object(ROW_BOAT, end + 1, cy + 3, TYPE_SCENERY, 1);
+		g.object(ROW_BOAT, shore - 2, cy - 3, TYPE_SCENERY, 3);
+		g.object(FISHING_NET, shore + 1, cy + 2, TYPE_SCENERY, 0);
+		g.object(NET_DRYING, cx - 1, cy + 3, TYPE_SCENERY, 1);
+		g.object(BARREL, cx, cy - 2, TYPE_SCENERY, 0);
+		g.object(STACKED_BARRELS, cx + 1, cy - 4, TYPE_SCENERY, 0);
+		g.object(CRATES, shore + 2, cy - 3, TYPE_SCENERY, 0);
+		g.object(CRATE, shore, cy + 3, TYPE_SCENERY, 0);
+		g.object(SPIT_ROAST, cx - 1, cy - 5, TYPE_SCENERY, 0); // the day's catch, roasting
+	}
+
+	/** Tollan's Croft: a farmhouse, flax and cabbages, hay and a scarecrow keeping watch. */
+	void croft() {
+		int cx = CROFT_X, cy = CROFT_Y;
+		site(cx, cy, 13);
+		g.stampBuilding(3652, 2969, 3658, 2979, cx - 11, cy - 4); // the farmhouse
+		for (int x = cx + 1; x <= cx + 9; x++) {
+			for (int y = cy - 8; y <= cy - 2; y++) {
+				g.setUnderlay(x, y, MUD_FIELD);
+				if (y % 2 == 0) {
+					g.object(y < cy - 5 ? FLAX : WHEAT, x, y, TYPE_SCENERY, random.nextInt(4));
+				}
+			}
+		}
+		for (int x = cx + 2; x <= cx + 7; x++) {
+			for (int y = cy + 3; y <= cy + 6; y++) {
+				g.setUnderlay(x, y, MUD_FIELD);
+				if ((x + y) % 2 == 0) {
+					g.object(CABBAGE, x, y, TYPE_SCENERY, random.nextInt(4));
+				}
+			}
+		}
+		g.removeObjectsAt(cx + 5, cy - 5);
+		g.object(SCARECROW, cx + 5, cy - 5, TYPE_SCENERY, 1);
+		g.object(HAYSTACK, cx - 2, cy + 6, TYPE_SCENERY, 0);
+		g.object(HAY_BALES, cx, cy + 7, TYPE_SCENERY, 1);
+		g.object(WELL, cx - 1, cy + 1, TYPE_SCENERY, 0);
+		g.object(TROUGH, cx - 4, cy + 8, TYPE_SCENERY, 1);
+		g.object(CART, cx + 10, cy + 1, TYPE_SCENERY, 2);
+		g.object(PLOUGH, cx + 10, cy - 4, TYPE_SCENERY, 1);
+		g.object(SACKS, cx - 3, cy + 2, TYPE_SCENERY, 0);
+	}
+
+	/** Hob's camp on the forest edge: tents, a cookfire, stumps and stacked timber. */
+	void woodCamp() {
+		int cx = WOOD_CAMP_X, cy = WOOD_CAMP_Y;
+		site(cx, cy, 7);
+		g.object(TENT, cx - 4, cy + 1, TYPE_SCENERY, 1);
+		g.object(TENT, cx - 1, cy + 3, TYPE_SCENERY, 2);
+		g.object(FIRE, cx + 1, cy, TYPE_SCENERY, 0);
+		g.object(COOKING_POT, cx + 2, cy - 1, TYPE_SCENERY, 0);
+		g.object(BEDROLL, cx + 3, cy + 2, TYPE_SCENERY, 1);
+		g.object(LOG_PILE, cx + 3, cy - 3, TYPE_SCENERY, 0);
+		g.object(AXE_LOGS, cx - 2, cy - 3, TYPE_SCENERY, 1);
+		g.object(CART, cx - 5, cy - 3, TYPE_SCENERY, 1);
+		int[][] stumps = { { 5, 4 }, { -6, 4 }, { -3, -6 }, { 6, -2 }, { 0, -5 }, { -6, -1 } };
+		for (int[] st : stumps) {
+			g.object(STUMP + random.nextInt(4), cx + st[0], cy + st[1], TYPE_SCENERY, random.nextInt(4));
+		}
+	}
+
+	/** The Scar Watch: a lookout on the edge of the dying land. */
+	void scarWatch() {
+		int cx = WATCH_X, cy = WATCH_Y;
+		site(cx, cy, 6);
+		g.object(TENT, cx - 3, cy - 1, TYPE_SCENERY, 1);
+		g.object(FIRE, cx, cy - 1, TYPE_SCENERY, 0);
+		g.object(FLAGPOLE, cx + 2, cy + 2, TYPE_SCENERY, 0);
+		g.object(CRATES, cx - 3, cy + 2, TYPE_SCENERY, 0);
+		g.object(BARREL, cx - 1, cy + 3, TYPE_SCENERY, 0);
+		g.object(BEDROLL, cx + 1, cy - 3, TYPE_SCENERY, 0);
+	}
+
+	/* ====================================================================== */
+	/*                    WILDLIFE - spawns for spawns.json                   */
+	/* ====================================================================== */
+
+	/** Spawns chosen by {@link #wildlife()}: {npc id, x, y, walk}. Written out with -Dnythera.spawns=path. */
+	final List<int[]> spawns = new ArrayList<>();
+
+	boolean water(int x, int y) {
+		return g.overlayAt(x, y) == WATER;
+	}
+
+	boolean open(int x, int y) {
+		return !water(x, y) && !blocked(x, y) && free(x, y, 0) && !nearCamp(x, y) && crater(x, y) <= 0;
+	}
+
+	/** Water with dry, walkable land beside it (where a fishing spot or a duck makes sense). */
+	boolean shoreWater(int x, int y) {
+		if (!water(x, y)) {
+			return false;
+		}
+		for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
+			if (!water(x + d[0], y + d[1]) && !blocked(x + d[0], y + d[1])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	interface Where {
+		boolean ok(int x, int y);
+	}
+
+	/** Scatters {@code count} spawns of the given ids over tiles that pass {@code where}, at least {@code gap} apart. */
+	void scatter(int[] ids, int count, int walk, int gap, Where where) {
+		int placed = 0;
+		for (int attempt = 0; attempt < 20000 && placed < count; attempt++) {
+			int x = NX0 + 4 + random.nextInt(NSIZE - 8), y = NY0 + 4 + random.nextInt(NSIZE - 8);
+			if (!where.ok(x, y)) {
+				continue;
+			}
+			boolean crowded = false;
+			for (int[] s : spawns) {
+				if (Math.abs(s[1] - x) < gap && Math.abs(s[2] - y) < gap) {
+					crowded = true;
+					break;
+				}
+			}
+			if (!crowded) {
+				spawns.add(new int[] { ids[placed % ids.length], x, y, walk });
+				placed++;
+			}
+		}
+	}
+
+	/** Scatters spawns in a disc around a point. */
+	void around(int id, int count, int cx, int cy, int r, int walk) {
+		int placed = 0;
+		for (int attempt = 0; attempt < 2000 && placed < count; attempt++) {
+			int x = cx + random.nextInt(2 * r + 1) - r, y = cy + random.nextInt(2 * r + 1) - r;
+			if (Math.hypot(x - cx, y - cy) <= r && !water(x, y) && !blocked(x, y) && free(x, y, 0)) {
+				spawns.add(new int[] { id, x, y, walk });
+				placed++;
+			}
+		}
+	}
+
+	void wildlife() {
+		Where meadow = (x, y) -> open(x, y) && forest(x, y) < 0.4 && mountain(x, y) < 0.25 && scar(x, y) < 0.05
+				&& coast(x, y) > 6;
+		Where woods = (x, y) -> open(x, y) && forest(x, y) > 0.6 && scar(x, y) < 0.05;
+		Where foothills = (x, y) -> open(x, y) && mountain(x, y) > 0.2 && mountain(x, y) < 0.5;
+		Where heights = (x, y) -> open(x, y) && mountain(x, y) > 0.5;
+		Where beach = (x, y) -> open(x, y) && coast(x, y) < 3.5 && coast(x, y) > 0.5;
+		Where scarEdge = (x, y) -> open(x, y) && scar(x, y) > 0.1 && scar(x, y) < 0.35;
+		Where scarDeep = (x, y) -> open(x, y) && scar(x, y) > 0.4;
+		Where lakeShore = (x, y) -> shoreWater(x, y) && lake(x, y) > 0;
+		Where riverBank = (x, y) -> shoreWater(x, y) && lake(x, y) <= 0 && coast(x, y) > 8;
+
+		scatter(new int[] { 1192, 1193, 1194 }, 16, 1, 6, meadow); // rabbits
+		scatter(new int[] { 153, 154, 155, 156 }, 10, 1, 8, meadow); // butterflies
+		scatter(new int[] { 3283, 3284, 3285 }, 8, 1, 6, woods); // squirrels
+		scatter(new int[] { 89 }, 3, 1, 20, woods); // unicorns in the deep forest
+		scatter(new int[] { 105 }, 4, 1, 14, foothills); // grizzly bears
+		scatter(new int[] { 96 }, 5, 1, 8, heights); // white wolves on the ridge
+		scatter(new int[] { 2693 }, 8, 1, 10, beach); // seagulls
+		scatter(new int[] { 44, 45, 3296 }, 7, 1, 4, lakeShore); // ducks and swans
+		scatter(new int[] { 1751, 1752, 1753 }, 6, 1, 6, scarEdge); // crows on the dying land's edge
+		scatter(new int[] { HOLLOWED_WOLF }, 7, 1, 5, scarEdge);
+		scatter(new int[] { HOLLOW_HUSK }, 8, 1, 5, scarDeep);
+		// the croft's animals
+		around(43, 6, CROFT_X - 4, CROFT_Y + 11, 5, 1); // sheep
+		around(81, 3, CROFT_X + 6, CROFT_Y + 12, 4, 1); // cows
+		around(41, 4, CROFT_X - 3, CROFT_Y + 4, 3, 1); // chickens
+		// fishing: net/bait in the lake (one at the end of Bram's jetty), lure/bait in the river
+		scatter(new int[] { 316 }, 4, 0, 10, lakeShore);
+		scatter(new int[] { 309 }, 5, 0, 12, riverBank);
+		String out = System.getProperty("nythera.spawns");
+		if (out != null) {
+			try (java.io.PrintWriter pw = new java.io.PrintWriter(out)) {
+				for (int[] s : spawns) {
+					pw.println(s[0] + " " + s[1] + " " + s[2] + " " + s[3]);
+				}
+			} catch (java.io.IOException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		System.out.println("Nythera wildlife: " + spawns.size() + " spawns");
 	}
 
 	boolean blocked(int x, int y) {

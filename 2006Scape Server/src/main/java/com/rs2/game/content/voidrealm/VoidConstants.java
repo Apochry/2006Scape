@@ -16,6 +16,9 @@ public final class VoidConstants {
 	public static final int VOIDLING = 3860;
 	public static final int HOLLOW_KING = 3861;
 	public static final int OREN = 3862;
+	/* the people and creatures of Nythera */
+	public static final int BRAM = 3863, MARTA = 3864, HOB = 3865, KAEL = 3866, PILGRIM = 3867, HOLLOWED_WOLF = 3868,
+			HOLLOW_HUSK = 3869;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;
@@ -74,6 +77,21 @@ public final class VoidConstants {
 	public static final int LANDING_X = 1574, LANDING_Y = 2646;
 	/** Oren's camp on the crater's north-west rim. */
 	public static final int OREN_X = 1562, OREN_Y = 2661;
+
+	/* camps (scenery in VoidRealmGenerator#camps, people in spawns.json) */
+	/** Netwright's landing: Bram's fishing camp on the lake's east shore. */
+	public static final int FISH_CAMP_X = 1459, FISH_CAMP_Y = 2712;
+	/** Tollan's Croft: Marta's farm on the hills between the crater and the Broken Gate. */
+	public static final int CROFT_X = 1522, CROFT_Y = 2662;
+	/** Hob's woodcutting camp on the edge of the Greenreach forest. */
+	public static final int WOOD_CAMP_X = 1446, WOOD_CAMP_Y = 2652;
+	/** The Scar Watch: Warden Kael's lookout on the western edge of the Hollow Scar. */
+	public static final int WATCH_X = 1574, WATCH_Y = 2741;
+	/** Where the old roads meet at the Broken Gate. */
+	public static final int GATE_X = 1510, GATE_Y = 2712;
+
+	/** Bram's shop in data/cfg/shops.json. */
+	public static final int BRAM_SHOP = 350, MARTA_SHOP = 351;
 
 	public static boolean onNythera(int x, int y) {
 		return x >= NYTHERA_REGION_X0 * 64 && x < (NYTHERA_REGION_X0 + NYTHERA_REGIONS) * 64 && y >= NYTHERA_REGION_Y0 * 64

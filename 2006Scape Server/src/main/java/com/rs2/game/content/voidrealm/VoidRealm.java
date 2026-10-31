@@ -17,6 +17,7 @@ import com.rs2.game.dialogues.DialogueHandler;
 import com.rs2.game.npcs.Npc;
 import com.rs2.game.npcs.NpcHandler;
 import com.rs2.game.players.Player;
+import com.rs2.game.players.PlayerHandler;
 import com.rs2.util.Misc;
 
 /**
@@ -34,7 +35,8 @@ public final class VoidRealm {
 	/* Dialogue ids (9600-9799) and option actions. */
 	private static final int D_GHOST = 9600, D_GHOST_LATER = 9610, D_SEER_EARLY = 9620, D_SEER_INTRO = 9625,
 			D_SEER_WHERE = 9640, D_SEER_HINT = 9655, D_SEER_BIND = 9660, D_SEER_VEIL = 9675, D_SEER_LATER = 9690,
-			D_PORTAL = 9700, D_OREN = 9710, D_OREN_LATER = 9730, D_LANTERN = 9740;
+			D_PORTAL = 9700, D_OREN = 9710, D_OREN_LATER = 9730, D_LANTERN = 9740, D_BRAM = 9750, D_MARTA = 9760,
+			D_HOB = 9770, D_KAEL = 9778, D_KAEL_PAY = 9786, D_PILGRIM = 9790;
 	private static final int A_SEER_ASK = 9600, A_SEER_VEIL = 9601, A_PORTAL = 9602, A_LANTERN = 9603;
 
 	private static final int SPADE = 952;
@@ -75,9 +77,36 @@ public final class VoidRealm {
 		case OREN:
 			dialogue(player, player.voidVeil == BeyondTheVeil.FELL ? D_OREN : D_OREN_LATER, npcType);
 			return true;
+		case BRAM:
+			dialogue(player, D_BRAM, npcType);
+			return true;
+		case MARTA:
+			dialogue(player, D_MARTA, npcType);
+			return true;
+		case HOB:
+			dialogue(player, D_HOB, npcType);
+			return true;
+		case KAEL:
+			dialogue(player, player.hollowKills >= KAEL_BOUNTY ? D_KAEL_PAY : D_KAEL, npcType);
+			return true;
+		case PILGRIM:
+			dialogue(player, D_PILGRIM + Misc.random(2) * 2, npcType);
+			return true;
 		}
 		return false;
 	}
+
+	/** Right-click "Trade" on the camp folk who sell things. */
+	public static boolean secondClickNpc(Player player, int npcType) {
+		if (npcType == BRAM || npcType == MARTA) {
+			player.getShopAssistant().openShop(npcType == BRAM ? BRAM_SHOP : MARTA_SHOP);
+			return true;
+		}
+		return false;
+	}
+
+	/** Hollowed creatures Warden Kael pays for, per batch. */
+	private static final int KAEL_BOUNTY = 10;
 
 	private static void dialogue(Player player, int id, int npcType) {
 		player.getDialogueHandler().sendDialogues(id, npcType);
@@ -95,13 +124,22 @@ public final class VoidRealm {
 
 	/** Re-flows dialogue text so no line is wider than the chatbox beside a chathead (at most 4 lines). */
 	static String[] wrap(String... lines) {
+		return wrapTo(50, lines);
+	}
+
+	/** Statements have the whole chatbox to themselves, so they can run wider. */
+	static String[] wide(String... lines) {
+		return wrapTo(60, lines);
+	}
+
+	static String[] wrapTo(int max, String... lines) {
 		String text = String.join(" ", lines);
-		java.util.List<String> best = flow(text, 50);
+		java.util.List<String> best = flow(text, max);
 		if (best.size() > 4) {
 			return lines;
 		}
 		// balance: the narrowest width that still needs no more lines, so the last line isn't one lonely word
-		for (int width = text.length() / best.size(); width < 50; width++) {
+		for (int width = text.length() / best.size(); width < max; width++) {
 			java.util.List<String> f = flow(text, width);
 			if (f.size() == best.size()) {
 				best = f;
@@ -242,9 +280,9 @@ public final class VoidRealm {
 					"Give them to me. Hold still.");
 			break;
 		case D_SEER_BIND + 1:
-			d.sendStatement("Ilsabet presses the splinters together between her palms.",
+			d.sendStatement(wide("Ilsabet presses the splinters together between her palms.",
 					"Violet light leaks between her fingers. The air goes cold,",
-					"and for a moment the whole island is perfectly silent.");
+					"and for a moment the whole island is perfectly silent."));
 			p.gfx0(86);
 			p.nextChat = id + 1;
 			break;
@@ -305,9 +343,9 @@ public final class VoidRealm {
 
 		/* ---------------- the open portal ---------------- */
 		case D_PORTAL:
-			d.sendStatement("The sigil flares in your hand. The portal tears open, and",
+			d.sendStatement(wide("The sigil flares in your hand. The portal tears open, and",
 					"beyond it is nothing - utter, endless nothing - and, far",
-					"off in it, something that turns to look at you.");
+					"off in it, something that turns to look at you."));
 			p.nextChat = id + 1;
 			break;
 		case D_PORTAL + 1:
@@ -359,11 +397,107 @@ public final class VoidRealm {
 			break;
 		case D_OREN_LATER:
 			if (p.voidVeil >= BeyondTheVeil.COMPLETE) {
-				npc(p, id, OREN, ChatEmotes.CALM_TALK1, true, "When you're ready, the old road leads inland past the",
-						"Broken Gate. I'll be here... for now.");
+				npc(p, id, OREN, ChatEmotes.CALM_TALK1, true, "You'll find folk about, if you look. Marta's croft up the road,",
+						"Bram fishing the lake to the west, Hob in the woods past",
+						"it. Kael keeps watch on the Scar. Inland's another matter.");
 			} else {
 				npc(p, id, OREN, ChatEmotes.DISTRESSED, true, "Who... how did you get here?");
 			}
+			break;
+
+		/* ---------------- the people of Nythera ---------------- */
+		case D_BRAM:
+			npc(p, id, BRAM, ChatEmotes.HAPPY_JOYFUL, false, "Mind the planks, they bite. Ha! Another one from the sky,",
+					"is it? Oren said there'd be more.");
+			break;
+		case D_BRAM + 1:
+			me(p, id, false, "More? Others have fallen here?");
+			break;
+		case D_BRAM + 2:
+			npc(p, id, BRAM, ChatEmotes.CALM_TALK1, false, "Not for a long while. My grandmother used to say the lake",
+					"was a crater once, that something came down here before the",
+					"stars turned violet. Fish don't care. They bite all the same.");
+			break;
+		case D_BRAM + 3:
+			npc(p, id, BRAM, ChatEmotes.CALM_TALK2, true, "Need a net or a rod? Trout run in the river, pike in the deep",
+					"water. I'll sell you tackle, and I'll buy what you catch.");
+			break;
+
+		case D_MARTA:
+			npc(p, id, MARTA, ChatEmotes.ANNOYED, false, "If you're here about the sheep, it wasn't me. If you're here",
+					"to buy something, it definitely was me. Marta Tollan.");
+			break;
+		case D_MARTA + 1:
+			me(p, id, false, "You farm out here, on your own?");
+			break;
+		case D_MARTA + 2:
+			npc(p, id, MARTA, ChatEmotes.CALM_TALK1, false, "Four generations of Tollans on this hill. The soil's good, the",
+					"rain's honest, and the Scar's a long walk east. For now.");
+			break;
+		case D_MARTA + 3:
+			npc(p, id, MARTA, ChatEmotes.CALM_TALK2, false, "Pick some flax if you like - it grows back faster than I can",
+					"spin it. Cabbages too, but leave me a few, eh?");
+			break;
+		case D_MARTA + 4:
+			npc(p, id, MARTA, ChatEmotes.HAPPY_JOYFUL, true, "Bread, eggs, milk, wool. Coin's coin, even yours.");
+			break;
+
+		case D_HOB:
+			npc(p, id, HOB, ChatEmotes.CALM_TALK1, false, "Careful where you stand. Trees here fall wherever they like.");
+			break;
+		case D_HOB + 1:
+			me(p, id, false, "What's in the forest?");
+			break;
+		case D_HOB + 2:
+			npc(p, id, HOB, ChatEmotes.CALM_TALK2, false, "Oak and willow at the edge. Maple further in, and yews by the",
+					"water if you've the arms for them. Unicorns, if you're lucky.",
+					"Bears, if you're not.");
+			break;
+		case D_HOB + 3:
+			npc(p, id, HOB, ChatEmotes.DEFAULT, true, "Take what you can carry. The forest doesn't mind. It's the",
+					"only thing round here that isn't afraid of the east.");
+			break;
+
+		case D_KAEL:
+			npc(p, id, KAEL, ChatEmotes.CALM_TALK1, false, "Don't come any closer to the Scar than you need to. See the",
+					"black ground? A month ago that was barley.");
+			break;
+		case D_KAEL + 1:
+			me(p, id, false, "What's causing it?");
+			break;
+		case D_KAEL + 2:
+			npc(p, id, KAEL, ChatEmotes.CALM_TALK2, false, "Ask the thing you fell past on your way here. It empties",
+					"things. Wolves come out of there with nothing behind their",
+					"eyes. People too. We call them husks.");
+			break;
+		case D_KAEL + 3:
+			npc(p, id, KAEL, ChatEmotes.CALM_TALK1, true, "I'm paid to watch it. You look like you could do more than",
+					"watch. Put down ten of them and I'll pay you out of my wages.",
+					"Hollowed so far: " + p.hollowKills + ".");
+			break;
+		case D_KAEL_PAY:
+			npc(p, id, KAEL, ChatEmotes.HAPPY_JOYFUL, false, "Ten more that won't be wandering west. Here - you've earned",
+					"this. Don't spend it all at Marta's.");
+			p.hollowKills -= KAEL_BOUNTY;
+			p.getItemAssistant().addOrDropItem(995, 750);
+			p.getPlayerAssistant().addSkillXP(1500, Constants.SLAYER);
+			p.getPacketSender().sendMessage("Warden Kael pays you 750 coins. You gain 1,500 Slayer XP.");
+			break;
+		case D_KAEL_PAY + 1:
+			npc(p, id, KAEL, ChatEmotes.CALM_TALK2, true, "There's always more. Come back when there's ten fewer.");
+			break;
+
+		case D_PILGRIM:
+			npc(p, id, PILGRIM, ChatEmotes.CALM_TALK1, true, "We walk the old roads to the standing stones and back. It",
+					"used to be a festival. Now it's more of a habit.");
+			break;
+		case D_PILGRIM + 2:
+			npc(p, id, PILGRIM, ChatEmotes.CALM_TALK2, true, "You came out of the sky? Then you've seen the King. Don't",
+					"tell me what he looks like. I'd rather not know.");
+			break;
+		case D_PILGRIM + 4:
+			npc(p, id, PILGRIM, ChatEmotes.HAPPY_JOYFUL, true, "Lovely day for it. The stars will be violet again tonight.",
+					"They always are, now.");
 			break;
 
 		/* ---------------- Seer's lantern ---------------- */
@@ -503,9 +637,9 @@ public final class VoidRealm {
 		if (x != RIGHT_EYE_X) {
 			p.gfx0(78);
 			hurt(p, 2 + Misc.random(3));
-			p.getDialogueHandler().sendStatement("The cold fire bites to the bone! In the flames you see a throne",
+			p.getDialogueHandler().sendStatement(wide("The cold fire bites to the bone! In the flames you see a throne",
 					"of black glass on a platform hanging in nothing. Something vast",
-					"sits on it - and slowly turns its head towards you.");
+					"sits on it - and slowly turns its head towards you."));
 			p.nextChat = 0;
 			p.getPacketSender().sendMessage("This eye doesn't weep. Whatever's in here, it isn't a splinter.");
 			return;
@@ -717,7 +851,9 @@ public final class VoidRealm {
 				}
 				if (finale < 0) {
 					fight(p, king, tick);
-					if (tick >= 55 || tick > 12 && p.playerLevel[Constants.HITPOINTS] <= maxHp(p) * 2 / 5) {
+					// he lets you go before you can actually die: at 40% health (or a few hitpoints, for the very weak)
+					int hp = p.playerLevel[Constants.HITPOINTS];
+					if (tick >= 55 || tick > 12 && hp <= maxHp(p) * 2 / 5 || tick > 8 && hp <= 5) {
 						finale = tick;
 					}
 					return;
@@ -736,9 +872,9 @@ public final class VoidRealm {
 					p.getPlayerAssistant().sendCameraShake(4, 20, 4, 20);
 					p.startAnimation(714);
 					p.gfx0(86);
-					p.getDialogueHandler().sendStatement("The Hollow King closes his hand. The platform shatters",
+					p.getDialogueHandler().sendStatement(wide("The Hollow King closes his hand. The platform shatters",
 							"beneath your feet, and you fall - through the dark, through",
-							"the cold, through a sky full of violet stars...");
+							"the cold, through a sky full of violet stars..."));
 					p.nextChat = 0;
 				} else if (t == 15) {
 					c.stop();
@@ -796,15 +932,90 @@ public final class VoidRealm {
 		p.playerLevel[Constants.HITPOINTS] = Math.max(p.playerLevel[Constants.HITPOINTS], maxHp(p) / 2);
 		p.getPlayerAssistant().refreshSkill(Constants.HITPOINTS);
 		later(p, 2, () -> {
-			p.getDialogueHandler().sendStatement("You crash down into a smoking crater. Above you, a rift",
+			p.getDialogueHandler().sendStatement(wide("You crash down into a smoking crater. Above you, a rift",
 					"in the sky crackles shut... and stays, a violet scar, at the",
-					"crater's heart. Someone is shouting from the rim.");
+					"crater's heart. Someone is shouting from the rim."));
 			p.nextChat = 0;
 		});
 	}
 
+	/* ====================================================================== */
+	/*                     AMBIENCE - the world going about its day           */
+	/* ====================================================================== */
+
+	private static final java.util.Map<Integer, String[]> CHATTER = new java.util.HashMap<>();
+	/** Work animations: what each of the camp folk is busy doing when nobody's talking to them. */
+	private static final java.util.Map<Integer, Integer> WORK = new java.util.HashMap<>();
+	static {
+		CHATTER.put(OREN, new String[] { "The stars are wrong tonight. They're always wrong now.", "Three days I waited by that rift.",
+				"Hm-hm-hmm... how did that song go...", "Don't stand too near the rift. It hums back." });
+		CHATTER.put(SEER_ILSABET, new String[] { "Hush... it's singing again.", "Violet. Always violet.",
+				"I can hear the other shore, if I listen hard enough.", "Three seas I followed that song." });
+		CHATTER.put(BRAM, new String[] { "Come on, bite...", "There's a pike down there older than I am.", "Gah! Weed again.",
+				"Fish don't care what colour the stars are." });
+		CHATTER.put(MARTA, new String[] { "Get back here, you woolly menace!", "Who's been at my cabbages?",
+				"Rain by evening. My knees say so.", "Four generations on this hill. Not leaving now." });
+		CHATTER.put(HOB, new String[] { "Timber!", "Where did I put my good axe...", "Oak today. Maple tomorrow, if my back allows.",
+				"Smell that? Sap. Best smell there is." });
+		CHATTER.put(KAEL, new String[] { "Nothing moves out there. That's what worries me.", "Steady...",
+				"Another tree's gone grey.", "Come on, then. Show yourselves." });
+		CHATTER.put(PILGRIM, new String[] { "Step, and step, and step.", "To the stones, and home again.", "Mind the road, friend.",
+				"The Gate was a city once. Can you imagine?" });
+		CHATTER.put(HOLLOW_HUSK, new String[] { "...hollow...", "...so... empty...", "...he is coming...", "...light... give it..." });
+		CHATTER.put(HOLLOWED_WOLF, new String[] { "*a howl with nothing behind it*" });
+		WORK.put(BRAM, 622); // casting a rod
+		WORK.put(HOB, 879); // swinging an axe
+		WORK.put(MARTA, 827); // stooping to the crops
+	}
+
+	private static final Object AMBIENCE = new Object();
+	private static boolean ambienceRunning;
+
+	/** Starts the world-wide ambience loop the first time anyone logs in. */
+	static void startAmbience() {
+		if (ambienceRunning) {
+			return;
+		}
+		ambienceRunning = true;
+		CycleEventHandler.getSingleton().addEvent(AMBIENCE, new CycleEvent() {
+			@Override
+			public void execute(CycleEventContainer container) {
+				for (Npc n : NpcHandler.npcs) {
+					if (n == null || n.isDead || n.underAttack || !playerNear(n, 12)) {
+						continue;
+					}
+					Integer work = WORK.get(n.npcType);
+					if (work != null && Misc.random(2) == 0) {
+						n.animNumber = work;
+						n.animUpdateRequired = true;
+						n.updateRequired = true;
+					}
+					String[] lines = CHATTER.get(n.npcType);
+					if (lines != null && Misc.random(n.npcType == HOLLOW_HUSK || n.npcType == HOLLOWED_WOLF ? 14 : 7) == 0) {
+						n.forceChat(lines[Misc.random(lines.length - 1)]);
+					}
+				}
+			}
+
+			@Override
+			public void stop() {
+			}
+		}, 4);
+	}
+
+	private static boolean playerNear(Npc n, int range) {
+		for (Player p : PlayerHandler.players) {
+			if (p != null && p.heightLevel == n.heightLevel && Math.abs(p.absX - n.absX) <= range
+					&& Math.abs(p.absY - n.absY) <= range) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** If a player logs in inside the void (the scene was interrupted), put them back by the portal. */
 	public static void onLogin(Player p) {
+		startAmbience();
 		if (inArena(p.absX, p.absY)) {
 			p.getPlayerAssistant().movePlayer(PORTAL_SIDE_X, PORTAL_SIDE_Y, 0);
 			p.getPacketSender().sendMessage("The void spits you back out beside the portal.");
@@ -819,6 +1030,10 @@ public final class VoidRealm {
 	public static boolean clickItem(Player p, int itemId) {
 		if (itemId != SEERS_LANTERN) {
 			return false;
+		}
+		if (inArena(p.absX, p.absY)) {
+			p.getPacketSender().sendMessage("The lantern's flame gutters and shrinks. Nothing it knows can reach you here.");
+			return true;
 		}
 		if (p.voidVeil >= BeyondTheVeil.FELL) {
 			dialogue(p, D_LANTERN, -1);
@@ -844,6 +1059,13 @@ public final class VoidRealm {
 			return;
 		}
 		switch (npcType) {
+		case HOLLOWED_WOLF:
+		case HOLLOW_HUSK:
+			killer.hollowKills++;
+			if (killer.hollowKills == KAEL_BOUNTY) {
+				killer.getPacketSender().sendMessage("That's ten Hollowed. Warden Kael will want to hear about it.");
+			}
+			break;
 		case HOLLOW_WRAITH:
 			if (killer.voidEchoes == EchoesOfTheVoid.SPLINTERS && !killer.getItemAssistant().playerHasItem(GRAVE_SPLINTER)) {
 				GameEngine.itemHandler.createGroundItem(killer, GRAVE_SPLINTER, x, y, 1, killer.playerId);
@@ -942,6 +1164,9 @@ public final class VoidRealm {
 			if (!firstClickNpc(p, n[1])) {
 				com.rs2.game.content.skullbrine.SkullbrineIsle.firstClickNpc(p, n[1]);
 			}
+			break;
+		case "npc2":
+			secondClickNpc(p, n[1]);
 			break;
 		case "obj":
 			firstClickObject(p, n[1], n[2], n[3]);

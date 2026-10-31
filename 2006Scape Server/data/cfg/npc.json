@@ -16589,7 +16589,6 @@
     "combat": 140,
     "id": 3068
   },
-
   {
     "hitpoints": 7,
     "name": "Drunken Man",
@@ -16715,5 +16714,47 @@
     "name": "Oren the Wanderer",
     "combat": 0,
     "id": 3862
+  },
+  {
+    "hitpoints": 0,
+    "name": "Bram Netwright",
+    "combat": 0,
+    "id": 3863
+  },
+  {
+    "hitpoints": 0,
+    "name": "Marta Tollan",
+    "combat": 0,
+    "id": 3864
+  },
+  {
+    "hitpoints": 0,
+    "name": "Hob Ashby",
+    "combat": 0,
+    "id": 3865
+  },
+  {
+    "hitpoints": 0,
+    "name": "Warden Kael",
+    "combat": 0,
+    "id": 3866
+  },
+  {
+    "hitpoints": 0,
+    "name": "Wandering pilgrim",
+    "combat": 0,
+    "id": 3867
+  },
+  {
+    "hitpoints": 30,
+    "name": "Hollowed wolf",
+    "combat": 34,
+    "id": 3868
+  },
+  {
+    "hitpoints": 42,
+    "name": "Hollow husk",
+    "combat": 41,
+    "id": 3869
   }
 ]

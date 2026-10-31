@@ -44,7 +44,8 @@ Skull Rock), 3,000 Magic XP, 2,500 Mining XP and 2,500 Prayer XP.
    - every few seconds a wave of void hits you, but it never kills;
    - your hits pass through him like smoke, and he heals instantly;
    - everything he says also goes to the chatbox.
-   After about half a minute, or once you are down to 40% HP, he decides you're more fun alive.
+   After about half a minute, or once you are down to 40% HP (or 5 HP, for very weak characters),
+   he decides you're more fun alive. The Seer's lantern doesn't work in the void.
    He closes his hand, the platform shatters, and you fall.
 4. **Starfall Crater, Nythera.** You land in a smoking crater, and a violet **Rift** is left open
    in its heart. **Oren the Wanderer** is camped on the north-west rim. Talk to him to finish.
@@ -74,8 +75,36 @@ Nythera is a 7×7 region continent (448×448 tiles) at regions (20-26, 39-45), c
 - the **Hollow Scar** in the east, a dying, blackened land;
 - forests, ore clusters (copper through mithril), ruins and a standing-stone circle.
 
-Only Starfall Crater and Oren have content so far. The rest is ready for the next quests:
-Oren says "There are people inland who'll want to meet you."
+The inland settlement Oren hints at ("There are people inland who'll want to meet you") is left
+for the next quests. Until then the countryside already has people and wildlife in it.
+
+### Life on Nythera
+
+| Place | Where | Who and what |
+|---|---|---|
+| **Netwright's Landing** | lake's east shore (1459, 2712) | **Bram Netwright** fishes off a jetty. A shack, rowboats, nets, a spit-roast. He sells tackle and buys fish (shop 350). Net/bait spots in the lake, lure/bait spots along the river. |
+| **Tollan's Croft** | hills between the crater and the Broken Gate (1522, 2662) | **Marta Tollan**'s farmhouse. Flax, wheat and cabbages you can pick, a well, hay, a scarecrow, sheep (shearable), cows and chickens. She sells bread, eggs, milk, wool, shears and the like (shop 351). |
+| **Hob's camp** | edge of the western forest (1446, 2652) | **Hob Ashby** the woodcutter: tents, a cookfire, stumps and stacked timber. |
+| **The Scar Watch** | west edge of the Hollow Scar (1574, 2741) | **Warden Kael**. She pays a bounty for every 10 **Hollowed wolves** (combat 34) and **Hollow husks** (combat 41) you kill in the Scar: 750 coins and 1,500 Slayer XP, repeatable. The tally (`Player.hollowKills`) is saved. |
+| The roads | | **Wandering pilgrims** rest along the way. A signpost stands at the Broken Gate. |
+
+**Wildlife:** rabbits and butterflies in the meadows, squirrels and the odd unicorn in the woods,
+grizzly bears in the foothills, white wolves on the ridge, seagulls on the beaches, ducks and swans
+on the lake, and crows on the edge of the Scar.
+
+**Ambience:** people near a player go about their day. Bram casts his line, Hob swings his axe and
+Marta stoops over her crops. Now and then they say something overhead. So do Oren, Ilsabet,
+Kael, the pilgrims and the Hollowed. This all runs from a single loop in
+`VoidRealm.startAmbience` (the `CHATTER` and `WORK` tables), and only near players. Oren's later
+dialogue points newcomers towards the camps.
+
+Hollowed drops: wolves drop wolf bones and coins, with a rare uncut diamond. Husks drop bones,
+coins, grimy ranarr, uncut sapphires and emeralds, and very rarely a dragon dagger.
+
+**Regenerating:** the camps' scenery is built by `VoidRealmGenerator.camps()`.
+`wildlife()` chooses the spawn tiles (meadow, wood, shore, Scar...) and writes them out when
+`-Dnythera.spawns=path` is set. `tools/nythera_data.py path` then writes the people, creatures,
+drops, shops and spawns into `data/cfg`.
 
 Regenerate a top-down preview with
 `-Dnythera=/path/nythera.png` when running `CursedIslandGenerator`.
@@ -84,7 +113,7 @@ Regenerate a top-down preview with
 
 | What | Where |
 |---|---|
-| Ids and coordinates (NPCs 3858-3862, items 7961-7967, objects 14986-14991) | `game/content/voidrealm/VoidConstants.java` |
+| Ids and coordinates (NPCs 3858-3869, items 7961-7967, objects 14986-14991) | `game/content/voidrealm/VoidConstants.java` |
 | Dialogue, objects, the boss scene, lantern, drops | `game/content/voidrealm/VoidRealm.java` |
 | Quest journals and rewards | `game/content/quests/impl/EchoesOfTheVoid.java`, `BeyondTheVeil.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
@@ -101,13 +130,13 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 |---|---|
 | `::voidecho n` / `::voidveil n` | set a quest stage (no argument prints it) |
 | `::nythera` | teleport to Starfall Crater |
-| `::vt npc id` / `obj id x y` / `obj2 id x y` / `use objId x y itemId` / `item id` | fire the same handler a click would (testing) |
+| `::vt npc id` / `npc2 id` / `obj id x y` / `obj2 id x y` / `use objId x y itemId` / `item id` | fire the same handler a click would (testing) |
 | `::vt journal 1/2` | open either journal |
 | `::vt list` | list NPCs spawned for you |
 
 ## Ideas for what comes next
 
 - The people inland Oren mentions: a settlement past the Broken Gate.
-- The Hollow Scar spreading, and Hollow-touched creatures.
+- The Hollow Scar spreading: the Hollowed already prowl it, and Kael is watching.
 - A way to actually wound the Hollow King: the cape's "mark" and Hollowfang's "hunger" are
   hooks for that rematch.
