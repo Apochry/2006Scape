@@ -11677,6 +11677,13 @@ public class Game extends RSApplet {
 					myPlayer.currentHealth = Integer.parseInt(message);
 					currentStats[3] = Integer.parseInt(message);
 				}
+				// The server sends run energy only as the settings tab's "87%" text
+				if (interfaceID == 149) {
+					try {
+						energy = Integer.parseInt(message.replace("%", "").trim());
+					} catch (NumberFormatException ignored) {
+					}
+				}
 				RSInterface.interfaceCache[interfaceID].disabledText = message;
 				if (RSInterface.interfaceCache[interfaceID].parentID == tabInterfaceIDs[tabID]) {
 					needDrawTabArea = true;
