@@ -585,6 +585,9 @@ public class ItemAssistant {
 		newWeapon = newWeapon.replaceAll("Drag", "");
 		newWeapon = newWeapon.replaceAll("Crystal", "");
 		newWeapon = newWeapon.trim();
+		if (com.rs2.game.content.voidrealm.VoidGear.sendWeapon(player, weapon, weaponName)) {
+			return;
+		}
 		if (weaponName.equals("Unarmed")) {
 			player.getPacketSender().setSidebarInterface(0, 5855); // punch,
 			// kick,
@@ -686,6 +689,9 @@ public class ItemAssistant {
 		}
 		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.CROWN_OF_AUREL) {
 			player.defenceLevelReq = 45;
+			return;
+		}
+		if (com.rs2.game.content.voidrealm.VoidGear.requirements(player, itemId)) {
 			return;
 		}
 		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.STARLESS_CAPE
@@ -1111,7 +1117,7 @@ public class ItemAssistant {
 		if (itemName.contains("crystal")) {
 			return true;
 		}
-		if (itemName.contains("2h") || itemName.contains("spear")) {
+		if (itemName.contains("2h") || itemName.contains("spear") || itemName.contains("halberd")) {
 			return true;
 		}
 		switch (itemId) {
@@ -1145,6 +1151,7 @@ public class ItemAssistant {
 				break;
 
 			case 4587: // dscimmy
+			case com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND: // Heartfire (the longsword tab shares the scimitar's bar)
 				player.getPacketSender().sendHideInterfaceLayer(7599, false);
 				specialAmount(weapon, player.specAmount, 7611);
 				break;

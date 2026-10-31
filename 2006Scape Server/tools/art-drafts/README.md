@@ -1,4 +1,8 @@
-# Art drafts: not wired into the game yet
+# Art drafts (now wired in)
+
+**These are in the game now.** `ArmourForge`, `QuestWeapons`, `VoidEffects`, `FxAnim` and `AnimCache` live in
+`src/main/java/com/rs2/tools/mapgen`, and `docs/VOID_QUESTS.md` ("The saga's gear") says where each piece drops. The
+copies here are the research versions, kept with their previews.
 
 Example models in the old-school style for the Void saga. Each set was built and previewed outside the game. The
 models round-trip through `ModelData`; the armour was animated with the cache's own frames.

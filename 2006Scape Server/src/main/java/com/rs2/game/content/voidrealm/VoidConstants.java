@@ -45,6 +45,21 @@ public final class VoidConstants {
 	/* Hold the Gate, Heartforged, The Hollow King, and the Starless's uniques */
 	public static final int WARDEN_KITESHIELD = 7977, GATE_SPIKES = 7978, STARMETAL = 7979, RIMEHEART = 7980, EMBERBRAND = 7981,
 			CROWN_OF_AUREL = 7982, STARLESS_CAPE = 7983, ECLIPSE_AMULET = 7984;
+	/* the Gatehold Warden set (Def 30): the kiteshield above, the rest from Dorrin's armoury and the Hollowed */
+	public static final int WARDEN_HELM = 7985, WARDEN_BODY = 7986, WARDEN_LEGS = 7987, WARDEN_BOOTS = 7988,
+			WARDEN_GAUNTLETS = 7989;
+	/* Aurel's Royal Guard (Def 50): drops in the Starless Expanse, or reforged from rune by Dorrin */
+	public static final int ROYAL_HELM = 7990, ROYAL_BODY = 7991, ROYAL_LEGS = 7992, ROYAL_KITESHIELD = 7993, ROYAL_BOOTS = 7994,
+			ROYAL_GAUNTLETS = 7995;
+	/* the saga's weapons */
+	public static final int STARFALL_HALBERD = 7996, RIMECLEAVER = 7997, KINGS_SCEPTRE = 7998, DUSKYEW_SHORTBOW = 7999,
+			CAGED_STAR_STAFF = 8000;
+	public static final int[] WARDEN_SET = { WARDEN_HELM, WARDEN_BODY, WARDEN_LEGS, WARDEN_BOOTS, WARDEN_GAUNTLETS };
+	public static final int[] ROYAL_SET = { ROYAL_HELM, ROYAL_BODY, ROYAL_LEGS, ROYAL_KITESHIELD, ROYAL_BOOTS, ROYAL_GAUNTLETS };
+
+	/* ---------------- graphics (new spotanims, appended after the cache's 666) ---------------- */
+	public static final int GFX_VOID_BOLT = 666, GFX_VOID_IMPACT = 667, GFX_HEARTFIRE = 668, GFX_STARFALL_MARK = 669,
+			GFX_FALLING_STAR = 670, GFX_ECLIPSE = 671, GFX_RIME_BURST = 672;
 
 	/* ---------------- objects (new definitions) ---------------- */
 	public static final int VOID_VEIN = 14986;
@@ -144,6 +159,7 @@ public final class VoidConstants {
 	public static final int GATE_X = 1510, GATE_Y = 2712;
 
 	/** Shops in data/cfg/shops.json. */
+	public static final int WARDEN_SHOP = 357;
 	public static final int BRAM_SHOP = 350, MARTA_SHOP = 351, PELL_SHOP = 352, DORRIN_SHOP = 353, TESS_SHOP = 354,
 			MORRA_SHOP = 355, NETTLE_SHOP = 356;
 

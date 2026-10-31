@@ -139,7 +139,7 @@ final class StarlessBoss {
 				if (split < 2 && boss.HP <= at[split]) {
 					split++;
 					say(p, boss, "Children. Feed me.");
-					p.getPacketSender().sendMessage("@red@Three pieces of the dark tear away from the Starless. Kill them before it feeds!");
+					p.getPacketSender().sendMessage("@red@Three pieces of the dark tear away. Kill them before it feeds!");
 					for (int i = 0; i < 3; i++) {
 						int[] o = { -2, 0, 2 };
 						NpcHandler.spawnNpc(p, STARLESS_SPAWN, p.absX + o[i], p.absY + (i == 1 ? 2 : 1), 0, 1, 60, 8, 90, 70, true, false);
@@ -155,17 +155,16 @@ final class StarlessBoss {
 				if (fall == null && tick % every == 0) {
 					fall = new int[][] { { p.absX, p.absY }, { p.absX + Misc.random(4) - 2, p.absY + Misc.random(4) - 2 },
 							{ p.absX + Misc.random(4) - 2, p.absY + Misc.random(4) - 2 } };
-					for (int[] t : fall) {
-						p.getPacketSender().stillGfx(86, t[0], t[1], 0, 0);
-					}
+					GearQuest.markStars(p, fall);
 					if (!warned) {
 						warned = true;
 						p.getPacketSender().sendMessage("@red@Stars are falling! Where the ground flares, step off it - fast.");
 					}
-				} else if (fall != null && tick % every == 3 % every) {
+				} else if (fall != null && tick % every == 2) {
+					GearQuest.dropStars(p, fall);
+				} else if (fall != null && tick % every == 3) {
 					boolean hit = false;
 					for (int[] t : fall) {
-						p.getPacketSender().stillGfx(76, t[0], t[1], 0, 0);
 						hit |= p.absX == t[0] && p.absY == t[1];
 					}
 					if (hit) {
@@ -178,6 +177,7 @@ final class StarlessBoss {
 				if (eclipse < 0 && tick >= eclipseAt) {
 					eclipse = Misc.random(STAR_PILLARS.length - 1);
 					showPillars(p, eclipse);
+					p.getPacketSender().stillGfx(GFX_ECLIPSE, STARLESS_X, STARLESS_Y, 0, 0);
 					say(p, boss, "Let there be NO light.");
 					p.getPacketSender().sendMessage("@red@The Starless swallows the sky. One pillar still burns - get to it!");
 					p.getPlayerAssistant().sendCameraShake(1, 3, 1, 3);
@@ -187,7 +187,8 @@ final class StarlessBoss {
 					if (Math.abs(p.absX - pl[0]) <= 2 && Math.abs(p.absY - pl[1]) <= 2) {
 						p.getPacketSender().sendMessage("The pillar's light holds the dark off you.");
 					} else {
-						p.gfx0(78);
+						p.gfx100(GFX_VOID_IMPACT);
+						p.getPacketSender().stillGfx(GFX_ECLIPSE, p.absX, p.absY, 0, 0);
 						KingQuest.strike(p, 30 + Misc.random(15));
 						p.getPacketSender().sendMessage("@red@The dark closes over you, and it is very, very cold.");
 					}

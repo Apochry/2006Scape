@@ -80,6 +80,7 @@ drops.append({'id': 3868, 'items': [
 ]})
 drops.append({'id': 3869, 'items': [
     {'item_id': 526, 'chance': 0, 'amounts': [1, 1]},
+    {'item_id': 7989, 'chance': 63, 'amounts': [1, 1]},      # Warden's gauntlets: pried off a watchman who didn't come home
     {'item_id': 995, 'chance': 2, 'amounts': [15, 70]},
     {'item_id': 207, 'chance': 6, 'amounts': [1, 1]},        # grimy ranarr
     {'item_id': 1623, 'chance': 20, 'amounts': [1, 1]},      # uncut sapphire
@@ -115,13 +116,15 @@ def droptable(i, items):
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
 droptable(3883, [(532, 0, 1, 1), (995, 0, 150, 400), (440, 2, 2, 4), (1617, 40, 1, 1)])            # ravager: big bones, iron ore
 droptable(3884, [(526, 0, 1, 1), (995, 0, 100, 300), (1163, 30, 1, 1)])                           # oathsworn
-droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (555, 1, 30, 80), (1079, 20, 1, 1)])          # sentinel: water runes, rune legs
+droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])          # sentinel: water runes, rune legs
 droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
 droptable(3887, [(526, 0, 1, 1), (995, 1, 40, 120)])
 # the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
-droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7983, 11, 1, 1), (7984, 11, 1, 1), (1149, 7, 1, 1),
+droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (7983, 11, 1, 1), (7984, 11, 1, 1),
+                 (7990, 35, 1, 1), (7991, 35, 1, 1), (7992, 35, 1, 1), (7993, 35, 1, 1), (7994, 35, 1, 1), (7995, 35, 1, 1),
+                 (1149, 7, 1, 1),
                  (1215, 5, 1, 1), (1187, 40, 1, 1), (1615, 9, 1, 1), (2363, 2, 3, 6), (560, 1, 50, 150), (385, 1, 5, 10)])
-droptable(3890, [(592, 0, 1, 1)])
+droptable(3890, [(592, 0, 1, 1), (7979, 3, 1, 1)])   # spawn: sometimes a shard of starmetal
 save('npcdrops.json', drops)
 
 # the bosses' uniques: equipment bonuses, in ItemDefinitions.json's own compact format
@@ -140,6 +143,39 @@ uniques = {
     # the Crown of Aurel (The Hollow King)
     7982: (0.5, {'attackMagic': 6, 'defenceStab': 8, 'defenceSlash': 8, 'defenceCrush': 8, 'defenceMagic': 8, 'defenceRange': 8,
                  'strengthBonus': 3, 'prayerBonus': 4}),
+    # the Gatehold Warden set (Def 30): between adamant and rune, and a little prayer
+    7985: (2.3, {'attackMagic': -4, 'attackRange': -1, 'defenceStab': 24, 'defenceSlash': 26, 'defenceCrush': 21, 'defenceMagic': -1,
+                 'defenceRange': 24, 'prayerBonus': 1}),
+    7986: (9.5, {'attackMagic': -24, 'attackRange': -8, 'defenceStab': 72, 'defenceSlash': 70, 'defenceCrush': 62, 'defenceMagic': -4,
+                 'defenceRange': 70, 'prayerBonus': 1}),
+    7987: (8.6, {'attackMagic': -18, 'attackRange': -6, 'defenceStab': 40, 'defenceSlash': 38, 'defenceCrush': 36, 'defenceMagic': -3,
+                 'defenceRange': 38, 'prayerBonus': 1}),
+    7988: (1.0, {'attackMagic': -2, 'defenceStab': 10, 'defenceSlash': 11, 'defenceCrush': 12, 'strengthBonus': 1}),
+    7989: (0.5, {'attackStab': 4, 'attackSlash': 4, 'attackCrush': 4, 'attackMagic': 2, 'attackRange': 4, 'defenceStab': 5,
+                 'defenceSlash': 5, 'defenceCrush': 5, 'defenceMagic': 3, 'defenceRange': 5, 'strengthBonus': 3}),
+    # Aurel's Royal Guard (Def 50): a step past rune, with prayer and a touch of strength
+    7990: (2.7, {'attackMagic': -2, 'attackRange': -1, 'defenceStab': 33, 'defenceSlash': 35, 'defenceCrush': 30, 'defenceRange': 33,
+                 'strengthBonus': 1, 'prayerBonus': 2}),
+    7991: (9.9, {'attackMagic': -26, 'attackRange': -8, 'defenceStab': 88, 'defenceSlash': 86, 'defenceCrush': 78, 'defenceMagic': -4,
+                 'defenceRange': 86, 'strengthBonus': 2, 'prayerBonus': 2}),
+    7992: (9.0, {'attackMagic': -19, 'attackRange': -6, 'defenceStab': 55, 'defenceSlash': 53, 'defenceCrush': 51, 'defenceMagic': -2,
+                 'defenceRange': 53, 'strengthBonus': 1, 'prayerBonus': 2}),
+    7993: (5.4, {'attackMagic': -7, 'attackRange': -2, 'defenceStab': 48, 'defenceSlash': 52, 'defenceCrush': 50, 'defenceMagic': 2,
+                 'defenceRange': 50, 'strengthBonus': 1, 'prayerBonus': 2}),
+    7994: (1.2, {'attackMagic': -2, 'defenceStab': 14, 'defenceSlash': 15, 'defenceCrush': 16, 'defenceMagic': 1, 'defenceRange': 1,
+                 'strengthBonus': 2, 'prayerBonus': 1}),
+    7995: (0.6, {'attackStab': 7, 'attackSlash': 7, 'attackCrush': 7, 'attackMagic': 3, 'attackRange': 7, 'defenceStab': 7,
+                 'defenceSlash': 7, 'defenceCrush': 7, 'defenceMagic': 4, 'defenceRange': 7, 'strengthBonus': 6, 'prayerBonus': 1}),
+    # the saga's weapons
+    7996: (3.0, {'attackStab': 62, 'attackSlash': 86, 'attackMagic': -4, 'defenceStab': -1, 'defenceSlash': 4, 'defenceRange': 4,
+                 'strengthBonus': 82}),                                              # Starfall halberd (Att 60, two-handed)
+    7997: (2.7, {'attackStab': -2, 'attackSlash': 60, 'attackCrush': 55, 'defenceSlash': 2, 'defenceCrush': 2, 'defenceMagic': 3,
+                 'strengthBonus': 74}),                                              # Rimecleaver battleaxe (Att 55)
+    7998: (1.8, {'attackStab': 38, 'attackSlash': -2, 'attackCrush': 58, 'attackMagic': 8, 'defenceSlash': 2, 'defenceCrush': 2,
+                 'defenceMagic': 4, 'strengthBonus': 52, 'prayerBonus': 7}),         # Hollow King's mace (Att 60)
+    7999: (1.0, {'attackRange': 72}),                                                # Duskyew shortbow (Ranged 50)
+    8000: (2.0, {'attackStab': 10, 'attackSlash': -1, 'attackCrush': 40, 'attackMagic': 16, 'defenceStab': 2, 'defenceSlash': 3,
+                 'defenceCrush': 1, 'defenceMagic': 16, 'strengthBonus': 45, 'prayerBonus': 2}),  # Staff of the caged star (Magic 60)
     # the Starless's uniques
     7983: (0.4, {'attackStab': 4, 'attackSlash': 4, 'attackCrush': 4, 'attackMagic': 4, 'attackRange': 4, 'defenceStab': 11,
                  'defenceSlash': 11, 'defenceCrush': 11, 'defenceMagic': 11, 'defenceRange': 11, 'strengthBonus': 6, 'prayerBonus': 3}),
@@ -181,6 +217,9 @@ shop(355, 'The Last Hearth', [(2003, 20), (2289, 10), (1993, 15), (1917, 20), (1
                               (2011, 10), (379, 20), (373, 15), (1971, 30)])
 shop(356, "Nettle's Hold", [(954, 10), (301, 10), (311, 5), (1623, 5), (1621, 3), (1619, 2), (1617, 1),
                             (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2)])
+# the Warden's armoury: Dorrin opens it once you've held the gate (the gauntlets only come off the Hollowed)
+shop(357, "The Warden's Armoury", [(7985, 3), (7986, 2), (7987, 2), (7988, 3), (7977, 1), (1163, 2), (1079, 1), (1201, 1),
+                                   (4131, 2), (2363, 4)])
 save('shops.json', shops)
 
 # spawns: drop everything previously in Nythera's regions except Oren, then add camps + generated wildlife

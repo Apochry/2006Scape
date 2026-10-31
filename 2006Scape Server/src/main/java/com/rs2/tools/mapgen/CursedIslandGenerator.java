@@ -73,7 +73,7 @@ public final class CursedIslandGenerator {
 	CacheEditor cache;
 	/** The Void quest series and the continent of Nythera. */
 	final VoidRealmGenerator voidRealm = new VoidRealmGenerator(this);
-	private CacheEditor.Archive config;
+	CacheEditor.Archive config;
 
 	public static void main(String[] args) throws Exception {
 		Path cacheDir = Paths.get(args.length > 0 ? args[0] : "data/cache");

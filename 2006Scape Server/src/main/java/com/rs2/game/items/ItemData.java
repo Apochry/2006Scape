@@ -357,6 +357,7 @@ public class ItemData {
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.CROWN_OF_AUREL] = ItemConstants.HAT;
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.STARLESS_CAPE] = ItemConstants.CAPE;
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.ECLIPSE_AMULET] = ItemConstants.AMULET;
+		com.rs2.game.content.voidrealm.VoidGear.slots(targetSlots);
 	}
 
 }

@@ -639,10 +639,12 @@ final class CrownQuest {
 				}
 				if (tick % 12 == 0) { // a lash of void, whatever you're doing
 					int hit = 2 + Misc.random(5);
-					p.gfx0(78);
-					p.dealDamage(hit);
-					p.handleHitMask(hit);
-					p.getPacketSender().sendMessage("A lash of void tears at you.");
+					GearQuest.voidBolt(p, herald, 1);
+					later(p, 2, () -> {
+						p.dealDamage(hit);
+						p.handleHitMask(hit);
+						p.getPacketSender().sendMessage("A lash of void tears at you.");
+					});
 				}
 				if (tick % 9 == 0) {
 					herald.forceChat(HERALD_LINES[Misc.random(HERALD_LINES.length - 1)]);

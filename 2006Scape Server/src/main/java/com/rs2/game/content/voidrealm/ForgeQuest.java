@@ -323,6 +323,10 @@ final class ForgeQuest {
 	}
 
 	private static void mineStar(Player p) {
+		if (p.voidForge >= COMPLETE) {
+			GearQuest.mineStar(p);
+			return;
+		}
 		if (p.voidForge != MATERIALS || p.getItemAssistant().playerHasItem(STARMETAL)) {
 			p.getPacketSender().sendMessage(p.voidForge < MATERIALS ? "The star is still too hot to touch. It hums."
 					: "You've all the starmetal you need.");
@@ -359,11 +363,15 @@ final class ForgeQuest {
 			p.startAnimation(625);
 			p.getItemAssistant().addOrDropItem(STARMETAL, 1);
 			p.getPlayerAssistant().addSkillXP(600, Constants.MINING);
-			p.getPacketSender().sendMessage("A shard of starmetal comes away in your hand. It's cold, and it doesn't reflect anything.");
+			p.getPacketSender().sendMessage("A shard of starmetal comes away in your hand. It reflects nothing.");
 		});
 	}
 
 	private static void takeRimeheart(Player p) {
+		if (p.voidForge >= COMPLETE) {
+			GearQuest.wakeSentinel(p);
+			return;
+		}
 		if (p.voidForge != MATERIALS || p.getItemAssistant().playerHasItem(RIMEHEART)) {
 			p.getPacketSender().sendMessage("Frost creeps up your fingers. Best leave it be.");
 			return;
@@ -378,12 +386,9 @@ final class ForgeQuest {
 			p.getPacketSender().sendMessage("The sentinel won't let you near it!");
 			return;
 		}
-		p.getPacketSender().sendMessage("As you reach for the heart of the altar, the ice behind you cracks and stands up.");
+		p.getPacketSender().sendMessage("As you reach for the altar, the ice behind you cracks and stands up.");
 		NpcHandler.spawnNpc(p, RIMEBOUND_SENTINEL, p.absX + 1, p.absY - 1, p.heightLevel, 1, 110, 7, 60, 55, true, false);
-		Npc s = findSpawned(p, RIMEBOUND_SENTINEL);
-		if (s != null) {
-			s.forceChat("NONE SHALL THAW THE HEART.");
-		}
+		GearQuest.sentinelFight(p);
 	}
 
 	/* ====================================================================== */
@@ -420,7 +425,7 @@ final class ForgeQuest {
 							banish(k);
 						}
 						if (!p.disconnected) {
-							p.getPacketSender().sendMessage("Sir Vaelric steps back into the dark. Dorrin can't work while he's out there...");
+							p.getPacketSender().sendMessage("Sir Vaelric steps back into the dark. Dorrin can't work like this...");
 						}
 					}
 					c.stop();
@@ -461,7 +466,9 @@ final class ForgeQuest {
 	}
 
 	static void npcKilled(Player killer, int npcType) {
-		if (npcType == RIMEBOUND_SENTINEL) {
+		if (npcType == RIMEBOUND_SENTINEL && killer.voidForge >= COMPLETE) {
+			killer.getPacketSender().sendMessage("The sentinel shatters. It'll be back - the shrine always makes another.");
+		} else if (npcType == RIMEBOUND_SENTINEL) {
 			killer.forgeFlags |= SENTINEL_SLAIN;
 			killer.getPacketSender().sendMessage("The sentinel shatters into a thousand pieces. The altar's heart is unguarded.");
 		} else if (npcType == VOIDLING && killer.voidForge == MATERIALS && aliveSpawned(killer, VOIDLING) == 0

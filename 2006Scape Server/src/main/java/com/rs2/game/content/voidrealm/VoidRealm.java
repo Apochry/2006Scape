@@ -55,7 +55,7 @@ public final class VoidRealm {
 
 	public static boolean firstClickNpc(Player player, int npcType) {
 		if (GateQuest.firstClickNpc(player, npcType) || ForgeQuest.firstClickNpc(player, npcType)
-				|| KingQuest.firstClickNpc(player, npcType)) {
+				|| KingQuest.firstClickNpc(player, npcType) || GearQuest.firstClickNpc(player, npcType)) {
 			return true;
 		}
 		if (CrownQuest.firstClickNpc(player, npcType)) {
@@ -183,7 +183,8 @@ public final class VoidRealm {
 
 	/** Called from SkullbrineIsle#sendDialogue for ids 9600-9799. */
 	public static boolean sendDialogue(Player p, int id, int npcId) {
-		if (GateQuest.sendDialogue(p, id, npcId) || ForgeQuest.sendDialogue(p, id, npcId) || KingQuest.sendDialogue(p, id, npcId)) {
+		if (GateQuest.sendDialogue(p, id, npcId) || ForgeQuest.sendDialogue(p, id, npcId) || KingQuest.sendDialogue(p, id, npcId)
+				|| GearQuest.sendDialogue(p, id, npcId)) {
 			return true;
 		}
 		if (CrownQuest.sendDialogue(p, id, npcId)) {
@@ -552,7 +553,8 @@ public final class VoidRealm {
 
 	/** Called from SkullbrineIsle#handleOption. */
 	public static boolean handleOption(Player p, int buttonId) {
-		if (GateQuest.handleOption(p, buttonId) || ForgeQuest.handleOption(p, buttonId) || KingQuest.handleOption(p, buttonId)) {
+		if (GateQuest.handleOption(p, buttonId) || ForgeQuest.handleOption(p, buttonId) || KingQuest.handleOption(p, buttonId)
+				|| GearQuest.handleOption(p, buttonId)) {
 			return true;
 		}
 		if (CrownQuest.handleOption(p, buttonId)) {
@@ -1137,6 +1139,7 @@ public final class VoidRealm {
 		GateQuest.npcKilled(killer, npcType);
 		ForgeQuest.npcKilled(killer, npcType);
 		StarlessBoss.npcKilled(killer, npcType);
+		GearQuest.npcKilled(killer, npcType);
 		switch (npcType) {
 		case HOLLOWED_WOLF:
 		case HOLLOW_HUSK:
@@ -1294,7 +1297,7 @@ public final class VoidRealm {
 			p.wardsLit = 0;
 			p.getPacketSender().sendMessage("crown " + p.voidCrown + " flags " + p.crownFlags + " veil " + p.voidVeil + " bosses " + p.nytheraBosses);
 			break;
-		case "saga": // ::vt saga gate forge king [gateFlags forgeFlags]   (no args: just print)
+		case "saga": // ::vt saga gate forge king [gateFlags forgeFlags gateKills]   (no args: just print)
 			p.voidGate = a.length > 1 ? n[1] : p.voidGate;
 			p.voidForge = a.length > 2 ? n[2] : p.voidForge;
 			p.voidKing = a.length > 3 ? n[3] : p.voidKing;
@@ -1303,6 +1306,9 @@ public final class VoidRealm {
 			}
 			if (a.length > 5) {
 				p.forgeFlags = n[5];
+			}
+			if (a.length > 6) {
+				p.gateKills = n[6];
 			}
 			p.sagaRegion = -1;
 			QuestAssistant.sendStages(p);

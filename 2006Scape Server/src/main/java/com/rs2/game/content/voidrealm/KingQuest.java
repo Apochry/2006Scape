@@ -200,6 +200,7 @@ final class KingQuest {
 		case D_AUREL + 7:
 			npc(p, id, AUREL_SPIRIT, ChatEmotes.CALM_TALK1, false, "Do not go through that gate unless you are sure. Take this, and",
 					"go home. Tell Gatehold its king is at rest.");
+			GearQuest.giveMace(p);
 			break;
 		case D_AUREL + 8:
 			p.getDialogueHandler().sendStatement(wide("Aurel's shape thins to light, and then to nothing. Far away, a bell is",
@@ -420,23 +421,23 @@ final class KingQuest {
 					king.animNumber = 2656;
 					king.animUpdateRequired = true;
 					king.updateRequired = true;
-					p.gfx0(78);
-					strike(p, 3 + Misc.random(4));
+					GearQuest.voidBolt(p, king, 1);
+					later(p, 2, () -> strike(p, 3 + Misc.random(4)));
 					p.getPacketSender().sendMessage("A wave of void rolls out of the King and over you.");
 				}
 				if (tick % 13 == 0) { // the sky falls: three marked tiles, one of them yours
 					sky = new int[][] { { p.absX, p.absY }, { p.absX + Misc.random(4) - 2, p.absY + Misc.random(4) - 2 },
 							{ p.absX + Misc.random(4) - 2, p.absY + Misc.random(4) - 2 } };
-					for (int[] t : sky) {
-						p.getPacketSender().stillGfx(86, t[0], t[1], 0, 0);
-					}
+					GearQuest.markStars(p, sky);
 					kingSays(p, king, "The sky is mine too!");
 					p.getPacketSender().sendMessage("@red@The void above you darkens. Move!");
+				}
+				if (sky != null && tick % 13 == 2) {
+					GearQuest.dropStars(p, sky);
 				}
 				if (sky != null && tick % 13 == 3) {
 					boolean hit = false;
 					for (int[] t : sky) {
-						p.getPacketSender().stillGfx(76, t[0], t[1], 0, 0);
 						hit |= p.absX == t[0] && p.absY == t[1];
 					}
 					if (hit) {

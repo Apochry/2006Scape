@@ -12389,5 +12389,53 @@
         "itemAmount": 2
       }
     ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "The Warden's Armoury",
+    "id": 357,
+    "items": [
+      {
+        "itemId": 7985,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 7986,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 7987,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 7988,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 7977,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 1163,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1079,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 1201,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 4131,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 2363,
+        "itemAmount": 4
+      }
+    ]
   }
 ]

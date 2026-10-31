@@ -303,11 +303,53 @@ prayer.
   spawn every other tick.
 - Leaving through the gate, logging out or dying resets the fight. Kills are counted (`Player.starlessKills`).
 - **Drops:**
-  - always: ashes and 8-20k coins
+  - always: ashes, 8-20k coins and 2-4 starmetal
+  - each **Royal guard** piece at 1/36
   - **Starless cape** (Defence 70; all-round +11 defence, +6 strength) at 1/12
   - **Eclipse amulet** (Defence 70; +12 attack, +8 strength) at 1/12
   - otherwise dragon med helms and daggers, a rare dragon square shield, dragonstones, runite bars, death runes,
     sharks
+
+## The saga's gear
+
+Hand-built armour, weapons and effects (drafted in `tools/art-drafts/`, now packed by `VoidRealmGenerator.gearItems`
+and `effects()`). They're spread across the story so each tier arrives when the player is ready for it, and only
+one of them is a straight quest reward. The rest come from shops, side tasks, recipes and rare drops.
+
+| Gear | Wear | Stats (roughly) | Where from | When |
+|---|---|---|---|---|
+| **Warden's full helm / platebody / platelegs / boots** | Defence 30 | between adamant and rune, +1 prayer each | **Dorrin's "Warden's armoury"** (talk to Dorrin) | after Hold the Gate |
+| **Warden's kiteshield** | Defence 30 | as before, new model | Hold the Gate's reward (also in the armoury) | after Hold the Gate |
+| **Warden's gauntlets** | Defence 30 | +4 attack, +5 defence, +3 str | **rare drop** from Hollow husks (1/64) | after Hold the Gate |
+| **Duskyew shortbow** | Ranged 50 | +72 ranged, magic shortbow speed and arrows | **Kael's side task "Fifty for the Wall"**: kill 50 Hollowed (wolves, husks, ravagers) | after Hold the Gate |
+| **Starfall halberd** (two-handed) | Attack 60, Str 30 | +62 stab / +86 slash, +82 str | **Smithing 60 recipe** at Dorrin's: 3 starmetal + 2 rune bars + a hammer | after Heartforged |
+| **Rimecleaver battleaxe** | Attack 55 | +60 slash / +55 crush, +74 str | **rare drop (1/12)** from the Rimebound sentinel, which re-forms whenever you touch the rime altar | after Heartforged |
+| **Hollow King's mace** | Attack 60 | +58 crush, +52 str, +7 prayer | **Aurel gives it** at the end of The Hollow King (Maelis has it if you finished before this existed, or lose it) | The Hollow King |
+| **Staff of the caged star** | Magic 60 | +16 magic attack and defence; **unlimited fire runes** | **Crafting 60 recipe** with Maelis: battlestaff + 2 starmetal + 50 cosmic runes | after The Hollow King |
+| **Royal guard full helm / platebody / platelegs / kiteshield / boots / gauntlets** | Defence 50 | a step past rune, +2 prayer, a little strength | **Smithing 70 reforge** at Dorrin's (rune piece + starmetal: helm/boots 1, legs/kite 2, body 3; Warden's gauntlets + 1), or **rare drops from the Starless** (1/36 each) | after The Hollow King |
+
+**Starmetal** after Heartforged: mine the fallen star in Starfall Crater with Mining 40 (a pickaxe, 160 XP a shard;
+about one swing in ten at 40, one in five at 99). Sometimes the star cracks and lets out two voidlings. The Starless
+drops 2-4 a kill and its spawn sometimes drop one. The Warden's armoury also sells rune pieces and rune bars for the
+recipes.
+
+**The Emberbrand's special, Heartfire** (50% energy): 120% damage, 125% accuracy, with an arc of Aurel's heart-fire
+along the blade.
+
+**Effects** (new spotanims 666-672 on existing animations; `VoidConstants.GFX_*`):
+- the void bolt and impact are the Herald's lash and the King's wave of void
+- the starfall marker and falling star are the King's falling sky and the Starless's starfall (the star lands on the
+  tick the damage does)
+- the eclipse ring marks the Starless's eclipse
+- the rime burst is the sentinel's breath (every 10 ticks; it hits and freezes you if you're next to it)
+- the Heartfire arc is the Emberbrand's special
+
+The generator checks that `spotanim.dat` still has 666 entries before it appends them. Female characters wear the
+male armour models for now; no female meshes were built.
+
+Code: `GearQuest.java` (dialogue 20600+: Dorrin, Kael, Maelis, the star, the sentinel, effect helpers), `VoidGear.java`
+(slots, levels, weapon tabs). Flags: `gateFlags` bit 3 = Kael's task taken, bit 4 = the bow handed over, and
+`gateKills` counts the fifty. `forgeFlags` bit 8 = the mace handed over.
 
 ### Terrain smoothing
 
@@ -341,6 +383,7 @@ overlay and then smooth it: every cut shows the underlay beneath, which looked l
 | Ashes of the Crown: dialogue, the Vault, the Herald, the waystones | `game/content/voidrealm/CrownQuest.java` |
 | Hold the Gate (20000+), Heartforged (20200+), The Hollow King (20400+): dialogue and fights | `GateQuest.java`, `ForgeQuest.java`, `KingQuest.java` |
 | The Starless | `game/content/voidrealm/StarlessBoss.java` |
+| The saga's gear: armoury, recipes, Kael's task, repeatable star and sentinel, effects | `GearQuest.java`, `VoidGear.java`; models in `tools/mapgen/ArmourForge.java`, `QuestWeapons.java`, `VoidEffects.java` |
 | Hand-built models (Barrowsteel, Emberbrand, barricades, star, altar, gate, pillars, the Starless) | `tools/mapgen/ModelForge.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
@@ -359,7 +402,7 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt npc id` / `npc2 id` / `obj id x y` / `obj2 id x y` / `use objId x y itemId` / `item id` | fire the same handler a click would (testing) |
 | `::vt journal 1/2/4` | open a journal (4 = Ashes of the Crown) |
 | `::vt crown stage [flags] [veil]` | set Ashes of the Crown's stage, flags (bit 0 broodmother, bits 8+ waystones) and Beyond the Veil's stage |
-| `::vt saga gate forge king [gateFlags forgeFlags]` | set the later quests' stages (no arguments prints them) |
+| `::vt saga gate forge king [gateFlags forgeFlags gateKills]` | set the later quests' stages (no arguments prints them) |
 | `::vt journal 5/6/7` | Hold the Gate / Heartforged / The Hollow King journal |
 | `::vt hp n [npcId]` | cap the hp of NPCs spawned for you; 0 = instant kill with quest credit, -1 = a real death with drops |
 | `::vt list` | list NPCs spawned for you |

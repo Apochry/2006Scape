@@ -436,7 +436,7 @@ public class CombatSounds {
 			return 426;
 		} else if (id == 4587) { // dscim
 			return 1305;
-		} else if (id == 1305) { // D Long
+		} else if (id == 1305 || id == com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND) { // D Long, the Emberbrand
 			return 390;
 		} else if (id == 861 || id == 11235 || id == 859) { // MSB, Darkbow
 			return 386;

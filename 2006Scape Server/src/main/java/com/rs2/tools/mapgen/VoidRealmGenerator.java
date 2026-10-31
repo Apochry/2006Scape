@@ -171,9 +171,8 @@ final class VoidRealmGenerator {
 
 	/** Items for Hold the Gate, Heartforged, The Hollow King and the Starless's uniques. */
 	void sagaItems(ConfigDefinitions.Table items) throws java.io.IOException {
-		ConfigDefinitions.Definition shield = g.item(items, 1197, WARDEN_KITESHIELD).name("Warden's kiteshield")
+		ConfigDefinitions.Definition shield = g.item(items, 1201, WARDEN_KITESHIELD).name("Warden's kiteshield")
 				.examine("Gatehold's watch carries these. They gave you one. Don't lose it.").cost(30000);
-		tintItem(shield, 36, 3, 0.85, 6);
 		ConfigDefinitions.Definition spikes = g.item(items, 2351, GATE_SPIKES).name("Gate spikes")
 				.examine("Iron spikes from Dorrin's forge, for the barricades.").cost(1);
 		tintItem(spikes, 0, 0, 0.7, 0);
@@ -197,6 +196,137 @@ final class VoidRealmGenerator {
 		ConfigDefinitions.Definition eclipse = g.item(items, 1704, ECLIPSE_AMULET).name("Eclipse amulet")
 				.examine("A black sun on a chain. It's warm on one side and freezing on the other.").cost(200000);
 		tintItem(eclipse, 50, 7, 0.55, 0);
+		gearItems(items, shield);
+		effects();
+	}
+
+	/**
+	 * The saga's hand-built gear (tools/art-drafts): the Gatehold Warden set, Aurel's Royal Guard and five weapons.
+	 * Each clones the rune (or magic) item whose inventory camera its model was built to fit, then swaps the models in.
+	 * No female meshes were built, so women wear the male models (opcodes 25/26) for now.
+	 */
+	void gearItems(ConfigDefinitions.Table items, ConfigDefinitions.Definition wardenShield) throws java.io.IOException {
+		ArmourForge af = new ArmourForge(forge);
+		double tau = Math.PI * 2;
+		ArmourForge.Palette[] palettes = { ArmourForge.WARDEN, ArmourForge.ROYAL };
+		String[] tag = { "Warden's", "Royal guard" };
+		String[][] examines = {
+				{ "Blackened starmetal, cut for the watch on the wall. The plume is Gatehold's colours.",
+						"The watch's plate. The ember over the heart is meant to keep you warm on the wall. It doesn't.",
+						"Gatehold steel, scratched by a hundred raids.", "Heavy boots for long nights on the wall.",
+						"Pried from a watchman who didn't come home. Still warm." },
+				{ "The helm of Aurel's own guard. The visor still glows, as if someone's behind it.",
+						"Pale starmetal and royal violet. The last knights of Nythera wore this to the end.",
+						"Polished so bright you can see the stars in them.", "Fit to walk a king's halls - or the void.",
+						"Gold-cuffed gauntlets of the Royal Guard. A king's hand once clasped these." } };
+		int[][] ids = { { WARDEN_HELM, WARDEN_BODY, WARDEN_LEGS, -1, WARDEN_BOOTS, WARDEN_GAUNTLETS },
+				{ ROYAL_HELM, ROYAL_BODY, ROYAL_LEGS, ROYAL_KITESHIELD, ROYAL_BOOTS, ROYAL_GAUNTLETS } };
+		int[] cost = { 170000, 400000 };
+		for (int k = 0; k < 2; k++) {
+			ArmourForge.Palette p = palettes[k];
+			ModelData helm = af.helm(p), legs = af.legs(p), kite = af.shield(p), boots = af.boots(p), gl = af.gauntlets(p);
+			ModelData[] ba = af.body(p);
+			int[] worn = { forge.pack(helm), forge.pack(ba[0]), forge.pack(legs), forge.pack(kite), forge.pack(boots), forge.pack(gl) };
+			int arms = forge.pack(ba[1]);
+			int[] inv = { forge.pack(af.inventory(helm, 218, 2813)),
+					forge.pack(af.inventory(ArmourForge.mergeAll(ba[0], ba[1]), new int[] { 306, 164 }, 2605)),
+					forge.pack(af.inventory(legs, 268, 2582)), forge.pack(af.shieldInventory(kite, -1104 * tau / 2048, 344 * tau / 2048)),
+					forge.pack(af.inventory(boots, 4954, 5037)), forge.pack(af.gauntletsInventory(gl)) };
+			int[] base = { 1163, 1127, 1079, 1201, 4131, 1059 };
+			String[] piece = { "full helm", "platebody", "platelegs", "kiteshield", "boots", "gauntlets" };
+			int[] share = { 15, 30, 22, 20, 7, 6 };
+			for (int i = 0; i < 6; i++) {
+				if (ids[k][i] < 0) {
+					// the Warden's kiteshield already exists (Hold the Gate's reward): give it the new model
+					wear(wardenShield.remove(40).remove(41).shorts(1, inv[3]), worn[3], -1);
+					continue;
+				}
+				String ex = examines[k][i < 3 ? i : i - 1];
+				if (k == 1 && i == 3) {
+					ex = "The last shield of the Royal Guard. Aurel's sun is still on it, under the soot.";
+				}
+				ConfigDefinitions.Definition d = g.item(items, base[i], ids[k][i]).name(tag[k] + " " + piece[i]).examine(ex)
+						.cost(cost[k] * share[i] / 100).remove(41);
+				if (i == 0) {
+					d.recolor(new int[] { 61, 926 }, new int[] { p.steel, p.plume }); // only the chathead models still use these
+				} else {
+					d.remove(40);
+				}
+				wear(d.shorts(1, inv[i]), worn[i], i == 1 ? arms : -1);
+			}
+		}
+		// the five weapons, each placed in its base item's own hand and inventory frame
+		int[] weaponIds = { STARFALL_HALBERD, RIMECLEAVER, KINGS_SCEPTRE, DUSKYEW_SHORTBOW, CAGED_STAR_STAFF };
+		String[] names = { "Starfall halberd", "Rimecleaver battleaxe", "Hollow King's mace", "Duskyew shortbow", "Staff of the caged star" };
+		String[] wex = { "Starmetal on a long haft. Where it bites, the sky follows.",
+				"A battleaxe of black ice that will not melt. It's colder than the sentinel it came from.",
+				"Aurel's sceptre. The Starless lent him the stone in it, and you can feel it looking.",
+				"Strung from a yew that grew in the Scar's shadow. It shoots straight, and it shoots fast.",
+				"A star in a cage of starmetal. It burns for ever, so you never need fire runes." };
+		int[] wcost = { 120000, 100000, 110000, 90000, 110000 };
+		for (int i = 0; i < 5; i++) {
+			QuestWeapons.Weapon w = QuestWeapons.ALL[i];
+			int inv = forge.pack(w.inventoryModel()), held = forge.pack(w.wieldedModel());
+			ConfigDefinitions.Definition d = g.item(items, w.pose.baseItem, weaponIds[i]).name(names[i]).examine(wex[i])
+					.cost(wcost[i]).remove(40).remove(41).remove(24).remove(26).shorts(1, inv);
+			d.set(23, new byte[] { (byte) (held >> 8), (byte) held, 0 }).set(25, new byte[] { (byte) (held >> 8), (byte) held, 6 });
+		}
+	}
+
+	/** Points an item's worn models (male, and female as a stop-gap) at a new model, keeping each base's offsets. */
+	private static void wear(ConfigDefinitions.Definition d, int model, int second) {
+		for (int op : new int[] { 23, 25 }) {
+			byte[] old = d.get(op);
+			d.set(op, new byte[] { (byte) (model >> 8), (byte) model, old == null ? 0 : old[2] });
+		}
+		if (second >= 0) {
+			d.shorts(24, second).shorts(26, second);
+		}
+	}
+
+	/** The saga's spotanims (tools/art-drafts/effects): new models on existing animations, appended as gfx 666-672. */
+	void effects() throws java.io.IOException {
+		byte[] dat = g.config.get("spotanim.dat");
+		int count = (dat[0] & 0xFF) << 8 | dat[1] & 0xFF;
+		if (count != GFX_VOID_BOLT) {
+			throw new IllegalStateException("spotanim.dat has " + count + " entries; the saga's gfx ids assume 666");
+		}
+		java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream();
+		java.util.List<VoidEffects.Effect> all = VoidEffects.all();
+		o.write(dat, 2, dat.length - 2);
+		for (VoidEffects.Effect e : all) {
+			if (e == all.get(GFX_HEARTFIRE - GFX_VOID_BOLT)) {
+				e.resizeXY = e.resizeZ = 150; // the arc reads small beside a full swing; a little bigger, as the d long's is
+			}
+			int model = forge.pack(e.model);
+			o.write(1);
+			o.write(model >> 8);
+			o.write(model);
+			o.write(2);
+			o.write(e.reuseSeq >> 8);
+			o.write(e.reuseSeq);
+			if (e.resizeXY != 128) {
+				o.write(4);
+				o.write(e.resizeXY >> 8);
+				o.write(e.resizeXY);
+			}
+			if (e.resizeZ != 128) {
+				o.write(5);
+				o.write(e.resizeZ >> 8);
+				o.write(e.resizeZ);
+			}
+			o.write(7);
+			o.write(e.brightness);
+			o.write(8);
+			o.write(e.shadow);
+			o.write(0);
+		}
+		byte[] body = o.toByteArray(), out = new byte[body.length + 2];
+		int n = count + all.size();
+		out[0] = (byte) (n >> 8);
+		out[1] = (byte) n;
+		System.arraycopy(body, 0, out, 2, body.length);
+		g.config.put("spotanim.dat", out);
 	}
 
 	/** Items for Ashes of the Crown. */
