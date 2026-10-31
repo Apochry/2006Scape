@@ -27,13 +27,13 @@ public final class AshesOfTheCrown {
 	public static final int QUEST_POINTS = 3;
 
 	/* Player#crownFlags */
-	public static final int BROODMOTHER_SLAIN = 1, WAYSTONE_BITS = 8; // bit 8 + n: attuned to waystone n
+	public static final int BROODMOTHER_SLAIN = 1, OATHSWORN_SLAIN = 2, WAYSTONE_BITS = 8; // bit 8 + n: attuned to waystone n
 
 	private AshesOfTheCrown() {
 	}
 
 	public static boolean canStart(Player player) {
-		return player.voidVeil >= BeyondTheVeil.COMPLETE;
+		return player.voidGate >= HoldTheGate.COMPLETE;
 	}
 
 	public static void showInformation(Player player) {
@@ -45,8 +45,8 @@ public final class AshesOfTheCrown {
 		int stage = player.voidCrown;
 		if (stage == NOT_STARTED) {
 			line = write(player, line, "I can start this quest by speaking to @dre@Captain Ysolde@bla@ in",
-					"Gatehold, on Nythera.", "", "@dre@Requirements:", strike(canStart(player), "Completion of Beyond the Veil"),
-					"I should be able to face a Herald of the Hollow King.");
+					"Gatehold, on Nythera.", "", "@dre@Requirements:", strike(canStart(player), "Completion of Hold the Gate"),
+					"@dre@Recommended:@bla@ combat 40+, and some food.");
 		} else {
 			line = write(player, line, strike(stage > STARTED, "Something crowned is walking in the Scar. Ysolde sent me"),
 					strike(stage > STARTED, "to @dre@Archivist Maelis@bla@, in the standing stones above the Gate."));
@@ -99,10 +99,13 @@ public final class AshesOfTheCrown {
 		player.crownFlags |= 1 << WAYSTONE_BITS; // Gatehold's waystone knows you already
 		player.questPoints += QUEST_POINTS;
 		player.getItemAssistant().addOrDropItem(GATEHOLD_SIGNET, 1);
+		player.getPlayerAssistant().addSkillXP(8000, Constants.ATTACK);
+		player.getPlayerAssistant().addSkillXP(8000, Constants.STRENGTH);
+		player.getPlayerAssistant().addSkillXP(8000, Constants.DEFENCE);
 		player.getPlayerAssistant().addSkillXP(7500, Constants.SLAYER);
 		player.getPlayerAssistant().addSkillXP(5000, Constants.MAGIC);
 		player.getPlayerAssistant().addSkillXP(5000, Constants.PRAYER);
 		QuestRewards.questReward(player, NAME, QUEST_POINTS + " Quest Points", "The waystone network", "Signet of Gatehold",
-				"7,500 Slayer XP", "5,000 Magic and Prayer XP", "The Ember (keep it safe)", GATEHOLD_SIGNET);
+				"8,000 Attack, Strength, Defence XP", "7,500 Slayer, 5,000 Magic, Prayer XP", "The Ember (keep it safe)", GATEHOLD_SIGNET);
 	}
 }

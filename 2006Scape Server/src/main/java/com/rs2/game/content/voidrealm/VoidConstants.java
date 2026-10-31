@@ -25,6 +25,9 @@ public final class VoidConstants {
 	public static final int BARROW_THANE = 3876, HOLLOW_MATRIARCH = 3877, RIMECLAW = 3878;
 	/* Ashes of the Crown */
 	public static final int MAELIS = 3879, BROODMOTHER = 3880, HOLLOW_HERALD = 3881, HOLLOW_SHADE = 3882;
+	/* Hold the Gate, Ashes of the Crown's coffer guard, Heartforged, The Hollow King, and the Starless */
+	public static final int HOLLOW_RAVAGER = 3883, THANE_OATHSWORN = 3884, RIMEBOUND_SENTINEL = 3885, SIR_VAELRIC = 3886,
+			HOLLOW_KNIGHT = 3887, AUREL_SPIRIT = 3888, THE_STARLESS = 3889, STARLESS_SPAWN = 3890;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;
@@ -39,6 +42,9 @@ public final class VoidConstants {
 	/* Ashes of the Crown */
 	public static final int THANE_PAGE = 7971, SILK_PAGE = 7972, NETTLE_PAGE = 7973, ROYAL_CHRONICLE = 7974, EMBER = 7975,
 			GATEHOLD_SIGNET = 7976;
+	/* Hold the Gate, Heartforged, The Hollow King, and the Starless's uniques */
+	public static final int WARDEN_KITESHIELD = 7977, GATE_SPIKES = 7978, STARMETAL = 7979, RIMEHEART = 7980, EMBERBRAND = 7981,
+			CROWN_OF_AUREL = 7982, STARLESS_CAPE = 7983, ECLIPSE_AMULET = 7984;
 
 	/* ---------------- objects (new definitions) ---------------- */
 	public static final int VOID_VEIN = 14986;
@@ -57,6 +63,33 @@ public final class VoidConstants {
 			MOON_WARD = 15003, VAULT_SEAL = 15004, EMBER_PEDESTAL = 15005, MAELIS_BOOKS = 15006;
 	/** The wards once lit (shown to the player who lit them). */
 	public static final int SUN_WARD_LIT = 15007, STAR_WARD_LIT = 15008, MOON_WARD_LIT = 15009;
+	/* the later quests and the Starless (all with hand-built models) */
+	public static final int BROKEN_BARRICADE = 15010, SPIKED_BARRICADE = 15011, FALLEN_STAR = 15012, RIME_ALTAR = 15013,
+			STARLESS_GATE = 15014, STAR_PILLAR = 15015, STAR_PILLAR_LIT = 15016;
+
+	/* ---------------- Hold the Gate ---------------- */
+	/** The three broken barricades across the Scar road north-east of the Gate. */
+	public static final int[][] BARRICADE_SPOTS = { { 1520, 2711 }, { 1521, 2713 }, { 1522, 2715 } };
+	/** Where the raid comes from (up the Scar road), and where the defenders stand. */
+	public static final int RAID_FROM_X = 1528, RAID_FROM_Y = 2721, RAID_HOLD_X = 1518, RAID_HOLD_Y = 2712;
+
+	/* ---------------- Heartforged ---------------- */
+	/** The fallen star in Starfall Crater; the rime altar deep in the Frostfang Caves (local tiles of its region). */
+	public static final int STAR_X = 1580, STAR_Y = 2652, ALTAR_LX = 19, ALTAR_LY = 13;
+
+	/* ---------------- the Starless Expanse (the optional mega boss) ---------------- */
+	public static final int STARLESS_REGION_X = 26, STARLESS_REGION_Y = 148;
+	public static final int STARLESS_X = 1696, STARLESS_Y = 9506, STARLESS_ARRIVAL_X = 1696, STARLESS_ARRIVAL_Y = 9497;
+	/** The four star pillars round the Expanse, and the gate home. */
+	public static final int[][] STAR_PILLARS = { { 1689, 9499 }, { 1703, 9499 }, { 1703, 9513 }, { 1689, 9513 } };
+	public static final int EXPANSE_GATE_X = 1696, EXPANSE_GATE_Y = 9494;
+	/** The Starless Gate on the void platform (shown once the Hollow King has fallen). */
+	public static final int ARENA_GATE_X = 1568, ARENA_GATE_Y = 9511;
+
+	public static boolean inExpanse(int x, int y) {
+		return x >= STARLESS_REGION_X * 64 && x < STARLESS_REGION_X * 64 + 64 && y >= STARLESS_REGION_Y * 64
+				&& y < STARLESS_REGION_Y * 64 + 64;
+	}
 
 	/* ---------------- Skullbrine Isle ---------------- */
 

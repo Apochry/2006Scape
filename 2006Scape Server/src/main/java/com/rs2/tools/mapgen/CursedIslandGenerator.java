@@ -1071,6 +1071,8 @@ public final class CursedIslandGenerator {
 			}
 		}
 
+		VoidRealmGenerator.smoothDungeon(r); // soften the ring's stair-stepped edge like every other cave
+
 		this.dungeonOpen = open;
 		// entrance
 		dobj(r, CAVE_EXIT, DUNGEON_EXIT_X, DUNGEON_EXIT_Y, TYPE_SCENERY, 2);

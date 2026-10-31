@@ -16818,21 +16818,69 @@
     "id": 3879
   },
   {
-    "hitpoints": 95,
+    "hitpoints": 70,
     "name": "Silkwood broodmother",
-    "combat": 58,
+    "combat": 44,
     "id": 3880
   },
   {
-    "hitpoints": 220,
+    "hitpoints": 160,
     "name": "Hollow Herald",
-    "combat": 88,
+    "combat": 62,
     "id": 3881
   },
   {
-    "hitpoints": 34,
+    "hitpoints": 26,
     "name": "Hollow shade",
-    "combat": 34,
+    "combat": 26,
     "id": 3882
+  },
+  {
+    "hitpoints": 80,
+    "name": "Hollow ravager",
+    "combat": 48,
+    "id": 3883
+  },
+  {
+    "hitpoints": 55,
+    "name": "Thane's oathsworn",
+    "combat": 40,
+    "id": 3884
+  },
+  {
+    "hitpoints": 110,
+    "name": "Rimebound sentinel",
+    "combat": 58,
+    "id": 3885
+  },
+  {
+    "hitpoints": 170,
+    "name": "Sir Vaelric",
+    "combat": 66,
+    "id": 3886
+  },
+  {
+    "hitpoints": 40,
+    "name": "Hollow knight",
+    "combat": 44,
+    "id": 3887
+  },
+  {
+    "hitpoints": 0,
+    "name": "Aurel",
+    "combat": 0,
+    "id": 3888
+  },
+  {
+    "hitpoints": 900,
+    "name": "The Starless",
+    "combat": 400,
+    "id": 3889
+  },
+  {
+    "hitpoints": 60,
+    "name": "Starless spawn",
+    "combat": 72,
+    "id": 3890
   }
 ]

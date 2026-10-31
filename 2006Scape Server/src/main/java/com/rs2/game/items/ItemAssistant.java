@@ -676,6 +676,23 @@ public class ItemAssistant {
 			player.defenceLevelReq = 40;
 			return;
 		}
+		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.WARDEN_KITESHIELD) {
+			player.defenceLevelReq = 30;
+			return;
+		}
+		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND) {
+			player.attackLevelReq = 50;
+			return;
+		}
+		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.CROWN_OF_AUREL) {
+			player.defenceLevelReq = 45;
+			return;
+		}
+		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.STARLESS_CAPE
+				|| itemId == com.rs2.game.content.voidrealm.VoidConstants.ECLIPSE_AMULET) {
+			player.defenceLevelReq = 70;
+			return;
+		}
 		if (itemName.contains("mystic") || itemName.contains("nchanted")) {
 			if (itemName.contains("staff")) {
 				player.magicLevelReq = 20;

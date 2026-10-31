@@ -44,9 +44,18 @@ people = [
     npcdef(3878, 'Rimeclaw', 'The cold of the mountain, given claws.', 110, 180, 14, 2, 5000, 128, 129, 131, 115, 100, True, True),
     # Ashes of the Crown
     npcdef(3879, 'Archivist Maelis', 'Ink to the elbows. He knows more about Nythera than Nythera does.'),
-    npcdef(3880, 'Silkwood broodmother', 'Every spider in Silkwood came out of her. She would like you to go in.', 58, 95, 9, 2, 4000, 143, 144, 146, 65, 55, True, True),
-    npcdef(3881, 'Hollow Herald', 'It speaks with the Hollow King\'s voice, because it has none of its own.', 88, 220, 10, 2, 3000, 2655, 2653, 2654, 95, 85, True, True),
-    npcdef(3882, 'Hollow shade', 'A scrap of the dark between the stars, wearing a shape.', 34, 34, 5, 1, 4000, 422, 1834, 836, 40, 30, True, True),
+    npcdef(3880, 'Silkwood broodmother', 'Every spider in Silkwood came out of her. She would like you to go in.', 44, 70, 6, 2, 4000, 143, 144, 146, 45, 40, True, True),
+    npcdef(3881, 'Hollow Herald', 'It speaks with the Hollow King\'s voice, because it has none of its own.', 62, 160, 8, 2, 3000, 2655, 2653, 2654, 70, 60, True, True),
+    npcdef(3882, 'Hollow shade', 'A scrap of the dark between the stars, wearing a shape.', 26, 26, 3, 1, 4000, 422, 1834, 836, 30, 22, True, True),
+    # the saga: Hold the Gate, Heartforged, The Hollow King, and the Starless
+    npcdef(3883, 'Hollow ravager', 'Something big, emptied out, and pointed at the gate.', 48, 80, 6, 1, 4000, 299, 300, 302, 45, 40, True, True),
+    npcdef(3884, "Thane's oathsworn", 'It swore to guard the Thane\'s things. Death did not release it.', 40, 55, 5, 1, 4000, 260, 261, 263, 40, 35, True, True),
+    npcdef(3885, 'Rimebound sentinel', 'Ice that remembers being a soldier.', 58, 110, 7, 1, 4000, 422, 404, 2304, 60, 55, True, True),
+    npcdef(3886, 'Sir Vaelric', 'The last knight of King Aurel. Still keeping his oath.', 66, 170, 9, 1, 4000, 422, 404, 2304, 75, 65, True, True),
+    npcdef(3887, 'Hollow knight', 'An empty suit of armour that has forgotten it is empty.', 44, 40, 5, 1, 4000, 422, 404, 2304, 45, 40, True, True),
+    npcdef(3888, 'Aurel', 'The last King of Nythera. Free, at the very end.'),
+    npcdef(3889, 'The Starless', 'The dark between the stars, looking back at you.', 400, 900, 16, 3, 3000, 422, 404, 2304, 180, 150, True, True),
+    npcdef(3890, 'Starless spawn', 'A piece of the Starless that wandered off. It wants to go back.', 72, 60, 8, 1, 4000, 422, 404, 2304, 90, 70, True, True),
 ]
 ids = {p['id'] for p in people}
 
@@ -100,6 +109,19 @@ drops.append({'id': 3881, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1,
     {'item_id': 565, 'chance': 0, 'amounts': [40, 80]}, {'item_id': 1319, 'chance': 3, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 4, 'amounts': [1, 1]}]})
 drops.append({'id': 3882, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 3, 'amounts': [20, 90]},
     {'item_id': 562, 'chance': 5, 'amounts': [5, 15]}]})
+def droptable(i, items):
+    global drops
+    drops = [x for x in drops if x['id'] != i]
+    drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
+droptable(3883, [(532, 0, 1, 1), (995, 0, 150, 400), (440, 2, 2, 4), (1617, 40, 1, 1)])            # ravager: big bones, iron ore
+droptable(3884, [(526, 0, 1, 1), (995, 0, 100, 300), (1163, 30, 1, 1)])                           # oathsworn
+droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (555, 1, 30, 80), (1079, 20, 1, 1)])          # sentinel: water runes, rune legs
+droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
+droptable(3887, [(526, 0, 1, 1), (995, 1, 40, 120)])
+# the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
+droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7983, 11, 1, 1), (7984, 11, 1, 1), (1149, 7, 1, 1),
+                 (1215, 5, 1, 1), (1187, 40, 1, 1), (1615, 9, 1, 1), (2363, 2, 3, 6), (560, 1, 50, 150), (385, 1, 5, 10)])
+droptable(3890, [(592, 0, 1, 1)])
 save('npcdrops.json', drops)
 
 # the bosses' uniques: equipment bonuses, in ItemDefinitions.json's own compact format
@@ -109,6 +131,20 @@ uniques = {
     7969: (1.8, {'attackStab': 44, 'attackSlash': 54, 'attackCrush': -2, 'defenceSlash': 3, 'defenceCrush': 2, 'strengthBonus': 56}),
     7970: (0.9, {'defenceStab': 6, 'defenceSlash': 6, 'defenceCrush': 6, 'defenceMagic': 3, 'defenceRange': 6, 'strengthBonus': 2,
                  'prayerBonus': 1}),
+    # Warden's kiteshield (Hold the Gate)
+    7977: (5.4, {'attackMagic': -6, 'attackRange': -2, 'defenceStab': 27, 'defenceSlash': 29, 'defenceCrush': 26, 'defenceMagic': 2,
+                 'defenceRange': 28, 'strengthBonus': 1, 'prayerBonus': 1}),
+    # the Emberbrand (Heartforged): a quest longsword a little behind Barrowsteel, and the only blade that cuts the King
+    7981: (1.6, {'attackStab': 40, 'attackSlash': 50, 'attackCrush': -2, 'attackMagic': 4, 'defenceSlash': 3, 'defenceCrush': 2,
+                 'defenceMagic': 3, 'strengthBonus': 52, 'prayerBonus': 2}),
+    # the Crown of Aurel (The Hollow King)
+    7982: (0.5, {'attackMagic': 6, 'defenceStab': 8, 'defenceSlash': 8, 'defenceCrush': 8, 'defenceMagic': 8, 'defenceRange': 8,
+                 'strengthBonus': 3, 'prayerBonus': 4}),
+    # the Starless's uniques
+    7983: (0.4, {'attackStab': 4, 'attackSlash': 4, 'attackCrush': 4, 'attackMagic': 4, 'attackRange': 4, 'defenceStab': 11,
+                 'defenceSlash': 11, 'defenceCrush': 11, 'defenceMagic': 11, 'defenceRange': 11, 'strengthBonus': 6, 'prayerBonus': 3}),
+    7984: (0.1, {'attackStab': 12, 'attackSlash': 12, 'attackCrush': 12, 'attackMagic': 12, 'attackRange': 12, 'defenceStab': 8,
+                 'defenceSlash': 8, 'defenceCrush': 8, 'defenceMagic': 8, 'defenceRange': 8, 'strengthBonus': 8, 'prayerBonus': 4}),
 }
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re

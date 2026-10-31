@@ -54,6 +54,10 @@ public final class VoidRealm {
 	/* ====================================================================== */
 
 	public static boolean firstClickNpc(Player player, int npcType) {
+		if (GateQuest.firstClickNpc(player, npcType) || ForgeQuest.firstClickNpc(player, npcType)
+				|| KingQuest.firstClickNpc(player, npcType)) {
+			return true;
+		}
 		if (CrownQuest.firstClickNpc(player, npcType)) {
 			return true;
 		}
@@ -179,6 +183,9 @@ public final class VoidRealm {
 
 	/** Called from SkullbrineIsle#sendDialogue for ids 9600-9799. */
 	public static boolean sendDialogue(Player p, int id, int npcId) {
+		if (GateQuest.sendDialogue(p, id, npcId) || ForgeQuest.sendDialogue(p, id, npcId) || KingQuest.sendDialogue(p, id, npcId)) {
+			return true;
+		}
 		if (CrownQuest.sendDialogue(p, id, npcId)) {
 			return true;
 		}
@@ -545,6 +552,9 @@ public final class VoidRealm {
 
 	/** Called from SkullbrineIsle#handleOption. */
 	public static boolean handleOption(Player p, int buttonId) {
+		if (GateQuest.handleOption(p, buttonId) || ForgeQuest.handleOption(p, buttonId) || KingQuest.handleOption(p, buttonId)) {
+			return true;
+		}
 		if (CrownQuest.handleOption(p, buttonId)) {
 			return true;
 		}
@@ -590,6 +600,10 @@ public final class VoidRealm {
 
 	/** Called first from SkullbrineIsle#firstClickObject. */
 	public static boolean firstClickObject(Player p, int objectId, int x, int y) {
+		if (GateQuest.firstClickObject(p, objectId, x, y) || ForgeQuest.firstClickObject(p, objectId, x, y)
+				|| StarlessBoss.firstClickObject(p, objectId, x, y)) {
+			return true;
+		}
 		if (CrownQuest.firstClickObject(p, objectId, x, y)) {
 			return true;
 		}
@@ -824,6 +838,14 @@ public final class VoidRealm {
 			p.getPacketSender().sendMessage("The rift spits violet sparks at you.");
 			return;
 		}
+		if (KingQuest.useRift(p)) {
+			return;
+		}
+		riftToSkullbrine(p);
+	}
+
+	/** Through the rift and out of the portal beneath Skull Rock. */
+	static void riftToSkullbrine(Player p) {
 		p.startAnimation(827);
 		p.getPacketSender().sendMessage("You step into the rift. The world turns inside out...");
 		later(p, 2, () -> {
@@ -1008,6 +1030,17 @@ public final class VoidRealm {
 		CycleEventHandler.getSingleton().addEvent(AMBIENCE, new CycleEvent() {
 			@Override
 			public void execute(CycleEventContainer container) {
+				for (Player p : PlayerHandler.players) {
+					// per-player scenery (repaired barricades, the platform's gates) is lost whenever the client loads a new map
+					if (p != null && !p.disconnected) {
+						int region = p.mapRegionX << 16 | p.mapRegionY;
+						if (region != p.sagaRegion) {
+							p.sagaRegion = region;
+							GateQuest.showBarricades(p);
+							KingQuest.showPlatform(p);
+						}
+					}
+				}
 				for (Npc n : NpcHandler.npcs) {
 					if (n != null && NytheraPlaces.bossPulse(n)) {
 						continue;
@@ -1047,9 +1080,16 @@ public final class VoidRealm {
 	/** If a player logs in inside the void (the scene was interrupted), put them back by the portal. */
 	public static void onLogin(Player p) {
 		startAmbience();
-		if (inArena(p.absX, p.absY)) {
-			p.getPlayerAssistant().movePlayer(PORTAL_SIDE_X, PORTAL_SIDE_Y, 0);
-			p.getPacketSender().sendMessage("The void spits you back out beside the portal.");
+		GateQuest.onLogin(p);
+		p.sagaRegion = -1;
+		if (inArena(p.absX, p.absY) || inExpanse(p.absX, p.absY)) {
+			if (p.voidVeil < BeyondTheVeil.FELL) {
+				p.getPlayerAssistant().movePlayer(PORTAL_SIDE_X, PORTAL_SIDE_Y, 0);
+				p.getPacketSender().sendMessage("The void spits you back out beside the portal.");
+			} else {
+				p.getPlayerAssistant().movePlayer(LANDING_X, LANDING_Y, 0);
+				p.getPacketSender().sendMessage("The void spits you back out into Starfall Crater.");
+			}
 		}
 	}
 
@@ -1094,6 +1134,9 @@ public final class VoidRealm {
 		}
 		NytheraPlaces.npcKilled(killer, npcType);
 		CrownQuest.npcKilled(killer, npcType);
+		GateQuest.npcKilled(killer, npcType);
+		ForgeQuest.npcKilled(killer, npcType);
+		StarlessBoss.npcKilled(killer, npcType);
 		switch (npcType) {
 		case HOLLOWED_WOLF:
 		case HOLLOW_HUSK:
@@ -1228,6 +1271,12 @@ public final class VoidRealm {
 		case "journal":
 			if (n[1] == 4) {
 				com.rs2.game.content.quests.impl.AshesOfTheCrown.showInformation(p);
+			} else if (n[1] == 5) {
+				com.rs2.game.content.quests.impl.HoldTheGate.showInformation(p);
+			} else if (n[1] == 6) {
+				com.rs2.game.content.quests.impl.Heartforged.showInformation(p);
+			} else if (n[1] == 7) {
+				com.rs2.game.content.quests.impl.TheHollowKing.showInformation(p);
 			} else if (n[1] == 1) {
 				EchoesOfTheVoid.showInformation(p);
 			} else {
@@ -1244,6 +1293,40 @@ public final class VoidRealm {
 			}
 			p.wardsLit = 0;
 			p.getPacketSender().sendMessage("crown " + p.voidCrown + " flags " + p.crownFlags + " veil " + p.voidVeil + " bosses " + p.nytheraBosses);
+			break;
+		case "saga": // ::vt saga gate forge king [gateFlags forgeFlags]   (no args: just print)
+			p.voidGate = a.length > 1 ? n[1] : p.voidGate;
+			p.voidForge = a.length > 2 ? n[2] : p.voidForge;
+			p.voidKing = a.length > 3 ? n[3] : p.voidKing;
+			if (a.length > 4) {
+				p.gateFlags = n[4];
+			}
+			if (a.length > 5) {
+				p.forgeFlags = n[5];
+			}
+			p.sagaRegion = -1;
+			QuestAssistant.sendStages(p);
+			p.getPacketSender().sendMessage("gate " + p.voidGate + " forge " + p.voidForge + " king " + p.voidKing + " gflags "
+					+ p.gateFlags + " fflags " + p.forgeFlags + " kills " + p.gateKills + " starless " + p.starlessKills);
+			break;
+		case "hp": // ::vt hp n - set the hp of everything you spawned (testing the fights)
+			for (Npc npc : NpcHandler.npcs) {
+				if (npc != null && npc.spawnedBy == p.getId() && !npc.isDead && (a.length < 3 || npc.npcType == n[2])) {
+					if (n[1] < 0) { // a real death: through the engine, with drops and kill credit
+						p.lastNpcAttacked = npc.npcId;
+						p.totalDamageDealt = 1;
+						npc.HP = 0;
+						npc.isDead = true;
+						continue;
+					}
+					npc.HP = Math.min(npc.HP, n[1]);
+					if (npc.HP <= 0) { // a test kill: quest credit without the fight
+						int type = npc.npcType;
+						banish(npc);
+						npcKilled(p, type, p.absX, p.absY, 0);
+					}
+				}
+			}
 			break;
 		case "list":
 			for (Npc npc : NpcHandler.npcs) {

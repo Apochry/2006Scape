@@ -92,16 +92,15 @@ final class CrownQuest {
 		switch (id) {
 		/* ---------------- Captain Ysolde: something crowned in the Scar ---------------- */
 		case D_YSOLDE:
-			npc(p, id, YSOLDE, ChatEmotes.CALM_TALK1, false, "You. You're the one who fell out of the sky - Oren sent word.",
-					"I thought you'd be taller.");
+			npc(p, id, YSOLDE, ChatEmotes.CALM_TALK1, false, "You. Good. I've been waiting for you to come back from",
+					"the walls.");
 			break;
 		case D_YSOLDE + 1:
-			me(p, id, false, "Word travels fast out here.");
+			me(p, id, false, "Kael told me what her watch saw. The crowned thing.");
 			break;
 		case D_YSOLDE + 2:
-			npc(p, id, YSOLDE, ChatEmotes.CALM_TALK2, false, "Nothing else does. Listen. Three nights ago Kael's watch saw",
-					"something walk out of the Scar. Tall. Crowned. It stood at the edge and looked at Gatehold for an hour.",
-					"Then it went back in.");
+			npc(p, id, YSOLDE, ChatEmotes.CALM_TALK2, false, "It's been back twice since. Tall. Crowned. It stands at the",
+					"edge of the Scar and looks at Gatehold for an hour, then it goes back in.");
 			break;
 		case D_YSOLDE + 3:
 			npc(p, id, YSOLDE, ChatEmotes.CALM_TALK1, false, "You've met the thing on the other side of that rift. Is this",
@@ -443,19 +442,28 @@ final class CrownQuest {
 		return false;
 	}
 
-	/** The Thane's coffer only opens once the Thane himself has been put down. */
+	/** The Thane's coffer is guarded by his oathsworn - unless the Thane himself has already been put down. */
 	private static void openCoffer(Player p) {
 		if (p.voidCrown != PAGES || p.getItemAssistant().playerHasItem(THANE_PAGE)) {
 			p.getPacketSender().sendMessage("The coffer holds a mouldering crown-cloth and nothing else.");
 			return;
 		}
-		if ((p.nytheraBosses & 1) == 0 || VoidRealm.findSpawned(p, BARROW_THANE) != null) {
-			p.getPacketSender().sendMessage("The lid won't move. Something in this tomb is holding it shut - and it's watching you.");
+		if (VoidRealm.findSpawned(p, THANE_OATHSWORN) != null) {
+			p.getPacketSender().sendMessage("Not with the oathsworn standing over you!");
+			return;
+		}
+		if ((p.nytheraBosses & 1) == 0 && (p.crownFlags & OATHSWORN_SLAIN) == 0) {
+			p.getPacketSender().sendMessage("As you touch the lid, something rises out of the floor behind you, still sworn to guard it.");
+			NpcHandler.spawnNpc(p, THANE_OATHSWORN, p.absX - 1, p.absY - 1, 0, 1, 55, 5, 40, 35, true, false);
+			Npc guard = VoidRealm.findSpawned(p, THANE_OATHSWORN);
+			if (guard != null) {
+				guard.forceChat("The Thane's things are the Thane's!");
+			}
 			return;
 		}
 		p.startAnimation(832);
 		p.getItemAssistant().addOrDropItem(THANE_PAGE, 1);
-		p.getPacketSender().sendMessage("With the Thane gone, the lid lifts easily. Under the crown-cloth lies a page of the chronicle.");
+		p.getPacketSender().sendMessage("The lid lifts at last. Under the crown-cloth lies a page of the chronicle.");
 	}
 
 	/** Cutting the cocoon wakes its guardian; once she's dead, the page is yours. */
@@ -475,7 +483,7 @@ final class CrownQuest {
 			return;
 		}
 		p.getPacketSender().sendMessage("You start cutting - and something huge drops out of the branches above!");
-		NpcHandler.spawnNpc(p, BROODMOTHER, p.absX + 1, p.absY + 1, 0, 1, 95, 9, 65, 55, true, false);
+		NpcHandler.spawnNpc(p, BROODMOTHER, p.absX + 1, p.absY + 1, 0, 1, 70, 6, 45, 40, true, false);
 		Npc mother = VoidRealm.findSpawned(p, BROODMOTHER);
 		if (mother != null) {
 			mother.forceChat("*HISSSSS*");
@@ -531,7 +539,7 @@ final class CrownQuest {
 		showWards(p);
 		p.getPacketSender().sendMessage("The " + WARD_NAMES[ward] + " ward flares black - and every flame in the hall goes out.");
 		p.getPacketSender().sendMessage("Shapes peel away from the walls...");
-		spawnShades(p, 5);
+		spawnShades(p, 3);
 	}
 
 	private static void touchSeal(Player p) {
@@ -577,7 +585,7 @@ final class CrownQuest {
 		if (VoidRealm.findSpawned(p, HOLLOW_HERALD) != null || p.voidCrown != WARDS_LIT) {
 			return;
 		}
-		NpcHandler.spawnNpc(p, HOLLOW_HERALD, vx(HERALD_LX), vy(HERALD_LY), 0, 1, 220, 10, 90, 85, true, false);
+		NpcHandler.spawnNpc(p, HOLLOW_HERALD, vx(HERALD_LX), vy(HERALD_LY), 0, 1, 160, 8, 70, 60, true, false);
 		Npc herald = VoidRealm.findSpawned(p, HOLLOW_HERALD);
 		if (herald == null) {
 			return;
@@ -610,7 +618,7 @@ final class CrownQuest {
 					shieldTicks = 0;
 					herald.forceChat(phase == 1 ? "Shades! Shield your King's voice!" : "You will NOT have it!");
 					p.getPacketSender().sendMessage("The Herald wraps itself in void. Its shades must fall before it can be hurt!");
-					spawnShades(p, 4);
+					spawnShades(p, 3);
 				}
 				if (shieldHp >= 0) {
 					if (herald.HP < shieldHp) {
@@ -630,7 +638,7 @@ final class CrownQuest {
 					}
 				}
 				if (tick % 12 == 0) { // a lash of void, whatever you're doing
-					int hit = 3 + Misc.random(6);
+					int hit = 2 + Misc.random(5);
 					p.gfx0(78);
 					p.dealDamage(hit);
 					p.handleHitMask(hit);
@@ -656,18 +664,21 @@ final class CrownQuest {
 		for (int[] o : AROUND) {
 			int x = p.absX + o[0], y = p.absY + o[1];
 			if (made < 2 && Region.getClipping(x, y, p.heightLevel) == 0) {
-				NpcHandler.spawnNpc(p, HOLLOW_SHADE, x, y, p.heightLevel, 1, 34, maxHit, 40, 30, true, false);
+				NpcHandler.spawnNpc(p, HOLLOW_SHADE, x, y, p.heightLevel, 1, 26, maxHit, 30, 22, true, false);
 				made++;
 			}
 		}
 		while (made++ < 2) {
-			NpcHandler.spawnNpc(p, HOLLOW_SHADE, p.absX, p.absY, p.heightLevel, 1, 34, maxHit, 40, 30, true, false);
+			NpcHandler.spawnNpc(p, HOLLOW_SHADE, p.absX, p.absY, p.heightLevel, 1, 26, maxHit, 30, 22, true, false);
 		}
 	}
 
 	/** NPC deaths that matter to the quest. */
 	static void npcKilled(Player killer, int npcType) {
-		if (npcType == BROODMOTHER) {
+		if (npcType == THANE_OATHSWORN) {
+			killer.crownFlags |= OATHSWORN_SLAIN;
+			killer.getPacketSender().sendMessage("The oathsworn crumbles. Its oath, at last, is over.");
+		} else if (npcType == BROODMOTHER) {
 			killer.crownFlags |= BROODMOTHER_SLAIN;
 			killer.getPacketSender().sendMessage("The broodmother curls up and dies. Now for that cocoon.");
 		} else if (npcType == HOLLOW_HERALD && killer.voidCrown == WARDS_LIT) {

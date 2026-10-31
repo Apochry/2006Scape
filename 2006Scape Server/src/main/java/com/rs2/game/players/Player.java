@@ -1698,6 +1698,10 @@ public abstract class Player {
 	public int nytheraBosses;
 	/** Ashes of the Crown: quest stage, and flags (broodmother slain, waystones attuned). */
 	public int voidCrown, crownFlags;
+	/** Hold the Gate, Heartforged, The Hollow King, and kills of the Starless. */
+	public int voidGate, gateKills, gateFlags, voidForge, forgeFlags, voidKing, starlessKills;
+	/** Transient: the map region the saga's per-player objects were last shown in. */
+	public int sagaRegion = -1;
 	/** Transient: wards lit this visit to the Vault; the waystone menu on offer. */
 	public int wardsLit;
 	public int[] wayChoices;
