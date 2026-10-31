@@ -387,7 +387,8 @@ Other rules the generator follows:
   row just outside, so the corners never share a tile) and leaves a one-tile gap to walk in. Fenced areas go into
   `keepClear`, which keeps trees, rocks and wildlife out. The Gate and its approach and the barrow's approach are
   kept clear the same way.
-- Loose rocks are stock boulders 6950 (1x1) and 444 (2x2) rather than 5604, which carries a ring of grass round its foot.
+- Loose rocks are the grey mossy rocks 478 (1x1) and 477 (2x2), as on Skullbrine, rather than 5604 (which carries a ring
+  of grass round its foot) or the textured boulders 6950/444 (which render almost black).
 - The barrow's graves stand in two rows either side of the approach, all facing the door.
 - Thin hand-built pieces (flags, flaps) are two-sided. Where the client's painter's sort would paint one face over
   another (a tent's doorway against its end wall), face priorities fix the order (`WorldProps.priority`).
