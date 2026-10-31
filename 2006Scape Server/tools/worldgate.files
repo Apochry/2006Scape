@@ -1,0 +1,14 @@
+# The world code: the files whose contents decide what the generated world looks like. WorldGate hashes them, in this
+# order, into tools/worldgate.stamp when the world they build passes the gate, and the Claude Code hooks refuse to
+# commit changes to them (or end a session with them changed) until the stamp matches again. Paths are relative to
+# "2006Scape Server". Add any new file that places terrain or objects.
+src/main/java/com/rs2/tools/mapgen/CursedIslandGenerator.java
+src/main/java/com/rs2/tools/mapgen/VoidRealmGenerator.java
+src/main/java/com/rs2/tools/mapgen/WorldProps.java
+src/main/java/com/rs2/tools/mapgen/SkullRock.java
+src/main/java/com/rs2/tools/mapgen/MapRegion.java
+src/main/java/com/rs2/tools/mapgen/WorldAreas.java
+src/main/java/com/rs2/tools/mapgen/WorldGate.java
+src/main/java/com/rs2/tools/mapgen/WorldLint.java
+src/main/java/com/rs2/tools/mapgen/Origin.java
+tools/worldlint-accepted.txt

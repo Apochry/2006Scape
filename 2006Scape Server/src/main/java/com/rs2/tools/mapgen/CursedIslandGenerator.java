@@ -106,6 +106,10 @@ public final class CursedIslandGenerator {
 						VoidRealmGenerator.NY0, VoidRealmGenerator.NSIZE, VoidRealmGenerator.NSIZE, 2, false), "png",
 						new java.io.File(System.getProperty("nythera")));
 			}
+			// nothing reaches the cache until the world passes the gate (see WorldGate and WorldAreas)
+			if (!WorldGate.check(gen.regions, ConfigDefinitions.load(gen.config, "loc", false), cache)) {
+				System.exit(3);
+			}
 		}
 		gen.pack(cacheDir);
 	}
@@ -656,6 +660,7 @@ public final class CursedIslandGenerator {
 	 * trodden track never runs ruler-straight) and its width breathes, but it still starts and ends exactly on them.
 	 */
 	void road(double width, int floor, int[][] points) {
+		Origin.road(points);
 		int seed = points[0][0] * 31 + points[0][1];
 		for (double[] pt : VoidRealmGenerator.meander(points, 0.9, 7, seed)) {
 			double px = pt[0] + 0.5, py = pt[1] + 0.5;
@@ -1475,8 +1480,19 @@ public final class CursedIslandGenerator {
 		regionAt(x, y).underlay[0][x & 63][y & 63] = floor;
 	}
 
+	/**
+	 * Paints a floor. Water blocks the tile as it's painted - nobody walks on water by accident - unless the tile is a
+	 * bridge; a ford the player should wade must be unblocked deliberately, after.
+	 */
 	void setOverlay(int x, int y, int floor) {
-		regionAt(x, y).overlay[0][x & 63][y & 63] = floor;
+		MapRegion r = regionAt(x, y);
+		r.overlay[0][x & 63][y & 63] = floor;
+		if (WorldLint.WATER_FLOORS.contains(floor) && (r.settings[0][x & 63][y & 63] & MapRegion.BRIDGE) == 0) {
+			r.settings[0][x & 63][y & 63] |= MapRegion.BLOCKED;
+		}
+		if (WorldLint.PATH_FLOORS.contains(floor)) {
+			Origin.pathTile(x, y);
+		}
 	}
 
 	void object(int id, int x, int y, int type, int rot) {

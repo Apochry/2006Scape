@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/worldgate.sh\"; [ -x \"$f\" ] && \"$f\" edit || true",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(*git*commit*)",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/worldgate.sh\"; [ -x \"$f\" ] && \"$f\" commit || true",
+            "timeout": 30,
+            "statusMessage": "Checking the world gate"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/worldgate.sh\"; [ -x \"$f\" ] && \"$f\" stop || true",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

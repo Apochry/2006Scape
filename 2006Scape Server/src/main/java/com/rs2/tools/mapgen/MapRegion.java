@@ -32,14 +32,24 @@ public final class MapRegion {
 
 	public static final class MapObject {
 		public final int id, x, y, z, type, rotation;
+		/**
+		 * Which generator code put this object here ("VoidRealmGenerator.tent:1360 < camps:1430"), so a world-gate finding
+		 * points straight at the line to change; "stock map" for objects read back from an existing map file.
+		 */
+		public final String origin;
 
 		public MapObject(int id, int x, int y, int z, int type, int rotation) {
+			this(id, x, y, z, type, rotation, Origin.here());
+		}
+
+		MapObject(int id, int x, int y, int z, int type, int rotation, String origin) {
 			this.id = id;
 			this.x = x;
 			this.y = y;
 			this.z = z;
 			this.type = type;
 			this.rotation = rotation;
+			this.origin = origin;
 		}
 
 		int packedPosition() {
@@ -165,7 +175,7 @@ public final class MapRegion {
 				for (int pd; (pd = readSmart(o)) != 0;) {
 					pos += pd - 1;
 					int attr = o.get() & 0xFF;
-					r.objects.add(new MapObject(id, pos >> 6 & 63, pos & 63, pos >> 12 & 3, attr >> 2, attr & 3));
+					r.objects.add(new MapObject(id, pos >> 6 & 63, pos & 63, pos >> 12 & 3, attr >> 2, attr & 3, Origin.STOCK));
 				}
 			}
 		}

@@ -67,18 +67,19 @@ public final class WorldLint {
 	final List<Obj> objects = new ArrayList<>();
 	final Map<String, List<String>> findings = new TreeMap<>();
 	final List<int[]> marks = new ArrayList<>(); // x, y, kind index
-	static final String[] ORDER = { "UNREACHABLE", "TILE-OVERFULL", "DOOR-NO-WALL", "OPENING-UNBACKED", "PATH-DEAD-END",
+	static final String[] ORDER = { "MUST-REACH", "UNREACHABLE", "TILE-OVERFULL", "DOOR-NO-WALL", "OPENING-UNBACKED", "PATH-DEAD-END",
 			"PATH-DIAGONAL-JOIN", "PATH-OBSTRUCTED", "STRAIGHT-PATH", "STRAIGHT-WATER", "WALL-FRAGMENT", "WALL-LOOSE-END",
-			"ON-WATER", "STEEP-FOOTPRINT", "OVERLAP", "PATH-SCRAP" };
+			"ON-WATER", "WATER-WALKABLE", "STEEP-FOOTPRINT", "OVERLAP", "PATH-SCRAP" };
 
 	/** An object in the area, with what the lint needs from its definition. */
 	final class Obj {
 		final int id, x, y, type, rot, sx, sy;
-		final String name;
+		final String name, origin;
 		final boolean solid, actions;
 
 		Obj(MapRegion.MapObject o, int wx, int wy) {
 			id = o.id;
+			origin = o.origin;
 			x = wx;
 			y = wy;
 			type = o.type;
@@ -122,14 +123,33 @@ public final class WorldLint {
 		}
 	}
 
-	WorldLint(CacheEditor cache, int x0, int y0, int x1, int y1) throws Exception {
+	/** Lints the area of a world held in memory (the generators' regions, before they are packed). */
+	WorldLint(Map<Integer, MapRegion> world, ConfigDefinitions.Table locs, int x0, int y0, int x1, int y1) {
 		this.x0 = x0;
 		this.y0 = y0;
 		this.x1 = x1;
 		this.y1 = y1;
+		this.locs = locs;
+		for (MapRegion r : world.values()) {
+			int rx = r.regionX, ry = r.regionY;
+			if (rx * 64 + 63 < x0 - 2 || rx * 64 > x1 + 2 || ry * 64 + 63 < y0 - 2 || ry * 64 > y1 + 2) {
+				continue;
+			}
+			regions.put(r.id(), r);
+			for (MapRegion.MapObject mo : r.objects) {
+				int wx = rx * 64 + mo.x, wy = ry * 64 + mo.y;
+				if (mo.z == 0 && in(wx, wy)) {
+					objects.add(new Obj(mo, wx, wy));
+				}
+			}
+		}
+	}
+
+	/** Lints the area as the finished cache has it (so whatever wrote it, this is what the player gets). */
+	static WorldLint fromCache(CacheEditor cache, int x0, int y0, int x1, int y1) throws Exception {
 		CacheEditor.Archive config = CacheEditor.Archive.decode(cache.read(0, ConfigDefinitions.CONFIG_ARCHIVE));
-		locs = ConfigDefinitions.load(config, "loc", false);
 		CacheEditor.Archive versions = CacheEditor.Archive.decode(cache.read(0, CacheEditor.VERSIONLIST_ARCHIVE));
+		Map<Integer, MapRegion> world = new HashMap<>();
 		for (CacheEditor.MapIndexEntry e : CacheEditor.parseMapIndex(versions.get("map_index"))) {
 			int rx = e.region >> 8, ry = e.region & 0xFF;
 			if (rx * 64 + 63 < x0 - 2 || rx * 64 > x1 + 2 || ry * 64 + 63 < y0 - 2 || ry * 64 > y1 + 2) {
@@ -139,21 +159,26 @@ public final class WorldLint {
 			if (t == null) {
 				continue;
 			}
-			MapRegion r;
 			try {
-				r = MapRegion.decode(rx, ry, CompressionUtil.degzip(ByteBuffer.wrap(t)),
-						o == null ? null : CompressionUtil.degzip(ByteBuffer.wrap(o)));
+				world.put(e.region, MapRegion.decode(rx, ry, CompressionUtil.degzip(ByteBuffer.wrap(t)),
+						o == null ? null : CompressionUtil.degzip(ByteBuffer.wrap(o))));
 			} catch (RuntimeException ex) {
 				System.out.println("(region " + rx + "," + ry + " couldn't be read and is skipped: " + ex + ")");
-				continue;
 			}
-			regions.put(e.region, r);
-			for (MapRegion.MapObject mo : r.objects) {
-				int wx = rx * 64 + mo.x, wy = ry * 64 + mo.y;
-				if (mo.z == 0 && in(wx, wy)) {
-					objects.add(new Obj(mo, wx, wy));
-				}
-			}
+		}
+		return new WorldLint(world, ConfigDefinitions.load(config, "loc", false), x0, y0, x1, y1);
+	}
+
+	/** Runs every check; with start tiles, also what can't be walked to from any of them. */
+	void checkAll(int[]... from) {
+		paths();
+		straightEdges(this::water, "STRAIGHT-WATER", STRAIGHT_WATER);
+		walls();
+		openings();
+		placement();
+		wetFeet();
+		if (from != null && from.length > 0 && from[0] != null) {
+			reach(from);
 		}
 	}
 
@@ -183,18 +208,59 @@ public final class WorldLint {
 		return WATER_FLOORS.contains(overlay(x, y)) && (region(x, y) == null || (region(x, y).settings[0][x & 63][y & 63] & MapRegion.BRIDGE) == 0);
 	}
 
-	/** Findings someone has looked at and decided are right (kind, x, y), from the accepted file. */
-	final List<String[]> accepted = new ArrayList<>();
+	/** A finding someone has looked at and decided is right as it is: one line of the accepted file. */
+	static final class Accepted {
+		final String kind, why, line;
+		final int x, y, lineNo;
+		int hits;
+
+		Accepted(String kind, int x, int y, String why, String line, int lineNo) {
+			this.kind = kind;
+			this.x = x;
+			this.y = y;
+			this.why = why;
+			this.line = line;
+			this.lineNo = lineNo;
+		}
+	}
+
+	/** Reads the accepted file: "KIND x,y  why" per line, '#' comments. Lines it can't read come back in {@code bad}. */
+	static List<Accepted> readAccepted(java.nio.file.Path file, List<String> bad) throws java.io.IOException {
+		List<Accepted> out = new ArrayList<>();
+		if (!java.nio.file.Files.exists(file)) {
+			return out;
+		}
+		List<String> lines = java.nio.file.Files.readAllLines(file);
+		for (int i = 0; i < lines.size(); i++) {
+			String l = lines.get(i).replaceAll("#.*", "").trim();
+			if (l.isEmpty()) {
+				continue;
+			}
+			String[] f = l.split("\\s+", 3);
+			String[] xy = f.length > 1 ? f[1].split(",") : new String[0];
+			if (f.length < 3 || xy.length != 2 || !xy[0].matches("\\d+") || !xy[1].matches("\\d+")) {
+				bad.add("line " + (i + 1) + ": \"" + lines.get(i).trim() + "\" - needs KIND x,y and a reason why it's right");
+				continue;
+			}
+			out.add(new Accepted(f[0], Integer.parseInt(xy[0]), Integer.parseInt(xy[1]), f[2], lines.get(i).trim(), i + 1));
+		}
+		return out;
+	}
+
+	List<Accepted> accepted = new ArrayList<>();
 	int acceptedHits;
 
 	void report(String kind, int x, int y, String text) {
-		for (String[] a : accepted) {
-			if (a[0].equals(kind) && Math.abs(Integer.parseInt(a[1]) - x) <= 2 && Math.abs(Integer.parseInt(a[2]) - y) <= 2) {
+		for (Accepted a : accepted) {
+			if (a.kind.equals(kind) && Math.abs(a.x - x) <= 2 && Math.abs(a.y - y) <= 2) {
+				a.hits++;
 				acceptedHits++;
 				return;
 			}
 		}
-		findings.computeIfAbsent(kind, k -> new ArrayList<>()).add(String.format("%-18s %d,%d  %s", kind, x, y, text));
+		String from = madeBy(kind, x, y);
+		findings.computeIfAbsent(kind, k -> new ArrayList<>())
+				.add(String.format("%-18s %d,%d  %s", kind, x, y, text) + (from == null ? "" : "\n" + String.format("%-18s %s", "", "<- " + from)));
 		int k = 0;
 		for (int i = 0; i < ORDER.length; i++) {
 			if (ORDER[i].equals(kind)) {
@@ -202,6 +268,41 @@ public final class WorldLint {
 			}
 		}
 		marks.add(new int[] { x, y, k });
+	}
+
+	/**
+	 * The generator code behind a finding: the road painted through it for path findings, otherwise whatever placed the
+	 * objects on (or right next to) that tile. Null when it was all stock map.
+	 */
+	String madeBy(String kind, int x, int y) {
+		if (kind.startsWith("PATH-") || kind.equals("STRAIGHT-PATH") || kind.equals("UNREACHABLE") && path(x, y)) {
+			String painted = Origin.pathTileNear(x, y);
+			if (painted != null) {
+				return "path painted by " + painted;
+			}
+			String road = Origin.roadNear(x, y, 4);
+			if (road != null) {
+				return "road from " + road;
+			}
+		}
+		java.util.LinkedHashSet<String> who = new java.util.LinkedHashSet<>();
+		for (int r = 0; r <= 1 && who.isEmpty(); r++) {
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dy = -r; dy <= r; dy++) {
+					for (Obj o : objectsAt(x + dx, y + dy)) {
+						boolean relevant = !(kind.startsWith("WALL-") || kind.startsWith("DOOR-")) || o.wall();
+						if (relevant && o.origin != null && !o.origin.equals(Origin.STOCK)) {
+							who.add(o.name + " from " + o.origin);
+						}
+					}
+				}
+			}
+		}
+		if (who.isEmpty()) {
+			return null;
+		}
+		List<String> l = new ArrayList<>(who);
+		return String.join("; ", l.subList(0, Math.min(2, l.size()))) + (l.size() > 2 ? " (+" + (l.size() - 2) + " more)" : "");
 	}
 
 	/* ------------------------------------------------------------------ paths */
@@ -489,6 +590,13 @@ public final class WorldLint {
 	}
 
 	/** Whether a wall's end at this tile corner runs into something: solid scenery, a cliff, or water. */
+	/**
+	 * Things that don't hold a wall up: plants and loose props. A wall that stops against a fern or a barrel still stops
+	 * in open ground - only rock, a cliff, a building or another structure can take the end of a wall.
+	 */
+	static final String[] SOFT = { "tree", "bush", "fern", "plant", "grass", "log", "mushroom", "fungus", "flower", "reed", "weed",
+			"shrub", "barrel", "crate", "sack", "box", "bones", "skull", "root", "branch", "stump", "leaves", "palm", "web", "net" };
+
 	boolean backed(int cx, int cy) {
 		for (int x = cx - 1; x <= cx; x++) {
 			for (int y = cy - 1; y <= cy; y++) {
@@ -496,7 +604,7 @@ public final class WorldLint {
 					return true;
 				}
 				for (Obj o : objectsAt(x, y)) {
-					if (o.scenery() && o.solid) {
+					if (o.scenery() && o.solid && !o.is(SOFT)) {
 						return true;
 					}
 				}
@@ -607,10 +715,57 @@ public final class WorldLint {
 		}
 	}
 
+	/** Whole tiles of water with nothing stopping the player walking out across them (no block flag, not a bridge). */
+	void wetFeet() {
+		List<int[]> wet = new ArrayList<>();
+		for (int x = x0; x <= x1; x++) {
+			for (int y = y0; y <= y1; y++) {
+				MapRegion r = region(x, y);
+				if (r != null && water(x, y) && r.overlayShape[0][x & 63][y & 63] == 0
+						&& (r.settings[0][x & 63][y & 63] & MapRegion.BLOCKED) == 0) {
+					wet.add(new int[] { x, y });
+				}
+			}
+		}
+		for (int[] c : cluster(wet, 2)) {
+			report("WATER-WALKABLE", c[0], c[1], "the player can walk out onto this water: block it (or make it a bridge or a shallow ford on purpose)");
+		}
+	}
+
 	/* ---------------------------------------------------------- reachability */
 
-	/** Floods the walkable ground from a start tile and reports paths and usable things that can't be reached. */
+	/** The walkable ground reach() flooded from its start tile. */
+	boolean[][] reached;
+
+	/**
+	 * Whether the player can walk onto this tile, or up beside it (an npc, a door, a cave mouth), from the start - or
+	 * beside the whole of any object standing on it, since a big object is used from any of its sides.
+	 */
+	boolean reachable(int x, int y) {
+		List<int[]> boxes = new ArrayList<>();
+		boxes.add(new int[] { x, y, 1, 1 });
+		for (Obj o : objectsAt(x, y)) {
+			boxes.add(new int[] { o.x, o.y, Math.max(1, o.sx), Math.max(1, o.sy) });
+		}
+		for (int[] b : boxes) {
+			for (int i = b[0] - 1; i <= b[0] + b[2]; i++) {
+				for (int j = b[1] - 1; j <= b[1] + b[3]; j++) {
+					if (reached != null && in(i, j) && reached[i - x0][j - y0]) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	void reach(int sx, int sy) {
+		reach(new int[][] { { sx, sy } });
+	}
+
+	/** Floods the walkable ground from the start tiles and reports paths and usable things that can't be reached. */
+	void reach(int[][] starts) {
+		int sx = starts[0][0], sy = starts[0][1];
 		boolean[][] solid = new boolean[x1 - x0 + 1][y1 - y0 + 1];
 		Set<Long> blockedEdge = new HashSet<>(); // key(tile) * 4 + direction (0 W, 1 N, 2 E, 3 S)
 		for (int x = x0; x <= x1; x++) {
@@ -637,11 +792,13 @@ public final class WorldLint {
 				}
 			}
 		}
-		boolean[][] reached = new boolean[x1 - x0 + 1][y1 - y0 + 1];
+		reached = new boolean[x1 - x0 + 1][y1 - y0 + 1];
 		ArrayDeque<int[]> q = new ArrayDeque<>();
-		if (in(sx, sy)) {
-			reached[sx - x0][sy - y0] = true;
-			q.add(new int[] { sx, sy });
+		for (int[] st : starts) {
+			if (in(st[0], st[1])) {
+				reached[st[0] - x0][st[1] - y0] = true;
+				q.add(new int[] { st[0], st[1] });
+			}
 		}
 		int[][] step = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 		while (!q.isEmpty()) {
@@ -769,8 +926,8 @@ public final class WorldLint {
 		int scale = 6;
 		BufferedImage img = new MapRender(cache).render(id -> regions.get(id), x0, y0, x1 - x0 + 1, y1 - y0 + 1, scale, false);
 		Graphics2D g = img.createGraphics();
-		Color[] colors = { Color.RED, Color.MAGENTA, Color.ORANGE, Color.ORANGE, Color.YELLOW, Color.YELLOW, Color.PINK, Color.CYAN,
-				Color.CYAN, Color.WHITE, Color.WHITE, Color.BLUE, Color.GREEN, Color.LIGHT_GRAY, Color.LIGHT_GRAY };
+		Color[] colors = { Color.RED, Color.RED, Color.MAGENTA, Color.ORANGE, Color.ORANGE, Color.YELLOW, Color.YELLOW, Color.PINK, Color.CYAN,
+				Color.CYAN, Color.WHITE, Color.WHITE, Color.BLUE, Color.BLUE, Color.GREEN, Color.LIGHT_GRAY, Color.LIGHT_GRAY };
 		g.setStroke(new BasicStroke(2));
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		for (int[] m : marks) {
@@ -817,25 +974,11 @@ public final class WorldLint {
 			}
 		}
 		try (CacheEditor cache = new CacheEditor(Paths.get("data/cache"))) {
-			WorldLint lint = new WorldLint(cache, Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1));
-			if (new File(accept).exists()) {
-				for (String line : java.nio.file.Files.readAllLines(Paths.get(accept))) {
-					String l = line.replaceAll("#.*", "").trim();
-					if (!l.isEmpty()) {
-						String[] f = l.split("\\s+");
-						String[] xy = f[1].split(",");
-						lint.accepted.add(new String[] { f[0], xy[0], xy[1] });
-					}
-				}
-			}
-			lint.paths();
-			lint.straightEdges(lint::water, "STRAIGHT-WATER", STRAIGHT_WATER);
-			lint.walls();
-			lint.openings();
-			lint.placement();
-			if (from != null) {
-				lint.reach(from[0], from[1]);
-			}
+			WorldLint lint = fromCache(cache, Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1));
+			List<String> bad = new ArrayList<>();
+			lint.accepted = readAccepted(Paths.get(accept), bad);
+			bad.forEach(b -> System.out.println("(accepted file " + b + ")"));
+			lint.checkAll(from == null ? null : new int[][] { from });
 			lint.print(max, only);
 			if (png != null) {
 				lint.png(cache, png, only);

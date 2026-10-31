@@ -1,6 +1,6 @@
 ---
 name: world-building
-description: How to design and build game world areas (islands, continents, camps, towns, dungeons, landmarks) so they read as real places rather than code-placed primitives. Use whenever adding to or changing the map generators in "2006Scape Server/src/main/java/com/rs2/tools/mapgen" (CursedIslandGenerator, VoidRealmGenerator, WorldProps, SkullRock, ModelForge scenery), placing objects/paths/rivers/walls/doors, or reviewing an area's look. Covers the design rules, the generator helpers, the 317 client's quirks, and the WorldLint checker that must pass before an area is called finished.
+description: How to design and build game world areas (islands, continents, camps, towns, dungeons, landmarks) so they read as real places rather than code-placed primitives. Use whenever adding to or changing the map generators in "2006Scape Server/src/main/java/com/rs2/tools/mapgen" (CursedIslandGenerator, VoidRealmGenerator, WorldProps, SkullRock, ModelForge scenery), placing objects/paths/rivers/walls/doors, or reviewing an area's look. Covers the world gate (the generator refuses to write a world that fails it, and hooks refuse commits of world code that hasn't passed it), the design rules, the generator helpers, the 317 client's quirks, and what each finding means.
 ---
 
 # Building worlds that hold together
@@ -18,6 +18,36 @@ where the player stands to see whether the things add up to a place. The typical
 
 None of these are hard to avoid. They come from skipping three steps: **design the place before placing objects,
 follow the rules below while placing, and verify from the map and from the player's eye before calling it done.**
+
+## 0. The system: you can't ship a broken world by forgetting
+
+Discipline alone kept failing, so the toolchain now makes the right way the only way through:
+
+| Layer | What it does | Where |
+|---|---|---|
+| **Declare before building** | Every area is registered in `WorldAreas` with a `Brief` (purpose, arrival, landmark; each a real sentence, or it throws), its arrival tile(s) and its must-reach spots (npcs, doors, camps). Anything a generator places outside every declared area fails the gate as `UNREGISTERED`. | `WorldAreas.java` |
+| **Helpers that can't do the wrong thing** | `road()` meanders and breathes on its own. `setOverlay()` blocks water as it paints it, so nobody walks on water by accident. Dungeon `hug()` checks an object's whole footprint and refuses any spot that would cut a cave in two (`keepsCaveWhole`). `footprintFree` checks footprints, not anchors. | the generators |
+| **The gate** | After building, before a byte is written, `WorldGate` lints every declared area in memory with every WorldLint check, floods reach from each arrival, and checks every must-reach spot. Any unaccepted finding means **the cache is not written** (exit 3). | `WorldGate.java`, called from `CursedIslandGenerator.main` |
+| **Findings point at code** | Every map object records the generator frames that placed it (`MapObject.origin`); every painted path tile records who painted it. Each finding prints `<- Door from CursedIslandGenerator.object:1514 < seededMistakes:687`, the line to change. | `Origin.java` |
+| **Accepting is explicit and expires** | An accepted finding needs `KIND x,y  reason`; a line with no reason is `ACCEPT-UNREADABLE`, and a line that no longer matches anything is `ACCEPT-STALE`. Both fail the gate, so the accepted list can't rot into a blanket pardon. | `tools/worldlint-accepted.txt` |
+| **Stamp and hooks** | A pass writes `tools/worldgate.stamp`, a hash of the world code listed in `tools/worldgate.files`. Claude Code hooks (`.claude/hooks/worldgate.sh`) put these rules in front of you the first time world code is edited in a session, **deny any `git commit` that includes world code without a matching, staged stamp**, and **block ending a session** with ungated world changes. | `.claude/settings.json` |
+
+The one command is `"2006Scape Server/tools/regen-world.sh"`: it compiles, restores the pristine cache, generates, and
+gates. It writes the report to `target/worldgate/report.txt`, with each area's brief beside its findings, and a map of
+every area, findings ringed, to `target/worldgate/<area>.png`. Use `WORLDGATE=warn` only to look at a broken world
+while experimenting. It writes the cache but no stamp, so it can't be committed.
+
+When the gate refuses, fix the finding at the line it names. Don't widen an accept, and don't loosen a check to get
+green. If a check is genuinely wrong, fix the check and re-prove it: seed the mistake on purpose, and confirm the gate
+still catches it. The proof run that added these layers seeded:
+- a straight path that ends in a field
+- a door with no wall
+- a lone wall stub
+- a cave mouth on flat ground
+- barrels across the jetty
+
+All five were refused, with their lines. It also caught a real quest-breaker: a 3x3 crystal plugging the Crown Vault's
+only tunnel to the Ember.
 
 ## 1. Design first: a place, not a list of objects
 
@@ -125,10 +155,14 @@ Sketch it on a grid, with ASCII in a comment or the `-Dzoom` / `MapRender` top-d
   Type 10 is scenery and 22 is ground decoration. Height on the client is `-8 × map height`, and a map height of 1
   is read as 0.
 - A footprint outside the 104-tile loaded scene, or one on a tile already holding 4 objects, is dropped.
+- A cloned loc keeps its source's options: the dark void crystal kept the stock crystal's dead "Search". `.remove(30)`
+  options nothing answers. Scenery shouldn't offer an option that does nothing, and the gate's reach check counts any
+  option as "usable".
 
 ## 3. Workflow
 
-1. **Design** (section 1). Write the site's story and its node/edge list as a comment where the site is generated.
+1. **Design** (section 1). Declare the area in `WorldAreas`: its brief, its arrival and its must-reach spots. Then
+   write the site's story and its node/edge list as a comment where the site is generated.
 2. **Generate in this order:**
    1. terrain
    2. water (coast, lake, river)
@@ -141,25 +175,14 @@ Sketch it on a grid, with ASCII in a comment or the `-Dzoom` / `MapRender` top-d
    9. cleanup (`drownedScenery`, `bedFlatProps`)
 
    Placing paths after structures, or props after scatter, is how things end up inside each other.
-3. **Regenerate** from the pristine cache, as in "Regenerating the map" in `docs/SKULLBRINE_ISLE.md`: package the
-   server, `git checkout 7f1dc47 -- data/cache`, then run `CursedIslandGenerator`, which builds Skullbrine, the
-   dungeons and Nythera. Pass `-Dnythera.spawns=FILE`, then run `python3 tools/nythera_data.py FILE` to merge
-   Nythera's generated spawns into `data/cfg/spawns.json`. Read the generator output for exceptions: a compile error
-   or an exception in the generator leaves the old cache.
-4. **Lint every area you touched:**
-   ```bash
-   cd "2006Scape Server"
-   java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.WorldLint x0 y0 x1 y1 -from X,Y -png /tmp/lint.png
-   ```
-   - Skullbrine Isle: `1940 2860 2090 2990 -from 2016,2900`
-   - Nythera: `1280 2496 1727 2943 -from 1574,2656`
-   - Skullbrine dungeon: `1984 9280 2047 9343`
-   - Nythera's dungeons: `1280 9664 1727 9727`
-   - The void arena and Expanse: `1536 9472 1599 9535` and `1664 9408 1727 9535`
-
-   Open the PNG: every finding is ringed and labelled. Fix each finding, or, only if it's right as it is, add it to
-   `2006Scape Server/tools/worldlint-accepted.txt` with the reason. "The wreck is set dressing out in the water" is
-   a reason. "It's fine" is not.
+3. **Regenerate and gate:** run `"2006Scape Server/tools/regen-world.sh"`, adding
+   `GENOPTS="-Dnythera.spawns=FILE"` and then `python3 tools/nythera_data.py FILE` when Nythera's spawns changed. The
+   gate covers every declared area, so there's no list of areas to remember. A refusal leaves the cache unwritten.
+4. **Read the report and the maps** in `target/worldgate/`. Fix each finding at the line it names, or, only if it's
+   right as it is, add it to `2006Scape Server/tools/worldlint-accepted.txt` with the reason. "The wreck is set
+   dressing out in the water" is a reason. "It's fine" is not. For a closer look at one spot, WorldLint still runs on
+   its own against the written cache:
+   `WorldLint x0 y0 x1 y1 -from X,Y -png f.png`.
 5. **Look at it from the player's eye.** Log in, teleport to each arrival point and landmark, and take screenshots
    at a moderate pitch from two or three angles. Walk each route. The linter can't see ugliness, scale, colour, or a
    model that isn't drawn. Compare before and after shots side by side.
@@ -170,7 +193,11 @@ Sketch it on a grid, with ASCII in a comment or the `-Dzoom` / `MapRender` top-d
 
 | Finding | Means | Usual fix |
 |---|---|---|
-| `UNREACHABLE` | A path, or a usable object, can't be walked to from the arrival point | Open a way in, move it, or accept it if it's set dressing (a wreck offshore) |
+| `MUST-REACH` | A spot the area's declaration says the player must reach can't be walked to from any arrival | Clear the way, unblock the floor, or declare the extra arrival the game really uses (`alsoArrives`) |
+| `UNREGISTERED` | A generator placed something outside every declared area | Declare the area in `WorldAreas`, with its brief, or move the thing |
+| `ACCEPT-STALE` / `ACCEPT-UNREADABLE` | An accepted-file line that matches nothing any more, or has no reason | Delete it, or write the reason |
+| `WATER-WALKABLE` | Whole water tiles with no block flag, so the player walks on water | Paint water with `setOverlay` (it blocks); don't unblock rectangles that take in water |
+| `UNREACHABLE` | A path, or a usable object, can't be walked to from the arrival point | Open a way in, move it, take a dead option off it, or accept it if it's set dressing (a wreck offshore) |
 | `TILE-OVERFULL` | 5+ objects cover a tile, so the client drops some | Thin them out; check big footprints overlapping |
 | `DOOR-NO-WALL` | A door or gate with no wall on one or both sides | Build the wall, or remove the door |
 | `OPENING-UNBACKED` | A cave, tunnel or archway in open ground | Raise a cliff or rock face behind it, or set it in a wall |
@@ -196,6 +223,8 @@ those lists when you add new floors.
 - [ ] Every wall, door, gate, cave mouth, flag, lamp and ladder is attached to what makes sense of it.
 - [ ] Flat-bottomed props stand on level ground, nothing overlaps, and nothing stands in water or in a road.
 - [ ] Large hand-built models are split under the client's size limit, and are seen in game, not just in the cache.
-- [ ] WorldLint is clean, with every accepted finding explained in `worldlint-accepted.txt`.
+- [ ] The area is declared in `WorldAreas` with a real brief and its must-reach spots.
+- [ ] `tools/regen-world.sh` says `WORLD GATE: PASSED`, every accepted finding is explained, and the new
+      `tools/worldgate.stamp` is committed with the code and the cache.
 - [ ] You've looked at in-game screenshots from the arrival point and each landmark, at two angles each.
 - [ ] The docs and the object/item id notes are updated.

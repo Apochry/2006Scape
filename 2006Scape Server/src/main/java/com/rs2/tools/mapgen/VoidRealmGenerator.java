@@ -520,8 +520,9 @@ final class VoidRealmGenerator {
 		ConfigDefinitions.Definition crystal = g.loc(locs, CRYSTAL_SRC, VOID_CRYSTAL).name("Void crystal")
 				.examine("It grew here when the void touched the world.");
 		voidGlass(crystal, false);
+		// (the stock crystal it's cloned from has a "Search" that nothing answers: scenery shouldn't offer dead options)
 		ConfigDefinitions.Definition dark = g.loc(locs, CRYSTAL_DARK_SRC, VOID_CRYSTAL_DARK).name("Void crystal")
-				.examine("Black glass with a violet heart.");
+				.examine("Black glass with a violet heart.").remove(30);
 		voidGlass(dark, true);
 		ConfigDefinitions.Definition eye = g.loc(locs, GHOSTFIRE, EYE_FIRE).name("Ghostfire")
 				.examine("It burns in the skull's eye. Something glints beneath the flames.")
@@ -723,7 +724,15 @@ final class VoidRealmGenerator {
 						&& CursedIslandGenerator.openAround(open, x, y, 1) >= 4
 						&& r.objects.stream().noneMatch(o -> Math.abs(o.x - fx) <= 1 && Math.abs(o.y - fy) <= 1)) {
 					r.objects.add(new MapRegion.MapObject(VOID_VEIN, x, y, 0, TYPE_SCENERY, 0));
-					r.objects.add(new MapRegion.MapObject(VOID_CRYSTAL_DARK, Math.max(1, x - 1), y + 2, 0, TYPE_SCENERY, 0));
+					// a crystal grown beside it, on open ground clear of everything else (so it never walls in a rock)
+					for (int[] d : new int[][] { { -1, 2 }, { 1, 2 }, { -2, 1 }, { 2, 1 }, { -1, -2 }, { 1, -2 } }) {
+						int cx = x + d[0], cy = y + d[1];
+						if (cx >= 1 && cy >= 1 && open[cx][cy]
+								&& r.objects.stream().noneMatch(o -> Math.abs(o.x - cx) <= 1 && Math.abs(o.y - cy) <= 1 && o.id != VOID_VEIN)) {
+							r.objects.add(new MapRegion.MapObject(VOID_CRYSTAL_DARK, cx, cy, 0, TYPE_SCENERY, 0));
+							break;
+						}
+					}
 					System.out.println("Void vein at " + (x + DBASE_X) + "," + (y + DBASE_Y));
 					return;
 				}
@@ -1084,10 +1093,13 @@ final class VoidRealmGenerator {
 				}
 			}
 		}
-		// a pass over the ridge where the north road goes
+		// a pass over the ridge where the north road goes (the ground only: the tarn under the ridge stays water)
 		for (int x = 1474; x <= 1486; x++) {
 			for (int y = 2760; y <= 2820; y++) {
 				MapRegion r = g.regionAt(x, y);
+				if (WorldLint.WATER_FLOORS.contains(r.overlay[0][x & 63][y & 63])) {
+					continue;
+				}
 				r.settings[0][x & 63][y & 63] &= ~MapRegion.BLOCKED;
 			}
 		}
@@ -1095,6 +1107,7 @@ final class VoidRealmGenerator {
 
 	/** A winding road: every tile within width/2 of the meandering line gets the floor (no gaps, no diagonal-only joins). */
 	void road(double width, int floor, int[][] points, double amplitude, double wavelength, int seed) {
+		Origin.road(points);
 		for (double[] pt : meander(points, amplitude, wavelength, seed)) {
 			for (int x = (int) pt[0] - 3; x <= pt[0] + 3; x++) {
 				for (int y = (int) pt[1] - 3; y <= pt[1] + 3; y++) {
@@ -1964,9 +1977,83 @@ final class VoidRealmGenerator {
 			if (r.objects.stream().anyMatch(o -> Math.abs(o.x - fx) + Math.abs(o.y - fy) < 3)) {
 				continue;
 			}
-			r.objects.add(new MapRegion.MapObject(ids[placed % ids.length], x, y, 0, TYPE_SCENERY, random.nextInt(4)));
+			int id = ids[placed % ids.length], rot = random.nextInt(4);
+			if (!keepsCaveWhole(r, open, id, x, y, rot)) {
+				continue;
+			}
+			r.objects.add(new MapRegion.MapObject(id, x, y, 0, TYPE_SCENERY, rot));
 			placed++;
 		}
+	}
+
+	/** A dungeon object's footprint (our crystals are clones, so measure the stock crystal they're made from). */
+	int[] dungeonSize(int id, int rot) {
+		int[] s = g.locSize(id == VOID_CRYSTAL ? CRYSTAL_SRC : id == VOID_CRYSTAL_DARK ? CRYSTAL_DARK_SRC : id);
+		return (rot & 1) == 1 ? new int[] { s[1], s[0] } : s;
+	}
+
+	/**
+	 * Whether a piece of dungeon dressing can stand at (x, y) without blocking the way: its whole footprint (not just
+	 * the corner it's anchored at - a 3 x 3 crystal anchored in a wall bay can still plug the passage beside it) must be
+	 * open floor clear of other things, and it must not cut any walkable space in two. Set dressing never decides where
+	 * the player can go.
+	 */
+	boolean keepsCaveWhole(MapRegion r, boolean[][] open, int id, int x, int y, int rot) {
+		boolean[][] blocked = new boolean[64][64];
+		for (int i = 0; i < 64; i++) {
+			for (int j = 0; j < 64; j++) {
+				blocked[i][j] = !open[i][j];
+			}
+		}
+		for (MapRegion.MapObject o : r.objects) {
+			if (o.type == TYPE_SCENERY) {
+				int[] s = dungeonSize(o.id, o.rotation);
+				for (int i = o.x; i < Math.min(64, o.x + s[0]); i++) {
+					for (int j = o.y; j < Math.min(64, o.y + s[1]); j++) {
+						blocked[i][j] = true;
+					}
+				}
+			}
+		}
+		int before = regions(blocked);
+		int[] s = dungeonSize(id, rot);
+		for (int i = x; i < x + s[0]; i++) {
+			for (int j = y; j < y + s[1]; j++) {
+				if (i > 63 || j > 63 || blocked[i][j]) {
+					return false;
+				}
+				blocked[i][j] = true;
+			}
+		}
+		return regions(blocked) <= before;
+	}
+
+	/** How many separate pieces of walkable floor there are (4-connected). */
+	static int regions(boolean[][] blocked) {
+		boolean[][] seen = new boolean[64][64];
+		int n = 0;
+		java.util.ArrayDeque<int[]> q = new java.util.ArrayDeque<>();
+		for (int i = 0; i < 64; i++) {
+			for (int j = 0; j < 64; j++) {
+				if (blocked[i][j] || seen[i][j]) {
+					continue;
+				}
+				n++;
+				seen[i][j] = true;
+				q.add(new int[] { i, j });
+				while (!q.isEmpty()) {
+					int[] p = q.poll();
+					for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
+						int a = p[0] + d[0], b = p[1] + d[1];
+						if (a >= 0 && b >= 0 && a < 64 && b < 64 && !blocked[a][b] && !seen[a][b]) {
+							seen[a][b] = true;
+							q.add(new int[] { a, b });
+						}
+					}
+				}
+			}
+		}
+		return n;
 	}
 
 	/** Places monsters on open floor in a chamber. */
@@ -2093,6 +2180,9 @@ final class VoidRealmGenerator {
 			reg.underlay[0][x][y] = n > -0.1 ? VOIDSTONE : VOIDSTONE_DARK; // the same void-eaten stone as the platform
 			if (n > 0.45) {
 				reg.overlay[0][x][y] = n > 0.6 ? VOID_POOL : VOID_ASH; // pools of the Scar's black glass, ringed with ash
+				if (n > 0.6) {
+					reg.settings[0][x][y] |= MapRegion.BLOCKED;
+				}
 			} else if (n < -0.5) {
 				reg.overlay[0][x][y] = VOID_GLASS;
 			}

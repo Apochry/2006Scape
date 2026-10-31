@@ -401,10 +401,18 @@ Other rules the generator follows:
   (`VoidRealmGenerator.ragged`). Free-space checks (`footprintFree`) count every object's whole footprint, not just
   its anchor tile, so rocks don't get planted inside trees. Tents, boats, coffins and graves are bedded into level
   ground. Scenery that smoothing leaves standing in water is cleared.
-- **Check every area with `WorldLint`** after a regen (see the world-building skill in `.claude/skills/`): it reports
-  dead-end and pinched paths, ruler-straight roads and shores, stray walls and doors, unbacked cave mouths, scenery in
-  roads or water, props on slopes, overlapping and overfull tiles, and unreachable places. Findings that are right as
-  they are go in `tools/worldlint-accepted.txt` with the reason.
+- **Every world passes the gate.** `tools/regen-world.sh` builds the world and `WorldGate` lints every area declared
+  in `WorldAreas` (each with a brief, arrival tiles and must-reach spots) before a byte is written. It looks for:
+  - dead-end and pinched paths, and ruler-straight roads and shores
+  - stray walls and doors, and cave mouths with nothing behind them
+  - scenery in roads or water, and water a player can walk on
+  - props on slopes, and overlapping or overfull tiles
+  - places and must-reach spots that can't be reached, and anything built outside a declared area
+
+  Any finding refuses the whole world and names the generator line behind it. Findings that are right as they are go
+  in `tools/worldlint-accepted.txt` with the reason; a stale or unexplained line fails too. A pass stamps
+  `tools/worldgate.stamp`, and the Claude Code hooks in `.claude/` refuse commits of world code without it. See the
+  world-building skill.
 - Floors and objects share no id space. An object id passed as a floor (the dungeons once got the mossy rock, 478, as
   their wall underlay) wraps inside the map format's one-byte opcodes and scrambles the rest of the region;
   `MapRegion.encodeTerrain` now refuses to write it.
@@ -463,6 +471,7 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 | Hand-built scenery (tents, hearths, seats, banners, standing stones, the Broken Gate, the black flag) | `tools/mapgen/WorldProps.java` |
 | Skull Rock's sculpted face | `tools/mapgen/SkullRock.java` |
 | The world checker (and the findings judged right as they are) | `tools/mapgen/WorldLint.java`, `tools/worldlint-accepted.txt` |
+| The world gate: declared areas, the gate, provenance, the one regen command, the stamp and hooks | `tools/mapgen/WorldAreas.java`, `WorldGate.java`, `Origin.java`, `tools/regen-world.sh`, `tools/worldgate.files`, `tools/worldgate.stamp`, `.claude/hooks/worldgate.sh` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |

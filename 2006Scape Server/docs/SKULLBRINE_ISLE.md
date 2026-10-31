@@ -86,13 +86,14 @@ original cache so old map data doesn't pile up in `main_file_cache.dat`:
 
 ```bash
 cd "2006Scape Server"
-mvn -q -f ../pom.xml -pl "2006Scape Server" package -DskipTests
-git checkout 7f1dc47 -- data/cache   # the cache as it was before Skullbrine Isle
-java -Dpreview=island.png -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.CursedIslandGenerator
+tools/regen-world.sh     # compile, restore the pristine cache (7f1dc47), generate, and gate
 ```
 
-`-Dpreview=island.png` also writes a top-down picture of the island, so you can check a layout
-change before logging in.
+The world gate (`WorldGate`) checks every area declared in `WorldAreas` before anything is
+written, and refuses the whole world if anything is wrong, naming the generator line behind
+each finding. The report and a map of each area are written to `target/worldgate/`. A pass stamps
+`tools/worldgate.stamp`, which the Claude Code hooks require before world code can be committed.
+`GENOPTS="-Dpreview=island.png"` also writes a top-down picture of the island.
 
 Clients download the changed files from the server automatically, because the CRCs change.
 That only happens if the client runs **without** `-local`/`-offline`/`-no-crc`, which turn
@@ -105,7 +106,9 @@ Handy tools in the same package:
 - `MapRender x0 y0 width height out.png [scale] [labels]` draws a top-down map of any part of
   the world, with a coordinate grid. With `labels`, objects are tagged with their ids.
 - `DefDump loc|npc|obj` lists every object, NPC or item definition (id, name, size, models).
-- `WorldLint x0 y0 x1 y1 [-from x,y] [-png out.png]` checks an area for slap-dash world-building: dead-end and
+- `WorldGate`, `WorldAreas` and `Origin` make up the gate described above. `WorldGate` is run by the
+  generator; `java ... WorldGate` on its own prints the current world-code hash.
+- `WorldLint x0 y0 x1 y1 [-from x,y] [-png out.png]` (the checks behind the gate, run on their own against the cache) checks an area for slap-dash world-building: dead-end and
   pinched paths, ruler-straight roads and shores, stray walls and doors, unbacked cave mouths, scenery in roads or
   water, props on slopes, overlaps, and places you can't reach. See the world-building skill
   (`.claude/skills/world-building/SKILL.md`).
