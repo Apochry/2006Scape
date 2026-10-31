@@ -50,6 +50,15 @@ public class Constants {
     /**
      * The Variables Below Should Only Be Changed If You Understand What You Are Doing
      */
+    /**
+     * Inventory slots (5 columns x 7 rows). The client's inventory grids must match this - see
+     * RSInterface#widenInventories in the client.
+     */
+    public final static int INVENTORY_SIZE = 35;
+
+    /** Items that fit in the trade window, and in each side of the duel stake window. */
+    public final static int TRADE_WINDOW_SIZE = 28;
+
     public final static int ITEM_LIMIT = 15000, MAXITEM_AMOUNT = Integer.MAX_VALUE,
             IPS_ALLOWED = 250, CONNECTION_DELAY = 100;
 
