@@ -94,6 +94,16 @@ public final class ConfigDefinitions {
 			return this;
 		}
 
+		/** Object model scale (opcodes 65/66/67, 128 = normal size). */
+		public Definition scale(int x, int height, int y) {
+			return shorts(65, x).shorts(66, height).shorts(67, y);
+		}
+
+		/** Object footprint in tiles (opcodes 14/15). */
+		public Definition footprint(int width, int length) {
+			return set(14, new byte[] { (byte) width }).set(15, new byte[] { (byte) length });
+		}
+
 		public Definition shorts(int opcode, int... values) {
 			ByteBuffer b = ByteBuffer.allocate(values.length * 2);
 			for (int v : values) {
@@ -125,6 +135,29 @@ public final class ConfigDefinitions {
 				out[i] = (p[1 + i * 2] & 0xFF) << 8 | p[2 + i * 2] & 0xFF;
 			}
 			return out;
+		}
+
+		/** Model ids of an object definition (opcode 1 or 5). */
+		public int[] locModels() {
+			byte[] p = get(1);
+			int stride = 3;
+			if (p == null) {
+				p = get(5);
+				stride = 2;
+			}
+			if (p == null) {
+				return new int[0];
+			}
+			int[] out = new int[p[0] & 0xFF];
+			for (int i = 0; i < out.length; i++) {
+				out[i] = (p[1 + i * stride] & 0xFF) << 8 | p[2 + i * stride] & 0xFF;
+			}
+			return out;
+		}
+
+		public String text(int opcode) {
+			byte[] p = get(opcode);
+			return p == null ? null : new String(p, 0, p.length - 1, StandardCharsets.ISO_8859_1);
 		}
 
 		public int itemModel() {
@@ -180,7 +213,7 @@ public final class ConfigDefinitions {
 					break;
 				}
 				int start = b.position();
-				skip(b, op, npc);
+				skip(b, op, npc, name.equals("loc"));
 				byte[] payload = new byte[b.position() - start];
 				System.arraycopy(entries.get(id), start, payload, 0, payload.length);
 				d.ops.add(new Op(op, payload));
@@ -215,7 +248,11 @@ public final class ConfigDefinitions {
 		}
 	}
 
-	private static void skip(ByteBuffer b, int op, boolean npc) {
+	private static void skip(ByteBuffer b, int op, boolean npc, boolean loc) {
+		if (loc) {
+			skipLoc(b, op);
+			return;
+		}
 		if (op == 2 || op == 3 || op >= 30 && op < 40) {
 			while (b.get() != 10) {
 				// string terminated by '\n'
@@ -272,6 +309,43 @@ public final class ConfigDefinitions {
 				return;
 			}
 			b.getShort(); // 1,4-8,10,24,26,78,79,90-93,95,97,98,110-112
+		}
+	}
+
+	/** Object (loc.dat) opcodes, as read by the 317 client's ObjectDef. */
+	private static void skipLoc(ByteBuffer b, int op) {
+		switch (op) {
+		case 1:
+			b.position(b.position() + 1 + (b.get(b.position()) & 0xFF) * 3);
+			return;
+		case 2: case 3: case 30: case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38:
+			while (b.get() != 10) {
+				// string terminated by '\n'
+			}
+			return;
+		case 5:
+			b.position(b.position() + 1 + (b.get(b.position()) & 0xFF) * 2);
+			return;
+		case 40:
+			b.position(b.position() + 1 + (b.get(b.position()) & 0xFF) * 4);
+			return;
+		case 14: case 15: case 19: case 28: case 29: case 39: case 69: case 75:
+			b.get();
+			return;
+		case 17: case 18: case 21: case 22: case 23: case 62: case 64: case 73: case 74:
+			return;
+		case 24: case 60: case 65: case 66: case 67: case 68: case 70: case 71: case 72:
+			b.getShort();
+			return;
+		case 77: {
+			b.getShort();
+			b.getShort();
+			int n = b.get() & 0xFF;
+			b.position(b.position() + (n + 1) * 2);
+			return;
+		}
+		default:
+			throw new IllegalStateException("unknown loc opcode " + op);
 		}
 	}
 
@@ -335,6 +409,12 @@ public final class ConfigDefinitions {
 	 */
 	public static int[][] tint(CacheEditor cache, int[] models, int hue, int saturation, double lightScale, int lightAdd)
 			throws IOException {
+		return tint(cache, models, hue, saturation, lightScale, lightAdd, c -> true);
+	}
+
+	/** As above, but only recolours the colours accepted by {@code filter} (16-bit HSL). */
+	public static int[][] tint(CacheEditor cache, int[] models, int hue, int saturation, double lightScale, int lightAdd,
+			java.util.function.IntPredicate filter) throws IOException {
 		Set<Integer> all = new LinkedHashSet<>();
 		for (int model : models) {
 			all.addAll(modelColors(cache, model));
@@ -343,6 +423,9 @@ public final class ConfigDefinitions {
 		for (int col : all) {
 			if (from.size() == 255) {
 				break;
+			}
+			if (!filter.test(col)) {
+				continue;
 			}
 			int light = col & 127;
 			int newLight = Math.max(0, Math.min(127, (int) (light * lightScale) + lightAdd));

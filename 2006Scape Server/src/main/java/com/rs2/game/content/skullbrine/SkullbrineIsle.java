@@ -13,7 +13,7 @@ import com.rs2.game.dialogues.DialogueHandler;
 import com.rs2.game.players.Player;
 
 /**
- * Server-side content for Skullbrine Isle: the boat from Port Sarim, the cave under skull hill,
+ * Server-side content for Skullbrine Isle: the boat from Port Sarim, the cave in Skull Rock's mouth,
  * the quest "Curse of Skullbrine" (dialogues, searchables, chest, portal) and Mad Pete's shop.
  *
  * Quest stages are stored in {@link Player#skullbrine}; see {@link CurseOfSkullbrine} for what each means.
@@ -97,8 +97,8 @@ public final class SkullbrineIsle {
 		switch (id) {
 		/* ---------------- Bosun Grimsby, Port Sarim: quest start ---------------- */
 		case D_GRIMSBY_START:
-			d.sendNpcChat(BOSUN_GRIMSBY, ChatEmotes.DISTRESSED, "You there! You've the look of someone who can",
-					"handle themselves in a scrap.");
+			d.sendNpcChat(BOSUN_GRIMSBY, ChatEmotes.DISTRESSED, "You there! You look like an adventurer - even a",
+					"fresh one will do. I need help, and nobody else will listen.");
 			player.nextChat = id + 1;
 			break;
 		case D_GRIMSBY_START + 1:
@@ -171,9 +171,10 @@ public final class SkullbrineIsle {
 			player.nextChat = id + 1;
 			break;
 		case D_PETE + 3:
-			d.sendNpcChat(MAD_PETE, ChatEmotes.DISTRESSED, "The Cap'n found a cave under the skull hill. Deep",
-					"inside there's a door that hums - a door to nowhere.",
-					"He pulled a pearl out of it, black as a moonless sea.");
+			d.sendNpcChat(MAD_PETE, ChatEmotes.DISTRESSED, "See that great skull in the rock, up north? The Cap'n",
+					"went in through its mouth. Deep inside there's a door",
+					"that hums - a door to nowhere. He pulled a pearl out",
+					"of it, black as a moonless sea.");
 			player.nextChat = id + 1;
 			break;
 		case D_PETE + 4:
@@ -184,8 +185,8 @@ public final class SkullbrineIsle {
 			break;
 		case D_PETE + 5:
 			d.sendNpcChat(MAD_PETE, ChatEmotes.CALM_TALK2, "The Cap'n kept a log of everything. He went down with",
-					"the ship, but his bones washed up by the wreck on",
-					"the south beach. Find his log - it'll say how to end this.");
+					"the ship, but his bones washed up by the wreck in",
+					"the cove. Find his log - it'll say how to end this.");
 			player.nextChat = id + 1;
 			break;
 		case D_PETE + 6:
@@ -246,12 +247,12 @@ public final class SkullbrineIsle {
 			if (player.getItemAssistant().playerHasItem(BLACKBRINES_LOG)) {
 				return new String[] { "You found the Cap'n's log! Well, don't just stand", "there - read it!" };
 			}
-			return new String[] { "The Cap'n's bones washed up by the wreck on the", "south beach. Search them for his log." };
+			return new String[] { "The Cap'n's bones washed up beside the wreck in the", "cove, west of the jetty. Search them for his log." };
 		case CurseOfSkullbrine.FIND_KEY:
 			if (player.getItemAssistant().playerHasItem(CAPTAINS_KEY)) {
-				return new String[] { "That's the Cap'n's key! His chest is in the hold", "under the skull hill." };
+				return new String[] { "That's the Cap'n's key! His chest is in the hold", "behind the skull's mouth." };
 			}
-			return new String[] { "Sam had the key? 'Smiling' Sam was always the worst", "of us. Find him under the skull hill." };
+			return new String[] { "Sam had the key? 'Smiling' Sam was always the worst", "of us. Find him inside Skull Rock - go in by the mouth." };
 		case CurseOfSkullbrine.RETURN_PEARL:
 			return new String[] { "Don't bring that thing near me! Put it back", "through that humming door, quick!" };
 		default:
@@ -341,7 +342,7 @@ public final class SkullbrineIsle {
 		switch (objectId) {
 		case CAVE_ENTRANCE:
 			player.startAnimation(827);
-			player.getPacketSender().sendMessage("You duck into the dark beneath the skull hill...");
+			player.getPacketSender().sendMessage("You step between the teeth and into the skull's mouth...");
 			player.getPlayerAssistant().movePlayer(DUNGEON_ARRIVAL_X, DUNGEON_ARRIVAL_Y, 0);
 			return true;
 		case CAVE_EXIT:

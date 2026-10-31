@@ -35,20 +35,20 @@ public final class SkullbrineConstants {
 	/* ---------------- places ---------------- */
 
 	/** Where the bosun drops you off on the island jetty. */
-	public static final int DOCK_X = 2061, DOCK_Y = 2912;
+	public static final int DOCK_X = 2016, DOCK_Y = 2879;
 	/** Where you land back at Port Sarim. */
 	public static final int PORT_SARIM_X = 3029, PORT_SARIM_Y = 3216;
 
-	public static final int CAVE_ENTRANCE_X = 2015, CAVE_ENTRANCE_Y = 2934;
+	public static final int CAVE_ENTRANCE_X = 2015, CAVE_ENTRANCE_Y = 2928;
 	/** Where you appear on the island after leaving the dungeon (just south of the cave mouth). */
-	public static final int CAVE_OUTSIDE_X = 2016, CAVE_OUTSIDE_Y = 2931;
+	public static final int CAVE_OUTSIDE_X = 2016, CAVE_OUTSIDE_Y = 2926;
 
 	public static final int DUNGEON_EXIT_X = 2015, DUNGEON_EXIT_Y = 9282;
 	/** Where you appear in the dungeon after entering the cave. */
 	public static final int DUNGEON_ARRIVAL_X = 2016, DUNGEON_ARRIVAL_Y = 9288;
 
 	public static final int CAPTAINS_CHEST_X = 2034, CAPTAINS_CHEST_Y = 9316;
-	public static final int CAPTAINS_SKELETON_X = 2012, CAPTAINS_SKELETON_Y = 2886;
+	public static final int CAPTAINS_SKELETON_X = 2008, CAPTAINS_SKELETON_Y = 2889;
 	public static final int PORTAL_X = 2015, PORTAL_Y = 9335;
 
 	/** Bounds of the island (surface) and the dungeon, for area checks. */

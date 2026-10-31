@@ -50,6 +50,19 @@ public final class CursedIslandGenerator {
 			FLAGPOLE = 3680, CAVE_TORCH = 724,
 			STALAGMITE = 541, STALAGMITE_2 = 542, DUNGEON_SKULLS = 668, PORTAL = VOID_PORTAL;
 
+	/* ---------- new objects (recoloured / rescaled clones appended to loc.dat, see buildObjects) ---------- */
+	static final int LOC_BASE = 14974;
+	static final int GHOSTFIRE = LOC_BASE, GHOST_TORCH = LOC_BASE + 1, BONE_FANG = LOC_BASE + 2, BIG_FANG = LOC_BASE + 3,
+			SERPENT_SKULL = LOC_BASE + 4, GIANT_RIBS = LOC_BASE + 5, BLACK_FLAG = LOC_BASE + 6, WITHERED_PALM = LOC_BASE + 7,
+			WITHERED_LEAFY_PALM = LOC_BASE + 8, GHOST_LAMP = LOC_BASE + 9, GHOST_LAMP_POST = LOC_BASE + 10;
+
+	/** RS 16-bit HSL colour. */
+	static int hsl(int hue, int sat, int light) {
+		return hue << 10 | sat << 7 | light;
+	}
+
+	static final int BONE = hsl(7, 1, 100), BONE_DARK = hsl(7, 1, 78);
+
 	public static final int TYPE_WALL = 0, TYPE_SCENERY = 10, TYPE_GROUND_DECOR = 22;
 
 	/* Key points (cave, dungeon exit, portal, chest...) come from SkullbrineConstants, shared with the server. */
@@ -67,6 +80,10 @@ public final class CursedIslandGenerator {
 			gen.buildSurface();
 			gen.buildDungeon();
 			gen.buildDefinitions();
+			if (System.getProperty("preview") != null) {
+				javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), BASE_X, BASE_Y,
+						64 * SURFACE_REGIONS, 64 * SURFACE_REGIONS, 6, false), "png", new java.io.File(System.getProperty("preview")));
+			}
 		}
 		gen.pack(cacheDir);
 	}
@@ -75,15 +92,177 @@ public final class CursedIslandGenerator {
 	/*                                SURFACE                                 */
 	/* ====================================================================== */
 
+	/*
+	 * Layout (north is up):
+	 *
+	 *                 ~~~~~ sea ~~~~~
+	 *            _____ SKULL ROCK _____          A cliff carved and painted as a giant skull, staring south.
+	 *   graveyard   (eyes)  (nose)              Its mouth is the cave into Blackbrine's Hold.
+	 *   (west)       [ teeth | mouth ]   swamp   Fangs ring the plaza in front of it like a lower jaw.
+	 *                   jaw plaza        (east)
+	 *                       |                    serpent skeleton on the east beach
+	 *        Rattlebone Row (ruined shanty town)
+	 *          Drowned Maiden  [jetty]           Deadwater Cove: a sickly green bay full of wrecks,
+	 *     ~~~~~~~ Deadwater Cove ~~~~~~~~~        guarded by sea stacks.
+	 */
+
+	/**
+	 * Skull Rock: a giant skull half-buried in the north of the island, its face tilted up to the sky (the game camera
+	 * looks down on the world, so the face is a gentle slope you can walk over rather than a cliff). Horizontal centre,
+	 * the y of its chin, how deep (in tiles) the face is, where the back of the cranium meets the sea, and heights.
+	 */
+	static final int SKX = 2016, FACE_Y0 = 2928, FACE_DEPTH = 20, SKULL_BACK_Y = 2964;
+	static final double FACE_RISE = 34, CRANIUM_H = 62;
+	/** Deadwater Cove (an ellipse of green water bitten out of the south coast). */
+	static final int COVE_X = 2017, COVE_Y = 2873, COVE_RX = 15, COVE_RY = 13;
+
+	/* extra floors for the cursed palette (flo index + 1) */
+	static final int GUNGY_WATER = 7, BLACK = 37, BLACK_SAND = 83, DARK_SAND = 90, AHOY_GRASS = 107, BURGH_SOIL = 131,
+			DAGANNOTH_GRASS = 133, BARROW_GRASS = 115, ECTO_GLOW = 114, BONE_ROCK = 124, BONE_ROCK_DARK = 125,
+			DARK_PATH = 141, GREY_PATH = 132, DARK_ROCK = 56, SHADOW_ROCK = 57, DEAD_GRASS = 96, ASH = 92,
+			MUD_PATH = 81, ROAD = 81;
+
+	/* swamp and Morytania scenery */
+	static final int MORY_TREE = 4051, MORY_TREE_BIG = 4052, MORY_TREE_2 = 4053, ROTTING_TREE = 3514, ROTTING_LOG = 3508,
+			ROTTING_BRANCH = 3510, HUGE_MUSHROOM = 4055, ROOTS = 1363, SMALL_FERN = 1173, MOSSY_ROCK = 477,
+			SMALL_MOSSY_ROCK = 478, SWAMP_BUBBLES = 684, LARGE_BONE = 702, CURVED_BONE = 700, FUNGUS = 1171,
+			GALLOWS = 649, PILE_OF_SKULLS = 658, SMALL_BUSH = 3512, ROW_BOAT = 2515, ROW_BOAT_2 = 2516,
+			TORN_SAIL = 212, STOCKS = 648, CAGE = 3351, OPEN_COFFIN = 399, CROSS = 898, FISHING_NET = 969, HAMMOCK = 430,
+			LONG_GRASS = 4815, GRASS = 3795, TOTEM = 870;
+
 	/** Radius of the coastline (in tiles) at a given angle - a wobbly circle. */
 	static double coastRadius(double angle) {
-		return 33 + 4 * Math.sin(3 * angle + 1) + 2.5 * Math.sin(5 * angle + 2) + 1.5 * Math.sin(9 * angle);
+		return 41 + 3 * Math.sin(3 * angle + 1) + 2.2 * Math.sin(5 * angle + 2) + 1.2 * Math.sin(9 * angle);
+	}
+
+	/** Distance (in tiles, roughly) outside the cove's edge: negative = inside the cove. */
+	static double coveDistance(int x, int y) {
+		double dx = (x - COVE_X) / (double) COVE_RX, dy = (y - COVE_Y) / (double) COVE_RY;
+		double wobble = 0.06 * Math.sin(Math.atan2(dy, dx) * 5 + 1.3);
+		return (Math.sqrt(dx * dx + dy * dy) - 1 - wobble) * Math.min(COVE_RX, COVE_RY);
 	}
 
 	/** Signed distance inland from the coast: negative = sea. */
 	static double inland(int x, int y) {
 		double dx = x - CX, dy = y - CY;
-		return coastRadius(Math.atan2(dy, dx)) - Math.sqrt(dx * dx + dy * dy);
+		double d = coastRadius(Math.atan2(dy, dx)) - Math.sqrt(dx * dx + dy * dy);
+		d = Math.min(d, coveDistance(x, y));
+		if (skullHeight(x, y) > 3) {
+			d = Math.max(d, 1); // the back of the skull rises straight out of the sea
+		}
+		return d;
+	}
+
+	static double smooth(double t) {
+		t = Math.max(0, Math.min(1, t));
+		return t * t * (3 - 2 * t);
+	}
+
+	/** Face coordinate: 0 at the foot of the skull's face, 1 at its brow. */
+	static double faceV(int y) {
+		return (y - FACE_Y0) / (double) FACE_DEPTH;
+	}
+
+	/** Half the width of the skull (narrow jaw, wide cranium, tapering towards the back). */
+	static double skullHalfWidth(int y) {
+		double v = faceV(y);
+		if (v < 0.3) {
+			return 10 + Math.max(0, v) / 0.3 * 3;
+		}
+		if (v <= 1) {
+			return 13 + 4 * Math.sin(Math.min(1, (v - 0.3) / 0.5) * Math.PI / 2);
+		}
+		double t = (y - FACE_Y0 - FACE_DEPTH) / (double) (SKULL_BACK_Y - FACE_Y0 - FACE_DEPTH);
+		return 17 * Math.sqrt(Math.max(0, 1 - 0.7 * t * t));
+	}
+
+	/** Height (map units) Skull Rock adds on top of the ground, before the eyes and nose are hollowed out. */
+	static double skullHeight(int x, int y) {
+		double v = faceV(y);
+		if (v < -0.02 || y > SKULL_BACK_Y + 1) {
+			return 0;
+		}
+		double h;
+		if (v <= 1) {
+			h = 6 + FACE_RISE * Math.pow(Math.max(0, v), 1.25); // the chin is a low step, the face rises gently
+		} else {
+			double t = (y - FACE_Y0 - FACE_DEPTH) / (double) (SKULL_BACK_Y - FACE_Y0 - FACE_DEPTH);
+			h = 6 + FACE_RISE + (CRANIUM_H - FACE_RISE) * Math.sin(Math.min(1, t / 0.55) * Math.PI / 2);
+			if (t > 0.75) {
+				h *= Math.max(0, 1 - Math.pow((t - 0.75) / 0.28, 2)); // sheer drop into the sea
+			}
+		}
+		// the sides fall away steeply as bone cliffs
+		double side = smooth((skullHalfWidth(y) - Math.abs(x - SKX + 0.5)) / 2.5);
+		return h * side;
+	}
+
+	/** Eye socket (-1 / +1) the tile is in, with how close to the centre (0 = centre, 1 = rim); null if none. */
+	static double[] eye(int x, int y) {
+		double v = faceV(y), u = x - SKX + 0.5;
+		for (int side = -1; side <= 1; side += 2) {
+			double ex = (u - side * 6) / 3.6, ey = (v - 0.62) / 0.17;
+			double r = Math.sqrt(ex * ex + ey * ey);
+			if (r < 1) {
+				return new double[] { side, r };
+			}
+		}
+		return null;
+	}
+
+	static boolean nose(int x, int y) {
+		double v = faceV(y), u = x - SKX + 0.5;
+		return v > 0.3 && v < 0.46 && Math.abs(u) < 0.5 + 1.8 * (0.46 - v) / 0.16;
+	}
+
+	/** The dark band of the mouth, between the jaws. The fangs stand in it and the cave opens in its middle. */
+	static boolean mouth(int x, int y) {
+		double v = faceV(y), u = x - SKX + 0.5;
+		return v >= 0 && v < 0.13 && Math.abs(u) < 7.5;
+	}
+
+	/** What is painted on the skull at (x, y): 0 = bone, 1 = black hollow, 2 = glowing green pool, 3 = shadowed rock / crack. */
+	static int skullPaint(int x, int y) {
+		double[] e = eye(x, y);
+		if (e != null) {
+			return e[1] < 0.5 ? 2 : 3;
+		}
+		if (nose(x, y) || mouth(x, y)) {
+			return 1;
+		}
+		return crack(x, y) ? 3 : 0;
+	}
+
+	/** Sutures across the crown and a crack running down from the left brow, so the bone isn't a blank slab. */
+	static boolean crack(int x, int y) {
+		int u = x - SKX;
+		int crown = FACE_Y0 + FACE_DEPTH + 4;
+		// zig-zag suture across the crown
+		if (Math.abs(u) < 13 && y == crown + ((u + 40) / 2 % 2)) {
+			return true;
+		}
+		// sagittal suture running back from it
+		if (y > crown && y < SKULL_BACK_Y - 5 && x == SKX + ((y / 2) % 2) - 1) {
+			return true;
+		}
+		// a crack from the left brow up towards the crown
+		int[][] crackTiles = { { -9, 16 }, { -9, 17 }, { -10, 18 }, { -10, 19 }, { -11, 20 }, { -11, 21 }, { -12, 22 },
+				{ 9, 18 }, { 10, 19 }, { 10, 20 } };
+		for (int[] c : crackTiles) {
+			if (u == c[0] && y - FACE_Y0 == c[1]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Depth (height units) the eye sockets and nose are hollowed into the face. */
+	static double skullHollow(int x, int y) {
+		double[] e = eye(x, y);
+		if (e != null) {
+			return 20 * Math.sqrt(1 - e[1] * e[1]);
+		}
+		return nose(x, y) ? 9 : 0;
 	}
 
 	void buildSurface() {
@@ -99,48 +278,114 @@ public final class CursedIslandGenerator {
 				double d = inland(x, y);
 				if (d < 0) {
 					sea(x, y);
-				} else {
-					// beach slope, then gentle interior, plus the skull hill to the north
-					double h = 2 + Math.min(d, 6) * 1.6 + noise(x, y) * 2.5;
-					double hill = hillHeight(x, y);
-					h += hill;
-					setHeight(x, y, (int) Math.round(h));
-					if (d < 3.2) {
-						setUnderlay(x, y, SAND);
-					} else if (hill > 22) {
-						setUnderlay(x, y, ROCK); // bare rock on the skull hill
-					} else {
-						double n = noise(x * 3 + 17, y * 3 + 5);
-						int floor = n > 0.35 ? SWAMP : n < -0.4 ? DARK_GRASS : DEAD_GREEN;
-						if (Math.hypot(x - 1992, y - 2916) < 9) {
-							floor = DEAD_GREEN; // graveyard soil
-						}
-						setUnderlay(x, y, floor);
+					if (coveDistance(x, y) < 0) {
+						setOverlay(x, y, GUNGY_WATER); // the cursed water of Deadwater Cove
 					}
+					continue;
+				}
+				// beach slope, rolling ground, and small bumps that catch the light (the client blurs floor colours
+				// together, so the ground's texture comes mostly from shading)
+				double bumps = 2.6 * noise(x * 3 + 5, y * 3 + 9) + 1.4 * noise(x * 7 + 1, y * 6 + 3)
+						+ (random.nextDouble() - 0.5) * 1.6;
+				double h = 3 + Math.min(d, 6) * 1.6 + noise(x, y) * 4 + bumps * Math.min(1, d / 3) + westPlateau(x, y);
+				double skull = skullHeight(x, y);
+				h += skull - skullHollow(x, y);
+				setHeight(x, y, (int) Math.round(Math.max(2, h)));
+				if (skull > 4) {
+					// Skull Rock: bone-white stone, its features painted in black and ghostly green
+					setUnderlay(x, y, noise(x * 5, y * 5) > 0.55 ? BONE_ROCK_DARK : BONE_ROCK);
+					int paint = skullPaint(x, y);
+					if (paint == 1) {
+						setOverlay(x, y, BLACK);
+					} else if (paint == 2) {
+						setOverlay(x, y, GUNGY_WATER); // the eyes are pools of the cove's cursed water
+					} else if (paint == 3) {
+						setOverlay(x, y, SHADOW_ROCK);
+					}
+					// the eyes, nose and the steep sides can't be walked on; the face and crown can
+					boolean steep = skullHalfWidth(y) - Math.abs(x - SKX + 0.5) < 2.2 || y > SKULL_BACK_Y - 5;
+					if (paint != 0 && !mouth(x, y) && !crack(x, y) || steep) {
+						block(x, y);
+					}
+				} else if (d < 3.4) {
+					setUnderlay(x, y, noise(x * 4 + 3, y * 4) > 0.2 ? DARK_SAND : BLACK_SAND); // black volcanic sand
+				} else {
+					double n = noise(x + 17, y + 5) + 0.35 * noise(x * 3 + 2, y * 3 + 31);
+					int floor = n > 0.8 ? DEAD_GRASS : n > 0.45 ? MUDDY_GRASS : n > 0.1 ? BARROW_GRASS : n < -0.75 ? BURGH_SOIL
+							: n < -0.35 ? DAGANNOTH_GRASS : AHOY_GRASS;
+					if (d < 6 && noise(x * 5, y * 5 + 7) > 0.3) {
+						floor = ASH; // grey ash where the sand gives way to grass
+					}
+					setUnderlay(x, y, floor);
 				}
 			}
 		}
 
+		seaStacks();
+		swamp();
 		paths();
 		if (System.getProperty("gallery") != null) {
-			// temporary: line up candidate objects to compare them in game
+			// line up candidate objects on the beach west of the cove to compare them in game
 			String[] ids = System.getProperty("gallery").split(",");
 			for (int i = 0; i < ids.length; i++) {
-				object(Integer.parseInt(ids[i]), 2026 + (i % 6) * 4, 2896 + (i / 6) * 4, TYPE_SCENERY, 0);
+				object(Integer.parseInt(ids[i]), 2034 + (i % 5) * 4, 2925 + (i / 5) * 5, TYPE_SCENERY, 0);
 			}
 		}
-		dock();
-		pirateCamp();
+		jetty();
+		rattleboneRow();
 		shipwreck();
+		coveWrecks();
 		graveyard();
-		skullHill();
+		serpentBeach();
+		skullRock();
 		vegetation();
+		smoothOverlays();
 	}
 
-	/** The skull hill rises steeply in the north of the island. */
-	static double hillHeight(int x, int y) {
-		double hx = x - CX, hy = y - (CY + 27);
-		return 75 * Math.exp(-(hx * hx + hy * hy) / (2 * 6.5 * 6.5));
+	/** Overlays that should blend with each other when smoothing edges (sea and cove water are one body). */
+	static int overlayGroup(int overlay) {
+		return overlay == WATER || overlay == GUNGY_WATER ? WATER : overlay;
+	}
+
+	/**
+	 * Cuts the corners of overlay patches (water, paths, painted features) diagonally, the way the game's own maps
+	 * do: a tile whose overlay only continues to two adjacent sides becomes a triangle (shape 1). Rotation picks
+	 * the corner the triangle sits in: 0 = south-west, 1 = north-west, 2 = north-east, 3 = south-east.
+	 */
+	void smoothOverlays() {
+		List<int[]> changes = new ArrayList<>();
+		for (int x = BASE_X + 1; x < BASE_X + 64 * SURFACE_REGIONS - 1; x++) {
+			for (int y = BASE_Y + 1; y < BASE_Y + 64 * SURFACE_REGIONS - 1; y++) {
+				int ov = overlayAt(x, y);
+				if (ov == 0 || ov == WOOD) {
+					continue;
+				}
+				int g = overlayGroup(ov);
+				boolean n = overlayGroup(overlayAt(x, y + 1)) == g, e = overlayGroup(overlayAt(x + 1, y)) == g,
+						so = overlayGroup(overlayAt(x, y - 1)) == g, w = overlayGroup(overlayAt(x - 1, y)) == g;
+				int count = (n ? 1 : 0) + (e ? 1 : 0) + (so ? 1 : 0) + (w ? 1 : 0);
+				if (count != 2 || n && so || e && w) {
+					continue;
+				}
+				int rot = so && w ? 0 : w && n ? 1 : n && e ? 2 : 3;
+				changes.add(new int[] { x, y, rot });
+			}
+		}
+		for (int[] c : changes) {
+			MapRegion r = regionAt(c[0], c[1]);
+			r.overlayShape[0][c[0] & 63][c[1] & 63] = 1;
+			r.overlayRotation[0][c[0] & 63][c[1] & 63] = c[2];
+		}
+	}
+
+	int overlayAt(int x, int y) {
+		MapRegion r = regionAt(x, y);
+		return r == null ? 0 : r.overlay[0][x & 63][y & 63];
+	}
+
+	/** The graveyard sits on a low plateau in the west. */
+	static double westPlateau(int x, int y) {
+		return 7 * smooth(1 - Math.hypot(x - 1989, y - 2918) / 13.0);
 	}
 
 	void sea(int x, int y) {
@@ -152,102 +397,418 @@ public final class CursedIslandGenerator {
 		r.height[0][lx][ly] = 1; // sea level
 	}
 
-	void paths() {
-		// dock -> camp
-		path(2046, 2912, 2032, 2912);
-		// camp -> graveyard (west)
-		path(2032, 2912, 2016, 2914);
-		path(2016, 2914, 1998, 2916);
-		// camp -> skull hill cave (north)
-		path(2016, 2914, 2016, 2932);
-		// camp -> wreck (south)
-		path(2024, 2910, 2016, 2888);
+	void block(int x, int y) {
+		regionAt(x, y).settings[0][x & 63][y & 63] |= MapRegion.BLOCKED;
 	}
 
-	void path(int x0, int y0, int x1, int y1) {
-		int steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
-		for (int i = 0; i <= steps; i++) {
-			double t = steps == 0 ? 0 : (double) i / steps;
-			int x = (int) Math.round(x0 + (x1 - x0) * t + Math.sin(i * 0.5) * 0.6);
-			int y = (int) Math.round(y0 + (y1 - y0) * t + Math.cos(i * 0.45) * 0.6);
-			for (int dx = 0; dx <= 1; dx++) {
-				for (int dy = 0; dy <= 1; dy++) {
-					if (inland(x + dx, y + dy) > 1) {
-						setOverlay(x + dx, y + dy, PATH);
+	/** Pillars of black rock standing in the sea, the tallest guarding the mouth of the cove. */
+	void seaStacks() {
+		int[][] stacks = { { 2005, 2860, 46 }, { 2028, 2858, 38 }, { 2034, 2865, 26 }, { 1999, 2866, 22 },
+				{ 1968, 2900, 30 }, { 1972, 2935, 40 }, { 2062, 2930, 34 }, { 2058, 2890, 28 }, { 2044, 2955, 44 },
+				{ 1990, 2958, 30 } };
+		for (int[] s : stacks) {
+			for (int x = s[0] - 2; x <= s[0] + 2; x++) {
+				for (int y = s[1] - 2; y <= s[1] + 2; y++) {
+					double r = Math.hypot(x - s[0], y - s[1]);
+					if (r > 1.9 || inland(x, y) >= 0) {
+						continue;
+					}
+					MapRegion reg = regionAt(x, y);
+					int lx = x & 63, ly = y & 63;
+					reg.overlay[0][lx][ly] = 0;
+					reg.underlay[0][lx][ly] = DARK_ROCK;
+					reg.height[0][lx][ly] = (int) (s[2] * (1 - r / 2.2) + 2);
+				}
+			}
+		}
+	}
+
+	/** Stagnant green pools and bubbling mud in the east, between the skull and the serpent's beach. */
+	void swamp() {
+		for (int x = 2028; x < 2056; x++) {
+			for (int y = 2914; y < 2944; y++) {
+				double d = inland(x, y);
+				if (d < 4 || skullHeight(x, y) > 1) {
+					continue;
+				}
+				double n = noise(x * 2 + 40, y * 2 - 13) + 0.35 * noise(x * 7, y * 7);
+				if (n > 0.62) {
+					setOverlay(x, y, GUNGY_WATER);
+					block(x, y);
+					setHeight(x, y, heightAt(x, y) - 2);
+					if (random.nextInt(7) == 0) {
+						object(SWAMP_BUBBLES, x, y, TYPE_GROUND_DECOR, 0);
+					}
+				} else if (n > 0.45) {
+					setUnderlay(x, y, BURGH_SOIL);
+				}
+			}
+		}
+	}
+
+	/** Dirt roads (as waypoints) joining the jetty, the town deck, the skull, the graveyard and the serpent's bones. */
+	void paths() {
+		// jetty -> town deck -> jaw plaza
+		road(2.6, ROAD, new int[][] { { 2016, 2892 }, { 2016, 2901 } });
+		road(2.6, ROAD, new int[][] { { 2016, 2910 }, { 2016, 2915 }, { 2017, 2921 } });
+		// deck -> graveyard (west)
+		road(2.2, ROAD, new int[][] { { 2011, 2906 }, { 2005, 2909 }, { 1999, 2913 }, { 1993, 2916 } });
+		// deck -> swamp -> serpent beach (east)
+		road(2.2, ROAD, new int[][] { { 2021, 2906 }, { 2027, 2909 }, { 2034, 2910 }, { 2041, 2909 }, { 2046, 2906 } });
+		// Mad Pete's camp, off the east road
+		road(1.8, ROAD, new int[][] { { 2027, 2909 }, { 2030, 2905 } });
+	}
+
+	/**
+	 * Paints a road of the given width through the waypoints: every tile within width/2 of the line gets the overlay,
+	 * so there are no gaps or tiles that only touch diagonally.
+	 */
+	void road(double width, int floor, int[][] points) {
+		for (int i = 0; i + 1 < points.length; i++) {
+			double x0 = points[i][0] + 0.5, y0 = points[i][1] + 0.5, x1 = points[i + 1][0] + 0.5, y1 = points[i + 1][1] + 0.5;
+			double len = Math.hypot(x1 - x0, y1 - y0);
+			for (double t = 0; t <= len; t += 0.25) {
+				double px = x0 + (x1 - x0) * t / len, py = y0 + (y1 - y0) * t / len;
+				int r = (int) Math.ceil(width);
+				for (int x = (int) px - r; x <= (int) px + r; x++) {
+					for (int y = (int) py - r; y <= (int) py + r; y++) {
+						if (Math.hypot(x + 0.5 - px, y + 0.5 - py) <= width / 2 && inland(x, y) > 0.5
+								&& skullHeight(x, y) < 4 && overlayAt(x, y) != WOOD) {
+							setOverlay(x, y, floor);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	void dock() {
-		// a jetty running east from the beach, with a T at the end where the boat ties up
-		for (int x = 2044; x <= 2063; x++) {
-			for (int y = 2911; y <= 2913; y++) {
+	/** The jetty runs south from the beach into the cove; the bosun ties up at its end. */
+	void jetty() {
+		for (int y = 2878; y <= 2892; y++) {
+			for (int x = 2015; x <= 2017; x++) {
 				plank(x, y);
 			}
 		}
-		for (int x = 2061; x <= 2064; x++) {
-			for (int y = 2906; y <= 2918; y++) {
+		for (int x = 2012; x <= 2020; x++) {
+			for (int y = 2876; y <= 2878; y++) {
 				plank(x, y);
 			}
 		}
-		object(CRATE, 2062, 2917, TYPE_SCENERY, 0);
-		object(BARREL, 2063, 2907, TYPE_SCENERY, 0);
-		object(BARREL, 2064, 2908, TYPE_SCENERY, 0);
-		object(TORCH, 2060, 2914, TYPE_SCENERY, 0);
-		object(TORCH, 2060, 2910, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2014, 2884, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2018, 2884, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2012, 2879, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2020, 2879, TYPE_SCENERY, 0);
+		object(BARREL, 2013, 2876, TYPE_SCENERY, 0);
+		object(CRATE, 2020, 2876, TYPE_SCENERY, 0);
+		object(BLACK_FLAG, 2018, 2890, TYPE_SCENERY, 1);
 	}
 
 	void plank(int x, int y) {
 		MapRegion r = regionAt(x, y);
 		int lx = x & 63, ly = y & 63;
-		if (inland(x, y) >= 0) {
-			r.overlay[0][lx][ly] = WOOD;
-			return;
-		}
 		r.overlay[0][lx][ly] = WOOD;
-		r.settings[0][lx][ly] = 0;
-		r.height[0][lx][ly] = 3;
+		if (inland(x, y) < 0) {
+			r.settings[0][lx][ly] = 0;
+			r.height[0][lx][ly] = 4;
+		}
 	}
 
-	void pirateCamp() {
-		clear(2032, 2912, 6);
-		// the camp itself
-		object(FLAGPOLE, 2032, 2918, TYPE_SCENERY, 0);
-		object(TORCH, 2028, 2916, TYPE_SCENERY, 0);
-		object(TORCH, 2036, 2916, TYPE_SCENERY, 0);
-		object(TORCH, 2028, 2907, TYPE_SCENERY, 0);
-		object(TORCH, 2036, 2907, TYPE_SCENERY, 0);
-		object(STACKED_BARRELS, 2027, 2913, TYPE_SCENERY, 0);
-		object(BARREL, 2027, 2911, TYPE_SCENERY, 0);
-		object(CRATES, 2037, 2913, TYPE_SCENERY, 0);
-		object(CRATE, 2037, 2911, TYPE_SCENERY, 0);
-		object(CANNON, 2039, 2909, TYPE_SCENERY, 1);
-		object(CANNONBALLS, 2040, 2907, TYPE_SCENERY, 0);
-		object(CHEST, 2033, 2917, TYPE_SCENERY, 0);
+	/**
+	 * Rattlebone Row: the shanty town the crew built when they first came ashore. Shacks are copied from
+	 * Mos Le'Harmless (region 14638/14637); everything with an option (lockers, ladders, bank booths) is left out.
+	 */
+	void rattleboneRow() {
+		// town square
+		for (int x = 2011; x <= 2021; x++) {
+			for (int y = 2901; y <= 2910; y++) {
+				if (Math.hypot(x - 2016, y - 2905.5) < 5.6) {
+					setOverlay(x, y, WOOD); // a deck of salvaged ship's planks
+					removeObjectsAt(x, y);
+				}
+			}
+		}
+		flatten(2010, 2899, 2022, 2912);
+		object(GALLOWS, 2018, 2907, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2012, 2902, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2020, 2902, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2012, 2909, TYPE_SCENERY, 0);
+		object(BROKEN_BARREL, 2013, 2906, TYPE_SCENERY, 0);
+		object(PILE_OF_SKULLS, 2021, 2905, TYPE_SCENERY, 0);
+
+		// shacks (source rectangle in Mos Le'Harmless -> destination south-west corner)
+		stampBuilding(3670, 2963, 3678, 2972, 2001, 2896); // west of the square, door to the south
+		stampBuilding(3652, 2969, 3658, 2979, 2023, 2898); // east of the square: Mad Pete's shack
+		stampBuilding(3673, 2985, 3679, 2993, 2003, 2911); // north-west, towards the graveyard
+		stampBuilding(3678, 2978, 3684, 2985, 2028, 2913); // a lean-to on the swamp's edge
+
+		// the boardwalk along the beach, and what the crew dragged ashore
+		for (int x = 2000; x <= 2034; x++) {
+			for (int y = 2892; y <= 2893; y++) {
+				if (inland(x, y) > 0) {
+					setOverlay(x, y, WOOD);
+					removeObjectsAt(x, y);
+				}
+			}
+		}
+		object(ROW_BOAT, 2025, 2888, TYPE_SCENERY, 1);
+		object(ROW_BOAT_2, 2029, 2886, TYPE_SCENERY, 2);
+		object(FISHING_NET, 2022, 2891, TYPE_SCENERY, 0);
+		object(TORN_SAIL, 2034, 2889, TYPE_SCENERY, 1);
+		object(GHOST_LAMP_POST, 2014, 2894, TYPE_SCENERY, 0);
+		object(GHOST_LAMP_POST, 2018, 2894, TYPE_SCENERY, 0);
+		object(GHOST_LAMP_POST, 2004, 2894, TYPE_SCENERY, 0);
+		object(GHOST_LAMP_POST, 2030, 2894, TYPE_SCENERY, 0);
+		// the square: stocks, a cage, and lamps
+		object(STOCKS, 2013, 2903, TYPE_SCENERY, 0);
+		object(SKELETON, 2013, 2902, TYPE_GROUND_DECOR, 0);
+		object(CAGE, 2020, 2903, TYPE_SCENERY, 0);
+		object(GHOST_LAMP, 2011, 2906, TYPE_SCENERY, 0);
+		object(GHOST_LAMP, 2021, 2908, TYPE_SCENERY, 0);
+		object(TOTEM, 2016, 2911, TYPE_SCENERY, 0);
+
+		// Mad Pete's camp in front of his shack
+		object(STACKED_BARRELS, 2031, 2898, TYPE_SCENERY, 0);
+		object(CRATES, 2031, 2901, TYPE_SCENERY, 0);
+		object(CANNON, 2033, 2904, TYPE_SCENERY, 1);
+		object(CANNONBALLS, 2033, 2907, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2022, 2896, TYPE_SCENERY, 0);
+		object(BLACK_FLAG, 2026, 2896, TYPE_SCENERY, 0);
+	}
+
+	/** Flattens the ground to the average height of a rectangle. */
+	void flatten(int x0, int y0, int x1, int y1) {
+		int sum = 0, n = 0;
+		for (int x = x0; x <= x1; x++) {
+			for (int y = y0; y <= y1; y++) {
+				sum += heightAt(x, y);
+				n++;
+			}
+		}
+		for (int x = x0; x <= x1; x++) {
+			for (int y = y0; y <= y1; y++) {
+				setHeight(x, y, sum / n);
+			}
+		}
+	}
+
+	/** Copies a building (floor, walls, roof, furniture without options) onto flattened ground. */
+	void stampBuilding(int ax0, int ay0, int ax1, int ay1, int destX, int destY) {
+		int w = ax1 - ax0, h = ay1 - ay0;
+		flatten(destX - 1, destY - 1, destX + w + 1, destY + h + 1);
+		for (int x = destX - 1; x <= destX + w + 1; x++) {
+			for (int y = destY - 1; y <= destY + h + 1; y++) {
+				removeObjectsAt(x, y);
+			}
+		}
+		int region = (ax0 >> 6) << 8 | (ay0 >> 6);
+		stamp(region, ax0 & 63, ay0 & 63, ax1 & 63, ay1 & 63, destX, destY, new int[0], true);
 	}
 
 	void shipwreck() {
-		// The Drowned Maiden: a copy of one of the Port Sarim ships (region 12082, local 22..30 x 9..28),
-		// driven stern-first onto the south beach. Gangplanks are left behind.
-		stamp(12082, 22, 9, 30, 28, 2011, 2862, new int[] { 2083, 2084 });
-		// wreckage strewn across the sand
-		object(BROKEN_BARREL, 2008, 2884, TYPE_SCENERY, 0);
-		object(BROKEN_BARREL, 2022, 2883, TYPE_SCENERY, 0);
-		object(CRATE, 2021, 2886, TYPE_SCENERY, 0);
-		object(ANCHOR, 2025, 2882, TYPE_SCENERY, 2);
-		object(CANNON, 2008, 2887, TYPE_SCENERY, 3);
+		// The Drowned Maiden: a copy of one of the Port Sarim ships (region 12082, local 22..30 x 9..28), run aground
+		// on the west side of the cove with her bow on the beach. Gangplanks are left behind.
+		stamp(12082, 22, 9, 30, 28, 2003, 2866, new int[] { 2083, 2084 }, false);
+		object(BROKEN_BARREL, 2004, 2889, TYPE_SCENERY, 0);
+		object(ANCHOR, 2006, 2884, TYPE_SCENERY, 2);
+		object(CRATE, 1992, 2884, TYPE_SCENERY, 0);
+		object(ROTTING_LOG, 2008, 2887, TYPE_SCENERY, 1);
 		// Captain Blackbrine's remains, washed up beside his ship (searchable - holds his log)
 		object(CAPTAINS_SKELETON, CAPTAINS_SKELETON_X, CAPTAINS_SKELETON_Y, TYPE_SCENERY, 1);
-		object(LONG_SKELETON, 2019, 2888, TYPE_GROUND_DECOR, 2);
+		object(LONG_SKELETON, 1999, 2890, TYPE_GROUND_DECOR, 2);
+	}
+
+	/** The masts of older wrecks poke out of the cove. */
+	void coveWrecks() {
+		int[][] masts = { { 2024, 2869 }, { 2027, 2873 }, { 2009, 2866 }, { 2030, 2878 } };
+		for (int[] m : masts) {
+			object(MAST, m[0], m[1], TYPE_SCENERY, random.nextInt(4));
+		}
+		object(HULL, 2025, 2871, TYPE_SCENERY, 1);
+		object(HULL, 2010, 2864, TYPE_SCENERY, 2);
+	}
+
+	void graveyard() {
+		int cx = 1988, cy = 2918;
+		int[] kinds = { GRAVESTONE, SMALL_GRAVESTONE, GRAVE_MARKER };
+		int i = 0;
+		for (int gx = cx - 6; gx <= cx + 6; gx += 3) {
+			for (int gy = cy - 6; gy <= cy + 6; gy += 3) {
+				if (Math.hypot(gx - cx, gy - cy) < 7.5 && !(gx == cx && gy == cy) && random.nextInt(5) != 0) {
+					object(kinds[i++ % kinds.length], gx, gy, TYPE_SCENERY, 1);
+				}
+			}
+		}
+		for (int x = cx - 8; x <= cx + 8; x++) {
+			for (int y = cy - 8; y <= cy + 8; y++) {
+				if (Math.hypot(x - cx, y - cy) < 8.5) {
+					setUnderlay(x, y, BURGH_SOIL);
+				}
+			}
+		}
+		// the captain's empty grave, with ghostfire braziers
+		object(LARGE_GRAVE, cx, cy, TYPE_SCENERY, 1);
+		object(GHOSTFIRE, cx - 2, cy + 2, TYPE_SCENERY, 0);
+		object(GHOSTFIRE, cx + 2, cy + 2, TYPE_SCENERY, 0);
+		object(SKULL_PILE, cx + 5, cy - 7, TYPE_SCENERY, 0);
+		object(LONG_SKELETON, cx - 7, cy - 3, TYPE_GROUND_DECOR, 0);
+		object(MORY_TREE_BIG, cx - 9, cy + 6, TYPE_SCENERY, 0);
+		object(MORY_TREE, cx + 8, cy + 7, TYPE_SCENERY, 0);
+		object(BIG_DEAD_TREE, cx - 8, cy - 8, TYPE_SCENERY, 0);
+		object(BLACK_FLAG, cx + 1, cy + 8, TYPE_SCENERY, 0);
+		object(OPEN_COFFIN, cx + 4, cy + 4, TYPE_SCENERY, 1);
+		object(OPEN_COFFIN, cx - 5, cy - 5, TYPE_SCENERY, 0);
+		object(CROSS, cx - 3, cy + 6, TYPE_SCENERY, 0);
+		object(CROSS, cx + 6, cy - 2, TYPE_SCENERY, 0);
+		object(GHOST_LAMP_POST, cx + 7, cy - 6, TYPE_SCENERY, 0);
+		object(GHOST_LAMP_POST, cx - 7, cy + 4, TYPE_SCENERY, 0);
+		object(SKELETON, cx + 3, cy - 4, TYPE_GROUND_DECOR, 2);
+		object(PILE_OF_SKULLS, cx - 4, cy + 1, TYPE_SCENERY, 0);
+	}
+
+	/** The bones of a sea serpent lie half-buried on the east beach. */
+	void serpentBeach() {
+		object(SERPENT_SKULL, 2049, 2896, TYPE_SCENERY, 1);
+		// ribs either side of the spine, running north-west up the beach
+		for (int i = 0; i < 6; i++) {
+			int x = 2047 - i * 2, y = 2902 + i * 2;
+			object(GIANT_RIBS, x - 1, y + 1, TYPE_SCENERY, 3);
+			object(GIANT_RIBS, x + 2, y - 1, TYPE_SCENERY, 1);
+			object(LARGE_BONE, x, y, TYPE_GROUND_DECOR, i & 3);
+		}
+		object(CURVED_BONE, 2033, 2916, TYPE_SCENERY, 1);
+		object(TORN_SAIL, 2052, 2918, TYPE_SCENERY, 0);
+		object(ROW_BOAT_2, 2056, 2909, TYPE_SCENERY, 3);
+		object(CURVED_BONE, 2054, 2903, TYPE_SCENERY, 2);
+	}
+
+	void skullRock() {
+		// the jaw plaza: flat, trodden ground below the chin
+		int plazaH = heightAt(SKX, FACE_Y0 - 7);
+		for (int x = SKX - 11; x <= SKX + 11; x++) {
+			for (int y = FACE_Y0 - 8; y <= FACE_Y0 - 1; y++) {
+				if (Math.hypot((x - SKX + 0.5) / 1.6, y - FACE_Y0 + 0.5) < 7.5) {
+					setHeight(x, y, plazaH + (int) Math.round(noise(x * 6, y * 6)));
+					setOverlay(x, y, 0);
+					setUnderlay(x, y, noise(x * 4 + 1, y * 4) > 0.2 ? ASH : BURGH_SOIL);
+					removeObjectsAt(x, y);
+				}
+			}
+		}
+		// the mouth: the cave opens between the front teeth
+		object(CAVE_ENTRANCE, CAVE_ENTRANCE_X, CAVE_ENTRANCE_Y, TYPE_SCENERY, 0);
+		int mouthTop = FACE_Y0 + (int) Math.round(0.13 * FACE_DEPTH);
+		for (int u : new int[] { -7, -5, -3, 3, 5, 7 }) {
+			object(Math.abs(u) == 3 ? BIG_FANG : BONE_FANG, SKX + u - (u < 0 ? 1 : 0), mouthTop, TYPE_SCENERY, random.nextInt(4));
+		}
+		for (int u : new int[] { -6, -4, 4, 6 }) {
+			object(BONE_FANG, SKX + u - (u < 0 ? 1 : 0), FACE_Y0, TYPE_SCENERY, random.nextInt(4));
+		}
+		// ghostfire burns deep in the eye sockets
+		int eyeY = FACE_Y0 + (int) Math.round(0.62 * FACE_DEPTH);
+		for (int side = -1; side <= 1; side += 2) {
+			int ex = SKX + side * 6 - (side < 0 ? 1 : 0);
+			object(GHOSTFIRE, ex, eyeY, TYPE_SCENERY, 0);
+			object(GHOSTFIRE, ex - 1, eyeY + 1, TYPE_SCENERY, 0);
+			object(GHOSTFIRE, ex + 1, eyeY - 1, TYPE_SCENERY, 0);
+		}
+		// torches lead the way in
+		object(GHOST_TORCH, SKX - 3, FACE_Y0 - 3, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, SKX + 2, FACE_Y0 - 3, TYPE_SCENERY, 0);
+		int[][] bones = { { -6, -5 }, { 5, -6 }, { -9, -4 }, { 8, -3 }, { -2, -7 }, { 3, -2 }, { -4, -2 } };
+		for (int i = 0; i < bones.length; i++) {
+			int[] kinds = { CURVED_BONE, LARGE_BONE, SKELETON, ANIMAL_SKULL };
+			int k = kinds[i % kinds.length];
+			object(k, SKX + bones[i][0], FACE_Y0 + bones[i][1], k == ANIMAL_SKULL ? TYPE_SCENERY : TYPE_GROUND_DECOR, i & 3);
+		}
+		object(SKULL_PILE, SKX - 8, FACE_Y0 - 2, TYPE_SCENERY, 0);
+		object(SKULL_PILE, SKX + 7, FACE_Y0 - 2, TYPE_SCENERY, 0);
+		// a black flag flies from the crown
+		object(BLACK_FLAG, SKX, FACE_Y0 + FACE_DEPTH + 5, TYPE_SCENERY, 0);
+	}
+
+	void vegetation() {
+		// pass 1: trees, palms and other big things, spaced out; pass 2: ground cover between them
+		for (int pass = 0; pass < 2; pass++) {
+			for (int x = BASE_X; x < BASE_X + 64 * SURFACE_REGIONS; x++) {
+				for (int y = BASE_Y; y < BASE_Y + 64 * SURFACE_REGIONS; y++) {
+					double d = inland(x, y);
+					if (d < 1 || skullHeight(x, y) > 2 || !isFree(x, y, 0)) {
+						continue;
+					}
+					if ((regionAt(x, y).settings[0][x & 63][y & 63] & MapRegion.BLOCKED) != 0) {
+						continue;
+					}
+					if (pass == 0) {
+						bigPlant(x, y, d);
+					} else {
+						groundCover(x, y, d);
+					}
+				}
+			}
+		}
+	}
+
+	void bigPlant(int x, int y, double d) {
+		int roll = random.nextInt(1000), rot = random.nextInt(4);
+		if (d < 4) {
+			if (roll < 45 && isFree(x, y, 2)) {
+				object(roll < 18 ? WITHERED_LEAFY_PALM : WITHERED_PALM, x, y, TYPE_SCENERY, rot);
+			} else if (roll < 60 && isFree(x, y, 1)) {
+				object(ROTTING_LOG, x, y, TYPE_SCENERY, rot);
+			}
+			return;
+		}
+		// thickets where the noise is high, clearings where it's low
+		double thicket = noise(x * 2 + 91, y * 2 + 7);
+		int treeChance = (int) (40 + 110 * Math.max(0, thicket));
+		if (roll < treeChance && isFree(x, y, 2)) {
+			int[] trees = { MORY_TREE, MORY_TREE_2, DEAD_TREE, BIG_DEAD_TREE, ROTTING_TREE, MORY_TREE, MORY_TREE_2,
+					WITHERED_PALM };
+			object(trees[random.nextInt(trees.length)], x, y, TYPE_SCENERY, rot);
+		} else if (roll < treeChance + 12 && isFree(x, y, 2)) {
+			object(HUGE_MUSHROOM + random.nextInt(3), x, y, TYPE_SCENERY, rot);
+		} else if (roll < treeChance + 18 && isFree(x, y, 3)) {
+			object(ROOTS, x, y, TYPE_SCENERY, rot);
+		} else if (roll < treeChance + 30 && isFree(x, y, 1)) {
+			object(random.nextInt(3) == 0 ? MOSSY_ROCK : SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
+		} else if (roll < treeChance + 42 && isFree(x, y, 1)) {
+			object(SMALL_BUSH, x, y, TYPE_SCENERY, rot);
+		}
+	}
+
+	void groundCover(int x, int y, double d) {
+		int roll = random.nextInt(1000), rot = random.nextInt(4);
+		if (d < 4) {
+			if (roll < 15) {
+				object(ANIMAL_SKULL, x, y, TYPE_SCENERY, rot);
+			} else if (roll < 40) {
+				object(SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
+			} else if (roll < 55) {
+				object(CURVED_BONE, x, y, TYPE_GROUND_DECOR, rot);
+			}
+			return;
+		}
+		if (roll < 70) {
+			object(LONG_GRASS, x, y, TYPE_GROUND_DECOR, rot);
+		} else if (roll < 120) {
+			object(GRASS, x, y, TYPE_GROUND_DECOR, rot);
+		} else if (roll < 170) {
+			object(SMALL_FERN, x, y, TYPE_GROUND_DECOR, rot);
+		} else if (roll < 195) {
+			object(ROTTING_BRANCH, x, y, TYPE_GROUND_DECOR, rot);
+		} else if (roll < 225) {
+			object(FUNGUS, x, y, TYPE_GROUND_DECOR, rot);
+		} else if (roll < 232) {
+			object(ANIMAL_SKULL, x, y, TYPE_SCENERY, rot);
+		}
 	}
 
 	/**
 	 * Copies a rectangle of an existing region (upper planes' terrain and every object) onto the island.
-	 * Plane 0 terrain is left alone so the copy sits on our own sea/sand.
+	 * Plane 0 terrain is left alone so the copy sits on our own ground, unless {@code withFloor} is set, in which
+	 * case plane 0 overlays (floors) are copied too and objects with options (other than doors) are skipped.
 	 */
-	void stamp(int sourceRegion, int sx0, int sy0, int sx1, int sy1, int destX, int destY, int[] skipIds) {
+	void stamp(int sourceRegion, int sx0, int sy0, int sx1, int sy1, int destX, int destY, int[] skipIds, boolean withFloor) {
 		MapRegion src;
 		try {
 			src = loadRegion(sourceRegion);
@@ -260,13 +821,15 @@ public final class CursedIslandGenerator {
 				MapRegion dst = regionAt(ax, ay);
 				int lx = ax & 63, ly = ay & 63;
 				removeObjectsAt(ax, ay);
-				for (int z = 1; z < 4; z++) {
-					dst.height[z][lx][ly] = src.height[z][x][y];
+				for (int z = withFloor ? 0 : 1; z < 4; z++) {
+					if (z > 0) {
+						dst.height[z][lx][ly] = src.height[z][x][y];
+						dst.underlay[z][lx][ly] = src.underlay[z][x][y];
+						dst.settings[z][lx][ly] = src.settings[z][x][y];
+					}
 					dst.overlay[z][lx][ly] = src.overlay[z][x][y];
 					dst.overlayShape[z][lx][ly] = src.overlayShape[z][x][y];
 					dst.overlayRotation[z][lx][ly] = src.overlayRotation[z][x][y];
-					dst.underlay[z][lx][ly] = src.underlay[z][x][y];
-					dst.settings[z][lx][ly] = src.settings[z][x][y];
 				}
 			}
 		}
@@ -280,9 +843,34 @@ public final class CursedIslandGenerator {
 					continue outer;
 				}
 			}
+			if (withFloor && hasOptions(o.id)) {
+				continue;
+			}
 			int ax = destX + o.x - sx0, ay = destY + o.y - sy0;
 			regionAt(ax, ay).objects.add(new MapRegion.MapObject(o.id, ax & 63, ay & 63, o.z, o.type, o.rotation));
 		}
+	}
+
+	private ConfigDefinitions.Table locTable;
+
+	/** True when an object has right-click options (we don't copy things players could use but nothing handles). */
+	boolean hasOptions(int id) {
+		if (locTable == null) {
+			try {
+				locTable = ConfigDefinitions.load(CacheEditor.Archive.decode(cache.read(0, ConfigDefinitions.CONFIG_ARCHIVE)),
+						"loc", false);
+			} catch (java.io.IOException e) {
+				throw new java.io.UncheckedIOException(e);
+			}
+		}
+		ConfigDefinitions.Definition d = locTable.decode(id);
+		for (int op = 30; op < 35; op++) {
+			String a = d.text(op);
+			if (a != null && !a.equalsIgnoreCase("hidden")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	MapRegion loadRegion(int regionId) throws java.io.IOException {
@@ -295,65 +883,6 @@ public final class CursedIslandGenerator {
 			}
 		}
 		throw new java.io.FileNotFoundException("region " + regionId);
-	}
-
-	void graveyard() {
-		int[][] graves = { {1988, 2920}, {1991, 2920}, {1994, 2920}, {1988, 2917}, {1991, 2917}, {1994, 2917},
-				{1988, 2914}, {1991, 2914}, {1994, 2913}, {1989, 2911} };
-		int[] kinds = { GRAVESTONE, SMALL_GRAVESTONE, GRAVE_MARKER };
-		for (int i = 0; i < graves.length; i++) {
-			object(kinds[i % kinds.length], graves[i][0], graves[i][1], TYPE_SCENERY, 1);
-		}
-		object(LARGE_GRAVE, 1985, 2916, TYPE_SCENERY, 1);
-		object(SKULL_PILE, 1996, 2922, TYPE_SCENERY, 0);
-		object(LONG_SKELETON, 1993, 2909, TYPE_GROUND_DECOR, 0);
-		object(BIG_DEAD_TREE, 1984, 2922, TYPE_SCENERY, 0);
-		object(BIG_DEAD_TREE, 1997, 2908, TYPE_SCENERY, 0);
-	}
-
-	void skullHill() {
-		// carve a flat ledge in front of the cave
-		for (int x = CAVE_ENTRANCE_X - 3; x <= CAVE_ENTRANCE_X + 4; x++) {
-			for (int y = CAVE_ENTRANCE_Y - 4; y <= CAVE_ENTRANCE_Y; y++) {
-				setHeight(x, y, heightAt(CAVE_ENTRANCE_X, CAVE_ENTRANCE_Y - 4));
-				setOverlay(x, y, PATH);
-				removeObjectsAt(x, y);
-			}
-		}
-		object(CAVE_ENTRANCE, CAVE_ENTRANCE_X, CAVE_ENTRANCE_Y, TYPE_SCENERY, 0);
-		object(SKULL_PILE, CAVE_ENTRANCE_X - 2, CAVE_ENTRANCE_Y, TYPE_SCENERY, 0);
-		object(SKULL_PILE, CAVE_ENTRANCE_X + 4, CAVE_ENTRANCE_Y, TYPE_SCENERY, 0);
-		object(TORCH, CAVE_ENTRANCE_X - 1, CAVE_ENTRANCE_Y - 2, TYPE_SCENERY, 0);
-		object(TORCH, CAVE_ENTRANCE_X + 3, CAVE_ENTRANCE_Y - 2, TYPE_SCENERY, 0);
-		for (int i = 0; i < 10; i++) {
-			int x = CX - 8 + random.nextInt(17), y = CY + 26 + random.nextInt(10);
-			if (isFree(x, y, 1)) {
-				object(ROCKS + random.nextInt(3), x, y, TYPE_SCENERY, random.nextInt(4));
-			}
-		}
-	}
-
-	void vegetation() {
-		for (int x = BASE_X; x < BASE_X + 64 * SURFACE_REGIONS; x++) {
-			for (int y = BASE_Y; y < BASE_Y + 64 * SURFACE_REGIONS; y++) {
-				double d = inland(x, y);
-				if (d < 1 || !isFree(x, y, 2)) {
-					continue;
-				}
-				int roll = random.nextInt(1000);
-				if (d < 4.5) {
-					if (roll < 35) {
-						object(roll < 12 ? LEAFY_PALM : PALM, x, y, TYPE_SCENERY, random.nextInt(4));
-					}
-				} else if (roll < 22) {
-					object(roll < 8 ? BIG_DEAD_TREE : DEAD_TREE, x, y, TYPE_SCENERY, random.nextInt(4));
-				} else if (roll < 26) {
-					object(ROCKS + random.nextInt(3), x, y, TYPE_SCENERY, random.nextInt(4));
-				} else if (roll < 28) {
-					object(ANIMAL_SKULL, x, y, TYPE_SCENERY, random.nextInt(4));
-				}
-			}
-		}
 	}
 
 	/* ====================================================================== */
@@ -535,11 +1064,11 @@ public final class CursedIslandGenerator {
 				.npcActions("Talk-to", null, "Trade", null, null); // slot 2 = "second click" packet (slot 1 is attack)
 		// the cursed crew: pirates / zombies washed in a pale, drowned green
 		ghostly(npc(npcs, 182, CURSED_PIRATE), npcs, 182, GHOST_HUE, 2, 0.75, 22).name("Cursed pirate")
-				.examine("A dead man who doesn't know it yet.").shorts(95, 34);
+				.examine("A dead man who doesn't know it yet.").shorts(95, 12);
 		ghostly(npc(npcs, 75, DROWNED_DECKHAND), npcs, 75, 33, 3, 0.7, 10).name("Drowned deckhand")
-				.examine("Seaweed hangs from what's left of him.").shorts(95, 24);
+				.examine("Seaweed hangs from what's left of him.").shorts(95, 5);
 		ghostly(npc(npcs, 184, CURSED_FIRST_MATE), npcs, 184, GHOST_HUE, 4, 0.6, 8).name("Cursed first mate")
-				.examine("'Smiling' Sam, Blackbrine's first mate. Something glints at his neck.").shorts(95, 62)
+				.examine("'Smiling' Sam, Blackbrine's first mate. Something glints at his neck.").shorts(95, 20)
 				.shorts(97, 160).shorts(98, 160).set(12, new byte[] { 1 });
 		ghostly(npc(npcs, 376, CAPTAIN_BLACKBRINE), npcs, 376, GHOST_HUE, 1, 0.5, 60).name("Ghost of Captain Blackbrine")
 				.examine("The captain of the Drowned Maiden, bound to this place.").npcActions("Talk-to", null, null, null, null);
@@ -554,9 +1083,57 @@ public final class CursedIslandGenerator {
 		pearl.recolor(tint[0], tint[1]);
 		items.put(VOID_PEARL, pearl);
 
+		ConfigDefinitions.Table locs = ConfigDefinitions.load(config, "loc", false);
+		buildObjects(locs);
+
 		live.forEach((table, defsById) -> defsById.forEach(table::put));
-		ConfigDefinitions.save(config, npcs, items);
+		ConfigDefinitions.save(config, npcs, items, locs);
 		System.out.println("Definitions: " + npcs.size() + " npcs, " + items.size() + " items");
+	}
+
+	/** New scenery: recoloured and rescaled copies of existing objects. */
+	void buildObjects(ConfigDefinitions.Table locs) throws java.io.IOException {
+		if (locs.size() < LOC_BASE) {
+			throw new IllegalStateException("loc.dat has " + locs.size() + " entries, expected " + LOC_BASE
+					+ " - regenerate from the original cache");
+		}
+		// green ghost-fire: the curse's colour, burning in the skull's eyes and the braziers
+		ConfigDefinitions.Definition fire = loc(locs, 2732, GHOSTFIRE).name("Ghostfire").examine("It burns, but gives no warmth.");
+		tintLoc(fire, 23, 6, 1.0, 4, c -> true);
+		ConfigDefinitions.Definition torch = loc(locs, 724, GHOST_TORCH).name("Ghostfire torch")
+				.examine("Someone keeps these lit. You'd rather not meet them.");
+		tintLoc(torch, 23, 6, 1.0, 4, c -> (c >> 7 & 7) == 7);
+		// bone-white fangs: stalagmites recoloured and stretched
+		loc(locs, 541, BONE_FANG).name("Fang").examine("A tooth as tall as a man.").remove(40).remove(21)
+				.recolor(new int[] { 5916 }, new int[] { BONE }).scale(150, 330, 150);
+		loc(locs, 541, BIG_FANG).name("Fang").examine("The skull's teeth. Some still have bits of ship in them.").remove(40)
+				.remove(21).recolor(new int[] { 5916 }, new int[] { BONE_DARK }).scale(230, 560, 230);
+		// the skull of a sea serpent, beached long ago
+		loc(locs, 697, SERPENT_SKULL).name("Sea serpent skull").examine("Whatever killed this is still out there.")
+				.scale(1000, 1000, 1000).footprint(4, 4);
+		loc(locs, 14013, GIANT_RIBS).name("Serpent ribs").examine("The ribs of something enormous.").scale(260, 300, 260);
+		// the Jolly Roger of the Drowned Maiden
+		ConfigDefinitions.Definition flag = loc(locs, 10541, BLACK_FLAG).name("Black flag").examine("The colours of the Drowned Maiden.");
+		tintLoc(flag, 0, 0, 0.2, 2, c -> c != 6932);
+		// palms withered by the curse
+		ConfigDefinitions.Definition palm = loc(locs, 1311, WITHERED_PALM).examine("This palm has seen better centuries.");
+		tintLoc(palm, 9, 2, 0.9, 0, c -> (c >> 10) == 21);
+		ConfigDefinitions.Definition leafy = loc(locs, 2975, WITHERED_LEAFY_PALM).examine("Its leaves rattle like dry bones.");
+		tintLoc(leafy, 9, 2, 0.9, 0, c -> (c >> 10) == 15);
+		// lamps burning with ghostfire
+		tintLoc(loc(locs, 201, GHOST_LAMP).examine("The flame inside is the wrong colour."), 23, 6, 1.0, 4, c -> (c >> 7 & 7) == 7);
+		tintLoc(loc(locs, 6202, GHOST_LAMP_POST).examine("A lamp post. The light is cold and green."), 23, 6, 1.0, 4,
+				c -> (c >> 7 & 7) == 7);
+	}
+
+	ConfigDefinitions.Definition loc(ConfigDefinitions.Table table, int source, int id) {
+		return putLive(table, id, table.decode(source));
+	}
+
+	void tintLoc(ConfigDefinitions.Definition d, int hue, int sat, double lightScale, int lightAdd,
+			java.util.function.IntPredicate filter) throws java.io.IOException {
+		int[][] t = ConfigDefinitions.tint(cache, d.locModels(), hue, sat, lightScale, lightAdd, filter);
+		d.recolor(t[0], t[1]);
 	}
 
 	/** Clones NPC {@code source} into id {@code id} (appending if it is the next free id). */
@@ -645,7 +1222,7 @@ public final class CursedIslandGenerator {
 					return false;
 				}
 				int lx = (x + dx) & 63, ly = (y + dy) & 63;
-				if (reg.overlay[0][lx][ly] == PATH || reg.overlay[0][lx][ly] == WOOD) {
+				if (reg.overlay[0][lx][ly] != 0) {
 					return false;
 				}
 				for (MapRegion.MapObject o : reg.objects) {
@@ -655,9 +1232,10 @@ public final class CursedIslandGenerator {
 				}
 			}
 		}
-		// keep the camp, graveyard and wreck clearings open
-		return Math.hypot(x - 2032, y - 2912) > 8 && Math.hypot(x - 1991, y - 2916) > 9
-				&& Math.hypot(x - 2015, y - 2884) > 8 && Math.hypot(x - CAVE_ENTRANCE_X, y - CAVE_ENTRANCE_Y) > 5;
+		// keep the town, graveyard, wreck and plaza open
+		return Math.hypot(x - 2016, y - 2905) > 7 && Math.hypot(x - 1988, y - 2918) > 9
+				&& Math.hypot(x - 2008, y - 2888) > 4 && Math.hypot(x - SKX, y - FACE_Y0 + 4) > 11
+				&& Math.hypot(x - 2028, y - 2903) > 5;
 	}
 
 	/** Cheap deterministic value noise in roughly [-1, 1]. */

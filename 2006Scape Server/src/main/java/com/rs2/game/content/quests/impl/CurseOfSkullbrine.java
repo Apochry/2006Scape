@@ -36,7 +36,8 @@ public final class CurseOfSkullbrine {
 		int stage = player.skullbrine;
 		if (stage == NOT_STARTED) {
 			line = write(player, line, "I can start this quest by speaking to @dre@Bosun Grimsby@bla@ on",
-					"the docks of @dre@Port Sarim@bla@.", "", "@dre@Requirements:", "Able to survive a fight against level 62 foes.");
+					"the docks of @dre@Port Sarim@bla@.", "", "@dre@Requirements:", "None - suitable for new adventurers.",
+						"Bring some food: the cursed crew bite back (level 5-20).");
 		} else {
 			line = write(player, line, strike(stage > STARTED, "Bosun Grimsby asked me to find out what happened to"),
 					strike(stage > STARTED, "his brother's ship, the Drowned Maiden, at Skullbrine Isle."));
@@ -46,16 +47,16 @@ public final class CurseOfSkullbrine {
 			if (stage >= FIND_LOG) {
 				line = write(player, line, "", strike(stage > FIND_LOG, "Mad Pete, the ship's cook, told me the crew were cursed"),
 						strike(stage > FIND_LOG, "after Captain Blackbrine stole a pearl from a humming door."),
-						strike(stage > FIND_LOG, "I should search the captain's remains by the wreck."));
+						strike(stage > FIND_LOG, "I should search the captain's remains by the wreck in the cove."));
 			}
 			if (stage >= FIND_KEY) {
 				line = write(player, line, "", strike(stage > FIND_KEY, "The captain's log says he locked the pearl in his chest"),
-						strike(stage > FIND_KEY, "under the skull hill and hung the key around the neck of"),
+						strike(stage > FIND_KEY, "inside Skull Rock and hung the key around the neck of"),
 						strike(stage > FIND_KEY, "his first mate, 'Smiling' Sam."));
 			}
 			if (stage >= RETURN_PEARL) {
 				line = write(player, line, "", strike(stage > RETURN_PEARL, "I have the Void pearl. I must return it to the portal"),
-						strike(stage > RETURN_PEARL, "deep in the caves to lift the curse."));
+						strike(stage > RETURN_PEARL, "deep inside Skull Rock to lift the curse."));
 			}
 			if (stage == PEARL_RETURNED) {
 				line = write(player, line, "", "I returned the pearl. I should speak to the captain's ghost.");
