@@ -628,11 +628,11 @@ public final class LadderWeapons {
 	}
 
 	/* ====================================================================== */
-	/*                         20. STARMETAL WARHAMMER                        */
+	/*                         20. GRAVESTAR WARHAMMER                        */
 	/* ====================================================================== */
 
 	/** The Barrowstone hammer, faced in starmetal at Gatehold's anvil: a pale ringing head, a beak, a star-shard set in it. */
-	static ModelData starmetalHammer() {
+	static ModelData gravestarHammer() {
 		ModelData m = new ModelData();
 		int shard = violet(92, 6), shardCore = violet(118, 3);
 		haft(m, 2, 60, 2.5, 2.2, BLACKSTEEL);
@@ -833,6 +833,209 @@ public final class LadderWeapons {
 	}
 
 	/* ====================================================================== */
+	/*                            26. EVENTIDE LONGBOW                        */
+	/* ====================================================================== */
+
+	/** A bow of dusk: limbs gilt at the tips going violet at the grip, a setting sun behind the hand, a string of starlight. */
+	static ModelData eventideBow(double bend) {
+		ModelData m = new ModelData();
+		int dusk = violet(34, 5), duskDark = violet(20, 4), gold = hsl(8, 4, 66), goldDark = hsl(8, 5, 44), sun = hsl(7, 5, 92), sunCore = hsl(9, 2, 122);
+		double k = 185 / 127.0, rk = Math.sqrt(k);
+		bow(m, 185, bend, new double[] { 1.7, 2.3, 3.1, 3.7, 4.0, 3.7, 3.1, 2.3, 1.7 }, dusk, duskDark, NIGHT_DARK, gold, STAR_WHITE);
+		// gilt sleeves over the outer limbs
+		double[][] limb = { { 3, 4 }, { 8, -0.5 }, { 24, 7 } };
+		for (int end = 0; end < 2; end++) {
+			for (int i = 0; i + 1 < limb.length; i++) {
+				double s0 = limb[i][0] * k, s1 = limb[i + 1][0] * k;
+				double w0 = (limb[i][1] < 0 ? limb[i][1] : limb[i][1] * bend) * rk, w1 = (limb[i + 1][1] < 0 ? limb[i + 1][1] : limb[i + 1][1] * bend) * rk;
+				if (end == 1) {
+					s0 = 185 - s0;
+					s1 = 185 - s1;
+				}
+				tube(m, f(s0, w0, 0), f(s1, w1, 0), 2.3 + i * 0.6, 2.9 + i * 0.6, 4, Math.PI / 4, i == 0 ? gold : goldDark, gold);
+			}
+		}
+		// the setting sun behind the grip: a gold disc risen past the belly, and its rays
+		double gw = 6 * bend * rk + 1.2, sw = gw + 7;
+		tube(m, f(92.5, sw, -1.0), f(92.5, sw, 1.0), 10.5, 10.5, 8, 0, sun, sun);
+		tube(m, f(92.5, sw, -1.4), f(92.5, sw, 1.4), 6.0, 6.0, 8, 0, sunCore, sunCore);
+		for (int r = 0; r < 7; r++) {
+			double a = Math.PI * (r + 1) / 8; // a fan over the outside (+w)
+			double len = r % 2 == 0 ? 24 : 17;
+			tube(m, f(92.5 - Math.cos(a) * 10, sw + Math.sin(a) * 10, 0), f(92.5 - Math.cos(a) * len, sw + Math.sin(a) * len, 0), 1.9, 0, 4,
+					Math.PI / 4, r % 2 == 0 ? sun : gold, gold);
+		}
+		// a star at each nock
+		star(m, f(-1, 4 * bend * rk + 5, 0), 3.2, 1.0, STAR_WHITE, sun);
+		star(m, f(186, 4 * bend * rk + 5, 0), 3.2, 1.0, STAR_WHITE, sun);
+		return m;
+	}
+
+	/* ====================================================================== */
+	/*                                27. SUNSPEAR                            */
+	/* ====================================================================== */
+
+	/** A spear with the sun on it: a white-gold leaf blade rising out of a burning corona, on a haft of pale ash bound in gold. */
+	static ModelData sunspear() {
+		ModelData m = new ModelData();
+		int ash = hsl(8, 2, 84), ashDark = hsl(8, 2, 66), gold = hsl(8, 4, 64), goldDark = hsl(8, 5, 44), goldBright = hsl(9, 2, 112),
+				ember = hsl(4, 6, 74), emberHot = hsl(6, 5, 100), core = hsl(9, 1, 124);
+		haft(m, 6, 206, 3.0, 2.7, ash);
+		tube(m, f(-6, 0, 0), f(6, 0, 0), 0, 3.2, 4, Math.PI / 4, gold, goldDark);
+		band(m, 106, 136, 3.2, LEATHER);
+		for (double s : new double[] { 60, 104, 136, 180 }) {
+			band(m, s, s + 2, 3.3, gold);
+		}
+		tube(m, f(150, 0, 0), f(170, 0, 0), 2.7, 2.7, 4, Math.PI / 4, ashDark, ashDark);
+		// the socket, and the sun: a gold disc ringed with burning rays
+		collar(m, 200, 214, 3.0, 4.2, goldDark);
+		collar(m, 214, 224, 4.2, 3.6, gold);
+		double cs = 218;
+		tube(m, f(cs, 0, -1.8), f(cs, 0, 1.8), 9.0, 9.0, 10, 0, gold, gold);
+		tube(m, f(cs, 0, -2.4), f(cs, 0, 2.4), 5.0, 5.0, 10, 0, core, core);
+		for (int k = 0; k < 12; k++) {
+			double a = Math.PI * 2 * k / 12 + Math.PI / 12;
+			double r = (k % 2 == 0 ? 24 : 16) * (Math.abs(Math.cos(a)) > 0.8 ? 0.75 : 1);
+			tube(m, f(cs + Math.cos(a) * 8, Math.sin(a) * 8, 0), f(cs + Math.cos(a) * r, Math.sin(a) * r, 0), 2.4, 0, 4, a + Math.PI / 4,
+					k % 2 == 0 ? emberHot : ember, ember);
+		}
+		// the blade: a long leaf of white gold, its edges catching the light
+		bladeStrip(m, new double[][] { { 222, 3.0, 2.0 }, { 238, 6.8, 2.2 }, { 254, 5.6, 1.9 }, { 268, 3.4, 1.4 } }, 290, goldBright, core, 0.5);
+		gem(m, 236, 0, 2.2, 3.4, emberHot, emberHot);
+		return m;
+	}
+
+	/* ====================================================================== */
+	/*                         28. STAFF OF THE FIRST STAR                    */
+	/* ====================================================================== */
+
+	/** The first star that ever burned over Nythera, caught in a gold armillary of three rings on a staff of night. */
+	static ModelData firstStarStaff() {
+		ModelData m = new ModelData();
+		int gold = hsl(8, 4, 64), goldDark = hsl(8, 5, 44), goldBright = hsl(9, 2, 104), core = hsl(42, 0, 126), halo = hsl(10, 2, 116);
+		tube(m, f(6, 0, 0), f(196, 0, 0), 3.6, 4.0, 6, 0, NIGHT, NIGHT_DARK);
+		tube(m, f(-2, 0, 0), f(6, 0, 0), 1.2, 3.9, 6, 0, gold, goldDark);
+		band(m, 100, 138, 4.2, NIGHT_DARK);
+		for (double s : new double[] { 30, 98, 138, 170 }) {
+			collar(m, s, s + 2.5, 4.6, 4.6, gold);
+		}
+		// small stars set up the haft, like the staff's own sky
+		for (double s : new double[] { 50, 74, 160, 184 }) {
+			gem(m, s, 0, 1.2, 4.8, goldBright, goldBright);
+		}
+		// the cradle: three gold arms lifting the armillary
+		collar(m, 194, 202, 4.2, 6.2, goldDark);
+		double cs = 216, R = 14;
+		for (int k = 0; k < 3; k++) {
+			double a = Math.PI * 2 * k / 3;
+			tube(m, f(200, Math.cos(a) * 5, Math.sin(a) * 5), f(cs - R * 0.8, Math.cos(a) * R * 0.6, Math.sin(a) * R * 0.6), 1.6, 1.2, 4, a, gold, gold);
+		}
+		// the armillary: three gold rings round one centre, each tilted
+		double[][][] planes = { { { 1, 0, 0 }, { 0, 1, 0 } }, { { 1, 0, 0 }, { 0, 0.5, 0.866 } }, { { 0.25, 0.7, 0 }, { 0, 0, 1 } } };
+		for (int p = 0; p < planes.length; p++) {
+			double[] U = unit(planes[p][0]), V = unit(planes[p][1]);
+			int seg = 10;
+			for (int i = 0; i < seg; i++) {
+				double a0 = Math.PI * 2 * i / seg, a1 = Math.PI * 2 * (i + 1) / seg;
+				double[] p0 = f(cs + R * (U[0] * Math.cos(a0) + V[0] * Math.sin(a0)), R * (U[1] * Math.cos(a0) + V[1] * Math.sin(a0)),
+						R * (U[2] * Math.cos(a0) + V[2] * Math.sin(a0)));
+				double[] p1 = f(cs + R * (U[0] * Math.cos(a1) + V[0] * Math.sin(a1)), R * (U[1] * Math.cos(a1) + V[1] * Math.sin(a1)),
+						R * (U[2] * Math.cos(a1) + V[2] * Math.sin(a1)));
+				tube(m, p0, p1, 1.1, 1.1, 3, 0, p == 0 ? goldBright : gold, gold);
+			}
+		}
+		// the first star, white, with a halo, its long ray up the staff
+		star(m, f(cs, 0, 0), 11, 3.2, core, halo);
+		tube(m, f(cs, 0, 0), f(cs + 6, 0, 0), 6, 0, 6, 0, core, core);
+		tube(m, f(cs, 0, 0), f(cs - 6, 0, 0), 6, 0, 6, 0, halo, halo);
+		return m;
+	}
+
+	/* ====================================================================== */
+	/*                          29. KINGSBANE BATTLEAXE                       */
+	/* ====================================================================== */
+
+	/**
+	 * The axe that was forged to end a king: two great black bits edged in gold, a crown on the haft-top with a single red
+	 * stone in it, and a haft of blackened oak bound in gold.
+	 */
+	static ModelData kingsbaneAxe() {
+		ModelData m = new ModelData();
+		int black = BLACKSTEEL, blackLight = BLACKSTEEL_LIGHT, gold = hsl(8, 4, 64), goldDark = hsl(8, 5, 44), goldBright = hsl(9, 2, 106),
+				ruby = hsl(0, 6, 56), rubyHot = hsl(1, 5, 86);
+		haft(m, 2, 70, 2.8, 2.5, hsl(6, 3, 18));
+		knob(m, 1.5, 3.8, 3.0, gold, goldDark);
+		band(m, 4, 20, 3.1, LEATHER_DARK);
+		for (double s : new double[] { 21, 30 }) {
+			band(m, s, s + 1.5, 3.2, gold);
+		}
+		collar(m, 34, 64, 4.2, 3.8, goldDark);
+		// the front bit: a huge crescent, gold along the whole edge
+		double[][] front = { { 37, 3 }, { 30, 12 }, { 16, 27 }, { 26, 30 }, { 38, 33 }, { 50, 34 }, { 62, 33 }, { 74, 30 }, { 82, 25 }, { 70, 12 },
+				{ 60, 3 } };
+		plateSW(m, front, new double[] { 2.8, 1.8, 0, 0, 0, 0, 0, 0, 0, 1.8, 2.8 }, new double[] { 49, 16 }, 2.8, blackLight, goldBright, black);
+		// the back bit, smaller, swept the other way
+		double[][] back = { { 39, -3 }, { 34, -10 }, { 22, -22 }, { 36, -24 }, { 48, -25 }, { 60, -24 }, { 70, -20 }, { 62, -10 }, { 57, -3 } };
+		plateSW(m, back, new double[] { 2.4, 1.6, 0, 0, 0, 0, 0, 1.6, 2.4 }, new double[] { 48, -13 }, 2.4, blackLight, goldBright, black);
+		// gold rivets on the bits' cheeks
+		gem(m, 49, 9, 2.0, 3.6, gold, gold);
+		gem(m, 48, -8, 1.8, 3.2, gold, gold);
+		// the crown on top: a gold circlet, five points, and the one red stone
+		collar(m, 64, 66, 3.8, 6.4, goldDark);
+		collar(m, 66, 70, 6.4, 6.4, gold);
+		for (int k = 0; k < 5; k++) {
+			double a = Math.PI * 2 * k / 5;
+			tube(m, f(69, Math.cos(a) * 6, Math.sin(a) * 6), f(77, Math.cos(a) * 7, Math.sin(a) * 7), 1.9, 0, 4, a, goldBright, gold);
+		}
+		tube(m, f(68, 0, 0), f(73, 0, 0), 3.4, 2.4, 6, 0, ruby, ruby);
+		tube(m, f(73, 0, 0), f(77, 0, 0), 2.4, 0, 6, 0, rubyHot, ruby);
+		return m;
+	}
+
+	/* ====================================================================== */
+	/*                              30. LAST LIGHT                            */
+	/* ====================================================================== */
+
+	/**
+	 * The last light there was before the Starless ate the sky, held in a sword: a split blade of white gold with the rift
+	 * burning in the slot between its tines, and an eclipse for a guard - a black sun in a ring of fire.
+	 */
+	static ModelData lastLight() {
+		ModelData m = new ModelData();
+		int metal = hsl(9, 2, 88), metalDark = hsl(9, 3, 62), edge = hsl(9, 1, 120), gold = hsl(8, 4, 64), goldDark = hsl(8, 5, 44),
+				black = violet(6, 1), rift = violet(100, 6), riftCore = violet(124, 2), corona = hsl(6, 5, 96), coronaHot = hsl(9, 2, 120);
+		// a little sun for a pommel, a black grip bound in gold
+		star(m, f(2, 0, 0), 4.4, 1.6, coronaHot, gold);
+		tube(m, f(4, 0, 0), f(7, 0, 0), 3.0, 2.0, 6, 0, gold, goldDark);
+		tube(m, f(7, 0, 0), f(36, 0, 0), 2.2, 2.4, 4, Math.PI / 4, black, black);
+		for (double s : new double[] { 11, 16, 21, 26, 31 }) {
+			band(m, s, s + 0.9, 2.65, gold);
+		}
+		// the eclipse: a black disc in a burning ring, a corona of rays flat in the blade's plane
+		double es = 41;
+		tube(m, f(es, 0, -2.2), f(es, 0, 2.2), 7.4, 7.4, 10, 0, black, black);
+		tube(m, f(es, 0, -1.4), f(es, 0, 1.4), 9.6, 9.6, 10, 0.3, coronaHot, coronaHot);
+		for (int k = 0; k < 14; k++) {
+			double a = Math.PI * 2 * k / 14 + Math.PI / 14;
+			double len = (k % 2 == 0 ? 19 : 14) * (Math.abs(Math.cos(a)) > 0.8 ? 0.7 : 1);
+			tube(m, f(es + Math.cos(a) * 8.5, Math.sin(a) * 8.5, 0), f(es + Math.cos(a) * len, Math.sin(a) * len, 0), 2.0, 0, 4, a + Math.PI / 4,
+					k % 2 == 0 ? coronaHot : corona, corona);
+		}
+		// the split blade: two tines meeting at the point, the rift between them
+		for (int side = -1; side <= 1; side += 2) {
+			double[][] tine = { { 48, 2.4 }, { 48, 8.0 }, { 70, 9.0 }, { 108, 8.2 }, { 132, 5.6 }, { 154, 0.4 }, { 130, 2.2 } };
+			for (double[] p : tine) {
+				p[1] *= side;
+			}
+			plateSW(m, tine, new double[] { 1.5, 0, 0, 0, 0, 0, 1.3 }, new double[] { 96, side * 4.6 }, 1.4, metal, edge, metalDark);
+		}
+		diamond(m, new double[][] { { 47, 2.2, 0.9 }, { 96, 2.4, 1.0 }, { 126, 1.8, 0.8 } }, 148, 0, riftCore, rift);
+		collar(m, 44, 50, 3.6, 2.6, goldDark);
+		gem(m, es, 0, 3.2, 3.8, riftCore, riftCore);
+		return m;
+	}
+
+	/* ====================================================================== */
 	/*                               THE LADDER                               */
 	/* ====================================================================== */
 
@@ -896,8 +1099,8 @@ public final class LadderWeapons {
 					() -> hollowheartBow(1.0), () -> hollowheartBow(2.4), SHORTBOW),
 			new Rung(VoidConstants.LADDER[18], "Wand of the Scar", "wand", 70000, "A Silkwood wand that touched a waystone's rune. It's been looking at you since.",
 					LadderWeapons::scarWand, WAND),
-			new Rung(VoidConstants.LADDER[19], "Starmetal warhammer", "warhammer", 90000, "Grave-stone faced in starmetal. It rings for a long time after every blow.",
-					LadderWeapons::starmetalHammer, WARHAMMER),
+			new Rung(VoidConstants.LADDER[19], "Gravestar warhammer", "warhammer", 90000, "Grave-stone faced in starmetal. It rings for a long time after every blow.",
+					LadderWeapons::gravestarHammer, WARHAMMER),
 			new Rung(VoidConstants.LADDER[20], "Riftglass halberd", "halberd", 140000, "Knapped from the rift's own edge. Through the seam you can see somewhere else.",
 					LadderWeapons::riftglassHalberd, HALBERD),
 			new Rung(VoidConstants.LADDER[21], "Rimeheart staff", "staff", 130000, "A frozen heart in a claw of ice. It never needs water runes; it's made of the stuff.",
@@ -907,7 +1110,17 @@ public final class LadderWeapons {
 			new Rung(VoidConstants.LADDER[23], "Crownbreaker mace", "mace", 260000, "This broke the Hollow King's crown. The star inside it is still angry about that.",
 					LadderWeapons::crownbreakerMace, MACE),
 			new Rung(VoidConstants.LADDER[24], "Starless longsword", "longsword", 400000, "The Starless shed it like a scale. There are stars in the blade, and the eye is open.",
-					LadderWeapons::starlessLongsword, LONGSWORD), };
+					LadderWeapons::starlessLongsword, LONGSWORD),
+			new Rung(VoidConstants.LADDER[25], "Eventide longbow", "longbow", 300000, "Strung at dusk with the first starlight. Its arrows land after dark, wherever you are.",
+					() -> eventideBow(1.0), () -> eventideBow(1.3), LONGBOW),
+			new Rung(VoidConstants.LADDER[26], "Sunspear", "spear", 450000, "The sun, on a stick. The Starless has never come near anyone holding one.",
+					LadderWeapons::sunspear, SPEAR),
+			new Rung(VoidConstants.LADDER[27], "Staff of the first star", "staff", 500000, "The first star that ever burned over Nythera, kept in gold. It never needs fire or air runes.",
+					LadderWeapons::firstStarStaff, STAFF),
+			new Rung(VoidConstants.LADDER[28], "Kingsbane battleaxe", "battleaxe", 600000, "Forged to end a king. The stone in the crown is the colour of the job.",
+					LadderWeapons::kingsbaneAxe, BATTLEAXE),
+			new Rung(VoidConstants.LADDER[29], "Last Light 2h sword", "2h sword", 1000000, "The last light before the Starless ate the sky. It's still burning, and it remembers.",
+					LadderWeapons::lastLight, TWO_HANDED), };
 
 	/** Every rung's weapon, in ladder order. */
 	static Weapon[] weapons() {

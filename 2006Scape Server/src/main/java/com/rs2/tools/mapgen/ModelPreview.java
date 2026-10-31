@@ -31,7 +31,9 @@ import com.rs2.game.content.voidrealm.VoidArsenal;
  * and the wielded model on the default body seen from the side, with the right hand ringed in red at (-30, -97, 0)),
  * and {@code sheet.png}, a contact sheet of all of them.
  *
- * <p>Usage (from '2006Scape Server', reads the cache only): {@code ModelPreview data/cache outDir [rank...]}
+ * <p>Usage (from '2006Scape Server', reads the cache only): {@code ModelPreview data/cache outDir [S1|S2] [rank...]}. With
+ * S1 or S2 it draws the starmetal or voidsteel set instead, as {@code S1-NN-name.png} and {@code S1-sheet.png}; rank 0
+ * asks for the sheet alongside the listed cards.
  */
 public final class ModelPreview {
 
@@ -289,15 +291,15 @@ public final class ModelPreview {
 	}
 
 	/** One rung's card: icon, inventory model, wielded on the body; name, type, level and stats. */
-	static BufferedImage card(LadderWeapons.Rung r, int rank, ModelData body, int[] cam, String stats, ModelData baseInv) {
+	static BufferedImage card(LadderWeapons.Rung r, String tag, ModelData body, int[] cam, String stats, ModelData baseInv) {
 		BufferedImage img = new BufferedImage(600, 300, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = img.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setColor(BG);
 		g.fillRect(0, 0, 600, 300);
 		ModelData inv = r.weapon.inventoryModel(), wld = r.weapon.wieldedModel();
-		label(g, String.format("%02d  %s", rank, r.name), 12, 24, GOLD, 17, true);
-		label(g, r.type + "  -  " + VoidArsenal.requirement(rank - 1) + "  -  " + wld.faces.size() + " tris", 12, 44, TEXT, 12, false);
+		label(g, tag + "  " + r.name, 12, 24, GOLD, 17, true);
+		label(g, r.type + "  -  " + VoidArsenal.requirementFor(r.id) + "  -  " + wld.faces.size() + " tris", 12, 44, TEXT, 12, false);
 		label(g, stats == null ? "" : stats, 12, 62, DIM, 12, false);
 		g.setColor(PANEL);
 		g.fillRect(8, 72, 584, 220);
@@ -319,7 +321,8 @@ public final class ModelPreview {
 		File out = new File(args[1]);
 		out.mkdirs();
 		java.util.Set<Integer> only = new java.util.HashSet<>();
-		for (int i = 2; i < args.length; i++) {
+		String set = args.length > 2 && args[2].startsWith("S") ? args[2] : null;
+		for (int i = set == null ? 2 : 3; i < args.length; i++) {
 			only.add(Integer.parseInt(args[i]));
 		}
 		Map<Integer, String> stats = bonuses(new File("data/cfg/ItemDefinitions.json"));
@@ -328,14 +331,16 @@ public final class ModelPreview {
 			CacheEditor.Archive cfg = CacheEditor.Archive.decode(c.read(0, ConfigDefinitions.CONFIG_ARCHIVE));
 			ConfigDefinitions.Table obj = ConfigDefinitions.load(cfg, "obj", false);
 			ModelData body = body(f);
-			LadderWeapons.Rung[] all = LadderWeapons.LADDER;
+			LadderWeapons.Rung[] all = set == null ? LadderWeapons.LADDER : set.equals("S1") ? WeaponSets.STARMETAL_SET : WeaponSets.VOIDSTEEL_SET;
+			String prefix = set == null ? "" : set + "-";
+			String title = set == null ? "The weapon ladder" : set.equals("S1") ? "The starmetal set (Attack 50)" : "The voidsteel set (Attack 70)";
 			int cols = 5, cw = 360, ch = 300, rows = (all.length + cols - 1) / cols;
 			BufferedImage sheet = new BufferedImage(cols * cw, 50 + rows * ch, BufferedImage.TYPE_INT_RGB);
 			Graphics2D sg = sheet.createGraphics();
 			sg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			sg.setColor(BG);
 			sg.fillRect(0, 0, sheet.getWidth(), sheet.getHeight());
-			label(sg, "The weapon ladder - inventory model (left) and wielded on the body (right, red ring = hand)", 14, 32, GOLD, 20, true);
+			label(sg, title + " - inventory model (left) and wielded on the body (right, red ring = hand)", 14, 32, GOLD, 20, true);
 			for (int i = 0; i < all.length; i++) {
 				LadderWeapons.Rung r = all[i];
 				int rank = i + 1;
@@ -347,22 +352,23 @@ public final class ModelPreview {
 				}
 				System.out.printf("%02d %-28s wield %3d tris, inv %3d tris, %d colours, grip s=%.0f of %.0f%n", rank, r.name, wld.faces.size(),
 						inv.faces.size(), new java.util.TreeSet<>(wld.colors).size(), r.weapon.pose.gripS(), r.weapon.pose.length);
+				String tag = prefix + String.format("%02d", rank);
 				if (only.isEmpty() || only.contains(rank)) {
 					String slug = r.name.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
-					ImageIO.write(card(r, rank, body, cam, stats.get(r.id), f.read(r.weapon.pose.baseInv)), "png", new File(out, String.format("%02d-%s.png", rank, slug)));
+					ImageIO.write(card(r, tag, body, cam, stats.get(r.id), f.read(r.weapon.pose.baseInv)), "png", new File(out, tag + "-" + slug + ".png"));
 				}
 				int x0 = (i % cols) * cw, y0 = 50 + (i / cols) * ch;
 				sg.setColor((i % cols + i / cols) % 2 == 0 ? PANEL : new Color(46, 50, 48));
 				sg.fillRect(x0, y0, cw, ch);
-				label(sg, String.format("%02d %s", rank, r.name), x0 + 8, y0 + 18, GOLD, 13, true);
-				label(sg, r.type + " - " + VoidArsenal.requirement(i), x0 + 8, y0 + 34, TEXT, 11, false);
+				label(sg, tag + " " + r.name, x0 + 8, y0 + 18, GOLD, 13, true);
+				label(sg, r.type + " - " + VoidArsenal.requirementFor(r.id), x0 + 8, y0 + 34, TEXT, 11, false);
 				sg.drawImage(icon(inv, cam, 2), x0 + 8, y0 + 42, null);
 				inventoryView(sg, inv, x0 + 8, y0 + 110, 140, 180);
 				wieldedView(sg, body, wld, x0 + 150, y0 + 40, 205, 255);
 			}
 			sg.dispose();
 			if (only.isEmpty() || only.contains(0)) {
-				ImageIO.write(sheet, "png", new File(out, "sheet.png"));
+				ImageIO.write(sheet, "png", new File(out, prefix + "sheet.png"));
 			}
 		}
 	}

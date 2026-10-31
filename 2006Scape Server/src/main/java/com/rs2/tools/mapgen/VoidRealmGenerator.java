@@ -296,13 +296,22 @@ final class VoidRealmGenerator {
 	}
 
 	/**
-	 * The weapon ladder (LadderWeapons, ids 8001-8025, appended in rank order): each clones its base item (so the camera,
-	 * actions and slot data match the pose its models were placed in), drops the base's recolours and extra wielded
-	 * model, and points the inventory and wielded models at the hand-built ones. Women wear the male model, at the
-	 * base item's own female offset.
+	 * The weapon ladder (LadderWeapons, ids 8001-8030, appended in rank order), the Starless shard (8031), then the
+	 * starmetal (8032-8041) and voidsteel (8042-8052) sets from WeaponSets. Each weapon clones its base item (so the
+	 * camera, actions and slot data match the pose its models were placed in), drops the base's recolours and extra
+	 * wielded model, and points the inventory and wielded models at the hand-built ones. Women wear the male model, at
+	 * the base item's own female offset.
 	 */
 	void ladderItems(ConfigDefinitions.Table items) throws java.io.IOException {
-		for (LadderWeapons.Rung r : LadderWeapons.LADDER) {
+		weaponItems(items, LadderWeapons.LADDER);
+		splinter(items, STARLESS_SHARD, "Starless shard", "A flake of the Starless. It's darker than the inside of your eyelids.",
+				ConfigDefinitions.VOID, 3);
+		weaponItems(items, WeaponSets.STARMETAL_SET);
+		weaponItems(items, WeaponSets.VOIDSTEEL_SET);
+	}
+
+	void weaponItems(ConfigDefinitions.Table items, LadderWeapons.Rung[] rungs) throws java.io.IOException {
+		for (LadderWeapons.Rung r : rungs) {
 			QuestWeapons.Weapon w = r.weapon;
 			int inv = forge.pack(w.inventoryModel()), held = forge.pack(w.wieldedModel());
 			ConfigDefinitions.Definition d = g.item(items, w.pose.baseItem, r.id);

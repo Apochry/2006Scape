@@ -22,7 +22,7 @@ import com.rs2.util.Misc;
  * </pre>
  * The weapon ladder (VoidArsenal) has a few rungs here: the Wolfbone shortbow and Barrowstone warhammer in the low
  * band's gear, the Silkwood wand and Scarglass dagger in the middle band's, and the Gravewarden 2h sword and Riftglass
- * halberd on the bonus roll.
+ * halberd on the bonus roll; the high band's bonus roll can also give a starmetal dagger, sword or spear.
  *
  * <p>Tables come in three bands by combat level: under 30, 30-49, and 50 and over. Bosses and quest fights keep their
  * own hand-made tables (in npcdrops.json), as do harmless animals (under combat 15).
@@ -62,7 +62,8 @@ public final class VoidLoot {
 	private static final int[][][] BONUS = {
 			{ { 1329, 1, 1 }, { 1183, 1, 1 }, { 1159, 1, 1 } },
 			{ { 1333, 1, 1 }, { 1147, 1, 1 }, { 1113, 1, 1 }, { WARDEN_BODY, 1, 1 }, { GRAVEWARDEN_2H, 1, 1 } },
-			{ { 1079, 1, 1 }, { 1163, 1, 1 }, { 1215, 1, 1 }, { 1149, 1, 1 }, { RIFTGLASS_HALBERD, 1, 1 } } };
+			{ { 1079, 1, 1 }, { 1163, 1, 1 }, { 1215, 1, 1 }, { 1149, 1, 1 }, { RIFTGLASS_HALBERD, 1, 1 }, { STARMETAL_SET[0], 1, 1 },
+					{ STARMETAL_SET[1], 1, 1 }, { STARMETAL_SET[8], 1, 1 } } };
 
 	/** Bosses and minibosses (hand-made tables), and the adds summoned in boss fights (bones only). */
 	private static final int[] CURATED = { BARROW_THANE, HOLLOW_MATRIARCH, RIMECLAW, BROODMOTHER, HOLLOW_HERALD,

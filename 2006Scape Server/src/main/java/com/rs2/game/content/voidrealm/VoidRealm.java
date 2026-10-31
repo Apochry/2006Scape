@@ -1359,8 +1359,12 @@ public final class VoidRealm {
 				}
 			}
 			break;
-		case "weapons": // ::vt weapons [from to] - the weapon ladder (ranks 1-25) into your inventory
+		case "weapons": // ::vt weapons [from to] - the weapon ladder (ranks 1-30) into your inventory
 			VoidArsenal.spawnAll(p, a.length > 1 ? n[1] : 1, a.length > 2 ? n[2] : LADDER.length);
+			break;
+		case "sets": // ::vt sets 1|2 - the starmetal (1) or voidsteel (2) set, and some metal to work
+			VoidArsenal.spawnSet(p, a.length > 1 ? n[1] : 1);
+			p.getItemAssistant().addItem(a.length > 1 && n[1] == 2 ? STARLESS_SHARD : STARMETAL, 10);
 			break;
 		case "list":
 			for (Npc npc : NpcHandler.npcs) {

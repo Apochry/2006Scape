@@ -45,7 +45,16 @@ public class Specials {
 		// Shatter: the Crownbreaker brings a falling star down on the target (the d mace's blow)
 		CROWNBREAKER_MACE(com.rs2.game.content.voidrealm.VoidConstants.CROWNBREAKER_MACE, 1.40, 1.20, 5, 1060, com.rs2.game.content.voidrealm.VoidConstants.GFX_FALLING_STAR, -1, false, 0),
 		// Eclipse: the Starless longsword closes the sky round the target (the d longsword's cleave)
-		STARLESS_LONGSWORD(com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD, 1.35, 1.30, 6, 1058, com.rs2.game.content.voidrealm.VoidConstants.GFX_ECLIPSE, -1, false, 0);
+		STARLESS_LONGSWORD(com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD, 1.35, 1.30, 6, 1058, com.rs2.game.content.voidrealm.VoidConstants.GFX_ECLIPSE, -1, false, 0),
+		// Starshot: the Eventide longbow looses a shot that lands after dark (the magic longbow's path and projectile)
+		EVENTIDE_LONGBOW(com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW, 1.25, 1.15, 5, 426, -1, -1, false, 0),
+		// Sunburst: the Sunspear's corona bursts on the target (the d spear's lunge)
+		SUNSPEAR(com.rs2.game.content.voidrealm.VoidConstants.SUNSPEAR, 1.30, 1.25, 5, 1064, com.rs2.game.content.voidrealm.VoidConstants.GFX_HEARTFIRE, -1, false, 0),
+		// Last Light: the eclipse on the target, the heart-fire on the wielder (a 2h cleave)
+		LAST_LIGHT_2H(com.rs2.game.content.voidrealm.VoidConstants.LAST_LIGHT_2H, 1.50, 1.20, 6, 407, com.rs2.game.content.voidrealm.VoidConstants.GFX_ECLIPSE,
+				com.rs2.game.content.voidrealm.VoidConstants.GFX_HEARTFIRE, false, 0),
+		// Twin fang: the voidsteel dagger's double stab (the d dagger's)
+		VOIDSTEEL_DAGGER(com.rs2.game.content.voidrealm.VoidConstants.VOIDSTEEL_DAGGER, 1.15, 1.20, 2.5, 1062, -1, 252, true, 0);
 		
 		private int weapon, anim, gfx1, gfx2, specEffect;
 		private double specDamage, specAccuracy, specAmount;
@@ -142,7 +151,11 @@ public class Specials {
 				return;
 			}
 			if (equippedWeapon == SA.getWeapon()) {
-				if (SA.getWeapon() == StaticItemList.MAGIC_LONGBOW || SA.getWeapon() == StaticItemList.MAGIC_SHORTBOW) {
+				if (SA.getWeapon() == StaticItemList.MAGIC_LONGBOW || SA.getWeapon() == StaticItemList.MAGIC_SHORTBOW
+						|| SA.getWeapon() == com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW) {
+					if (SA == specialAttack.EVENTIDE_LONGBOW) {
+						player.getPacketSender().sendMessage("@red@The arrow goes up into the dusk, and comes down as a star.");
+					}
 					player.usingBow = true;
 					player.bowSpecShot = 1;
 					player.rangeItemUsed = player.playerEquipment[player.playerArrows];
@@ -174,9 +187,14 @@ public class Specials {
 				} else {
 					String cry = SA == specialAttack.NIGHTGLASS_SCIMITAR ? "The nightglass opens the air, and the void pours into the wound!"
 							: SA == specialAttack.CROWNBREAKER_MACE ? "The star in the mace breaks free and falls!"
-									: SA == specialAttack.STARLESS_LONGSWORD ? "The eye in the guard opens. The sky closes." : null;
+									: SA == specialAttack.STARLESS_LONGSWORD ? "The eye in the guard opens. The sky closes."
+											: SA == specialAttack.SUNSPEAR ? "The sun on the spear bursts!"
+													: SA == specialAttack.LAST_LIGHT_2H ? "The last light there was flares, and the dark falls on your foe." : null;
 					if (cry != null) {
 						player.getPacketSender().sendMessage("@red@" + cry);
+					}
+					if (SA.getGfx2() != -1) {
+						player.gfx0(SA.getGfx2());
 					}
 					if (other != null) {
 						other.gfx0(SA.getGfx1());
@@ -270,7 +288,8 @@ public class Specials {
 			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_SCIMITAR
 					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND
 					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.NIGHTGLASS_SCIMITAR
-					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD) {
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.LAST_LIGHT_2H) {
 				player2.specBarId = 7611;
 				player2.usingSpecial = !player2.usingSpecial;
 				player2.getItemAssistant().updateSpecialBar();
@@ -295,13 +314,16 @@ public class Specials {
 			break;
 
 		case 29063:
-		if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_BATTLEAXE) {
+		if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_BATTLEAXE
+				|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.KINGSBANE_BATTLEAXE) {
+			boolean kingsbane = player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.KINGSBANE_BATTLEAXE;
 			if (player2.specAmount >= 5) {
-				player2.gfx0(246);
-				player2.forcedChat("Raarrrrrgggggghhhhhhh!");
+				// Regicide: the Kingsbane's rampage burns hotter (Strength +20%, not +15%)
+				player2.gfx0(kingsbane ? com.rs2.game.content.voidrealm.VoidConstants.GFX_HEARTFIRE : 246);
+				player2.forcedChat(kingsbane ? "No more kings!" : "Raarrrrrgggggghhhhhhh!");
 				player2.startAnimation(1056);
 				player2.specAmount -= 5;
-				player2.playerLevel[Constants.STRENGTH] = player2.getPlayerAssistant().getLevelForXP(player2.playerXP[Constants.STRENGTH]) + player2.getPlayerAssistant().getLevelForXP(player2.playerXP[Constants.STRENGTH]) * 15 / 100;
+				player2.playerLevel[Constants.STRENGTH] = player2.getPlayerAssistant().getLevelForXP(player2.playerXP[Constants.STRENGTH]) + player2.getPlayerAssistant().getLevelForXP(player2.playerXP[Constants.STRENGTH]) * (kingsbane ? 20 : 15) / 100;
 				player2.getPlayerAssistant().refreshSkill(Constants.STRENGTH);
 				player2.getItemAssistant().updateSpecialBar();
 			} else {
@@ -321,7 +343,8 @@ public class Specials {
 		case 29138:
 			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_DAGGER || player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_DAGGERP
 				|| player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_DAGGER_5680 || player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_DAGGERS
-				|| player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_LONGSWORD) {
+				|| player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_LONGSWORD
+				|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.VOIDSTEEL_DAGGER) {
 				player2.specBarId = 7586;
 				player2.usingSpecial = !player2.usingSpecial;
 				player2.getItemAssistant().updateSpecialBar();
@@ -329,7 +352,8 @@ public class Specials {
 			break;
 
 		case 29113:
-			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.MAGIC_SHORTBOW || player2.playerEquipment[player2.playerWeapon] == StaticItemList.MAGIC_LONGBOW) {
+			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.MAGIC_SHORTBOW || player2.playerEquipment[player2.playerWeapon] == StaticItemList.MAGIC_LONGBOW
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW) {
 				player2.specBarId = 7561;
 				player2.usingSpecial = !player2.usingSpecial;
 				player2.getItemAssistant().updateSpecialBar();

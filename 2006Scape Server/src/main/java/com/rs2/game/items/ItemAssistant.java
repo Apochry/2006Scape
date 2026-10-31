@@ -1146,6 +1146,7 @@ public class ItemAssistant {
 			case 859: // magic bows
 			case 861:
 			case 11235:
+			case com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW: // Starshot
 				player.getPacketSender().sendHideInterfaceLayer(7549, false);
 				specialAmount(weapon, player.specAmount, 7561);
 				break;
@@ -1154,6 +1155,7 @@ public class ItemAssistant {
 			case com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND: // Heartfire (the longsword tab shares the scimitar's bar)
 			case com.rs2.game.content.voidrealm.VoidConstants.NIGHTGLASS_SCIMITAR: // Rend
 			case com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD: // Eclipse
+			case com.rs2.game.content.voidrealm.VoidConstants.LAST_LIGHT_2H: // Last Light
 				player.getPacketSender().sendHideInterfaceLayer(7599, false);
 				specialAmount(weapon, player.specAmount, 7611);
 				break;
@@ -1164,6 +1166,7 @@ public class ItemAssistant {
 				break;
 
 			case 1377: // d battleaxe
+			case com.rs2.game.content.voidrealm.VoidConstants.KINGSBANE_BATTLEAXE: // Regicide
 				player.getPacketSender().sendHideInterfaceLayer(7499, false);
 				specialAmount(weapon, player.specAmount, 7511);
 				break;
@@ -1174,6 +1177,7 @@ public class ItemAssistant {
 				break;
 
 			case 1249: // dspear
+			case com.rs2.game.content.voidrealm.VoidConstants.SUNSPEAR: // Sunburst
 				player.getPacketSender().sendHideInterfaceLayer(7674, false);
 				specialAmount(weapon, player.specAmount, 7686);
 				break;
@@ -1183,6 +1187,7 @@ public class ItemAssistant {
 			case 5680:
 			case 5698:
 			case 1305: // dragon long
+			case com.rs2.game.content.voidrealm.VoidConstants.VOIDSTEEL_DAGGER: // Twin fang
 			case 11694:
 			case 11698:
 			case 11700:

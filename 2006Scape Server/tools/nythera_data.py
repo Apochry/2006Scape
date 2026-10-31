@@ -107,12 +107,14 @@ def droptable(i, items):
 droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (8022, 15, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])  # sentinel: Rimecleaver, Rimeheart staff, water runes, rune legs
 droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
 # the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
-droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (7983, 11, 1, 1), (7984, 11, 1, 1),
-                 (8023, 23, 1, 1), (8024, 31, 1, 1), (8025, 63, 1, 1),  # the ladder's top three
+droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (8031, 0, 1, 2), (7983, 11, 1, 1), (7984, 11, 1, 1),
+                 (8023, 23, 1, 1), (8024, 31, 1, 1), (8025, 63, 1, 1),  # the ladder's top rungs
+                 (8026, 79, 1, 1), (8027, 95, 1, 1), (8028, 111, 1, 1), (8029, 127, 1, 1),
+                 (8042, 39, 1, 1), (8034, 29, 1, 1),  # a voidsteel dagger, a starmetal longsword
                  (7990, 35, 1, 1), (7991, 35, 1, 1), (7992, 35, 1, 1), (7993, 35, 1, 1), (7994, 35, 1, 1), (7995, 35, 1, 1),
                  (1149, 7, 1, 1),
                  (1215, 5, 1, 1), (1187, 40, 1, 1), (1615, 9, 1, 1), (2363, 2, 3, 6), (560, 1, 50, 150), (385, 1, 5, 10)])
-droptable(3890, [(592, 0, 1, 1), (7979, 3, 1, 1)])   # spawn: sometimes a shard of starmetal
+droptable(3890, [(592, 0, 1, 1), (8031, 3, 1, 1), (7979, 3, 1, 1)])   # spawn: sometimes a Starless shard, or starmetal
 save('npcdrops.json', drops)
 
 # the bosses' uniques: equipment bonuses, in ItemDefinitions.json's own compact format
@@ -193,15 +195,52 @@ ladder = [
     (3.6, {S: -4, SL: 74, C: 60, DSL: 2, DC: 2, ST: 76}),                          # 17 Gravewarden 2h sword (Att 45)
     (1.0, {R: 60}),                                                                # 18 Hollowheart shortbow (Ranged 45)
     (0.3, {M: 15, DM: 10, P: 2}),                                                  # 19 Wand of the Scar (Magic 50)
-    (3.0, {S: -4, SL: -4, C: 64, DS: 2, DSL: 2, DC: 2, ST: 68, P: 2}),             # 20 Starmetal warhammer (Att 55)
+    (3.0, {S: -4, SL: -4, C: 64, DS: 2, DSL: 2, DC: 2, ST: 68, P: 2}),             # 20 Gravestar warhammer (Att 55)
     (3.0, {S: 66, SL: 90, M: -4, DSL: 4, DR: 4, ST: 88}),                          # 21 Riftglass halberd (Att 60, Str 40)
     (2.2, {S: 12, SL: -1, C: 44, M: 18, DS: 2, DSL: 3, DC: 1, DM: 18, ST: 42, P: 2}),  # 22 Rimeheart staff (Magic 65)
     (1.6, {S: 12, SL: 72, C: -2, M: 2, ST: 72}),                                   # 23 Nightglass scimitar (Att 70)
     (2.2, {S: 46, SL: -2, C: 84, M: 6, DSL: 2, DC: 2, DM: 4, ST: 78, P: 6}),       # 24 Crownbreaker mace (Att 75)
     (1.8, {S: 70, SL: 90, C: -2, M: 6, DS: 4, DSL: 4, DC: 4, DM: 6, DR: 4, ST: 92, P: 4}),  # 25 Starless longsword (Att 80)
+    (1.4, {R: 92, DM: 4, DR: 4}),                                                  # 26 Eventide longbow (Ranged 85)
+    (2.6, {S: 86, SL: 86, C: 86, DS: 6, DSL: 6, DC: 6, DM: 4, ST: 94, P: 2}),      # 27 Sunspear (Att 85)
+    (2.2, {S: 14, SL: -1, C: 50, M: 26, DS: 3, DSL: 4, DC: 2, DM: 26, ST: 48, P: 4}),  # 28 Staff of the first star (Magic 90)
+    (3.2, {S: -2, SL: 104, C: 96, DSL: 3, DC: 3, ST: 118, P: 3}),                 # 29 Kingsbane battleaxe (Att 90, Str 80)
+    (3.6, {S: -4, SL: 124, C: 108, DS: 4, DSL: 6, DC: 4, DM: 6, ST: 128, P: 6}),  # 30 Last Light 2h sword (Att 99, Str 90)
 ]
 for rank, (w, b) in enumerate(ladder):
     uniques[8001 + rank] = (w, b)
+# the two smithed tiers (WeaponSets), in set order: dagger, sword, longsword, scimitar, mace, warhammer, battleaxe,
+# 2h sword, spear, halberd (and voidsteel's longbow). Starmetal sits between rune and dragon, voidsteel above dragon;
+# within a set the dagger is weakest and quickest, the 2h sword and halberd strongest and slowest, as rune's are.
+starmetal = [
+    (0.4, {S: 33, SL: 18, C: -4, M: 1, ST: 32}),
+    (1.6, {S: 46, SL: 34, C: -2, DSL: 2, DC: 1, ST: 47}),
+    (1.8, {S: 48, SL: 58, C: -2, DSL: 3, DC: 2, ST: 60}),
+    (1.6, {S: 8, SL: 56, C: -2, DSL: 1, ST: 55}),
+    (1.8, {S: 30, SL: -2, C: 50, DSL: 1, ST: 46, P: 4}),
+    (2.7, {S: -4, SL: -4, C: 64, ST: 60}),
+    (2.9, {S: -2, SL: 59, C: 54, DSL: 1, ST: 74}),
+    (3.6, {S: -4, SL: 80, C: 65, DSL: 2, DC: 1, ST: 82}),
+    (2.2, {S: 46, SL: 46, C: 46, DS: 5, DSL: 5, DC: 5, ST: 51}),
+    (3.0, {S: 58, SL: 80, M: -4, DS: -1, DSL: 4, DR: 5, ST: 78}),
+]
+voidsteel = [
+    (0.4, {S: 48, SL: 32, C: -4, M: 2, ST: 47}),
+    (1.6, {S: 62, SL: 46, C: -2, DSL: 2, DC: 1, ST: 63}),
+    (1.8, {S: 66, SL: 78, C: -2, DSL: 3, DC: 2, ST: 80}),
+    (1.6, {S: 10, SL: 76, C: -2, DSL: 1, ST: 75}),
+    (1.8, {S: 48, SL: -2, C: 70, DSL: 1, ST: 64, P: 6}),
+    (2.7, {S: -4, SL: -4, C: 82, ST: 80}),
+    (2.9, {S: -2, SL: 80, C: 74, DSL: 1, ST: 95}),
+    (3.6, {S: -4, SL: 102, C: 90, DSL: 2, DC: 1, ST: 104}),
+    (2.2, {S: 62, SL: 62, C: 62, DS: 6, DSL: 6, DC: 6, ST: 68}),
+    (3.0, {S: 80, SL: 106, M: -4, DS: -1, DSL: 4, DR: 5, ST: 99}),
+    (1.4, {R: 82}),
+]
+for i, wb in enumerate(starmetal):
+    uniques[8032 + i] = wb
+for i, wb in enumerate(voidsteel):
+    uniques[8042 + i] = wb
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re
 txt = open(cfg + 'ItemDefinitions.json').read()

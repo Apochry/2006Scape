@@ -433,12 +433,14 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 
 ## The weapon ladder
 
-Twenty-five hand-built weapons, each a step cooler than the last. They run from Bram's fish knife to a blade the
-Starless sheds like a scale. The low rungs are plain iron, wood and twine in the old-school style. Gatehold's blue
+Thirty hand-built weapons, each a step cooler than the last. They run from Bram's fish knife, through a blade the
+Starless sheds like a scale, to the last light there was before the dark. The low rungs are plain iron, wood and twine in the old-school style. Gatehold's blue
 and the Wardens' star come in through the middle. The first violet appears at the Scarglass dagger (35). From the Wand of the Scar (50) up, the
-edges and cores glow. The top three have special attacks that throw the saga's own spotanims. Models are in
+edges and cores glow. From 23 up most have special attacks that throw the saga's own spotanims. The last five
+(26-30) leave violet behind for gold and white: the sun, the first star, a king's crown and the last light, the things
+the Starless ate. Models are in
 `tools/mapgen/LadderWeapons.java`. Rules (levels, tabs, recipes, `::vt weapons`) are in
-`game/content/voidrealm/VoidArsenal.java`, and bonuses are in `tools/nythera_data.py`. Item ids run from 8001 to 8025 in rank order.
+`game/content/voidrealm/VoidArsenal.java`, and bonuses are in `tools/nythera_data.py`. Item ids run from 8001 to 8030 in rank order.
 
 | # | Weapon | Type | Wield | Key bonuses | Where from |
 |---|---|---|---|---|---|
@@ -461,12 +463,17 @@ edges and cores glow. The top three have special attacks that throw the saga's o
 | 17 | Gravewarden 2h sword | 2h sword | Attack 45, Str 40 | +74 slash, +76 str | Nythera bonus roll, 30-49 |
 | 18 | Hollowheart shortbow | shortbow (adamant arrows) | Ranged 45 | +60 ranged | the Hollow Matriarch, about 1/14 |
 | 19 | Wand of the Scar | wand | Magic 50 | +15 magic, +10 magic def | **recipe**: use a Silkwood wand on a waystone with 1 starmetal and 25 cosmic runes (Crafting 50, after Ashes of the Crown) |
-| 20 | Starmetal warhammer | warhammer | Attack 55, Str 50 | +64 crush, +68 str | **recipe**: use a Barrowstone warhammer on Gatehold's anvil with 2 starmetal and a hammer (Smithing 55, after Heartforged) |
+| 20 | Gravestar warhammer | warhammer | Attack 55, Str 50 | +64 crush, +68 str | **recipe**: use a Barrowstone warhammer on Gatehold's anvil with 2 starmetal and a hammer (Smithing 55, after Heartforged) |
 | 21 | Riftglass halberd | halberd | Attack 60, Str 40 | +90 slash, +88 str | Nythera bonus roll, 50+ |
 | 22 | Rimeheart staff | staff | Magic 65, Attack 40 | +18 magic, +44 crush; **never needs water runes** | the Rimebound sentinel, about 1/16 |
 | 23 | Nightglass scimitar | scimitar | Attack 70 | +72 slash, +72 str; special **Rend** | the Starless, about 1/24 |
 | 24 | Crownbreaker mace | mace | Attack 75 | +84 crush, +78 str, +6 prayer; special **Shatter** | the Starless, about 1/32 |
 | 25 | Starless longsword | longsword | Attack 80 | +90 slash, +70 stab, +92 str; special **Eclipse** | the Starless, about 1/64 |
+| 26 | Eventide longbow | longbow (rune arrows) | Ranged 85 | +92 ranged; special **Starshot** | the Starless, about 1/80 |
+| 27 | Sunspear | spear | Attack 85 | +86 all, +94 str; special **Sunburst** | the Starless, about 1/96 |
+| 28 | Staff of the first star | staff | Magic 90, Attack 50 | +26 magic, +26 magic def, +50 crush; **never needs fire or air runes** | the Starless, about 1/112 |
+| 29 | Kingsbane battleaxe | battleaxe | Attack 90, Str 80 | +104 slash, +96 crush, +118 str; special **Regicide** | the Starless, about 1/128 |
+| 30 | Last Light 2h sword | 2h sword | Attack 99, Str 90 | +124 slash, +108 crush, +128 str, +6 prayer; special **Last Light** | **recipe**: use the Starless longsword on the Starless Gate with 5 Starless shards, after 25 Starless kills |
 
 Boss drops roll in table order and stop at the first hit. The ladder weapon rolls straight after the boss's own
 unique, so "about 1/N" is a little under 1/N.
@@ -478,6 +485,15 @@ unique, so "about 1/N" is a little under 1/N.
   the target.
 - **Eclipse** (Starless longsword, 60%): 135% damage, 130% accuracy, the dragon longsword's cleave. The eclipse ring
   closes on the target.
+- **Starshot** (Eventide longbow, 50%): 125% damage, 115% accuracy, through the magic longbow's own special path
+  (one shot, its projectile and draw).
+- **Sunburst** (Sunspear, 50%): 130% damage, 125% accuracy, the dragon spear's lunge; the heart-fire bursts on the
+  target. It uses the spear tab's generic bar.
+- **Regicide** (Kingsbane battleaxe, 50%): the dragon battleaxe's rampage, hotter: Strength +20% instead of +15%,
+  with the heart-fire on the wielder and "No more kings!".
+- **Last Light** (Last Light 2h sword, 60%): 150% damage, 120% accuracy, a 2h cleave; the eclipse falls on the target
+  and the heart-fire flares on the wielder.
+- **Twin fang** (voidsteel dagger, 25%): the dragon dagger's double stab, at 115% damage and 120% accuracy.
 
 **How they're built.** Each weapon is one frame placed into the inventory and wielded pose of a comparable cache
 item, as in `QuestWeapons`. The ladder adds nine poses read off the cache: longsword, sword, dagger, scimitar, warhammer,
@@ -492,7 +508,55 @@ and stock bolts aren't wired up.
 with the client's item-sprite camera for the icon. It draws the base item's own icon beside it to check the fit, and the
 wielded model on the default body with the hand ringed at (-30, -97, 0). It also writes a contact sheet. From
 `2006Scape Server`:
-`java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.ModelPreview data/cache outDir [rank...]`.
+`java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.ModelPreview data/cache outDir [S1|S2] [rank...]`.
+
+## Starmetal and voidsteel: two new tiers
+
+Rune and dragon are sets: every shape in one metal, one look, and a clear step between them. Nythera adds two more,
+each a complete set of ten (dagger, sword, longsword, scimitar, mace, warhammer, battleaxe, 2h sword, spear and
+halberd), and voidsteel adds a longbow. No crossbows (see above), and no starmetal bow: the Duskyew shortbow already
+fills that tier.
+
+- **Starmetal (Attack 50), between rune and dragon.** The fallen star that Dorrin learns to work in Heartforged. It is
+  harder than rune, but it is still metal from *this* sky, so it stops short of dragon. Pale silver-lilac blades with
+  bright honed edges, night-blue grips wound with starmetal, star-pointed pommels and guards, and a violet star-shard
+  fuller or gem as the one accent. It is clean, straight and heraldic: the Wardens' look. **Source:** use a rune weapon on
+  Gatehold's anvil with starmetal and a hammer (Smithing 60, after Heartforged). It takes 1 starmetal for the dagger,
+  sword, mace and spear, 2 for the longsword and scimitar, and 3 for the warhammer, battleaxe, 2h sword and halberd.
+  The weapon and the starmetal are used up. Also from Nythera's high-band bonus roll (dagger, sword, spear) and the
+  Starless (longsword, about 1/30).
+- **Voidsteel (Attack 70), above dragon.** Starmetal pushed through the Starless Gate and bitten by the dark behind
+  it. The Starless is what crowned Aurel and what ate the stars, so its metal outranks anything a dragon breathes on.
+  It is near-black violet whose every edge burns. Guards sweep forward like horns, barbs run down the backs of the blades,
+  pommels are hooked, and a single white eye sits where starmetal had its shard. It is menacing and asymmetric: the
+  Starless's look. **Source:** use a starmetal weapon (or, for the longbow, a magic longbow) on the Starless Gate with
+  Starless shards, in the same counts as above (3 for the bow), at Smithing 75, after The Hollow King. Starless shards
+  come from the Starless (1-2 on every kill) and its spawn (about 1/4). The voidsteel dagger also drops from the
+  Starless (about 1/40).
+
+Within each set the stats mirror rune and dragon. The dagger is weakest and quickest, the sword and scimitar come
+next, and the longsword, mace and spear sit in the middle. The warhammer and battleaxe hit harder and slower, and the
+2h sword and halberd are strongest and slowest. Each voidsteel piece is about as far past its starmetal twin as dragon
+is past rune. Attack speed comes from the name, as for the ladder.
+
+| Piece | Starmetal (8032-8041): stab / slash / crush, str | Voidsteel (8042-8052): stab / slash / crush, str |
+|---|---|---|
+| dagger | 33 / 18 / -4, 32 | 48 / 32 / -4, 47 (special **Twin fang**) |
+| sword | 46 / 34 / -2, 47 | 62 / 46 / -2, 63 |
+| longsword | 48 / 58 / -2, 60 | 66 / 78 / -2, 80 |
+| scimitar | 8 / 56 / -2, 55 | 10 / 76 / -2, 75 |
+| mace | 30 / -2 / 50, 46, +4 prayer | 48 / -2 / 70, 64, +6 prayer |
+| warhammer | -4 / -4 / 64, 60 | -4 / -4 / 82, 80 |
+| battleaxe | -2 / 59 / 54, 74 | -2 / 80 / 74, 95 |
+| 2h sword | -4 / 80 / 65, 82 | -4 / 102 / 90, 104 |
+| spear | 46 / 46 / 46, 51 | 62 / 62 / 62, 68 |
+| halberd (also Str 45 / Str 60) | 58 / 80 / 0, 78 | 80 / 106 / 0, 99 |
+| longbow (Ranged 70, rune arrows) | - | +82 ranged |
+
+Both sets are built from one parametric family in `tools/mapgen/WeaponSets.java`. Every shape is written once and
+dressed by a `Style` (palette plus design flags), so a starmetal scimitar and a voidsteel scimitar are visibly the same
+weapon in two metals. Previews: `ModelPreview data/cache outDir S1` (or `S2`) writes `S1-NN-name.png` and
+`S1-sheet.png`.
 
 ## Where things live
 
@@ -510,7 +574,7 @@ wielded model on the default body with the hand ringed at (-30, -97, 0). It also
 | Hand-built scenery (tents, hearths, seats, banners, standing stones, the Broken Gate, the black flag) | `tools/mapgen/WorldProps.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
-| The weapon ladder (items 8001-8025): rules, recipes, `::vt weapons`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`; `tools/mapgen/ModelPreview.java` |
+| The weapon ladder (items 8001-8030), the Starless shard (8031), the starmetal and voidsteel sets (8032-8052): rules, recipes, `::vt weapons`/`sets`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`, `WeaponSets.java`; `tools/mapgen/ModelPreview.java` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
 Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
@@ -532,7 +596,8 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt list` | list NPCs spawned for you |
 | `::vt loot rolls npcId` | tally Nythera's loot tiers over `rolls` rolls, and drop ten real rolls at your feet |
 | `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
-| `::vt weapons [from to]` | put the weapon ladder (ranks 1-25, or from-to) into your inventory |
+| `::vt weapons [from to]` | put the weapon ladder (ranks 1-30, or from-to) into your inventory |
+| `::vt sets 1` / `::vt sets 2` | put the starmetal (1) or voidsteel (2) set into your inventory, with 10 starmetal or 10 Starless shards |
 
 ## Ideas for what comes next
 

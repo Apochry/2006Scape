@@ -27,8 +27,10 @@ public final class VoidGear {
 		for (int w : new int[] { STARFALL_HALBERD, RIMECLEAVER, KINGS_SCEPTRE, DUSKYEW_SHORTBOW, CAGED_STAR_STAFF }) {
 			targetSlots[w] = ItemConstants.WEAPON;
 		}
-		for (int w : LADDER) {
-			targetSlots[w] = ItemConstants.WEAPON;
+		for (int[] set : new int[][] { LADDER, STARMETAL_SET, VOIDSTEEL_SET }) {
+			for (int w : set) {
+				targetSlots[w] = ItemConstants.WEAPON;
+			}
 		}
 	}
 
