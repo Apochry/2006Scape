@@ -148,8 +148,9 @@ public enum SmithingData {
 		return xp;
 	}
 	
+	/** The level needed, scaled down from the original (see {@link com.rs2.Constants#scaledLevel}). */
 	public int getLvl() {
-		return lvl;
+		return com.rs2.Constants.scaledLevel(lvl);
 	}
 	
 	public int getAmount() {

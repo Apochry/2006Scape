@@ -44,8 +44,8 @@ public class Superheat {
 				} else {
 					player.getPlayerAssistant().addSkillXP(smelt[7], Constants.SMITHING);
 				}
-				if (player.playerLevel[Constants.SMITHING] < smelt[6]) {
-					player.getPacketSender().sendMessage("You need a smithing level of " + smelt[6] + " to superheat this ore.");
+				if (player.playerLevel[Constants.SMITHING] < Constants.roundedLevel(smelt[6])) {
+					player.getPacketSender().sendMessage("You need a smithing level of " + Constants.roundedLevel(smelt[6]) + " to superheat this ore.");
 					return false;
 				}
 				if (player.playerLevel[Constants.MAGIC] < 43) {

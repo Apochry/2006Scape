@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.rs2.game.content.skills.smithing.DragonMetal;
 import com.rs2.game.content.skullbrine.SkullbrineConstants;
 import static com.rs2.game.content.skullbrine.SkullbrineConstants.*;
 
@@ -910,6 +911,9 @@ public final class CursedIslandGenerator {
 		// a side grotto off the tunnel (west), home to the cursed crew
 		tunnel(open, 38, 20, 24, 26, 2);
 		blob(open, 20, 28, 6, 5);
+		// the Dragonvein cavern, west of the portal chamber
+		tunnel(open, 26, 53, 16, 51, 2);
+		blob(open, 11, 50, 6, 5);
 
 		for (int x = 0; x < 64; x++) {
 			for (int y = 0; y < 64; y++) {
@@ -971,6 +975,8 @@ public final class CursedIslandGenerator {
 		dobj(r, SKULL_PILE, 2002, 9310, TYPE_SCENERY, 0);
 		dobj(r, LONG_SKELETON, 2006, 9306, TYPE_GROUND_DECOR, 0);
 		dobj(r, CAVE_TORCH, 2005, 9312, TYPE_SCENERY, 0);
+		// Dragonvein cavern: dragon rocks along its walls, lit red
+		dragonRocks(r, open);
 		// portal chamber
 		dobj(r, PORTAL, PORTAL_X, PORTAL_Y, TYPE_SCENERY, 0);
 		dobj(r, CAVE_TORCH, 2012, 9333, TYPE_SCENERY, 0);
@@ -980,6 +986,31 @@ public final class CursedIslandGenerator {
 	}
 
 	private boolean[][] dungeonOpen;
+
+	/** Dragon rocks on open tiles against the Dragonvein cavern's wall, spaced apart. */
+	void dragonRocks(MapRegion r, boolean[][] open) {
+		List<int[]> placed = new ArrayList<>();
+		for (int x = 4; x <= 18; x++) {
+			for (int y = 44; y <= 56; y++) {
+				if (!open[x][y] || !bordersClosed(open, x, y) || openAround(open, x, y, 1) < 4) {
+					continue;
+				}
+				final int fx = x, fy = y;
+				if (r.objects.stream().anyMatch(o -> o.x == fx && o.y == fy)) {
+					continue;
+				}
+				if (placed.stream().anyMatch(p -> Math.abs(p[0] - fx) + Math.abs(p[1] - fy) < 5) || placed.size() >= 6) {
+					continue;
+				}
+				placed.add(new int[] { x, y });
+				r.objects.add(new MapRegion.MapObject(DragonMetal.DRAGON_ROCK, x, y, 0, TYPE_SCENERY, random.nextInt(4)));
+			}
+		}
+		System.out.println("Dragon rocks: " + placed.size());
+		for (int[] p : placed) {
+			System.out.println("  dragon rock at " + (p[0] + DBASE_X) + "," + (p[1] + DBASE_Y));
+		}
+	}
 
 	void dobj(MapRegion r, int id, int x, int y, int type, int rot) {
 		if (id != CAVE_EXIT && !dungeonOpen[x - DBASE_X][y - DBASE_Y]) {
@@ -1083,6 +1114,14 @@ public final class CursedIslandGenerator {
 		pearl.recolor(tint[0], tint[1]);
 		items.put(VOID_PEARL, pearl);
 
+		// dragon metal: runite ore and bar, recoloured blood red
+		ConfigDefinitions.Definition ore = item(items, 451, DragonMetal.DRAGON_ORE).name("Dragon ore")
+				.examine("Blood-red ore. It's warm to the touch.").cost(12000);
+		dragonRed(ore, new int[] { ore.itemModel() });
+		ConfigDefinitions.Definition bar = item(items, 2363, DragonMetal.DRAGON_BAR).name("Dragon bar")
+				.examine("It's a bar of dragon metal.").cost(20000);
+		dragonRed(bar, new int[] { bar.itemModel() });
+
 		ConfigDefinitions.Table locs = ConfigDefinitions.load(config, "loc", false);
 		buildObjects(locs);
 
@@ -1124,7 +1163,31 @@ public final class CursedIslandGenerator {
 		tintLoc(loc(locs, 201, GHOST_LAMP).examine("The flame inside is the wrong colour."), 23, 6, 1.0, 4, c -> (c >> 7 & 7) == 7);
 		tintLoc(loc(locs, 6202, GHOST_LAMP_POST).examine("A lamp post. The light is cold and green."), 23, 6, 1.0, 4,
 				c -> (c >> 7 & 7) == 7);
+		// dragon rocks: a runite rock with blood-red ore
+		ConfigDefinitions.Definition rock = loc(locs, 2106, DragonMetal.DRAGON_ROCK).examine("A rock with veins of dragon ore.");
+		dragonRed(rock, rock.locModels());
 	}
+
+	/** Dragon red: re-hues an existing recolour (runite's cyan), or the model's own colours if it has none. */
+	void dragonRed(ConfigDefinitions.Definition d, int[] models) throws java.io.IOException {
+		byte[] p = d.get(40);
+		if (p != null) {
+			int n = p[0] & 0xFF;
+			int[] from = new int[n], to = new int[n];
+			java.nio.ByteBuffer b = java.nio.ByteBuffer.wrap(p, 1, p.length - 1);
+			for (int i = 0; i < n; i++) {
+				from[i] = b.getShort() & 0xFFFF;
+				int light = b.getShort() & 127;
+				to[i] = DRAGON_HUE << 10 | 7 << 7 | light * 3 / 4;
+			}
+			d.recolor(from, to);
+		} else {
+			int[][] t = ConfigDefinitions.tint(cache, models, DRAGON_HUE, 7, 0.9, 0);
+			d.recolor(t[0], t[1]);
+		}
+	}
+
+	static final int DRAGON_HUE = 1;
 
 	ConfigDefinitions.Definition loc(ConfigDefinitions.Table table, int source, int id) {
 		return putLive(table, id, table.decode(source));

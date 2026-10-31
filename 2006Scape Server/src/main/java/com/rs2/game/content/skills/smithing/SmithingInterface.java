@@ -35,7 +35,58 @@ public class SmithingInterface {
 			makeAddyInterface(c);
 		} else if (itemId == 2363) {
 			makeRuneInterface(c);
+		} else if (itemId == DragonMetal.DRAGON_BAR) {
+			makeDragonInterface(c);
 		}
+	}
+
+	/** Name label of each anvil slot, by [column - 1119][row]. */
+	private static final int[][] SLOT_NAMES = {
+			{ 1094, 1085, 1087, 1086, 1088 }, // dagger, sword, scimitar, longsword, 2h
+			{ 1091, 1093, 1083, 1092, 8429 }, // axe, mace, warhammer, battleaxe, claws
+			{ 1098, 1099, 1100, 1101, -1 }, // chainbody, platelegs, plateskirt, platebody
+			{ 1102, 1103, 1104, 1105, 13358 }, // med helm, full helm, sq shield, kiteshield, nails
+			{ 1107, 1108, 1106, -1, -1 }, // dart tips, arrowtips, knives
+	};
+
+	/** "N Bars" label of each anvil slot, by [column - 1119][row]. */
+	private static final int[][] SLOT_BARS = {
+			{ 1125, 1124, 1116, 1089, 1090 },
+			{ 1126, 1129, 1118, 1111, 8428 },
+			{ 1109, 1110, 1095, 1112, -1 },
+			{ 1127, 1113, 1114, 1115, 13357 },
+			{ 1128, 1130, 1131, -1, 11459 },
+	};
+
+	/** The anvil menu for dragon bars: only the slots that have a dragon item are filled in. */
+	private void makeDragonInterface(Player c) {
+		for (int col = 0; col < 5; col++) {
+			for (int row = 0; row < 5; row++) {
+				int[] item = null;
+				for (int[] d : DragonMetal.ITEMS) {
+					if (d[1] == 1119 + col && d[2] == row) {
+						item = d;
+					}
+				}
+				c.getPacketSender().sendFrame34(item == null ? -1 : item[0], row, 1119 + col, 1);
+				if (SLOT_NAMES[col][row] != -1) {
+					String name = item == null ? "" : com.rs2.game.items.DeprecatedItems.getItemName(item[0]).replace("Dragon ", "");
+					name = name.isEmpty() ? "" : Character.toUpperCase(name.charAt(0)) + name.substring(1);
+					String colour = item != null && c.playerLevel[Constants.SMITHING] >= item[4] ? "@whi@" : "@bla@";
+					c.getPacketSender().sendString(item == null ? "" : colour + name, SLOT_NAMES[col][row]);
+				}
+				if (SLOT_BARS[col][row] != -1) {
+					String bars = item == null ? "" : GetForBars(DragonMetal.DRAGON_BAR, item[3], c) + item[3] + (item[3] == 1 ? " Bar" : " Bars");
+					c.getPacketSender().sendString(bars, SLOT_BARS[col][row]);
+				}
+			}
+		}
+		c.getPacketSender().sendString("", 1135);
+		c.getPacketSender().sendString("", 1134);
+		c.getPacketSender().sendString("", 11461);
+		c.getPacketSender().sendString("", 1132);
+		c.getPacketSender().sendString("", 1096);
+		c.getPacketSender().showInterface(994);
 	}
 	
 	private void makeRuneInterface(Player c) {
@@ -666,8 +717,9 @@ public class SmithingInterface {
 		c.getPacketSender().showInterface(994);
 	}
 
+	/** White if the player can make it, black if not. Levels here are the original ones, so scale them. */
 	private String GetForlvl(int i, Player c) {
-		if (c.playerLevel[Constants.SMITHING] >= i) {
+		if (c.playerLevel[Constants.SMITHING] >= Constants.scaledLevel(i)) {
 			return "@whi@";
 		}
 

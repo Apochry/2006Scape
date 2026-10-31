@@ -1690,6 +1690,8 @@ public abstract class Player {
 	public int XremoveSlot, XinterfaceID, XremoveID, Xamount;
 
 	public boolean isMining;
+	/** Bumped whenever the player starts waiting for a rock or tree to respawn (see RespawnWait). */
+	public int respawnWaitToken;
 	public boolean hasThievedStall;
 	public boolean hasSearchedForTraps;
 	public boolean stopFiremaking, pickedUpFiremakingLog, logLit;
