@@ -1,0 +1,41 @@
+# WorldLint findings that have been looked at and are right as they are (see tools/mapgen/WorldLint.java).
+# KIND x,y   why it's fine            (matched within 2 tiles)
+
+# Skullbrine Isle
+ON-WATER 2009,2940     ghostfire burns on the cursed pool at the bottom of the west eye socket
+ON-WATER 2021,2941     ghostfire burns on the cursed pool at the bottom of the east eye socket
+UNREACHABLE 2007,2871  the wrecked ship in the cove is set dressing: its ladders and masts are out in the water on purpose
+UNREACHABLE 2007,2875  (the wreck)
+UNREACHABLE 2007,2879  (the wreck)
+UNREACHABLE 2009,2866  (the wreck)
+UNREACHABLE 2024,2869  (the wreck)
+UNREACHABLE 2027,2873  (the wreck)
+OPENING-UNBACKED 2015,2928  the cave opens in Skull Rock's mouth, between the sculpted teeth (non-solid model pieces the lint doesn't count)
+STEEP-FOOTPRINT 2004,2884  the wreck's broken hull lies tilted on the beach
+STEEP-FOOTPRINT 2009,2884  (the wreck)
+WALL-LOOSE-END 2005,2898   the west shack's open doorway (its door was never in the map)
+STRAIGHT-WATER 1978,2895   west shore: ragged enough by eye once the overlays are smoothed
+STRAIGHT-WATER 1998,2873   (the south-west shore)
+STRAIGHT-WATER 2046,2937   (the east shore under the skull)
+
+# Nythera
+UNREACHABLE 1480,2602      the smugglers' ship lies off the cove: its ladders are set dressing out in the water
+UNREACHABLE 1480,2606      (the smugglers' ship)
+UNREACHABLE 1480,2610      (the smugglers' ship)
+STEEP-FOOTPRINT 1477,2613  the smugglers' ship's hull, run aground and tilted in the surf
+STEEP-FOOTPRINT 1477,2615  (the hull)
+STEEP-FOOTPRINT 1482,2615  (the hull)
+STEEP-FOOTPRINT 1478,2739  the Barrow door is set into the side of its mound: the ground is meant to rise behind it
+ON-WATER 1601,2742         the Hollow fissure opens in the Scar's void pool
+OVERLAP 1598,2746          the Scar's crystal has grown up through a dead tree
+OVERLAP 1386,2672          Silkwood: a web strung through the branches of the magic tree
+STRAIGHT-PATH 1512,2706    the old kingdom's stone road, laid true where it runs up to the Gate
+WALL-LOOSE-END 1522,2659   the croft's field entrance, beside the cart
+WALL-LOOSE-END 1465,2711   Netwright's shack: its open doorway
+WALL-LOOSE-END 1490,2705   Gatehold: a shack's open doorway
+STRAIGHT-WATER 1374,2702   the west coast's one long gentle curve
+
+# Dungeons
+ON-WATER 1442,9706         Hollowdeep: a void crystal growing out of the dark pool
+OVERLAP 1990,9332          Skullbrine's smugglers' cave: the portal's crystal grows out of the rocks
+STEEP-FOOTPRINT 1696,9701  the Vault's ward-seal fills the passage between its rock walls

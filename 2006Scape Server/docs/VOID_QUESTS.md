@@ -392,6 +392,22 @@ Other rules the generator follows:
 - The barrow's graves stand in two rows either side of the approach, all facing the door.
 - Thin hand-built pieces (flags, flaps) are two-sided. Where the client's painter's sort would paint one face over
   another (a tent's doorway against its end wall), face priorities fix the order (`WorldProps.priority`).
+- **A model the client can't draw is silently skipped.** It depth-sorts a model's faces into 1500 buckets across the
+  model's bounding sphere, so anything much over ~5 tiles across from its centre (counting its height) isn't drawn at
+  all. Skull Rock's face (`SkullRock.java`) is built whole in world coordinates and then cut into 24 pieces, each a
+  non-solid, unclickable object (opcodes 17, 19 = 0, 64) with its own footprint and anchor height. Objects
+  15032-15079 are reserved for its pieces; the next new object is 15080.
+- Roads wander (`meander`) and their width breathes; shores, the lake and the river get a ragged edge
+  (`VoidRealmGenerator.ragged`). Free-space checks (`footprintFree`) count every object's whole footprint, not just
+  its anchor tile, so rocks don't get planted inside trees. Tents, boats, coffins and graves are bedded into level
+  ground. Scenery that smoothing leaves standing in water is cleared.
+- **Check every area with `WorldLint`** after a regen (see the world-building skill in `.claude/skills/`): it reports
+  dead-end and pinched paths, ruler-straight roads and shores, stray walls and doors, unbacked cave mouths, scenery in
+  roads or water, props on slopes, overlapping and overfull tiles, and unreachable places. Findings that are right as
+  they are go in `tools/worldlint-accepted.txt` with the reason.
+- Floors and objects share no id space. An object id passed as a floor (the dungeons once got the mossy rock, 478, as
+  their wall underlay) wraps inside the map format's one-byte opcodes and scrambles the rest of the region;
+  `MapRegion.encodeTerrain` now refuses to write it.
 
 ### Terrain smoothing
 
@@ -445,6 +461,8 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 | The saga's gear: armoury, recipes, Kael's task, repeatable star and sentinel, effects | `GearQuest.java`, `VoidGear.java`; models in `tools/mapgen/ArmourForge.java`, `QuestWeapons.java`, `VoidEffects.java` |
 | Hand-built models (Barrowsteel, Emberbrand, barricades, star, altar, gate, pillars, the Starless) | `tools/mapgen/ModelForge.java` |
 | Hand-built scenery (tents, hearths, seats, banners, standing stones, the Broken Gate, the black flag) | `tools/mapgen/WorldProps.java` |
+| Skull Rock's sculpted face | `tools/mapgen/SkullRock.java` |
+| The world checker (and the findings judged right as they are) | `tools/mapgen/WorldLint.java`, `tools/worldlint-accepted.txt` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |

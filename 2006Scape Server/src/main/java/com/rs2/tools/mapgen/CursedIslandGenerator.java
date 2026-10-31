@@ -86,6 +86,7 @@ public final class CursedIslandGenerator {
 			gen.buildDungeon();
 			gen.voidRealm.arena();
 			gen.voidRealm.nythera();
+			gen.bedFlatProps();
 			gen.buildDefinitions();
 			if (System.getProperty("preview") != null) {
 				javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), BASE_X, BASE_Y,
@@ -133,7 +134,7 @@ public final class CursedIslandGenerator {
 	 * the y of its chin, how deep (in tiles) the face is, where the back of the cranium meets the sea, and heights.
 	 */
 	static final int SKX = 2016, FACE_Y0 = 2928, FACE_DEPTH = 20, SKULL_BACK_Y = 2964;
-	static final double FACE_RISE = 34, CRANIUM_H = 62;
+	static final double FACE_RISE = 46, CRANIUM_H = 84;
 	/** Deadwater Cove (an ellipse of green water bitten out of the south coast). */
 	static final int COVE_X = 2017, COVE_Y = 2873, COVE_RX = 15, COVE_RY = 13;
 
@@ -168,6 +169,8 @@ public final class CursedIslandGenerator {
 		double dx = x - CX, dy = y - CY;
 		double d = coastRadius(Math.atan2(dy, dx)) - Math.sqrt(dx * dx + dy * dy);
 		d = Math.min(d, coveDistance(x, y));
+		// a ragged edge: smooth curves alone leave long ruler-straight runs of shore once they're cut into tiles
+		d += VoidRealmGenerator.ragged(x, y, 21);
 		if (skullHeight(x, y) > 3) {
 			d = Math.max(d, 1); // the back of the skull rises straight out of the sea
 		}
@@ -209,8 +212,11 @@ public final class CursedIslandGenerator {
 		} else {
 			double t = (y - FACE_Y0 - FACE_DEPTH) / (double) (SKULL_BACK_Y - FACE_Y0 - FACE_DEPTH);
 			h = 6 + FACE_RISE + (CRANIUM_H - FACE_RISE) * Math.sin(Math.min(1, t / 0.55) * Math.PI / 2);
-			if (t > 0.75) {
-				h *= Math.max(0, 1 - Math.pow((t - 0.75) / 0.28, 2)); // sheer drop into the sea
+			// sheer drop into the sea: the back of the cranium is rounded (it comes furthest out behind the middle) and
+			// broken, not cut off along a row
+			double u = (x - SKX + 0.5) / 17.0, tb = t + 0.22 * u * u + 0.05 * VoidRealmGenerator.vnoise(x / 2.5, 0.5, 23);
+			if (tb > 0.75) {
+				h *= Math.max(0, 1 - Math.pow((tb - 0.75) / 0.28, 2));
 			}
 		}
 		// the sides fall away steeply as bone cliffs
@@ -281,7 +287,7 @@ public final class CursedIslandGenerator {
 	static double skullHollow(int x, int y) {
 		double[] e = eye(x, y);
 		if (e != null) {
-			return 20 * Math.sqrt(1 - e[1] * e[1]);
+			return 30 * Math.sqrt(1 - e[1] * e[1]);
 		}
 		return nose(x, y) ? 9 : 0;
 	}
@@ -320,6 +326,8 @@ public final class CursedIslandGenerator {
 						setOverlay(x, y, VoidRealmGenerator.SKULL_SHADOW);
 					} else if (paint == 2) {
 						setOverlay(x, y, GUNGY_WATER); // the eyes are pools of the cove's cursed water
+					} else if (paint == 3 && crack(x, y)) {
+						setUnderlay(x, y, BONE_ROCK_DARK); // sutures: a soft darker line the client blends, not a hard tile
 					} else if (paint == 3) {
 						setOverlay(x, y, SHADOW_ROCK);
 					}
@@ -362,7 +370,59 @@ public final class CursedIslandGenerator {
 		skullRock();
 		vegetation();
 		smoothOverlays();
+		drownedScenery(BASE_X, BASE_Y, 64 * SURFACE_REGIONS);
 	}
+
+	/** Smoothing rounds coasts off, and can put the water over a plant or tree that was set on dry land: clear them. */
+	void drownedScenery(int x0, int y0, int size) {
+		locSize(0); // loads the stock names
+		for (int x = x0; x < x0 + size; x++) {
+			for (int y = y0; y < y0 + size; y++) {
+				int ov = overlayAt(x, y);
+				if (ov == WATER || ov == GUNGY_WATER) {
+					removeObjects(x, y, o -> VEGETATION.contains(o.id) || plant(o.id));
+				}
+			}
+		}
+	}
+
+	boolean plant(int id) {
+		if (id >= stockLocs.size()) {
+			return false;
+		}
+		String n = stockLocs.decode(id).text(2);
+		n = n == null ? "" : n.toLowerCase();
+		return n.matches(".*\\b(flowers?|fern|plant|bush|grass|mushroom|daisies|thistle|tree|oak|willow|yew|maple|evergreen|stump)\\b.*")
+				&& !n.contains("water");
+	}
+
+	/**
+	 * A client object stands level at one height: bed the flat-bottomed ones into level ground, or one end hangs in the
+	 * air while the other is buried. Runs last, over every region, once all the terrain is final.
+	 */
+	void bedFlatProps() {
+		for (int pass = 0; pass < 4; pass++) { // neighbours share corners: settle them together
+			for (MapRegion r : new ArrayList<>(regions.values())) {
+				for (MapRegion.MapObject o : r.objects) {
+					if (o.z == 0 && LEVEL_BEDDED.contains(o.id)) {
+						int[] size = locSize(o.id);
+						int x = r.regionX * 64 + o.x, y = r.regionY * 64 + o.y;
+						int sx = (o.rotation & 1) == 1 ? size[1] : size[0], sy = (o.rotation & 1) == 1 ? size[0] : size[1];
+						flatten(x, y, x + sx, y + sy);
+					}
+				}
+			}
+		}
+	}
+
+	/** Flat-bottomed things that are bedded into level ground wherever they're put. */
+	static final java.util.Set<Integer> LEVEL_BEDDED = new java.util.HashSet<>(java.util.Arrays.asList(ROW_BOAT, ROW_BOAT_2, TORN_SAIL,
+			OPEN_COFFIN, LARGE_GRAVE, GRAVESTONE, SMALL_GRAVESTONE, GRAVE_MARKER, CROSS, NET_DRYING, HAMMOCK));
+
+	/** What {@link #vegetation} plants (removed again wherever the sea ends up over it). */
+	static final java.util.Set<Integer> VEGETATION = new java.util.HashSet<>(java.util.Arrays.asList(WITHERED_LEAFY_PALM, WITHERED_PALM, ROTTING_LOG, MORY_TREE,
+			MORY_TREE_2, DEAD_TREE, BIG_DEAD_TREE, ROTTING_TREE, HUGE_MUSHROOM, HUGE_MUSHROOM + 1, HUGE_MUSHROOM + 2, ROOTS, MOSSY_ROCK,
+			SMALL_MOSSY_ROCK, SMALL_BUSH, LONG_GRASS, GRASS, SMALL_FERN, ROTTING_BRANCH, FUNGUS));
 
 	/** Overlays that should blend with each other when smoothing edges (sea and cove water are one body). */
 	static int overlayGroup(int overlay) {
@@ -580,32 +640,32 @@ public final class CursedIslandGenerator {
 	void paths() {
 		// jetty -> town deck -> jaw plaza
 		road(2.6, ROAD, new int[][] { { 2016, 2892 }, { 2016, 2901 } });
-		road(2.6, ROAD, new int[][] { { 2016, 2910 }, { 2016, 2915 }, { 2017, 2921 } });
+		road(2.6, ROAD, new int[][] { { 2016, 2910 }, { 2014, 2914 }, { 2017, 2918 }, { 2016, 2921 } });
 		// deck -> graveyard (west)
 		road(2.2, ROAD, new int[][] { { 2011, 2906 }, { 2005, 2909 }, { 1999, 2913 }, { 1993, 2916 } });
-		// deck -> swamp -> serpent beach (east)
-		road(2.2, ROAD, new int[][] { { 2021, 2906 }, { 2027, 2909 }, { 2034, 2910 }, { 2041, 2909 }, { 2046, 2906 } });
-		// Mad Pete's camp, off the east road
-		road(1.8, ROAD, new int[][] { { 2027, 2909 }, { 2030, 2905 } });
+		// deck -> swamp -> serpent beach (east): it bends south round the serpent's ribcage and ends at its skull, rather
+		// than running through the ribs
+		road(2.2, ROAD, new int[][] { { 2021, 2906 }, { 2027, 2909 }, { 2033, 2908 }, { 2037, 2903 }, { 2042, 2899 }, { 2047, 2897 } });
+		// Mad Pete's camp, off the east road (wide enough that it joins the road along an edge, not at a corner)
+		road(2.4, ROAD, new int[][] { { 2027, 2909 }, { 2029, 2906 }, { 2030, 2904 } });
 	}
 
 	/**
 	 * Paints a road of the given width through the waypoints: every tile within width/2 of the line gets the overlay,
-	 * so there are no gaps or tiles that only touch diagonally.
+	 * so there are no gaps or tiles that only touch diagonally. The line wanders a little between the waypoints (a
+	 * trodden track never runs ruler-straight) and its width breathes, but it still starts and ends exactly on them.
 	 */
 	void road(double width, int floor, int[][] points) {
-		for (int i = 0; i + 1 < points.length; i++) {
-			double x0 = points[i][0] + 0.5, y0 = points[i][1] + 0.5, x1 = points[i + 1][0] + 0.5, y1 = points[i + 1][1] + 0.5;
-			double len = Math.hypot(x1 - x0, y1 - y0);
-			for (double t = 0; t <= len; t += 0.25) {
-				double px = x0 + (x1 - x0) * t / len, py = y0 + (y1 - y0) * t / len;
-				int r = (int) Math.ceil(width);
-				for (int x = (int) px - r; x <= (int) px + r; x++) {
-					for (int y = (int) py - r; y <= (int) py + r; y++) {
-						if (Math.hypot(x + 0.5 - px, y + 0.5 - py) <= width / 2 && inland(x, y) > 0.5
-								&& skullHeight(x, y) < 4 && overlayAt(x, y) != WOOD) {
-							setOverlay(x, y, floor);
-						}
+		int seed = points[0][0] * 31 + points[0][1];
+		for (double[] pt : VoidRealmGenerator.meander(points, 0.9, 7, seed)) {
+			double px = pt[0] + 0.5, py = pt[1] + 0.5;
+			double w = width * (0.9 + 0.2 * VoidRealmGenerator.vnoise(pt[2] / 5, 0.5, seed + 1));
+			int r = (int) Math.ceil(w);
+			for (int x = (int) px - r; x <= (int) px + r; x++) {
+				for (int y = (int) py - r; y <= (int) py + r; y++) {
+					if (Math.hypot(x + 0.5 - px, y + 0.5 - py) <= w / 2 && inland(x, y) > 0.5 && skullHeight(x, y) < 4
+							&& overlayAt(x, y) != WOOD) {
+						setOverlay(x, y, floor);
 					}
 				}
 			}
@@ -624,10 +684,11 @@ public final class CursedIslandGenerator {
 				plank(x, y);
 			}
 		}
-		object(GHOST_TORCH, 2014, 2884, TYPE_SCENERY, 0);
-		object(GHOST_TORCH, 2018, 2884, TYPE_SCENERY, 0);
-		object(GHOST_TORCH, 2012, 2879, TYPE_SCENERY, 0);
-		object(GHOST_TORCH, 2020, 2879, TYPE_SCENERY, 0);
+		// torches on the jetty's outer planks (not standing in the sea beside it)
+		object(GHOST_TORCH, 2015, 2884, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2017, 2884, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2012, 2878, TYPE_SCENERY, 0);
+		object(GHOST_TORCH, 2020, 2878, TYPE_SCENERY, 0);
 		object(BARREL, 2013, 2876, TYPE_SCENERY, 0);
 		object(CRATE, 2020, 2876, TYPE_SCENERY, 0);
 		object(PIRATE_FLAG, 2018, 2890, TYPE_SCENERY, 1);
@@ -744,6 +805,11 @@ public final class CursedIslandGenerator {
 		}
 		int region = (ax0 >> 6) << 8 | (ay0 >> 6);
 		stamp(region, ax0 & 63, ay0 & 63, ax1 & 63, ay1 & 63, destX, destY, new int[0], true);
+		if (ax0 == 3673 && ay0 == 2985) {
+			// this rectangle catches a corner of the next building in Mos Le'Harmless: a wall panel standing on its own
+			removeObjects(destX + 5, destY, o -> o.id == 11325);
+			removeObjects(destX + 6, destY, o -> o.id == 11325);
+		}
 	}
 
 	void shipwreck() {
@@ -799,7 +865,7 @@ public final class CursedIslandGenerator {
 		object(PIRATE_FLAG, cx + 1, cy + 8, TYPE_SCENERY, 0);
 		object(OPEN_COFFIN, cx + 4, cy + 4, TYPE_SCENERY, 1);
 		object(OPEN_COFFIN, cx - 5, cy - 5, TYPE_SCENERY, 0);
-		object(CROSS, cx - 3, cy + 6, TYPE_SCENERY, 0);
+		object(CROSS, cx - 1, cy + 7, TYPE_SCENERY, 0); // between the grave rows, not on a grave
 		object(CROSS, cx + 6, cy - 2, TYPE_SCENERY, 0);
 		object(GHOST_LAMP_POST, cx + 7, cy - 6, TYPE_SCENERY, 0);
 		object(GHOST_LAMP_POST, cx - 7, cy + 4, TYPE_SCENERY, 0);
@@ -836,15 +902,21 @@ public final class CursedIslandGenerator {
 				}
 			}
 		}
+		// the road from town crosses the plaza as a trodden track and runs right up to the cave mouth
+		for (double t = 0; t <= 1; t += 0.05) {
+			double px = SKX + 0.5 - t * 1.0 + Math.sin(t * Math.PI * 2) * 1.1, py = FACE_Y0 - 8 + t * 7.4;
+			for (int x = (int) px - 1; x <= (int) px + 1; x++) {
+				for (int y = (int) py - 1; y <= (int) py + 1; y++) {
+					if (Math.hypot(x + 0.5 - px, y + 0.5 - py) <= 1.05) {
+						setOverlay(x, y, ROAD);
+					}
+				}
+			}
+		}
 		// the mouth: the cave opens between the front teeth
 		object(CAVE_ENTRANCE, CAVE_ENTRANCE_X, CAVE_ENTRANCE_Y, TYPE_SCENERY, 0);
-		int mouthTop = FACE_Y0 + (int) Math.round(0.13 * FACE_DEPTH);
-		for (int u : new int[] { -7, -5, -3, 3, 5, 7 }) {
-			object(Math.abs(u) == 3 ? BIG_FANG : BONE_FANG, SKX + u - (u < 0 ? 1 : 0), mouthTop, TYPE_SCENERY, random.nextInt(4));
-		}
-		for (int u : new int[] { -6, -4, 4, 6 }) {
-			object(BONE_FANG, SKX + u - (u < 0 ? 1 : 0), FACE_Y0, TYPE_SCENERY, random.nextInt(4));
-		}
+		// the face itself - brows, sockets, nose, cheekbones, teeth and jaw - is a sculpted model laid over this terrain
+		// (SkullRock, placed by VoidRealmGenerator once the whole island is finished)
 		// ghostfire burns deep in the eye sockets
 		int eyeY = FACE_Y0 + (int) Math.round(0.62 * FACE_DEPTH);
 		for (int side = -1; side <= 1; side += 2) {
@@ -1432,6 +1504,56 @@ public final class CursedIslandGenerator {
 	}
 
 	/** True when nothing is placed within {@code r} tiles and the tile isn't a path/dock. */
+	private ConfigDefinitions.Table stockLocs;
+	private final Map<Integer, int[]> locSizes = new HashMap<>();
+
+	/** An object's footprint (width, length) from the cache's own definitions; our new objects count as 4 x 4. */
+	int[] locSize(int id) {
+		return locSizes.computeIfAbsent(id, i -> {
+			try {
+				if (stockLocs == null) {
+					stockLocs = ConfigDefinitions.load(CacheEditor.Archive.decode(cache.read(0, ConfigDefinitions.CONFIG_ARCHIVE)), "loc",
+							false);
+				}
+			} catch (java.io.IOException e) {
+				throw new java.io.UncheckedIOException(e);
+			}
+			if (i >= stockLocs.size()) {
+				return new int[] { 4, 4 }; // ours are mostly big set pieces (the serpent's skull, its ribs): be generous
+			}
+			ConfigDefinitions.Definition d = stockLocs.decode(i);
+			byte[] w = d.get(14), l = d.get(15);
+			return new int[] { w == null ? 1 : w[0] & 0xFF, l == null ? 1 : l[0] & 0xFF };
+		});
+	}
+
+	/**
+	 * Whether no object's footprint covers any tile within r of (x, y). Objects are anchored at their south-west tile
+	 * and grow north-east, so a big one anchored a few tiles away can still be standing here: checking anchors alone
+	 * lets rocks get planted inside trees and boats.
+	 */
+	boolean footprintFree(int x, int y, int r) {
+		java.util.Set<MapRegion> seen = new java.util.HashSet<>();
+		for (int[] c : new int[][] { { x - r - 3, y - r - 3 }, { x + r, y - r - 3 }, { x - r - 3, y + r }, { x + r, y + r } }) {
+			MapRegion reg = regions.get((c[0] >> 6) << 8 | (c[1] >> 6));
+			if (reg == null || !seen.add(reg)) {
+				continue;
+			}
+			for (MapRegion.MapObject o : reg.objects) {
+				int ox = reg.regionX * 64 + o.x, oy = reg.regionY * 64 + o.y;
+				if (o.z != 0 || ox > x + r || oy > y + r || ox < x - r - 3 || oy < y - r - 3) {
+					continue;
+				}
+				int[] size = locSize(o.id);
+				int sx = (o.rotation & 1) == 1 ? size[1] : size[0], sy = (o.rotation & 1) == 1 ? size[0] : size[1];
+				if (ox + sx - 1 >= x - r && oy + sy - 1 >= y - r) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	boolean isFree(int x, int y, int r) {
 		for (int dx = -r; dx <= r; dx++) {
 			for (int dy = -r; dy <= r; dy++) {
@@ -1443,12 +1565,10 @@ public final class CursedIslandGenerator {
 				if (reg.overlay[0][lx][ly] != 0) {
 					return false;
 				}
-				for (MapRegion.MapObject o : reg.objects) {
-					if (o.x == lx && o.y == ly) {
-						return false;
-					}
-				}
 			}
+		}
+		if (!footprintFree(x, y, r)) {
+			return false;
 		}
 		// keep the town, graveyard, wreck and plaza open
 		return Math.hypot(x - 2016, y - 2905) > 7 && Math.hypot(x - 1988, y - 2918) > 9

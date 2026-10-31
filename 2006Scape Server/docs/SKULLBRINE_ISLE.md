@@ -7,14 +7,20 @@ to another world. The Void quest series opens it: see [VOID_QUESTS.md](VOID_QUES
 ## The island
 
 - **Skull Rock** (north): a giant bone-white skull half-buried in the island, its face tilted up
-  to the sky. Its eyes are pools of green water with ghostfire burning in them, fangs stand in
-  its jaw, and the cave into Blackbrine's Hold is its mouth. It is drawn as a skull on the minimap.
+  to the sky. Its eyes are pools of green water with ghostfire burning in them, and the cave into
+  Blackbrine's Hold is its mouth. It is drawn as a skull on the minimap. The terrain gives it its
+  bulk (and keeps it climbable); a sculpted face laid over it gives it its bones: heavy brow ridges
+  over black sockets, the nasal cavity, cheekbones and their arches, a row of great teeth over the
+  cave mouth (a gap where the cave opens, one knocked out, one broken), the lower teeth, the jaw's
+  two arms reaching down either side of the plaza, and a crack running up the left brow. The road
+  from town crosses the jaw plaza as a trodden track and runs right up to the cave mouth.
 - **Deadwater Cove** (south): a bay of sickly green water with the wreck of the *Drowned Maiden*,
-  the masts of older wrecks, and sea stacks at its mouth. The jetty runs out into it.
+  the masts of older wrecks, and sea stacks at its mouth. The jetty runs out into it, ghostfire torches
+  on its planks.
 - **Rattlebone Row**: the crew's shanty town around a plank deck with a gallows, stocks and a
   cage. The shacks are copied from Mos Le'Harmless. Mad Pete keeps shop here.
 - **Graveyard of the drowned** (west), a **swamp** (east) and a **sea serpent's skeleton** on
-  the east beach.
+  the east beach. The east road bends south round the serpent's ribcage and ends at its skull.
 - **The west beach**: a net/bait (shrimp) fishing spot just offshore at (1978, 2895), a beached row boat, nets drying,
   and one bare dead tree you can chop for firewood.
 - The *Drowned Maiden*'s black flag flies from a ship's spar stepped in a cairn: at the jetty end, in the town, in the
@@ -73,7 +79,8 @@ dialogue and kill. See [VOID_QUESTS.md](VOID_QUESTS.md).
 
 The island, dungeon, new NPCs (ids 3852-3857), new items (7956-7958, and dragon ore/bar 7959-7960)
 and new scenery (objects 14974-14985: ghostfire, ghostfire torches and lamps, bone fangs, the serpent skull
-and ribs, withered palms, dragon rocks; the black flag on its pole is object 15029, built in `WorldProps`) are written into `data/cache` by
+and ribs, withered palms, dragon rocks; the black flag on its pole is object 15029, built in `WorldProps`; Skull
+Rock's sculpted face is objects 15032-15079, built in `SkullRock`) are written into `data/cache` by
 `CursedIslandGenerator`. To change the layout, edit that class, then rebuild from the
 original cache so old map data doesn't pile up in `main_file_cache.dat`:
 

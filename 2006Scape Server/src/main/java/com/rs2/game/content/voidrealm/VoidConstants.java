@@ -86,7 +86,9 @@ public final class VoidConstants {
 	public static final int CAMP_TENT = 15018, FIRE_RING = 15019, COOK_FIRE_RING = 15020, LOG_SEAT = 15021, GATEHOLD_BANNER = 15022,
 			MENHIR = 15023, MENHIR_2 = 15024, MENHIR_3 = 15025, GATE_TOWER = 15026, GATE_TOWER_BROKEN = 15027, FALLEN_MASONRY = 15028,
 			PIRATE_FLAG = 15029, GATE_WALL = 15030, GATE_WALL_LOW = 15031;
-	// (the next new object is 15032)
+	/** Skull Rock's sculpted face, in pieces: 15032 to 15079 (SkullRock.MAX_PIECES ids, all defined). */
+	public static final int SKULL_ROCK = 15032;
+	// (the next new object is 15080)
 
 	/* ---------------- Hold the Gate ---------------- */
 	/** The three broken barricades across the Scar road north-east of the Gate. */

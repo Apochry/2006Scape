@@ -71,6 +71,15 @@ public final class MapRegion {
 		for (int z = 0; z < 4; z++) {
 			for (int x = 0; x < SIZE; x++) {
 				for (int y = 0; y < SIZE; y++) {
+					// every value rides in a single byte, the underlay and settings inside the opcode itself (81 + underlay,
+					// 49 + settings): anything bigger silently wraps into another opcode and scrambles the rest of the
+					// region. Usually it means an object id was passed where a floor was meant.
+					if (underlay[z][x][y] < 0 || 81 + underlay[z][x][y] > 255 || settings[z][x][y] < 0 || settings[z][x][y] > 31
+							|| overlay[z][x][y] < 0 || overlay[z][x][y] > 255) {
+						throw new IllegalStateException("region " + regionX + "," + regionY + " tile " + x + "," + y + " plane " + z
+								+ ": underlay " + underlay[z][x][y] + " / settings " + settings[z][x][y] + " / overlay " + overlay[z][x][y]
+								+ " won't fit in the map format (is an object id being used as a floor?)");
+					}
 					if (overlay[z][x][y] != 0) {
 						out.write(2 + (overlayShape[z][x][y] << 2) + overlayRotation[z][x][y]);
 						out.write(overlay[z][x][y]);

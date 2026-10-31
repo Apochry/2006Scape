@@ -49,7 +49,7 @@ final class VoidRealmGenerator {
 	/* ---------- scenery ---------- */
 	static final int TREE = 1276, TREE_2 = 1278, OAK = 1281, WILLOW = 1308, MAPLE = 1307, YEW = 1309, EVERGREEN = 1315,
 			EVERGREEN_BIG = 1316, FLOWERS = 1192, FERN = 1298, BUSH = 1124, BUSH_2 = 1125, BIG_BUSH = 1123, FALLEN_TREE = 1296,
-			ROCK = 478, BIG_ROCK = 477, STANDING_STONE = 11782, PILLAR = 2440, PILLAR_2 = 2441, RUBBLE = 2508,
+			STANDING_STONE = 11782, PILLAR = 2440, PILLAR_2 = 2441, RUBBLE = 2508,
 			FIRE = 2732, LOGS = 5581, CRYSTAL_SRC = 10014, CRYSTAL_DARK_SRC = 9751, COPPER = 2090,
 			TIN = 2094, IRON = 2092, COAL = 2096, MITHRIL = 2102, GROUND_FLOWERS = 4735;
 
@@ -564,15 +564,22 @@ final class VoidRealmGenerator {
 		worldProps(locs, props); // after the portal: definitions are appended in id order
 	}
 
+	/** Skull Rock's sculpted face, in pieces (see {@link SkullRock}). */
+	java.util.List<SkullRock.Piece> skullRock;
+
 	/** Packs the models of {@link #worldProps}, in its order (models must be packed before the forge finishes). */
 	int[] packWorldProps() throws java.io.IOException {
 		WorldProps w = new WorldProps();
 		ModelData[] models = { w.campTent(), w.fireRing(false), w.fireRing(true), w.logSeat(), w.gateholdBanner(), w.menhir(),
 				w.menhir(), w.menhir(), w.gateTower(true), w.gateTower(false), w.fallenMasonry(), w.pirateFlag(), w.gateWall(true),
 				w.gateWall(false) };
-		int[] ids = new int[models.length];
+		skullRock = new SkullRock(g).pieces();
+		int[] ids = new int[models.length + skullRock.size()];
 		for (int i = 0; i < models.length; i++) {
 			ids[i] = forge.pack(models[i]);
+		}
+		for (int i = 0; i < skullRock.size(); i++) {
+			ids[models.length + i] = forge.pack(skullRock.get(i).model);
 		}
 		return ids;
 	}
@@ -599,6 +606,18 @@ final class VoidRealmGenerator {
 		forgedLoc(locs, PIRATE_FLAG, m[11], "Black flag", "The colours of the Drowned Maiden, run up on a broken spar.");
 		forgedLoc(locs, GATE_WALL, m[12], "Old wall", "The wall that ran out from the Gate. The kingdom ended a long way before it did.");
 		forgedLoc(locs, GATE_WALL_LOW, m[13], "Old wall", "A stump of the old wall, waist-high and mossed over.");
+		// Skull Rock's face: walked through (the terrain under it does the blocking), never clicked (opcode 19 = 0 keeps
+		// it out of the client's mouse picking, so it can't swallow a click meant for the ground), and no ground shadow.
+		// Every reserved id is defined, so the ids after them don't move when the face is cut into fewer pieces.
+		for (int i = 0; i < SkullRock.MAX_PIECES; i++) {
+			SkullRock.Piece p = skullRock.get(Math.min(i, skullRock.size() - 1));
+			forgedLoc(locs, SKULL_ROCK + i, m[14 + Math.min(i, skullRock.size() - 1)], "Skull Rock", "Skull Rock.")
+					.footprint(p.sizeX, p.sizeY).set(17, new byte[0]).set(19, new byte[] { 0 }).set(64, new byte[0]);
+			if (i < skullRock.size()) {
+				g.object(SKULL_ROCK + i, p.x, p.y, CursedIslandGenerator.TYPE_SCENERY, 0);
+			}
+		}
+		System.out.println("Skull Rock: " + skullRock.size() + " pieces");
 	}
 
 	/** Objects for the later quests and the Starless, all on hand-built models. */
@@ -861,7 +880,13 @@ final class VoidRealmGenerator {
 				+ 3 * Math.sin(11 * a) + 16 * fbm(x / 38.0, y / 38.0, 7);
 		// a deep bay on the south-west coast
 		double bay = 26 - Math.hypot(x - 1400, y - 2600);
-		return Math.min(radius - Math.hypot(dx, dy * 1.08), -bay);
+		// plus a ragged edge: smooth curves cut into tiles leave long ruler-straight runs of shore
+		return Math.min(radius - Math.hypot(dx, dy * 1.08), -bay) + ragged(x, y, 51);
+	}
+
+	/** Small-scale wobble (about +-2 tiles) for shores, so no stretch of water's edge runs ruler-straight. */
+	static double ragged(int x, int y, int seed) {
+		return 1.5 * vnoise(x / 6.0, y / 6.0, seed) + 1.0 * vnoise(x / 2.5, y / 2.5, seed + 1);
 	}
 
 	/** The northern mountains: 0 outside, up to 1 on the ridge line. */
@@ -874,7 +899,7 @@ final class VoidRealmGenerator {
 
 	/** The lake in the west-centre. */
 	static double lake(int x, int y) {
-		return 15 + 5 * fbm(x / 9.0, y / 9.0, 21) - Math.hypot(x - 1440, (y - 2716) * 1.3);
+		return 15 + 5 * fbm(x / 9.0, y / 9.0, 21) - Math.hypot(x - 1440, (y - 2716) * 1.3) + ragged(x, y, 53);
 	}
 
 	/** The river: from a spring in the mountains down to the lake, then out of it to the south-west bay. */
@@ -887,7 +912,8 @@ final class VoidRealmGenerator {
 
 	double riverDistance(int x, int y) {
 		int lx = x - NX0, ly = y - NY0;
-		return lx < 0 || ly < 0 || lx >= NSIZE || ly >= NSIZE ? 99 : riverField[lx][ly];
+		// its banks wobble a little on top of the meander: a river's edge is never ruled
+		return lx < 0 || ly < 0 || lx >= NSIZE || ly >= NSIZE ? 99 : riverField[lx][ly] + 0.5 * ragged(x, y, 55);
 	}
 
 	/**
@@ -975,11 +1001,11 @@ final class VoidRealmGenerator {
 		slopes();
 		// the old stone road from the crater to the Broken Gate, then dirt tracks north to the pass and east to the scar
 		road(2.6, STONE_ROAD, new int[][] { { 1564, 2662 }, { 1558, 2670 }, { 1546, 2676 }, { 1538, 2688 }, { 1526, 2694 },
-				{ 1518, 2704 }, { 1510, 2710 } }, 1.6, 14, 91);
+				{ 1518, 2704 }, { 1510, 2710 } }, 2.2, 11, 91);
 		road(2.2, DIRT_ROAD, new int[][] { { 1510, 2714 }, { 1506, 2726 }, { 1496, 2732 }, { 1492, 2746 }, { 1484, 2754 },
-				{ 1482, 2768 }, { 1480, 2782 }, { 1482, 2800 } }, 2.0, 12, 92);
+				{ 1482, 2768 }, { 1480, 2782 }, { 1482, 2800 }, { 1483, 2804 } }, 2.4, 10, 92); // to the inn's yard
 		road(2.0, DIRT_ROAD, new int[][] { { 1514, 2712 }, { 1526, 2718 }, { 1538, 2728 }, { 1552, 2730 }, { 1566, 2738 },
-				{ 1578, 2736 } }, 1.8, 13, 93);
+				{ 1578, 2736 } }, 2.2, 10, 93);
 		craterAndCamp();
 		ruins();
 		scarScenery();
@@ -988,6 +1014,7 @@ final class VoidRealmGenerator {
 		places();
 		vegetation();
 		smoothOverlays();
+		g.drownedScenery(NX0, NY0, NSIZE);
 		wildlife();
 		dungeons();
 		writeSpawns();
@@ -1214,7 +1241,7 @@ final class VoidRealmGenerator {
 		boolean nearWater = lake(x, y) > -5 || riverDistance(x, y) < 4;
 		if (inland < 4) {
 			if (roll < 8 && free(x, y, 2)) {
-				g.object(ROCK, x, y, TYPE_SCENERY, rot);
+				g.object(SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
 			}
 			return;
 		}
@@ -1222,9 +1249,9 @@ final class VoidRealmGenerator {
 			if (roll < 25 && free(x, y, 2)) {
 				g.object(random.nextBoolean() ? EVERGREEN : EVERGREEN_BIG, x, y, TYPE_SCENERY, rot);
 			} else if (roll < 36 && free(x, y, 2)) {
-				g.object(BIG_ROCK, x, y, TYPE_SCENERY, rot); // 2x2: free(x, y, 2) covers it
+				g.object(MOSSY_ROCK, x, y, TYPE_SCENERY, rot); // 2x2: free(x, y, 2) covers it
 			} else if (roll < 45 && free(x, y, 1)) {
-				g.object(ROCK, x, y, TYPE_SCENERY, rot);
+				g.object(SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
 			}
 			return;
 		}
@@ -1243,7 +1270,7 @@ final class VoidRealmGenerator {
 		} else if (roll < treeChance + 12 && free(x, y, 3) && f > 0.4) {
 			g.object(FALLEN_TREE, x, y, TYPE_SCENERY, rot);
 		} else if (roll < treeChance + 15 && free(x, y, 1)) {
-			g.object(ROCK, x, y, TYPE_SCENERY, rot);
+			g.object(SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
 		}
 	}
 
@@ -1334,6 +1361,7 @@ final class VoidRealmGenerator {
 				g.removeObjectsAt(x + dx, y + dy);
 			}
 		}
+		g.flatten(x, y, x + 2, y + 2); // pitched on level ground: a tent on a slope hangs in the air on one side
 		g.object(CAMP_TENT, x, y, TYPE_SCENERY, door);
 	}
 
@@ -1397,8 +1425,9 @@ final class VoidRealmGenerator {
 		woodCamp();
 		scarWatch();
 		// a waymarker where the roads part at the Broken Gate
-		g.removeObjectsAt(GATE_X + 4, GATE_Y + 3);
-		g.object(SIGNPOST, GATE_X + 4, GATE_Y + 3, TYPE_SCENERY, 1);
+		// (beside the fallen masonry, not in it)
+		g.removeObjectsAt(GATE_X + 6, GATE_Y + 3);
+		g.object(SIGNPOST, GATE_X + 6, GATE_Y + 3, TYPE_SCENERY, 1);
 	}
 
 	/** Netwright's landing: a shack, a jetty out into the lake, boats, nets and the day's catch. */
@@ -1429,7 +1458,11 @@ final class VoidRealmGenerator {
 		g.object(BARREL, cx, cy - 2, TYPE_SCENERY, 0);
 		g.object(STACKED_BARRELS, cx + 1, cy - 4, TYPE_SCENERY, 0);
 		g.object(CRATES, shore + 2, cy - 3, TYPE_SCENERY, 0);
-		g.object(CRATE, shore, cy + 3, TYPE_SCENERY, 0);
+		int crateX = shore;
+		while (water(crateX, cy + 3) || water(crateX - 1, cy + 3)) { // on the bank, not in the shallows
+			crateX++;
+		}
+		g.object(CRATE, crateX, cy + 3, TYPE_SCENERY, 0);
 		g.object(SPIT_ROAST, cx - 1, cy - 5, TYPE_SCENERY, 0); // the day's catch, roasting
 	}
 
@@ -1491,7 +1524,7 @@ final class VoidRealmGenerator {
 		g.object(LOG_PILE, cx + 4, cy + 3, TYPE_SCENERY, 0);
 		g.object(AXE_LOGS, cx + 3, cy + 5, TYPE_SCENERY, 1);
 		g.object(CART, cx - 5, cy - 4, TYPE_SCENERY, 1);
-		g.object(LOGS, cx - 3, cy - 4, TYPE_SCENERY, 0);
+		g.object(LOGS, cx - 5, cy - 6, TYPE_SCENERY, 0); // unloaded beside the cart
 		int[][] stumps = { { -6, 4 }, { -3, 6 }, { 1, 6 }, { 5, 6 }, { -7, 1 }, { 6, 3 } }; // towards the trees
 		for (int[] st : stumps) {
 			g.object(STUMP + random.nextInt(4), cx + st[0], cy + st[1], TYPE_SCENERY, random.nextInt(4));
@@ -1828,8 +1861,9 @@ final class VoidRealmGenerator {
 			g.removeObjectsAt(dx + graves[i][0], dy + graves[i][1]);
 			g.object(i < 4 ? BIG_GRAVE : GRAVE, dx + graves[i][0], dy + graves[i][1], TYPE_SCENERY, 0);
 		}
+		// a stone either side of the door (it's three tiles wide), clear of it
 		g.object(STANDING_STONE, dx - 2, dy - 1, TYPE_SCENERY, 0);
-		g.object(STANDING_STONE, dx + 2, dy - 1, TYPE_SCENERY, 0);
+		g.object(STANDING_STONE, dx + 4, dy - 1, TYPE_SCENERY, 0);
 	}
 
 	/** Hollowdeep's mouth: a fissure in the Scar's black heart, ringed with crystals. */
@@ -1979,7 +2013,7 @@ final class VoidRealmGenerator {
 			} else if (d < 5) {
 				reg.overlay[0][x][y] = ASH;
 			}
-		}, ROCK);
+		}, DARK_ROCK);
 		int[] wardIds = { SUN_WARD, STAR_WARD, MOON_WARD };
 		for (int i = 0; i < 3; i++) {
 			put(r, o, wardIds[i], WARD_SPOTS[i][0], WARD_SPOTS[i][1], TYPE_SCENERY, 0);
@@ -2010,7 +2044,7 @@ final class VoidRealmGenerator {
 		MapRegion r = carve(BARROW_REGION_X, o, (reg, x, y) -> {
 			double f = fbm(x / 5.0, y / 5.0, 71);
 			reg.underlay[0][x][y] = f > 0.25 ? DARK_PATH : f < -0.35 ? MUD : GREY_PATH; // worn flagstones, blended
-		}, ROCK);
+		}, DARK_ROCK);
 		for (int y = 12; y <= 38; y += 6) { // torches down both walls of the hall
 			int west = 32, east = 32;
 			while (o[west - 1][y]) {
@@ -2094,7 +2128,7 @@ final class VoidRealmGenerator {
 			if (fbm(x / 5.0, y / 5.0, 73) > 0.3) {
 				reg.overlay[0][x][y] = BLUE_ICE;
 			}
-		}, ROCK);
+		}, DARK_ROCK);
 		hug(r, o, new int[] { STALAGMITE, STALAGMITE_2 }, 5, 32, 22, 7);
 		// the reward for braving it: a cavern rich in high ore, with a little runite at the back
 		int[] ores = { MITHRIL, MITHRIL_2, ADAMANT, ADAMANT_2, ADAMANT, MITHRIL, COAL, COAL_2, RUNITE };
@@ -2241,14 +2275,9 @@ final class VoidRealmGenerator {
 				if (reg.overlay[0][lx][ly] != 0) {
 					return false;
 				}
-				for (MapRegion.MapObject o : reg.objects) {
-					if (o.x == lx && o.y == ly) {
-						return false;
-					}
-				}
 			}
 		}
-		return true;
+		return g.footprintFree(x, y, r);
 	}
 
 	/** Softens the edges of water, roads and patches (see CursedIslandGenerator#smoothGrid). */
