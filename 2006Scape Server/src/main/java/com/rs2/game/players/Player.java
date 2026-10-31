@@ -1542,7 +1542,7 @@ public abstract class Player {
 	public int[] itemKeptId = new int[4];
 	public int[] pouches = new int[4];
 	public final int[] POUCH_SIZE = { 3, 6, 9, 12 };
-	public boolean[] invSlot = new boolean[28], equipSlot = new boolean[14];
+	public boolean[] invSlot = new boolean[Constants.INVENTORY_SIZE], equipSlot = new boolean[14];
 	public long friends[] = new long[200], ignores[] = new long[200];
 	public double specAmount = 0;
 	public double specAccuracy = 1;
@@ -1883,8 +1883,8 @@ public abstract class Player {
 	public String playerPass = null;
 	public int playerRights;
 	public PlayerHandler handler = null;
-	public int playerItems[] = new int[28];
-	public int playerItemsN[] = new int[28];
+	public int playerItems[] = new int[Constants.INVENTORY_SIZE];
+	public int playerItemsN[] = new int[Constants.INVENTORY_SIZE];
 	public int bankItems[] = new int[ItemConstants.BANK_SIZE];
 	public int bankItemsN[] = new int[ItemConstants.BANK_SIZE];
 	// used for player owned shops

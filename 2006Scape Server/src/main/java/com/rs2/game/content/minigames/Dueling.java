@@ -243,9 +243,20 @@ public class Dueling {
 			o.getDueling().declineDuel();
 			return false;
 		}
+		boolean stacksWithStake = false;
+		for (GameItem item : stakedItems) {
+			if (item.id == itemID && (ItemDefinition.lookup(itemID).isStackable() || ItemDefinition.lookup(itemID).isNote())) {
+				stacksWithStake = true;
+			}
+		}
+		if (stakedItems.size() >= Constants.TRADE_WINDOW_SIZE && !stacksWithStake) {
+			player.getPacketSender().sendMessage("You can't stake any more items.");
+			return false;
+		}
 		changeDuelStuff();
 		if (!ItemDefinition.lookup(itemID).isStackable()) {
-			for (int a = 0; a < amount; a++) {
+			// the stake window holds fewer items than the inventory, so stop when it is full
+			for (int a = 0; a < amount && stakedItems.size() < Constants.TRADE_WINDOW_SIZE; a++) {
 				if (player.getItemAssistant().playerHasItem(itemID, 1)) {
 					stakedItems.add(new GameItem(itemID, 1));
 					player.getItemAssistant().deleteItem(itemID,

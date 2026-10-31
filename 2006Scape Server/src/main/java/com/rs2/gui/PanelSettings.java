@@ -420,7 +420,7 @@ public class PanelSettings {
                         p.displayMessage("The selecetd item has been deleted!", cmd, 1);
                     } else {
                         String invItems = "";
-                        for (int i = 0; i < 28; i++) {
+                        for (int i = 0; i < c.playerItems.length; i++) {
                             if (c.playerItems[i] != 0) {
                                 invItems = (invItems + i + ". " + c.playerItems[i] + "\n");
                             }
@@ -463,7 +463,7 @@ public class PanelSettings {
                         p.displayMessage("The selecetd item has been dropped!", cmd, 1);
                     } else {
                         String invItems = "";
-                        for (int i = 0; i < 28; i++) {
+                        for (int i = 0; i < c.playerItems.length; i++) {
                             if (c.playerItems[i] != 0) {
                                 invItems = (invItems + i + ". " + c.playerItems[i] + "\n");
                             }

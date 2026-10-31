@@ -1,5 +1,6 @@
 package com.rs2.game.players;
 
+import com.rs2.Constants;
 import java.time.temporal.ValueRange;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -273,10 +274,21 @@ public class Trading {
 				return false;
 			}
 		}
+		boolean stacksWithOffer = false;
+		for (GameItem item : offeredItems) {
+			if (item.id == itemID && (ItemDefinition.lookup(itemID).isStackable() || ItemDefinition.lookup(itemID).isNote())) {
+				stacksWithOffer = true;
+			}
+		}
+		if (offeredItems.size() >= Constants.TRADE_WINDOW_SIZE && !stacksWithOffer) {
+			player.getPacketSender().sendMessage("The trade window is full.");
+			return false;
+		}
 		player.tradeConfirmed = false;
 		o.tradeConfirmed = false;
 		if (!ItemDefinition.lookup(itemID).isStackable() && !ItemDefinition.lookup(itemID).isNote()) {
-			for (int a = 0; a < amount && a < 28; a++) {
+			// the trade window holds fewer items than the inventory, so stop when it is full
+			for (int a = 0; a < amount && offeredItems.size() < Constants.TRADE_WINDOW_SIZE; a++) {
 				if (player.getItemAssistant().playerHasItem(itemID, 1)) {
 					offeredItems.add(new GameItem(itemID, 1));
 					player.getItemAssistant().deleteItem(itemID,

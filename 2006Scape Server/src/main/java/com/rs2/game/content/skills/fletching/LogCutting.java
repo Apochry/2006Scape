@@ -70,7 +70,7 @@ public class LogCutting {
 	}
 
 	public static void handleClick(Player player, int buttonId) {
-		if (player.doAmount == 28 && player.playerIsFletching) {
+		if (player.doAmount == Constants.INVENTORY_SIZE && player.playerIsFletching) {
 			player.getPacketSender().closeAllWindows();
 			player.playerIsFletching = false;
 			return;
@@ -93,7 +93,7 @@ public class LogCutting {
 			cutLog(player, 52, 1, 5, 10);
 			return;
 		case 34182:
-			cutLog(player, 52, 1, 5, 28);
+			cutLog(player, 52, 1, 5, Constants.INVENTORY_SIZE);
 			return;
 		case 34189:
 		if (player.playerIsFletching) {
@@ -109,7 +109,7 @@ public class LogCutting {
 			cutLog(player, 50, 5, 5, 10);
 			return;
 		case 34186:
-			cutLog(player, 50, 5, 5, 28);
+			cutLog(player, 50, 5, 5, Constants.INVENTORY_SIZE);
 			return;
 		case 34193:
 		if (player.playerIsFletching) {
@@ -125,7 +125,7 @@ public class LogCutting {
 			cutLog(player, 48, 10, 10, 10);
 			return;
 		case 34190:
-			cutLog(player, 48, 10, 10, 28);
+			cutLog(player, 48, 10, 10, Constants.INVENTORY_SIZE);
 			return;
 			/*
 			 * rest of the log's (item on interface 2)
@@ -191,19 +191,19 @@ public class LogCutting {
 			return;
 		case 34167:
 			if (player.getFletching().log == 1521) {
-				cutLog(player, 54, 20, 16.5, 28);
+				cutLog(player, 54, 20, 16.5, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1519) {
-				cutLog(player, 60, 35, 33.3, 28);
+				cutLog(player, 60, 35, 33.3, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1517) {
-				cutLog(player, 64, 50, 50, 28);
+				cutLog(player, 64, 50, 50, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1515) {
-				cutLog(player, 68, 65, 67.5, 28);
+				cutLog(player, 68, 65, 67.5, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1513) {
-				cutLog(player, 72, 80, 83.25, 28);
+				cutLog(player, 72, 80, 83.25, Constants.INVENTORY_SIZE);
 			}
 			return;
 			/*
@@ -267,19 +267,19 @@ public class LogCutting {
 			return;
 		case 34171:
 			if (player.getFletching().log == 1521) {
-				cutLog(player, 56, 25, 25, 28);
+				cutLog(player, 56, 25, 25, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1519) {
-				cutLog(player, 58, 40, 41.5, 28);
+				cutLog(player, 58, 40, 41.5, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1517) {
-				cutLog(player, 62, 55, 58.3, 28);
+				cutLog(player, 62, 55, 58.3, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1515) {
-				cutLog(player, 66, 70, 70, 28);
+				cutLog(player, 66, 70, 70, Constants.INVENTORY_SIZE);
 			}
 			if (player.getFletching().log == 1513) {
-				cutLog(player, 70, 85, 91.5, 28);
+				cutLog(player, 70, 85, 91.5, Constants.INVENTORY_SIZE);
 			}
 			return;
 		}

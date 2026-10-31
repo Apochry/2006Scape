@@ -7298,6 +7298,7 @@ public class Game extends RSApplet {
 			drawLoadingText(95, "Unpacking interfaces");
 			TextDrawingArea aclass30_sub2_sub1_sub4s[] = {aTextDrawingArea_1270, aTextDrawingArea_1271, chatTextDrawingArea, aTextDrawingArea_1273};
 			RSInterface.unpack(streamLoader_1, aclass30_sub2_sub1_sub4s, streamLoader_2);
+			RSInterface.widenInventories();
 			drawLoadingText(100, "Preparing game engine");
 			for (int j6 = 0; j6 < 33; j6++) {
 				int k6 = 999;
@@ -11555,8 +11556,11 @@ public class Game extends RSApplet {
 					if (i25 == 255) {
 						i25 = inStream.method440();
 					}
-					class9_1.inv[j22] = inStream.method436();
-					class9_1.invStackSizes[j22] = i25;
+					int itemId = inStream.method436();
+					if (j22 < class9_1.inv.length) { // ignore items that don't fit, rather than crash
+						class9_1.inv[j22] = itemId;
+						class9_1.invStackSizes[j22] = i25;
+					}
 				}
 
 				for (int j25 = j19; j25 < class9_1.inv.length; j25++) {

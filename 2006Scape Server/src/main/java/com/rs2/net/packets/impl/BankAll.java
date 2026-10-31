@@ -78,7 +78,7 @@ public class BankAll implements PacketType {
 
 		case 5382:
 			if (player.getItemAssistant().playerHasItem(removeId)) {
-				for (int i = 0; i <= 27; i++) {
+				for (int i = 0; i < player.playerItems.length; i++) {
 					if (removeId == player.playerItems[i] - 1)
 					{
 						if ((player.playerItemsN[i] + player.bankItemsN[removeSlot] + 1) < -1) {

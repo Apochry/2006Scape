@@ -254,7 +254,7 @@ public class ClickingButtons implements PacketType {
 		case 34186:
 		case 34190:
 			if (player.clickedSpinning) {
-				Spinning.getAmount(player, 28);
+				Spinning.getAmount(player, Constants.INVENTORY_SIZE);
 			}
 			break;
 
@@ -288,10 +288,10 @@ public class ClickingButtons implements PacketType {
 			break;
 		case 34242:
 			if (player.showedUnfire) {
-				Pottery.makeUnfire(player, 1787, 6.3, 1, 28);
+				Pottery.makeUnfire(player, 1787, 6.3, 1, Constants.INVENTORY_SIZE);
 			}
 			if (player.showedFire) {
-				Pottery.makeFire(player, 1787, 1931, 1, 6.3, 28);
+				Pottery.makeFire(player, 1787, 1931, 1, 6.3, Constants.INVENTORY_SIZE);
 			}
 			break;
 		// item 2
@@ -321,10 +321,10 @@ public class ClickingButtons implements PacketType {
 			break;
 		case 34246:
 			if (player.showedUnfire) {
-				Pottery.makeUnfire(player, 1789, 15, 7, 28);
+				Pottery.makeUnfire(player, 1789, 15, 7, Constants.INVENTORY_SIZE);
 			}
 			if (player.showedFire) {
-				Pottery.makeFire(player, 1789, 2313, 7, 10, 28);
+				Pottery.makeFire(player, 1789, 2313, 7, 10, Constants.INVENTORY_SIZE);
 			}
 			break;
 		// item 3
@@ -354,10 +354,10 @@ public class ClickingButtons implements PacketType {
 			break;
 		case 34250:
 			if (player.showedUnfire) {
-				Pottery.makeUnfire(player, 1791, 18, 8, 28);
+				Pottery.makeUnfire(player, 1791, 18, 8, Constants.INVENTORY_SIZE);
 			}
 			if (player.showedFire) {
-				Pottery.makeFire(player, 1791, 1923, 8, 15, 28);
+				Pottery.makeFire(player, 1791, 1923, 8, 15, Constants.INVENTORY_SIZE);
 			}
 			break;
 
@@ -621,7 +621,7 @@ public class ClickingButtons implements PacketType {
 
 		case 53149:
 			if (player.tutorialProgress < 36) {
-				CookingTutorialIsland.getAmount(player, 28);
+				CookingTutorialIsland.getAmount(player, Constants.INVENTORY_SIZE);
 			} else {
 				Cooking.cookItem(player, player.cookingItem, 28, player.cookingObject);
 			}

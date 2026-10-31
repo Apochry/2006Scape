@@ -177,7 +177,7 @@ public class Herblore extends SkillHandler {
 			break;
 		case 6211:
 			if (player.isPotionMaking) {
-				makePotion(player, 28);
+				makePotion(player, Constants.INVENTORY_SIZE);
 			}
 			break;
 		}

@@ -9,6 +9,38 @@ public final class RSInterface {
 		invStackSizes[j] = k;
 	}
 	
+	/** Inventory slots per row; must match the server's Constants.INVENTORY_SIZE (columns x 7 rows). */
+	public static final int INVENTORY_COLUMNS = 5;
+
+	/**
+	 * The cache defines the inventory grids as 4 columns x 7 rows. Widen every grid that shows the
+	 * player's inventory (the inventory tab, and the copies beside the bank, shop and trade/duel screens)
+	 * to {@link #INVENTORY_COLUMNS} columns, tightening the spacing so the grid still fits the side panel.
+	 */
+	public static void widenInventories() {
+		// { inventory grid, the side panel that holds it }
+		int[][] grids = { { 3214, 3213 }, { 5064, 5063 }, { 3823, 3822 }, { 3322, 3321 } };
+		int pad = 4;
+		int gridWidth = INVENTORY_COLUMNS * 32 + (INVENTORY_COLUMNS - 1) * pad;
+		int x = (190 - gridWidth) / 2; // centred in the 190 pixel wide side panel
+		for (int[] g : grids) {
+			RSInterface grid = interfaceCache[g[0]];
+			RSInterface panel = interfaceCache[g[1]];
+			if (grid == null || panel == null || grid.type != 2) {
+				continue;
+			}
+			grid.width = INVENTORY_COLUMNS;
+			grid.invSpritePadX = pad;
+			grid.inv = new int[grid.width * grid.height];
+			grid.invStackSizes = new int[grid.width * grid.height];
+			for (int c = 0; c < panel.children.length; c++) {
+				if (panel.children[c] == g[0]) {
+					panel.childX[c] = x;
+				}
+			}
+		}
+	}
+
 	public static void unpack(StreamLoader streamLoader, TextDrawingArea textDrawingAreas[], StreamLoader streamLoader_1) {
 		aMRUNodes_238 = new MRUNodes(50000);
 		Stream stream = new Stream(streamLoader.getDataForName("data"));

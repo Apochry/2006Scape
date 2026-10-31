@@ -266,8 +266,8 @@ public class PlayerAssistant {
 	    
 	public int backupItems[] = new int[ItemConstants.BANK_SIZE];
 	public int backupItemsN[] = new int[ItemConstants.BANK_SIZE];
-	public int backupInvItems[] = new int[28];
-	public int backupInvItemsN[] = new int[28];
+	public int backupInvItems[] = new int[Constants.INVENTORY_SIZE];
+	public int backupInvItemsN[] = new int[Constants.INVENTORY_SIZE];
 
 	public void otherInv(Client c, Client o) {
 		if (o == c || o == null || c == null)

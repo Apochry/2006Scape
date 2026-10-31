@@ -1891,7 +1891,7 @@ public class ItemAssistant {
 							if (player.playerItems[i] == itemID) {
 								firstPossibleSlot = i;
 								itemExists = true;
-								i = 30;
+								break;
 							}
 						}
 						if (itemExists) {
@@ -1916,7 +1916,7 @@ public class ItemAssistant {
 							if (player.playerItems[i] == itemID) {
 								firstPossibleSlot = i;
 								itemExists = true;
-								i = 30;
+								break;
 							}
 						}
 						if (itemExists) {
@@ -2014,7 +2014,7 @@ public class ItemAssistant {
 							if (player.playerItems[i] == itemID) {
 								firstPossibleSlot = i;
 								itemExists = true;
-								i = 30;
+								break;
 							}
 						}
 						if (itemExists) {
@@ -2039,7 +2039,7 @@ public class ItemAssistant {
 							if (player.playerItems[i] == itemID) {
 								firstPossibleSlot = i;
 								itemExists = true;
-								i = 30;
+								break;
 							}
 						}
 						if (itemExists) {
@@ -2095,7 +2095,7 @@ public class ItemAssistant {
 		if (amount > 0) {
 			if (player.bankItems[fromSlot] > 0) {
 				if (player.getItemAssistant().playerHasItem(itemID)) {
-					for (int i = 0; i <= 27; i++) {
+					for (int i = 0; i < player.playerItems.length; i++) {
 						if (itemID == player.playerItems[i] || (itemID == 995 && player.playerItems[i] - 1 == 995)) {
 							if ((player.playerItemsN[i] + amount + 1) < -1) {
 								cantWithdrawCuzMaxStack = true;
