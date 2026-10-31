@@ -21021,5 +21021,15 @@
    {
       "id":7951,
       "weight":9.0
+   },
+   {
+      "id":7966,
+      "weight":0.4,
+      "bonuses":{"attackStab":4,"attackSlash":4,"attackCrush":4,"attackMagic":4,"attackRange":4,"defenceStab":6,"defenceSlash":6,"defenceCrush":6,"defenceMagic":6,"defenceRange":6,"strengthBonus":3,"prayerBonus":3}
+   },
+   {
+      "id":7967,
+      "weight":1.8,
+      "bonuses":{"attackStab":9,"attackSlash":58,"attackCrush":-2,"defenceSlash":1,"strengthBonus":57}
    }
 ]

@@ -664,6 +664,10 @@ public class ItemAssistant {
 
 	public void getRequirements(String itemName, int itemId) {
 		player.attackLevelReq = player.defenceLevelReq = player.strengthLevelReq = player.rangeLevelReq = player.magicLevelReq = player.agilityLevelReq = player.slayerLevelReq = 0;
+		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.HOLLOWFANG) {
+			player.attackLevelReq = 50;
+			return;
+		}
 		if (itemName.contains("mystic") || itemName.contains("nchanted")) {
 			if (itemName.contains("staff")) {
 				player.magicLevelReq = 20;

@@ -68,9 +68,11 @@ public final class CursedIslandGenerator {
 
 	/* Key points (cave, dungeon exit, portal, chest...) come from SkullbrineConstants, shared with the server. */
 
-	private final Map<Integer, MapRegion> regions = new HashMap<>();
+	final Map<Integer, MapRegion> regions = new HashMap<>();
 	private final Random random = new Random(0x5C011);
-	private CacheEditor cache;
+	CacheEditor cache;
+	/** The Void quest series and the continent of Nythera. */
+	final VoidRealmGenerator voidRealm = new VoidRealmGenerator(this);
 	private CacheEditor.Archive config;
 
 	public static void main(String[] args) throws Exception {
@@ -79,11 +81,19 @@ public final class CursedIslandGenerator {
 		try (CacheEditor cache = new CacheEditor(cacheDir)) {
 			gen.cache = cache;
 			gen.buildSurface();
+			gen.voidRealm.islandScenery();
 			gen.buildDungeon();
+			gen.voidRealm.arena();
+			gen.voidRealm.nythera();
 			gen.buildDefinitions();
 			if (System.getProperty("preview") != null) {
 				javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), BASE_X, BASE_Y,
 						64 * SURFACE_REGIONS, 64 * SURFACE_REGIONS, 6, false), "png", new java.io.File(System.getProperty("preview")));
+			}
+			if (System.getProperty("nythera") != null) {
+				javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), VoidRealmGenerator.NX0,
+						VoidRealmGenerator.NY0, VoidRealmGenerator.NSIZE, VoidRealmGenerator.NSIZE, 2, false), "png",
+						new java.io.File(System.getProperty("nythera")));
 			}
 		}
 		gen.pack(cacheDir);
@@ -975,8 +985,9 @@ public final class CursedIslandGenerator {
 		dobj(r, SKULL_PILE, 2002, 9310, TYPE_SCENERY, 0);
 		dobj(r, LONG_SKELETON, 2006, 9306, TYPE_GROUND_DECOR, 0);
 		dobj(r, CAVE_TORCH, 2005, 9312, TYPE_SCENERY, 0);
-		// Dragonvein cavern: dragon rocks along its walls, lit red
+		// Dragonvein cavern: dragon rocks along its walls, and the void vein at its far end
 		dragonRocks(r, open);
+		voidRealm.voidVein(r, open);
 		// portal chamber
 		dobj(r, PORTAL, PORTAL_X, PORTAL_Y, TYPE_SCENERY, 0);
 		dobj(r, CAVE_TORCH, 2012, 9333, TYPE_SCENERY, 0);
@@ -1113,6 +1124,7 @@ public final class CursedIslandGenerator {
 		int[][] tint = ConfigDefinitions.tint(cache, new int[] { pearl.itemModel() }, VOID_HUE, 5, 0.6, 0);
 		pearl.recolor(tint[0], tint[1]);
 		items.put(VOID_PEARL, pearl);
+		voidRealm.npcs(npcs);
 
 		// dragon metal: runite ore and bar, recoloured blood red
 		ConfigDefinitions.Definition ore = item(items, 451, DragonMetal.DRAGON_ORE).name("Dragon ore")
@@ -1121,6 +1133,7 @@ public final class CursedIslandGenerator {
 		ConfigDefinitions.Definition bar = item(items, 2363, DragonMetal.DRAGON_BAR).name("Dragon bar")
 				.examine("It's a bar of dragon metal.").cost(20000);
 		dragonRed(bar, new int[] { bar.itemModel() });
+		voidRealm.items(items);
 
 		ConfigDefinitions.Table locs = ConfigDefinitions.load(config, "loc", false);
 		buildObjects(locs);
@@ -1166,6 +1179,7 @@ public final class CursedIslandGenerator {
 		// dragon rocks: a runite rock with blood-red ore
 		ConfigDefinitions.Definition rock = loc(locs, 2106, DragonMetal.DRAGON_ROCK).examine("A rock with veins of dragon ore.");
 		dragonRed(rock, rock.locModels());
+		voidRealm.locs(locs);
 	}
 
 	/** Dragon red: re-hues an existing recolour (runite's cyan), or the model's own colours if it has none. */

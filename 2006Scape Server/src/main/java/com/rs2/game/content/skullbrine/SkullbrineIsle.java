@@ -8,6 +8,7 @@ import com.rs2.event.CycleEventContainer;
 import com.rs2.event.CycleEventHandler;
 import com.rs2.game.content.quests.QuestAssistant;
 import com.rs2.game.content.quests.impl.CurseOfSkullbrine;
+import com.rs2.game.content.voidrealm.VoidRealm;
 import com.rs2.game.dialogues.ChatEmotes;
 import com.rs2.game.dialogues.DialogueHandler;
 import com.rs2.game.players.Player;
@@ -40,6 +41,9 @@ public final class SkullbrineIsle {
 	/* ====================================================================== */
 
 	public static boolean firstClickNpc(Player player, int npcType) {
+		if (VoidRealm.firstClickNpc(player, npcType)) {
+			return true;
+		}
 		switch (npcType) {
 		case BOSUN_GRIMSBY:
 			if (onIsland(player.absX, player.absY)) {
@@ -71,6 +75,9 @@ public final class SkullbrineIsle {
 	}
 
 	public static boolean secondClickNpc(Player player, int npcType) {
+		if (VoidRealm.secondClickNpc(player, npcType)) {
+			return true;
+		}
 		if (npcType == MAD_PETE) {
 			player.getShopAssistant().openShop(SALVAGE_SHOP);
 			return true;
@@ -88,6 +95,9 @@ public final class SkullbrineIsle {
 
 	/** Called first from DialogueHandler#sendDialogues; returns true if the id belongs to Skullbrine. */
 	public static boolean sendDialogue(Player player, int id, int npcId) {
+		if (VoidRealm.sendDialogue(player, id, npcId)) {
+			return true;
+		}
 		if (id < 9500 || id >= 9600) {
 			return false;
 		}
@@ -262,6 +272,9 @@ public final class SkullbrineIsle {
 
 	/** Called first from DialogueOptions#handleDialogueOptions. */
 	public static boolean handleOption(Player player, int buttonId) {
+		if (VoidRealm.handleOption(player, buttonId)) {
+			return true;
+		}
 		boolean first = buttonId == 9157, second = buttonId == 9158;
 		if (!first && !second) {
 			return false;
@@ -336,6 +349,9 @@ public final class SkullbrineIsle {
 
 	/** Called first from ObjectsActions#firstClickObject. */
 	public static boolean firstClickObject(Player player, int objectId, int x, int y) {
+		if (VoidRealm.firstClickObject(player, objectId, x, y)) {
+			return true;
+		}
 		if (!onIsland(x, y) && !inDungeon(x, y)) {
 			return false;
 		}
@@ -368,6 +384,9 @@ public final class SkullbrineIsle {
 
 	/** Called first from UseItem#itemOnObject. */
 	public static boolean itemOnObject(Player player, int objectId, int x, int y, int itemId) {
+		if (VoidRealm.itemOnObject(player, objectId, x, y, itemId)) {
+			return true;
+		}
 		if (objectId == VOID_PORTAL && itemId == VOID_PEARL && inDungeon(x, y)) {
 			touchPortal(player);
 			return true;
@@ -442,10 +461,7 @@ public final class SkullbrineIsle {
 		enterVoidPortal(player);
 	}
 
-	/**
-	 * The portal to another world. It is deliberately left unconnected for now - this is the single place to
-	 * hook up the destination when that world exists.
-	 */
+	/** The dormant portal before the Void series (see VoidRealm, which handles it once Skullbrine is complete). */
 	public static void enterVoidPortal(Player player) {
 		if (player.skullbrine >= CurseOfSkullbrine.COMPLETE) {
 			player.getPacketSender().sendMessage("The portal hums with a low, steady thrum. Something on the other side is waiting...");
@@ -461,6 +477,9 @@ public final class SkullbrineIsle {
 
 	/** Called first from ClickItem#processPacket. */
 	public static boolean clickItem(Player player, int itemId) {
+		if (VoidRealm.clickItem(player, itemId)) {
+			return true;
+		}
 		if (itemId != BLACKBRINES_LOG) {
 			return false;
 		}
@@ -474,6 +493,7 @@ public final class SkullbrineIsle {
 
 	/** Called when an NPC dies; drops the captain's key from Sam while the player needs it. */
 	public static void npcKilled(Player killer, int npcType, int x, int y, int height) {
+		VoidRealm.npcKilled(killer, npcType, x, y, height);
 		if (npcType != CURSED_FIRST_MATE || killer == null) {
 			return;
 		}

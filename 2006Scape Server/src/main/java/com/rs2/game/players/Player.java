@@ -1400,7 +1400,7 @@ public abstract class Player {
 
 	public int votePoints, saveDelay, playerKilled, gertCat, restGhost,
 			romeojuliet, runeMist, lostCity, vampSlayer, cookAss, doricQuest, blackKnight, shieldArrav,
-			sheepShear, impsC, skullbrine, randomActions,
+			sheepShear, impsC, skullbrine, voidEchoes, voidVeil, randomActions,
 			totalPlayerDamageDealt, killedBy, lastChatId = 1, privateChat,
 			dialogueId, randomCoffin, newLocation, specEffect,
 			specBarId, attackLevelReq, defenceLevelReq, strengthLevelReq,
@@ -1690,6 +1690,13 @@ public abstract class Player {
 	public int XremoveSlot, XinterfaceID, XremoveID, Xamount;
 
 	public boolean isMining;
+	/** Void quest series: the voidlings from the vein are all dead (not saved). */
+	public int voidlingsLeft;
+	/** Hollowed wolves and husks killed since Warden Kael last paid (saved). */
+	public int hollowKills;
+	public boolean voidVeinCleared;
+	/** When a grave last grabbed this player (Echoes of the Void). */
+	public long lastGraveGrab;
 	/** Bumped whenever the player starts waiting for a rock or tree to respawn (see RespawnWait). */
 	public int respawnWaitToken;
 	public boolean hasThievedStall;
