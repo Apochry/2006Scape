@@ -546,6 +546,17 @@ wielded model on the default body with the hand ringed at (-30, -97, 0). It also
 `2006Scape Server`:
 `java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.ModelPreview data/cache outDir [S1|S2|G] [rank...]`.
 
+**Inventory icons are centred automatically.** Each custom item borrows a stock item's icon camera (opcodes 4-8) but
+has a new model, so the borrowed camera can leave it off to one side or running past the edge of the slot. The last step
+of `buildDefinitions` is `IconCentre`. For every item past the stock table, it projects the model exactly as the client's
+`ItemDef.getSprite` does. It then slides the icon to the middle of the 32x32 sprite, sideways with opcode 7 and up or down
+with opcode 8. If the icon is too big to leave room for the black outline, it first pulls the zoom (opcode 4) back. The
+rotations are left alone. Opcode 8 also pushes the model away from the camera, and at pitch 256 (45 degrees) it can't
+move the icon up or down at all, so it is only used where it changes the icon's size by 4% or less. Items it can't
+centre to within 0.75 px are listed in the regen output. `GENOPTS=-Dicons=dir tools/regen-world.sh` also writes
+`icons-moved.png`, which shows each moved icon before and after with a crosshair through the middle, and `icons-all.png`.
+New items need nothing extra: the pass picks them up.
+
 ### The god tier (31-45)
 
 Fifteen weapons above everything else. Each belongs to one of the world's powers: the stars and the First Star, the

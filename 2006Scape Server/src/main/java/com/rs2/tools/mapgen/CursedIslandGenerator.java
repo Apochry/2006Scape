@@ -1330,6 +1330,7 @@ public final class CursedIslandGenerator {
 		config = CacheEditor.Archive.decode(cache.read(0, ConfigDefinitions.CONFIG_ARCHIVE));
 		ConfigDefinitions.Table npcs = ConfigDefinitions.load(config, "npc", true);
 		ConfigDefinitions.Table items = ConfigDefinitions.load(config, "obj", false);
+		int stockItems = items.size();
 
 		// Port Sarim's boatman, cloned from Captain Tobias
 		npc(npcs, 376, BOSUN_GRIMSBY).name("Bosun Grimsby").examine("A weathered sailor with a haunted look.")
@@ -1376,6 +1377,7 @@ public final class CursedIslandGenerator {
 		buildObjects(locs);
 
 		live.forEach((table, defsById) -> defsById.forEach(table::put));
+		IconCentre.centreAll(cache, items, stockItems); // last, so every item we added sits in the middle of its bag slot
 		ConfigDefinitions.save(config, npcs, items, locs);
 		System.out.println("Definitions: " + npcs.size() + " npcs, " + items.size() + " items");
 	}

@@ -1,4 +1,4 @@
-904c63ade5500ec962887f939c83f558ab2085ed89980905ebfb588361ca658b
+f51391cb2904b5839d5d4722942a2800df8f54b89260ebdc552fab17d4ea3293
 # Written by WorldGate when the world built from the files in tools/worldgate.files passed the gate.
 # The Claude Code hooks (.claude/hooks/worldgate-*.sh) compare it with those files before world code can be
 # committed or a session can end. Never edit it by hand: regenerate the world (tools/regen-world.sh).
