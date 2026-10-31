@@ -27,7 +27,24 @@ final class VoidRealmGenerator {
 
 	/* ---------- floors (flo index + 1) ---------- */
 	static final int GRASS_A = 48, GRASS_B = 49, GRASS_C = 50, GRASS_D = 63, GRASS_E = 64, FOREST_FLOOR = 57, SLOPE = 58,
-			MOUNTAIN = 56, SAND_FLOOR = 68, STONE_ROAD = 10, DIRT_ROAD = 81, CRYPT_PURPLE = 116, VOID_BLACK = 37, MUD_FIELD = 131;
+			MOUNTAIN = 56, SAND_FLOOR = 68, STONE_ROAD = 10, DIRT_ROAD = 81, MUD_FIELD = 131;
+	/**
+	 * The void's own floors, appended to flo.dat by {@link #floors()}: one family, darkest to brightest, so every
+	 * place the Scar has touched reads the same - a near-black pool, scorched violet ash, and the glassy violet of
+	 * ground the rift has fused. (They replace the stock crypt magenta and pure black, which looked like holes.)
+	 */
+	static final int VOID_POOL = 175, VOID_ASH = 176, VOID_GLASS = 177, EMBER_SCORCH = 178;
+	/** Skull Rock's eye sockets and mouth: as dark as the void pool, but warm, and never the flat black of a hole. */
+	static final int SKULL_SHADOW = 179;
+	static final int[][] VOID_FLOORS = { { 0x16121d }, { 0x241f2b }, { 0x4b3e6c }, { 0x3d2418 }, { 0x1e1b18 } };
+	static final String[] VOID_FLOOR_NAMES = { "void_pool", "void_ash", "void_glass", "ember_scorch", "skull_shadow" };
+	/**
+	 * The void platform's stone: dusky slate-violet underlays (blended by the client, so the stone shades smoothly).
+	 * The map format can't hold an underlay id above 174, so these take over two stock floors no map uses
+	 * (cosmic_floor_softpink and fairy_grass_overlay) instead of being appended.
+	 */
+	static final int VOIDSTONE = 167, VOIDSTONE_DARK = 168;
+	static final int[] VOIDSTONE_RGB = { 0x34304a, 0x25222f };
 
 	/* ---------- scenery ---------- */
 	static final int TREE = 1276, TREE_2 = 1278, OAK = 1281, WILLOW = 1308, MAPLE = 1307, YEW = 1309, EVERGREEN = 1315,
@@ -48,17 +65,19 @@ final class VoidRealmGenerator {
 				.set(60, npcs.decode(611).get(60)); // the Varrock witch's chathead - the cloned witch has none
 		// robes and hat only: leave skin (hues 4, 7, 8, and 26, which the witch's own recolour turns into skin), lips (1),
 		// hair (6) and eyes (42) alone
-		tintNpc(seer, 50, 4, 0.9, 6, c -> (c >> 7 & 7) >= 1 && java.util.Arrays.binarySearch(new int[] { 1, 4, 6, 7, 8, 26, 42 }, c >> 10) < 0);
-		g.ghostly(g.npc(npcs, 1612, HOLLOW_WRAITH), npcs, 1612, 50, 4, 0.75, 14).name("Hollow wraith")
+		tintNpc(seer, ConfigDefinitions.VOID, 4, 0.9, 6, c -> (c >> 7 & 7) >= 1 && java.util.Arrays.binarySearch(new int[] { 1, 4, 6, 7, 8, 26, 42 }, c >> 10) < 0);
+		g.ghostly(g.npc(npcs, 1612, HOLLOW_WRAITH), npcs, 1612, ConfigDefinitions.VOID, 4, 0.75, 14).name("Hollow wraith")
 				.examine("Something wearing the shape of a drowned man.").shorts(95, 30);
-		g.ghostly(g.npc(npcs, 2263, VOIDLING), npcs, 2263, 52, 6, 0.6, 8).name("Voidling")
+		g.ghostly(g.npc(npcs, 2263, VOIDLING), npcs, 2263, ConfigDefinitions.VOID, 6, 0.6, 8).name("Voidling")
 				.examine("It squirms out of the rock like a thought you'd rather not have.").shorts(95, 9);
 		// the Hollow King: a colossus of absence, cut from the same stone as TzTok-Jad but drained of all its fire
-		g.ghostly(g.npc(npcs, 2745, HOLLOW_KING), npcs, 2745, 50, 3, 0.42, 2).name("The Hollow King")
+		g.ghostly(g.npc(npcs, 2745, HOLLOW_KING), npcs, 2745, ConfigDefinitions.VOID, 3, 0.42, 2).name("The Hollow King")
 				.examine("Looking at it is like looking down a well with no bottom.").shorts(95, 999).shorts(97, 118)
 				.shorts(98, 118);
-		g.npc(npcs, 14, OREN).name("Oren the Wanderer").examine("A weathered old man in travel-stained robes.")
+		ConfigDefinitions.Definition oren = g.npc(npcs, 14, OREN).name("Oren the Wanderer").examine("A weathered old man in travel-stained robes.")
 				.npcActions("Talk-to", null, null, null, null).set(60, npcs.decode(455).get(60)); // Kaqemeex's chathead
+		// a druid's white robes, after a long road: dust-grey, with the beard left white
+		oren.recolor(new int[] { 25238, 8741, 6798 }, new int[] { hsl(8, 1, 76), hsl(8, 2, 58), 127 });
 		// the people of Nythera's camps (ids must stay contiguous after Oren)
 		g.npc(npcs, 219, BRAM).name("Bram Netwright").examine("His hands smell of lake-weed and pipe smoke.")
 				.npcActions("Talk-to", "Trade", null, null, null);
@@ -71,9 +90,10 @@ final class VoidRealmGenerator {
 		g.npc(npcs, 222, PILGRIM).name("Wandering pilgrim").examine("Walking somewhere slowly, and in no hurry to arrive.")
 				.npcActions("Talk-to", null, null, null, null);
 		// what the Scar does to living things
-		g.ghostly(g.npc(npcs, 142, HOLLOWED_WOLF), npcs, 142, 50, 4, 0.55, 4).name("Hollowed wolf")
+		g.ghostly(g.npc(npcs, 142, HOLLOWED_WOLF), npcs, 142, ConfigDefinitions.VOID, 4, 0.55, 4).name("Hollowed wolf")
 				.examine("Its eyes are empty. Something else is looking out of them.").shorts(95, 34);
-		g.ghostly(g.npc(npcs, 75, HOLLOW_HUSK), npcs, 75, 50, 3, 0.6, 6).name("Hollow husk")
+		// husk and ravager are built on human rigs: the zombie's few animations fling its limbs about
+		g.ghostly(g.npc(npcs, 2, HOLLOW_HUSK), npcs, 2, ConfigDefinitions.VOID, 3, 0.6, 6).name("Hollow husk")
 				.examine("Whoever this was, the Scar emptied them out and kept walking them around.").shorts(95, 41);
 		// Gatehold, the quarry, the inn and the cove
 		g.npc(npcs, 17, YSOLDE).name("Captain Ysolde").examine("Captain of Gatehold's watch. All six of them.")
@@ -92,7 +112,7 @@ final class VoidRealmGenerator {
 		g.ghostly(g.npc(npcs, 93, BARROW_THANE), npcs, 93, GHOST_HUE, 3, 0.8, 4).name("The Barrow Thane")
 				.examine("He was buried a king. He doesn't seem to have accepted the demotion.").shorts(95, 68).shorts(97, 140)
 				.shorts(98, 140);
-		g.ghostly(g.npc(npcs, 95, HOLLOW_MATRIARCH), npcs, 95, 50, 5, 0.5, 2).name("The Hollow Matriarch")
+		g.ghostly(g.npc(npcs, 95, HOLLOW_MATRIARCH), npcs, 95, ConfigDefinitions.VOID, 5, 0.5, 2).name("The Hollow Matriarch")
 				.examine("The first wolf the Scar took. Every Hollowed wolf is hers.").shorts(95, 92).shorts(97, 175)
 				.shorts(98, 175);
 		g.ghostly(g.npc(npcs, 111, RIMECLAW), npcs, 111, 36, 3, 1.1, 8).name("Rimeclaw")
@@ -100,30 +120,30 @@ final class VoidRealmGenerator {
 		// Ashes of the Crown
 		g.npc(npcs, 646, MAELIS).name("Archivist Maelis").examine("Ink to the elbows. He knows more about Nythera than Nythera does.")
 				.npcActions("Talk-to", null, null, null, null);
-		g.ghostly(g.npc(npcs, 60, BROODMOTHER), npcs, 60, 50, 2, 0.45, 2).name("Silkwood broodmother")
+		g.ghostly(g.npc(npcs, 60, BROODMOTHER), npcs, 60, ConfigDefinitions.VOID, 2, 0.45, 2).name("Silkwood broodmother")
 				.examine("Every spider in Silkwood is one of hers. She'd like you to be one of hers too.").shorts(95, 58)
 				.shorts(97, 190).shorts(98, 190);
 		// the Herald: a smaller echo of the Hollow King, crowned in his colours
-		g.ghostly(g.npc(npcs, 2745, HOLLOW_HERALD), npcs, 2745, 56, 5, 0.5, 6).name("The Hollow Herald")
+		g.ghostly(g.npc(npcs, 2745, HOLLOW_HERALD), npcs, 2745, ConfigDefinitions.VOID, 5, 0.5, 6).name("The Hollow Herald")
 				.examine("The King's voice, given a body. Smaller than him. That isn't much comfort.").shorts(95, 88)
 				.shorts(97, 52).shorts(98, 52).set(12, new byte[] { 2 });
-		g.ghostly(g.npc(npcs, 425, HOLLOW_SHADE), npcs, 425, 50, 3, 0.7, 10).name("Hollow shade")
+		g.ghostly(g.npc(npcs, 425, HOLLOW_SHADE), npcs, 425, ConfigDefinitions.VOID, 3, 0.7, 10).name("Hollow shade")
 				.examine("A scrap of the void with a grudge.").shorts(95, 34);
 		sagaNpcs(npcs);
 	}
 
 	/** NPCs for Hold the Gate, Heartforged, The Hollow King and the Starless. */
 	void sagaNpcs(ConfigDefinitions.Table npcs) throws java.io.IOException {
-		g.ghostly(g.npc(npcs, 75, HOLLOW_RAVAGER), npcs, 75, 50, 5, 0.45, 2).name("Hollow ravager")
+		g.ghostly(g.npc(npcs, 186, HOLLOW_RAVAGER), npcs, 186, ConfigDefinitions.VOID, 5, 0.45, 2).name("Hollow ravager")
 				.examine("The Scar's idea of a siege engine.").shorts(95, 48).shorts(97, 160).shorts(98, 160);
 		g.ghostly(g.npc(npcs, 92, THANE_OATHSWORN), npcs, 92, GHOST_HUE, 3, 0.75, 6).name("Thane's oathsworn")
 				.examine("Sworn to guard the Thane's things for ever. It took the oath literally.").shorts(95, 40);
 		g.ghostly(g.npc(npcs, 125, RIMEBOUND_SENTINEL), npcs, 125, 36, 3, 1.25, 24).name("Rimebound sentinel")
 				.examine("Frozen at its post so long it has become the post.").shorts(95, 58).shorts(97, 165).shorts(98, 165);
-		g.ghostly(g.npc(npcs, 178, SIR_VAELRIC), npcs, 178, 50, 5, 0.5, 4).name("Sir Vaelric, the Hollow Knight")
+		g.ghostly(g.npc(npcs, 178, SIR_VAELRIC), npcs, 178, ConfigDefinitions.VOID, 5, 0.5, 4).name("Sir Vaelric, the Hollow Knight")
 				.examine("Aurel's last knight. He followed his king into the dark, and kept following.").shorts(95, 66)
 				.shorts(97, 150).shorts(98, 150);
-		g.ghostly(g.npc(npcs, 178, HOLLOW_KNIGHT), npcs, 178, 50, 3, 0.65, 8).name("Hollow knight")
+		g.ghostly(g.npc(npcs, 178, HOLLOW_KNIGHT), npcs, 178, ConfigDefinitions.VOID, 3, 0.65, 8).name("Hollow knight")
 				.examine("Armour with nobody left inside it, still marching.").shorts(95, 44);
 		g.ghostly(g.npc(npcs, 648, AUREL_SPIRIT), npcs, 648, GHOST_HUE, 4, 1.0, 14).name("King Aurel")
 				.examine("Nythera's last king, himself again - for a little while.").npcActions("Talk-to", null, null, null, null);
@@ -132,30 +152,30 @@ final class VoidRealmGenerator {
 		g.npc(npcs, 2263, THE_STARLESS).name("The Starless").examine("The dark between the stars. It offered a king a crown once.")
 				.remove(40).set(1, new byte[] { 1, (byte) (starModel >> 8), (byte) starModel }).set(12, new byte[] { 3 })
 				.shorts(95, 400).shorts(97, 128).shorts(98, 128);
-		g.ghostly(g.npc(npcs, 2263, STARLESS_SPAWN), npcs, 2263, 50, 7, 0.9, 30).name("Starless spawn")
+		g.ghostly(g.npc(npcs, 2263, STARLESS_SPAWN), npcs, 2263, ConfigDefinitions.VOID, 7, 0.9, 30).name("Starless spawn")
 				.examine("A scrap of the Starless, sent to fetch you.").shorts(95, 72).shorts(97, 170).shorts(98, 170);
 	}
 
 	void items(ConfigDefinitions.Table items) throws java.io.IOException {
 		splinter(items, EYE_SPLINTER, "Eye splinter", "It weeps cold green light.", 27, 6);
 		splinter(items, GRAVE_SPLINTER, "Grave splinter", "Grey as a drowned man's skin. It's whispering.", 42, 2);
-		splinter(items, VEIN_SPLINTER, "Vein splinter", "It still pulses, like something alive.", 52, 6);
+		splinter(items, VEIN_SPLINTER, "Vein splinter", "It still pulses, like something alive.", ConfigDefinitions.VOID, 4);
 		ConfigDefinitions.Definition sigil = g.item(items, 1718, VOID_SIGIL).name("Void sigil")
 				.examine("Three splinters bound into one. It's so cold it burns.").cost(1);
-		tintItem(sigil, 50, 6, 0.8, 10);
+		tintItem(sigil, ConfigDefinitions.VOID, 6, 0.8, 10);
 		ConfigDefinitions.Definition lantern = g.item(items, 4550, SEERS_LANTERN).name("Seer's lantern")
 				.examine("Ilsabet's lantern. Its flame shows places, not things.").itemActions("Gaze", null, null, null, "Drop")
 				.cost(2500);
-		tintItem(lantern, 50, 5, 1.0, 8);
+		tintItem(lantern, ConfigDefinitions.VOID, 5, 1.0, 8);
 		ConfigDefinitions.Definition cape = g.item(items, 1052, HOLLOW_CAPE).name("Hollow-touched cape")
 				.examine("Woven from the edge of nothing. The Hollow King's mark is on it - and on you.").cost(60000);
-		tintItem(cape, 50, 4, 0.55, 0);
+		tintItem(cape, ConfigDefinitions.VOID, 4, 0.55, 0);
 		ConfigDefinitions.Definition fang = g.item(items, 4587, HOLLOWFANG).name("Hollowfang scimitar")
 				.examine("Forged from a sliver of the platform that shattered under you. It hums when it's hungry.").cost(80000);
-		tintItem(fang, 50, 3, 0.6, 6);
+		tintItem(fang, ConfigDefinitions.VOID, 3, 0.6, 6);
 		ConfigDefinitions.Definition heart = g.item(items, 1725, HOLLOWHEART_AMULET).name("Hollowheart amulet")
 				.examine("Cut from the Hollow Matriarch's heart. It beats when you're angry.").cost(90000);
-		tintItem(heart, 50, 6, 0.9, 10);
+		tintItem(heart, ConfigDefinitions.VOID, 6, 0.9, 10);
 		ConfigDefinitions.Definition barrow = g.item(items, 1303, BARROWSTEEL_LONGSWORD).name("Barrowsteel longsword")
 				.examine("The Barrow Thane's blade. Grave-cold, and very, very sharp.").cost(70000);
 		// the Barrowsteel longsword has its own models, built in ModelForge (not a recoloured rune longsword)
@@ -192,12 +212,13 @@ final class VoidRealmGenerator {
 		tintItem(crown, 8, 6, 1.2, 14);
 		ConfigDefinitions.Definition cape = g.item(items, 6570, STARLESS_CAPE).name("Starless cape")
 				.examine("A piece of the dark between the stars. There are stars in it, if you look.").cost(250000);
-		tintItem(cape, 50, 6, 0.45, 0);
+		tintItem(cape, ConfigDefinitions.VOID, 6, 0.45, 0);
 		ConfigDefinitions.Definition eclipse = g.item(items, 1704, ECLIPSE_AMULET).name("Eclipse amulet")
 				.examine("A black sun on a chain. It's warm on one side and freezing on the other.").cost(200000);
-		tintItem(eclipse, 50, 7, 0.55, 0);
+		tintItem(eclipse, ConfigDefinitions.VOID, 7, 0.55, 0);
 		gearItems(items, shield);
 		effects();
+		floors();
 	}
 
 	/**
@@ -284,6 +305,59 @@ final class VoidRealmGenerator {
 		}
 	}
 
+	/** Appends the void floors (see {@link #VOID_POOL}) to flo.dat. */
+	void floors() {
+		byte[] dat = g.config.get("flo.dat");
+		int count = (dat[0] & 0xFF) << 8 | dat[1] & 0xFF;
+		if (count != VOID_POOL - 1) {
+			throw new IllegalStateException("flo.dat has " + count + " entries; the void floors assume " + (VOID_POOL - 1));
+		}
+		java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream();
+		// copy the stock records, swapping in the void stone where it takes over an unused floor
+		int pos = 2;
+		for (int id = 1; id <= count; id++) {
+			int start = pos;
+			for (int op; (op = dat[pos++] & 0xFF) != 0;) {
+				pos += op == 1 || op == 7 ? 3 : op == 2 ? 1 : 0;
+				if (op == 6) {
+					while (dat[pos++] != 10) {
+						// name
+					}
+				}
+			}
+			if (id == VOIDSTONE || id == VOIDSTONE_DARK) {
+				int rgb = VOIDSTONE_RGB[id - VOIDSTONE];
+				o.write(1);
+				o.write(rgb >> 16);
+				o.write(rgb >> 8);
+				o.write(rgb);
+				byte[] name = ConfigDefinitions.string(id == VOIDSTONE ? "voidstone" : "voidstone_dark");
+				o.write(6);
+				o.write(name, 0, name.length);
+				o.write(0);
+			} else {
+				o.write(dat, start, pos - start);
+			}
+		}
+		for (int i = 0; i < VOID_FLOORS.length; i++) {
+			int rgb = VOID_FLOORS[i][0];
+			o.write(1);
+			o.write(rgb >> 16);
+			o.write(rgb >> 8);
+			o.write(rgb);
+			o.write(6);
+			byte[] name = ConfigDefinitions.string(VOID_FLOOR_NAMES[i]);
+			o.write(name, 0, name.length);
+			o.write(0);
+		}
+		byte[] body = o.toByteArray(), out = new byte[body.length + 2];
+		int n = count + VOID_FLOORS.length;
+		out[0] = (byte) (n >> 8);
+		out[1] = (byte) n;
+		System.arraycopy(body, 0, out, 2, body.length);
+		g.config.put("flo.dat", out);
+	}
+
 	/** The saga's spotanims (tools/art-drafts/effects): new models on existing animations, appended as gfx 666-672. */
 	void effects() throws java.io.IOException {
 		byte[] dat = g.config.get("spotanim.dat");
@@ -336,19 +410,20 @@ final class VoidRealmGenerator {
 				{ "Chronicle page (Nettle)", "Someone has used it as a coaster. Several times." } };
 		int[] ids = { THANE_PAGE, SILK_PAGE, NETTLE_PAGE };
 		for (int i = 0; i < 3; i++) {
-			g.item(items, 4569 + i, ids[i]).name(pages[i][0]).examine(pages[i][1]).cost(1);
+			tintItem(g.item(items, 4569 + i, ids[i]).name(pages[i][0]).examine(pages[i][1]).cost(1), 8, 2, 0.88, 0); // old parchment
 		}
 		ConfigDefinitions.Definition chron = g.item(items, 1509, ROYAL_CHRONICLE).name("Royal chronicle")
 				.examine("The last chronicle of Nythera's kings, bound back together.").itemActions("Read", null, null, null, "Drop")
 				.cost(1);
-		tintItem(chron, 50, 4, 0.8, 0);
+		tintItem(chron, ConfigDefinitions.VOID, 4, 0.8, 0);
 		ConfigDefinitions.Definition ember = g.item(items, 569, EMBER).name("The Ember")
 				.examine("King Aurel's heart. It's still warm. It's still beating.").cost(1);
-		tintItem(ember, 4, 7, 1.1, 20);
+		remap(ember, itemModels(ember), c -> c == 61 ? hsl(2, 7, 34) : hsl(5, 7, 74)); // a coal-red core in an orange glow
 		ConfigDefinitions.Definition signet = g.item(items, 2550, GATEHOLD_SIGNET).name("Signet of Gatehold")
 				.examine("Gatehold's seal, given to those who've earned the right to come home.")
 				.itemActions("Rub", "Wear", null, null, "Drop").cost(40000);
-		tintItem(signet, 50, 5, 1.0, 10);
+		// a gold band set with a chip of the Scar's crystal, the same glass Gatehold lights its streets with
+		remap(signet, itemModels(signet), c -> c == 127 ? ConfigDefinitions.voidRamp(48, 4) : c);
 	}
 
 	void splinter(ConfigDefinitions.Table items, int id, String name, String examine, int hue, int sat) throws java.io.IOException {
@@ -357,7 +432,44 @@ final class VoidRealmGenerator {
 		tintItem(d, hue, sat, 0.9, 12);
 	}
 
+	/**
+	 * Void glass: a stock crystal cluster re-made in the void's colours - cool lilac shards (or black glass, if
+	 * {@code dark}) growing out of a disc of scorched, ashen ground, so the cluster sits in any terrain.
+	 */
+	void voidGlass(ConfigDefinitions.Definition d, boolean dark) throws java.io.IOException {
+		remap(d, d.locModels(), c -> {
+			int light = c & 127;
+			if ((c >> 10) <= 9 && (c >> 7 & 7) >= 2) { // the sandy base disc
+				return hsl(8, 1, 10);
+			}
+			return dark ? ConfigDefinitions.voidRamp(Math.max(6, light), 3) : ConfigDefinitions.voidRamp(Math.min(100, (int) (light * 0.85)), 3);
+		});
+	}
+
+	/** Recolours every colour of the given models through {@code f} (16-bit HSL in, 16-bit HSL out). */
+	void remap(ConfigDefinitions.Definition d, int[] models, java.util.function.IntUnaryOperator f) throws java.io.IOException {
+		java.util.Set<Integer> all = new java.util.TreeSet<>();
+		for (int m : models) {
+			all.addAll(ConfigDefinitions.modelColors(g.cache, m));
+		}
+		List<Integer> from = new ArrayList<>(), to = new ArrayList<>();
+		for (int c : all) {
+			int n = f.applyAsInt(c);
+			if (n != c) {
+				from.add(c);
+				to.add(n);
+			}
+		}
+		d.recolor(from.stream().mapToInt(i -> i).toArray(), to.stream().mapToInt(i -> i).toArray());
+	}
+
 	void tintItem(ConfigDefinitions.Definition d, int hue, int sat, double light, int add) throws java.io.IOException {
+		int[][] t = ConfigDefinitions.tint(g.cache, itemModels(d), hue, sat, light, add);
+		d.recolor(t[0], t[1]);
+	}
+
+	/** An item's inventory model and its worn models. */
+	int[] itemModels(ConfigDefinitions.Definition d) {
 		List<Integer> models = new ArrayList<>();
 		models.add(d.itemModel());
 		for (int op : new int[] { 23, 25 }) { // male / female worn models
@@ -366,8 +478,7 @@ final class VoidRealmGenerator {
 				models.add((p[0] & 0xFF) << 8 | p[1] & 0xFF);
 			}
 		}
-		int[][] t = ConfigDefinitions.tint(g.cache, models.stream().mapToInt(i -> i).toArray(), hue, sat, light, add);
-		d.recolor(t[0], t[1]);
+		return models.stream().mapToInt(i -> i).toArray();
 	}
 
 	void tintNpc(ConfigDefinitions.Definition d, int hue, int sat, double light, int add, java.util.function.IntPredicate filter)
@@ -403,29 +514,29 @@ final class VoidRealmGenerator {
 		byte[] p = vein.get(40);
 		java.nio.ByteBuffer b = java.nio.ByteBuffer.wrap(p, 1, p.length - 1);
 		int from = b.getShort() & 0xFFFF;
-		vein.recolor(new int[] { from }, new int[] { hsl(51, 7, 40) });
+		vein.recolor(new int[] { from }, new int[] { ConfigDefinitions.voidRamp(40, 3) });
 		g.loc(locs, 404, EPITAPH_GRAVE).name("Gravestone").examine("A weathered stone, carved by an unsteady hand.")
 				.set(30, ConfigDefinitions.string("Read")).set(31, ConfigDefinitions.string("Dig"));
 		ConfigDefinitions.Definition crystal = g.loc(locs, CRYSTAL_SRC, VOID_CRYSTAL).name("Void crystal")
 				.examine("It grew here when the void touched the world.");
-		g.tintLoc(crystal, 50, 5, 0.9, 10, c -> true);
+		voidGlass(crystal, false);
 		ConfigDefinitions.Definition dark = g.loc(locs, CRYSTAL_DARK_SRC, VOID_CRYSTAL_DARK).name("Void crystal")
 				.examine("Black glass with a violet heart.");
-		g.tintLoc(dark, 52, 6, 0.8, 4, c -> true);
+		voidGlass(dark, true);
 		ConfigDefinitions.Definition eye = g.loc(locs, GHOSTFIRE, EYE_FIRE).name("Ghostfire")
 				.examine("It burns in the skull's eye. Something glints beneath the flames.")
 				.set(30, ConfigDefinitions.string("Reach-into"));
 		g.tintLoc(eye, 23, 6, 1.0, 4, c -> true);
-		ConfigDefinitions.Definition rift = g.loc(locs, com.rs2.game.content.skullbrine.SkullbrineConstants.VOID_PORTAL, RIFT)
+		ConfigDefinitions.Definition rift = g.loc(locs, com.rs2.game.content.skullbrine.SkullbrineConstants.STOCK_PORTAL, RIFT)
 				.name("Rift").examine("The hole your fall tore in the sky. It hasn't closed.").set(30, ConfigDefinitions.string("Enter"));
-		g.tintLoc(rift, 50, 6, 1.0, 12, c -> true);
+		g.tintLoc(rift, ConfigDefinitions.VOID, 4, 1.0, 12, c -> true);
 		int cave = com.rs2.game.content.skullbrine.SkullbrineConstants.CAVE_ENTRANCE;
 		ConfigDefinitions.Definition door = g.loc(locs, cave, BARROW_DOOR).name("Barrow door")
 				.examine("Someone carved a warning over it. Someone else scratched it out.").set(30, ConfigDefinitions.string("Enter"));
 		g.tintLoc(door, GHOST_HUE, 1, 0.7, 0, c -> true);
 		ConfigDefinitions.Definition fissure = g.loc(locs, cave, HOLLOW_FISSURE).name("Hollow fissure")
 				.examine("The Scar's heart. The dark down there is the wrong shape.").set(30, ConfigDefinitions.string("Descend"));
-		g.tintLoc(fissure, 50, 5, 0.6, 2, c -> true);
+		g.tintLoc(fissure, ConfigDefinitions.VOID, 3, 0.6, 2, c -> true);
 		ConfigDefinitions.Definition frost = g.loc(locs, cave, FROST_CAVE).name("Frostfang cave")
 				.examine("Cold breath rolls out of it. Something in there is breathing it.").set(30, ConfigDefinitions.string("Enter"));
 		g.tintLoc(frost, 36, 2, 1.4, 30, c -> true);
@@ -444,6 +555,11 @@ final class VoidRealmGenerator {
 		forge.finish();
 		crownLocs(locs);
 		sagaLocs(locs, saga);
+		// the dormant portal in Skullbrine's smugglers' cave: the rift's twin, its violet banked down low
+		ConfigDefinitions.Definition portal = g.loc(locs, com.rs2.game.content.skullbrine.SkullbrineConstants.STOCK_PORTAL,
+				com.rs2.game.content.skullbrine.SkullbrineConstants.VOID_PORTAL)
+				.examine("Dark and still. Something on the other side is waiting for a key.");
+		g.tintLoc(portal, ConfigDefinitions.VOID, 3, 0.75, 4, c -> true);
 	}
 
 	/** Objects for the later quests and the Starless, all on hand-built models. */
@@ -481,13 +597,17 @@ final class VoidRealmGenerator {
 					.set(30, ConfigDefinitions.string("Light")).remove(31).scale(184, 184, 184);
 			g.tintLoc(w, wards[i][1], wards[i][2], 1.1, 10, c -> true);
 		}
-		ConfigDefinitions.Definition seal = g.loc(locs, VOID_CRYSTAL, VAULT_SEAL).name("Ward-seal")
-				.examine("A wall of void glass grown across the passage.").set(30, ConfigDefinitions.string("Touch"));
+		ConfigDefinitions.Definition seal = g.loc(locs, CRYSTAL_SRC, VAULT_SEAL).name("Ward-seal")
+				.examine("A wall of void glass grown across the passage.").set(30, ConfigDefinitions.string("Touch"))
+				.scale(150, 170, 150);
+		voidGlass(seal, false);
 		ConfigDefinitions.Definition ped = g.loc(locs, 10988, EMBER_PEDESTAL).name("Ember pedestal")
 				.examine("Something burns on it, very small and very bright.").set(30, ConfigDefinitions.string("Take"));
-		g.tintLoc(ped, 4, 6, 1.0, 10, c -> true);
-		g.loc(locs, 380, MAELIS_BOOKS).name("Maelis's books").examine("Every book left in Nythera, by the look of it.")
-				.set(30, ConfigDefinitions.string("Browse"));
+		// the vault's grey stone, with the ember itself burning in the bowl on top
+		remap(ped, ped.locModels(), c -> (c >> 7 & 7) == 3 ? hsl(5, 7, 86) : hsl(7, 1, (int) ((c & 127) * 0.75)));
+		// an archivist's lectern, open at the page he was reading
+		g.loc(locs, 13642, MAELIS_BOOKS).name("Maelis's books").examine("Every book left in Nythera, by the look of it.")
+				.set(30, ConfigDefinitions.string("Browse")).remove(31);
 		int[] lit = { SUN_WARD_LIT, STAR_WARD_LIT, MOON_WARD_LIT };
 		for (int i = 0; i < 3; i++) { // burning: the iron keeps the ward's colour, the flame takes it too
 			ConfigDefinitions.Definition w = g.loc(locs, 11020, lit[i]).name(names[i]).examine(exam[i] + " It burns.").remove(30).scale(184, 184, 184)
@@ -522,6 +642,9 @@ final class VoidRealmGenerator {
 				g.setOverlay(x, y, GUNGY_WATER);
 			}
 		}
+		// the island's overlays were smoothed before the trail was drawn: cut its stair-steps into a running line too
+		CursedIslandGenerator.smoothGrid(g.worldGrid(), RIGHT_EYE_X - 3, FACE_Y0 + 2, RIGHT_EYE_X + 3, EYE_FIRE_Y,
+				CursedIslandGenerator::overlayGroup, ov -> ov == WOOD, ov -> false);
 		// the graves with epitaphs replace whatever stood there
 		for (int[] grave : GRAVES) {
 			g.removeObjectsAt(grave[0], grave[1]);
@@ -590,7 +713,7 @@ final class VoidRealmGenerator {
 					r.height[0][x][y] = 24 + (int) Math.round(fbm(x / 6.0, y / 6.0, 81) * 3);
 					double d = Math.hypot(x - cx, y - cy);
 					if (d > 4.5 && d < 6.0) {
-						r.overlay[0][x][y] = CRYPT_PURPLE; // a ring of violet light around the centre
+						r.overlay[0][x][y] = VOID_GLASS; // a ring of violet light around the centre
 					}
 
 				} else {
@@ -639,9 +762,9 @@ final class VoidRealmGenerator {
 					r.underlay[0][x][y] = fbm(x / 4.0, y / 4.0, 92) > 0.15 ? VOIDSTONE_DARK : VOIDSTONE;
 					r.height[0][x][y] = 24 + (int) Math.round(fbm(x / 6.0, y / 6.0, 91) * 2);
 					if (d < 2.6) {
-						r.overlay[0][x][y] = CRYPT_PURPLE; // where it hangs, the floor glows
+						r.overlay[0][x][y] = VOID_GLASS; // where it hangs, the floor glows
 					} else if (Math.abs(d - 9) < 0.7) {
-						r.overlay[0][x][y] = CRYPT_PURPLE; // a ring between the pillars
+						r.overlay[0][x][y] = VOID_GLASS; // a ring between the pillars
 					}
 				} else {
 					r.settings[0][x][y] = MapRegion.BLOCKED;
@@ -874,7 +997,7 @@ final class VoidRealmGenerator {
 		}
 		g.setUnderlay(x, y, floor);
 		if (sc > 0.7 && fbm(x / 4.0, y / 4.0, 72) > 0.3) {
-			g.setOverlay(x, y, VOID_BLACK); // patches where the ground has simply gone
+			g.setOverlay(x, y, VOID_ASH); // patches where the Scar has burned the ground to ash
 		}
 	}
 
@@ -926,7 +1049,7 @@ final class VoidRealmGenerator {
 				if (d < 7.5) {
 					g.setUnderlay(x, y, d < 4 ? ASH : BURGH_SOIL);
 					if (d < 3.4) {
-						g.setOverlay(x, y, CRYPT_PURPLE); // glassy violet where the rift burned the ground
+						g.setOverlay(x, y, VOID_GLASS); // glassy violet where the rift burned the ground
 					}
 				} else if (d < 11 && fbm(x / 3.0, y / 3.0, 81) > 0) {
 					g.setUnderlay(x, y, DEAD_GRASS);
@@ -1330,8 +1453,8 @@ final class VoidRealmGenerator {
 			}
 		}
 		g.object(TENT, cx - 2, cy + 2, TYPE_SCENERY, 2);
-		g.object(MAELIS_BOOKS, cx + 2, cy + 2, TYPE_SCENERY, 2);
-		g.object(5508, cx + 3, cy + 1, TYPE_SCENERY, 3); // a lectern
+		g.object(380, cx + 3, cy + 1, TYPE_SCENERY, 1); // his shelves, facing the fire
+		g.object(MAELIS_BOOKS, cx + 2, cy + 2, TYPE_SCENERY, 3);
 		g.object(FIRE, cx, cy - 2, TYPE_SCENERY, 0);
 		g.object(CRATES, cx - 3, cy - 1, TYPE_SCENERY, 0);
 		person(MAELIS, cx + 1, cy, 1);
@@ -1543,7 +1666,7 @@ final class VoidRealmGenerator {
 				g.removeObjectsAt(x, y);
 				double d = Math.hypot(x - cx, y - cy);
 				if (d < 3.2) {
-					g.setOverlay(x, y, d < 1.6 ? VOID_BLACK : CRYPT_PURPLE);
+					g.setOverlay(x, y, d < 1.6 ? VOID_POOL : d < 2.4 ? VOID_GLASS : VOID_ASH);
 				}
 			}
 		}
@@ -1678,9 +1801,9 @@ final class VoidRealmGenerator {
 			reg.underlay[0][x][y] = f > 0.25 ? DARK_PATH : f < -0.3 ? MUD : GREY_PATH; // worn stone; the client blends it
 			double d = Math.hypot(x - 32, y - 50);
 			if (d < 3.5) {
-				reg.overlay[0][x][y] = VOID_BLACK; // where the Ember's heat has burned the floor black
+				reg.overlay[0][x][y] = EMBER_SCORCH; // where the Ember's heat has scorched the stone
 			} else if (d < 5) {
-				reg.overlay[0][x][y] = CRYPT_PURPLE;
+				reg.overlay[0][x][y] = ASH;
 			}
 		}, ROCK);
 		int[] wardIds = { SUN_WARD, STAR_WARD, MOON_WARD };
@@ -1759,11 +1882,11 @@ final class VoidRealmGenerator {
 		CursedIslandGenerator.blob(o, 13, 45, 4, 4); // a crystal grotto
 		MapRegion r = carve(HOLLOWDEEP_REGION_X, o, (reg, x, y) -> {
 			double n = fbm(x / 6.0, y / 6.0, 72);
-			reg.underlay[0][x][y] = n > -0.1 ? ASH : CAVE_FLOOR;
+			reg.underlay[0][x][y] = n > -0.1 ? VOIDSTONE : VOIDSTONE_DARK; // the same void-eaten stone as the platform
 			if (n > 0.45) {
-				reg.overlay[0][x][y] = VOID_BLACK; // pools of the Scar's black glass
+				reg.overlay[0][x][y] = n > 0.6 ? VOID_POOL : VOID_ASH; // pools of the Scar's black glass, ringed with ash
 			} else if (n < -0.5) {
-				reg.overlay[0][x][y] = CRYPT_PURPLE;
+				reg.overlay[0][x][y] = VOID_GLASS;
 			}
 		}, SHADOW_ROCK);
 		hug(r, o, new int[] { VOID_CRYSTAL, VOID_CRYSTAL_DARK }, 5, 19, 25, 8);
@@ -1975,7 +2098,6 @@ final class VoidRealmGenerator {
 
 	/** Smooths a dungeon region's floor patches, in local coordinates; the invisible rock is left as it is. */
 	/** Floor colours for the floating platforms (flo 87 grey_blue, flo 57 verydarkrock): plain colours that blend. */
-	static final int VOIDSTONE = 87, VOIDSTONE_DARK = 57;
 
 	private static boolean isVoid(MapRegion r, int x, int y) {
 		return x < 0 || y < 0 || x > 63 || y > 63 || r.overlay[0][x][y] == INVISIBLE && r.underlay[0][x][y] == 0;

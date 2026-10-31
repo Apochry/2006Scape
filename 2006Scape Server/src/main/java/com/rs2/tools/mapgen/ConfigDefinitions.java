@@ -434,13 +434,32 @@ public final class ConfigDefinitions {
 			}
 			int light = col & 127;
 			int newLight = Math.max(0, Math.min(127, (int) (light * lightScale) + lightAdd));
-			int newCol = hue << 10 | saturation << 7 | newLight;
+			int newCol = hue == VOID ? voidRamp(newLight, saturation) : hue << 10 | saturation << 7 | newLight;
 			if (newCol != col) {
 				from.add(col);
 				to.add(newCol);
 			}
 		}
 		return new int[][] { from.stream().mapToInt(i -> i).toArray(), to.stream().mapToInt(i -> i).toArray() };
+	}
+
+	/**
+	 * Pass as the hue to {@link #tint} for the void's own colours: a ramp rather than one flat hue, so shading reads.
+	 * Shadows sink to a deep indigo, mid-tones are a muted violet and highlights lift to a cool lilac - and the
+	 * saturation is capped, so nothing tinted with it ever goes the hot magenta of a flat hue-50 recolour.
+	 */
+	public static final int VOID = 64;
+
+	/** The void ramp at a given lightness; {@code intensity} (0-7) is how strongly violet the mid-tones are. */
+	public static int voidRamp(int light, int intensity) {
+		int hue = light < 20 ? 45 : light < 44 ? 46 : light < 72 ? 47 : light < 96 ? 48 : 49;
+		int sat = Math.min(4, intensity);
+		if (light < 14) {
+			sat = Math.min(sat, 2); // near-black stays near-black
+		} else if (light > 100) {
+			sat = Math.min(sat, 3); // the brightest highlights go pale, not neon
+		}
+		return hue << 10 | sat << 7 | light;
 	}
 
 	static byte[] string(String s) {

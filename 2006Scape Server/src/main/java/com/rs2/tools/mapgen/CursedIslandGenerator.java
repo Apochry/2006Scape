@@ -307,7 +307,7 @@ public final class CursedIslandGenerator {
 					setUnderlay(x, y, noise(x * 5, y * 5) > 0.55 ? BONE_ROCK_DARK : BONE_ROCK);
 					int paint = skullPaint(x, y);
 					if (paint == 1) {
-						setOverlay(x, y, BLACK);
+						setOverlay(x, y, VoidRealmGenerator.SKULL_SHADOW);
 					} else if (paint == 2) {
 						setOverlay(x, y, GUNGY_WATER); // the eyes are pools of the cove's cursed water
 					} else if (paint == 3) {
@@ -509,7 +509,9 @@ public final class CursedIslandGenerator {
 		MapRegion r = regionAt(x, y);
 		int lx = x & 63, ly = y & 63;
 		r.overlay[0][lx][ly] = WATER;
-		r.underlay[0][lx][ly] = 0;
+		// a seabed of dark sand: where the shoreline is cut diagonally, the dry half of the tile shows this rather
+		// than the black of a tile with no floor at all
+		r.underlay[0][lx][ly] = DARK_SAND;
 		r.settings[0][lx][ly] = MapRegion.BLOCKED;
 		r.height[0][lx][ly] = 1; // sea level
 	}
@@ -1061,12 +1063,12 @@ public final class CursedIslandGenerator {
 			}
 		}
 
-		// make the portal chamber floor glow a sickly purple ring
+		// the portal chamber's floor is fused to violet glass in a ring around it - the same glass as the void's
 		for (int x = 26; x <= 38; x++) {
 			for (int y = 49; y <= 59; y++) {
 				double dist = Math.hypot(x - 32, y - 53);
 				if (open[x][y] && dist > 2.5 && dist < 3.8) {
-					r.overlay[0][x][y] = 116; // flo 115: morytania_barrow_crypt_purple
+					r.overlay[0][x][y] = VoidRealmGenerator.VOID_GLASS;
 				}
 			}
 		}
@@ -1210,13 +1212,17 @@ public final class CursedIslandGenerator {
 		// Port Sarim's boatman, cloned from Captain Tobias
 		npc(npcs, 376, BOSUN_GRIMSBY).name("Bosun Grimsby").examine("A weathered sailor with a haunted look.")
 				.npcActions("Talk-to", null, null, null, null);
-		// the last living survivor of the Drowned Maiden, cloned from Pirate Jackie the Fruit
-		npc(npcs, 1055, MAD_PETE).name("Mad Pete").examine("The Drowned Maiden's cook. He hasn't slept in weeks.")
+		// the last living survivor of the Drowned Maiden: a ship's cook (Lumbridge's, with his whites gone grey and
+		// stained after weeks stranded on the island)
+		npc(npcs, 278, MAD_PETE).name("Mad Pete").examine("The Drowned Maiden's cook. He hasn't slept in weeks.")
+				.recolor(new int[] { 37, 57, 43928, 8860, 8741, 4626, 107, 123 }, new int[] { hsl(8, 1, 96), 43292, 43292, 43292,
+						43177, 43280, hsl(8, 1, 82), hsl(8, 1, 98) })
 				.npcActions("Talk-to", null, "Trade", null, null); // slot 2 = "second click" packet (slot 1 is attack)
-		// the cursed crew: pirates / zombies washed in a pale, drowned green
+		// the cursed crew: pirates washed in a pale, drowned green
 		ghostly(npc(npcs, 182, CURSED_PIRATE), npcs, 182, GHOST_HUE, 2, 0.75, 22).name("Cursed pirate")
 				.examine("A dead man who doesn't know it yet.").shorts(95, 12);
-		ghostly(npc(npcs, 75, DROWNED_DECKHAND), npcs, 75, 33, 3, 0.7, 10).name("Drowned deckhand")
+		// a drowned sailor: a pirate's model and rig (not the zombie's, whose few animations fling it about), in sea-teal
+		ghostly(npc(npcs, 185, DROWNED_DECKHAND), npcs, 185, 33, 3, 0.7, 10).name("Drowned deckhand")
 				.examine("Seaweed hangs from what's left of him.").shorts(95, 5);
 		ghostly(npc(npcs, 184, CURSED_FIRST_MATE), npcs, 184, GHOST_HUE, 4, 0.6, 8).name("Cursed first mate")
 				.examine("'Smiling' Sam, Blackbrine's first mate. Something glints at his neck.").shorts(95, 20)
@@ -1230,7 +1236,7 @@ public final class CursedIslandGenerator {
 		item(items, 432, CAPTAINS_KEY).name("Captain's key").examine("A heavy iron key, still warm from Sam's neck.");
 		ConfigDefinitions.Definition pearl = item(items, 587, VOID_PEARL).name("Void pearl")
 				.examine("It is darker than anything has a right to be. It hums.");
-		int[][] tint = ConfigDefinitions.tint(cache, new int[] { pearl.itemModel() }, VOID_HUE, 5, 0.6, 0);
+		int[][] tint = ConfigDefinitions.tint(cache, new int[] { pearl.itemModel() }, ConfigDefinitions.VOID, 4, 0.6, 0);
 		pearl.recolor(tint[0], tint[1]);
 		items.put(VOID_PEARL, pearl);
 		voidRealm.npcs(npcs);

@@ -157,8 +157,23 @@ Kael, the pilgrims and the Hollowed. This all runs from a single loop in
 `VoidRealm.startAmbience` (the `CHATTER` and `WORK` tables), and only near players. Oren's later
 dialogue points newcomers towards the camps.
 
-Hollowed drops: wolves drop wolf bones and coins, with a rare uncut diamond. Husks drop bones,
-coins, grimy ranarr, uncut sapphires and emeralds, and very rarely a dragon dagger.
+### Loot
+
+Every ordinary monster on Nythera and in its dungeons (combat 15+, the stock wildlife included, but only while it's
+on Nythera) drops by one rule, in `VoidLoot.java`. It always drops its own bones (or ashes, or a unicorn's horn),
+and then rolls once:
+
+| Roll | Drop | Under 30 | 30-49 | 50+ |
+|---:|---|---|---|---|
+| 40% | just the bones | | | |
+| 30% | something ordinary | coins, logs, iron arrows, raw trout, flax | coins, oak/willow logs, steel arrows, raw salmon, iron ore | coins, maple logs, mithril arrows, raw lobster, coal |
+| 20% | something useful | nature/chaos runes, low herbs, trout, attack/strength potions | nature/law/cosmic runes, harralander-irit, lobster, mithril ore, prayer/super attack | death/law/blood runes, ranarr-kwuarm, swordfish, adamantite, prayer/super strength |
+| 5% | something valuable | uncut sapphire/emerald, a purse, a gold bar | uncut emerald/ruby, a purse, **starmetal** | uncut ruby/diamond, a fat purse, starmetal, runite ore |
+| 5% | gear around its level | steel pieces, oak shortbow | mithril/adamant pieces, maple shortbow, **Warden's helm, boots, gauntlets** | adamant pieces, rune med helm/dagger, yew shortbow, **Warden's body, legs** |
+| +1% | a separate bonus roll: unusually good gear | mithril scimitar/full helm, adamant sq shield | rune scimitar/med helm/chainbody, Warden's platebody | rune legs/full helm, dragon dagger/med helm |
+
+Bosses and minibosses keep their own tables, and the adds summoned in boss fights (Hollow knights, Starless spawn)
+drop only bones. `::vt loot rolls npcId` tallies the tiers over many rolls and drops ten for a look.
 
 **Regenerating:** the camps' scenery is built by `VoidRealmGenerator.camps()`. The places and
 dungeons are built by `places()` and `dungeons()`. Dungeon monsters go into the same spawn list.
@@ -320,7 +335,7 @@ one of them is a straight quest reward. The rest come from shops, side tasks, re
 |---|---|---|---|---|
 | **Warden's full helm / platebody / platelegs / boots** | Defence 30 | between adamant and rune, +1 prayer each | **Dorrin's "Warden's armoury"** (talk to Dorrin) | after Hold the Gate |
 | **Warden's kiteshield** | Defence 30 | as before, new model | Hold the Gate's reward (also in the armoury) | after Hold the Gate |
-| **Warden's gauntlets** | Defence 30 | +4 attack, +5 defence, +3 str | **rare drop** from Hollow husks (1/64) | after Hold the Gate |
+| **Warden's gauntlets** | Defence 30 | +4 attack, +5 defence, +3 str | **drop** from Nythera's monsters (the gear roll, combat 30-49; see Loot) | after Hold the Gate |
 | **Duskyew shortbow** | Ranged 50 | +72 ranged, magic shortbow speed and arrows | **Kael's side task "Fifty for the Wall"**: kill 50 Hollowed (wolves, husks, ravagers) | after Hold the Gate |
 | **Starfall halberd** (two-handed) | Attack 60, Str 30 | +62 stab / +86 slash, +82 str | **Smithing 60 recipe** at Dorrin's: 3 starmetal + 2 rune bars + a hammer | after Heartforged |
 | **Rimecleaver battleaxe** | Attack 55 | +60 slash / +55 crush, +74 str | **rare drop (1/12)** from the Rimebound sentinel, which re-forms whenever you touch the rime altar | after Heartforged |
@@ -366,11 +381,28 @@ features. Their walls rise over three tiles from low-frequency noise instead of 
 (x 1280-1727, y 9664-9727) is multi-combat, so a boss's summoned helpers can be fought.
 
 The floating platforms (the void platform and the Starless Expanse) work the same way. Their floor is underlay only
-(flo 87 violet-grey and flo 57 near-black, blended by the client); overlay is used only for the violet rings.
+(the void stone, blended by the client); overlay is used only for the violet rings.
 `VoidRealmGenerator.roundRim` rounds the edge: a floor tile with the void on two sides gets an invisible diagonal half,
 and a void notch cupped by floor gets an all-but-corner overlay (shape 8, whose rotation is opposite to shape 7's).
 The void itself has no underlay and sits level with the platform, so the edge is clean. Do not cover a whole floor in
 overlay and then smooth it: every cut shows the underlay beneath, which looked like grey sawteeth.
+
+### The look of the void
+
+Everything the Scar has touched shares one palette, so nothing reads as bolted on:
+- **Recolours** pass `ConfigDefinitions.VOID` as the hue to `tint`. That maps each colour through
+  `ConfigDefinitions.voidRamp`: deep indigo shadows, muted violet mid-tones, cool lilac highlights, with saturation
+  capped at 4. A flat hue-50 recolour at full saturation is the hot magenta this replaced. The hand-built models
+  (ModelForge, QuestWeapons, VoidEffects, ArmourForge) use `voidRamp` for their violets too.
+- **Floors**: `VoidRealmGenerator.floors()` appends void_pool, void_ash, void_glass, ember_scorch and skull_shadow to
+  flo.dat (ids 175-179, **overlays only**: the map format can't store an underlay id above 174). The platforms' stone
+  (voidstone 167 and voidstone_dark 168) takes over two stock floors that no map uses, so it can be an underlay and
+  blend. Nothing uses the stock crypt magenta (116) or pure black (37) any more: black reads as a hole in the world.
+- **Crystals** (`voidGlass`): lilac or black-glass shards on a dark ash disc that sits on grass and stone alike.
+- **Skullbrine's dormant portal** is its own object (15017, the rift's twin), so the stock portal elsewhere in the
+  world is untouched.
+- Monsters built on the stock zombie rig looked broken: it has only five animations, which fling its limbs about. The
+  Drowned deckhand (pirate), Hollow husk (man) and Hollow ravager (thug) now use human rigs.
 
 ## Where things live
 
@@ -406,6 +438,8 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt journal 5/6/7` | Hold the Gate / Heartforged / The Hollow King journal |
 | `::vt hp n [npcId]` | cap the hp of NPCs spawned for you; 0 = instant kill with quest credit, -1 = a real death with drops |
 | `::vt list` | list NPCs spawned for you |
+| `::vt loot rolls npcId` | tally Nythera's loot tiers over `rolls` rolls, and drop ten real rolls at your feet |
+| `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
 
 ## Ideas for what comes next
 

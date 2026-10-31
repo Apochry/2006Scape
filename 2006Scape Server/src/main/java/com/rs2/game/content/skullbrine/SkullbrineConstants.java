@@ -25,12 +25,13 @@ public final class SkullbrineConstants {
 	public static final int CAPTAINS_KEY = 7957;
 	public static final int VOID_PEARL = 7958;
 
-	/* ---------------- objects (existing ids placed by the generator) ---------------- */
+	/* ---------------- objects (placed by the generator) ---------------- */
 	public static final int CAVE_ENTRANCE = 3735;
 	public static final int CAVE_EXIT = 3736;
 	public static final int CAPTAINS_CHEST = 375;
 	public static final int CAPTAINS_SKELETON = 6893;
-	public static final int VOID_PORTAL = 6282;
+	/** The dormant portal in the smugglers' cave: a copy of the stock portal (6282) re-made in the void's colours. */
+	public static final int VOID_PORTAL = 15017, STOCK_PORTAL = 6282;
 
 	/* ---------------- places ---------------- */
 

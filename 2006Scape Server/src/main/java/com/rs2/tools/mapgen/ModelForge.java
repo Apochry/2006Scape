@@ -69,7 +69,7 @@ public final class ModelForge {
 
 	private static ModelData swordFrame() {
 		ModelData m = new ModelData();
-		int gem = hsl(50, 6, 58), gemDark = hsl(50, 7, 38), iron = hsl(0, 0, 22), bronze = hsl(7, 4, 34),
+		int gem = ConfigDefinitions.voidRamp(58, 6), gemDark = ConfigDefinitions.voidRamp(38, 7), iron = hsl(0, 0, 22), bronze = hsl(7, 4, 34),
 				leather = hsl(5, 3, 17), wrap = hsl(5, 2, 9), steelLight = hsl(27, 1, 76), steelDark = hsl(27, 1, 58);
 		// pommel: a violet gem in an iron collar
 		m.tube(at(0, 0, 0), at(2.5, 0, 0), 0, 2.8 * K, 4, Math.PI / 4, gem, gem);
@@ -188,7 +188,7 @@ public final class ModelForge {
 			m.triOut(idx[rings.length - 1][s], idx[rings.length - 1][(s + 1) % sides], top, band[3], topRef);
 		}
 		// the rune: three glowing strokes standing just proud of the stone's south face
-		int glow = hsl(50, 7, 96), glowCore = hsl(50, 6, 118);
+		int glow = ConfigDefinitions.voidRamp(96, 7), glowCore = ConfigDefinitions.voidRamp(118, 6);
 		double face = -37; // south side (-z)
 		double[][][] strokes = { { { 6, -78, face }, { 6, -158, face - 2 } }, { { 6, -150, face - 2 }, { -12, -128, face - 1 } },
 				{ { 6, -112, face - 1 }, { 24, -92, face } } };
@@ -205,7 +205,7 @@ public final class ModelForge {
 	ModelData voidLantern() {
 		ModelData m = new ModelData();
 		int wood = hsl(5, 7, 30), woodDark = hsl(5, 6, 20), iron = hsl(0, 0, 20), stone = hsl(10, 0, 38);
-		int pane = hsl(50, 6, 92), paneBright = hsl(50, 5, 112);
+		int pane = ConfigDefinitions.voidRamp(92, 6), paneBright = ConfigDefinitions.voidRamp(112, 5);
 		m.box(-17, -7, -17, 17, 0, 17, stone); // a footing stone
 		m.tube(new double[] { 0, -7, 0 }, new double[] { 0, -206, 0 }, 7, 6, 4, Math.PI / 4, wood, woodDark);
 		m.tube(new double[] { 0, -40, 0 }, new double[] { 0, -46, 0 }, 8.5, 8.5, 4, Math.PI / 4, iron, iron); // iron bands
@@ -231,7 +231,7 @@ public final class ModelForge {
 	ModelData hollowedTree() {
 		ModelData m = new ModelData();
 		int bark = hsl(5, 2, 20), barkDark = hsl(5, 2, 13), barkGrey = hsl(7, 1, 26);
-		int crystal = hsl(50, 6, 70), crystalBright = hsl(50, 7, 98);
+		int crystal = ConfigDefinitions.voidRamp(70, 6), crystalBright = ConfigDefinitions.voidRamp(98, 7);
 		m.shading = 0; // trunk and limbs smooth-shaded, like the cache's trees
 		double[][] trunk = { { 0, 0, 0 }, { 5, -75, 3 }, { -7, -145, 8 }, { 3, -200, 1 }, { -2, -236, 4 } };
 		double[] radius = { 17, 13, 9, 5, 0 };
@@ -415,26 +415,32 @@ public final class ModelForge {
 		return m;
 	}
 
-	/** The rime altar: a block of blue ice with a frozen heart of white light inside it. */
+	/**
+	 * The rime altar: a boulder of the cave's own grey stone, furred with frost, with a crown of ice grown out of the
+	 * top of it and the Rimeheart frozen at the centre of the crown.
+	 */
 	ModelData rimeAltar() {
 		ModelData m = new ModelData();
-		int ice = hsl(36, 3, 84), iceDark = hsl(36, 4, 62), iceDeep = hsl(36, 5, 48), heart = hsl(36, 1, 120);
-		m.tube(new double[] { 0, 0, 0 }, new double[] { 0, -60, 0 }, 66, 52, 6, 0.3, iceDeep, iceDark); // the plinth
-		m.tube(new double[] { 0, -60, 0 }, new double[] { 0, -78, 0 }, 58, 58, 6, 0.3, iceDark, ice);
-		double[][][] spires = { { { -40, -70, -20 }, { -56, -170, -30 } }, { { 38, -70, -18 }, { 52, -150, -26 } }, { { 0, -70, 34 }, { 6, -190, 50 } },
-				{ { 10, -70, -40 }, { 18, -130, -64 } } };
+		int[] stone = { hsl(36, 1, 34), hsl(36, 1, 42), hsl(36, 1, 28), hsl(36, 2, 50), hsl(36, 1, 38), hsl(36, 1, 24) };
+		int ice = hsl(36, 3, 92), iceDark = hsl(36, 4, 70), iceDeep = hsl(36, 4, 56), heart = hsl(36, 1, 122), heartGlow = hsl(36, 2, 108);
+		lump(m, 0, -40, 0, 70, 46, 62, 5, 8, 0.22, stone); // the boulder
+		// frost settled on its shoulders: a ragged white cap
+		lump(m, 0, -74, 0, 54, 14, 48, 3, 8, 0.25, new int[] { hsl(36, 1, 104), hsl(36, 2, 96), hsl(36, 1, 110) });
+		double[][][] spires = { { { -30, -76, -16 }, { -54, -176, -30 } }, { { 28, -76, -14 }, { 50, -156, -26 } }, { { 0, -76, 28 }, { 6, -196, 50 } },
+				{ { 10, -76, -32 }, { 18, -136, -62 } }, { { -26, -76, 24 }, { -44, -128, 44 } }, { { 32, -76, 22 }, { 52, -118, 40 } } };
 		for (int i = 0; i < spires.length; i++) {
-			m.tube(spires[i][0], spires[i][1], 16 - i * 2, 0, 4, i, i % 2 == 0 ? ice : iceDark, ice);
+			m.tube(spires[i][0], spires[i][1], 16 - i * 1.5, 0, 4, i * 0.9, i % 2 == 0 ? iceDeep : iceDark, ice);
 		}
-		m.tube(new double[] { 0, -78, 0 }, new double[] { 0, -100, 0 }, 14, 0, 5, 0, heart, heart); // the Rimeheart, waiting
-		m.tube(new double[] { 0, -78, 0 }, new double[] { 0, -70, 0 }, 14, 10, 5, 0, heart, heart);
+		// the Rimeheart, waiting in a cup of ice
+		m.tube(new double[] { 0, -80, 0 }, new double[] { 0, -96, 0 }, 22, 26, 6, 0.3, iceDark, ice);
+		VoidEffects.gem(m, 0, -112, 0, 12, 16, 6, 0, heart, heartGlow);
 		return m;
 	}
 
 	/** A ring of black stone standing on its edge, its middle full of violet nothing and pricked with stars. */
 	ModelData starlessGate() {
 		ModelData m = new ModelData();
-		int stone = hsl(50, 1, 16), stoneLight = hsl(50, 1, 24), rim = hsl(50, 4, 40), inner = hsl(50, 7, 30), starCol = hsl(42, 0, 122);
+		int stone = ConfigDefinitions.voidRamp(16, 1), stoneLight = ConfigDefinitions.voidRamp(24, 1), rim = ConfigDefinitions.voidRamp(40, 4), inner = ConfigDefinitions.voidRamp(30, 7), starCol = hsl(42, 0, 122);
 		int seg = 14;
 		double R = 120, cy = -150;
 		for (int i = 0; i < seg; i++) {
@@ -477,8 +483,8 @@ public final class ModelForge {
 	/** A star pillar: an obsidian needle with a star caught at its tip, dark or burning. */
 	ModelData starPillar(boolean lit) {
 		ModelData m = new ModelData();
-		int ob = hsl(50, 1, 14), obLight = hsl(50, 2, 22), band = hsl(42, 1, 40);
-		int star = lit ? hsl(42, 1, 124) : hsl(50, 2, 34), starHalo = lit ? hsl(42, 3, 108) : hsl(50, 2, 26);
+		int ob = ConfigDefinitions.voidRamp(14, 1), obLight = ConfigDefinitions.voidRamp(22, 2), band = hsl(42, 1, 40);
+		int star = lit ? hsl(42, 1, 124) : ConfigDefinitions.voidRamp(34, 2), starHalo = lit ? hsl(42, 3, 108) : ConfigDefinitions.voidRamp(26, 2);
 		m.tube(new double[] { 0, 0, 0 }, new double[] { 0, -40, 0 }, 52, 44, 6, 0.2, obLight, ob);
 		m.tube(new double[] { 0, -40, 0 }, new double[] { 0, -300, 0 }, 34, 16, 4, Math.PI / 4, ob, ob);
 		m.tube(new double[] { 0, -120, 0 }, new double[] { 0, -132, 0 }, 32, 31, 4, Math.PI / 4, band, band);
@@ -509,8 +515,8 @@ public final class ModelForge {
 	ModelData starless() {
 		ModelData m = new ModelData();
 		m.skin = 200;
-		int black = hsl(50, 2, 6), blackLight = hsl(50, 3, 12), corona = hsl(50, 7, 64), coronaHot = hsl(52, 6, 96),
-				ring = hsl(42, 1, 110), eye = hsl(42, 0, 125), pupil = hsl(50, 7, 20);
+		int black = ConfigDefinitions.voidRamp(6, 2), blackLight = ConfigDefinitions.voidRamp(12, 3), corona = ConfigDefinitions.voidRamp(64, 7), coronaHot = ConfigDefinitions.voidRamp(96, 6),
+				ring = hsl(42, 1, 110), eye = hsl(42, 0, 125), pupil = ConfigDefinitions.voidRamp(20, 7);
 		double cy = -330; // it floats, well above a man's head
 		lump(m, 0, cy, 0, 150, 150, 150, 8, 12, 0.08, new int[] { blackLight, black, blackLight, black, black, blackLight, black, black });
 		// corona: spines all round the disc, longest at the cardinal points

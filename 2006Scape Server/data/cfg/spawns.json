@@ -24340,9 +24340,9 @@
     "height": 0
   },
   {
-    "maxHit": 1,
-    "strength": 5,
-    "attack": 5,
+    "maxHit": 2,
+    "strength": 12,
+    "attack": 12,
     "x": 2005,
     "y": 2891,
     "id": 3855,
@@ -24350,9 +24350,9 @@
     "height": 0
   },
   {
-    "maxHit": 1,
-    "strength": 5,
-    "attack": 5,
+    "maxHit": 2,
+    "strength": 12,
+    "attack": 12,
     "x": 2027,
     "y": 2891,
     "id": 3855,
@@ -24360,9 +24360,9 @@
     "height": 0
   },
   {
-    "maxHit": 1,
-    "strength": 5,
-    "attack": 5,
+    "maxHit": 2,
+    "strength": 12,
+    "attack": 12,
     "x": 2037,
     "y": 2896,
     "id": 3855,
@@ -24370,9 +24370,9 @@
     "height": 0
   },
   {
-    "maxHit": 1,
-    "strength": 5,
-    "attack": 5,
+    "maxHit": 2,
+    "strength": 12,
+    "attack": 12,
     "x": 1997,
     "y": 2899,
     "id": 3855,

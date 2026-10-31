@@ -268,8 +268,8 @@ public final class QuestWeapons {
 	 */
 	static ModelData halberdFrame() {
 		ModelData m = new ModelData();
-		int metal = hsl(42, 1, 70), metalDark = hsl(42, 1, 56), metalEdge = hsl(42, 1, 102), haft = hsl(50, 2, 18),
-				wrap = hsl(50, 3, 30), shard = hsl(50, 6, 74);
+		int metal = hsl(42, 1, 70), metalDark = hsl(42, 1, 56), metalEdge = hsl(42, 1, 102), haft = ConfigDefinitions.voidRamp(18, 2),
+				wrap = ConfigDefinitions.voidRamp(30, 3), shard = ConfigDefinitions.voidRamp(74, 6);
 		// the haft
 		tube(m, f(8, 0, 0), f(206, 0, 0), 3.4, 3.1, 4, Math.PI / 4, haft, haft);
 		// butt: a starmetal ferrule and a stubby point
@@ -344,7 +344,7 @@ public final class QuestWeapons {
 	 */
 	static ModelData maceFrame() {
 		ModelData m = new ModelData();
-		int gold = hsl(8, 4, 60), goldDark = hsl(8, 5, 40), goldBright = hsl(8, 3, 86), iron = hsl(50, 1, 16), void_ = hsl(50, 7, 30), voidGlow = hsl(50, 6, 76);
+		int gold = hsl(8, 4, 60), goldDark = hsl(8, 5, 40), goldBright = hsl(8, 3, 86), iron = ConfigDefinitions.voidRamp(16, 1), void_ = ConfigDefinitions.voidRamp(30, 7), voidGlow = ConfigDefinitions.voidRamp(76, 6);
 		// rod and pommel
 		tube(m, f(4, 0, 0), f(46, 0, 0), 2.6, 2.3, 4, Math.PI / 4, iron, iron);
 		tube(m, f(0, 0, 0), f(4, 0, 0), 2.0, 4.0, 6, 0, gold, gold);
@@ -387,7 +387,7 @@ public final class QuestWeapons {
 	 */
 	static ModelData shortbowFrame(double bend) {
 		ModelData m = new ModelData();
-		int wood = hsl(52, 2, 26), woodDark = hsl(52, 2, 16), grip = hsl(27, 3, 42), cap = hsl(42, 1, 80), string = hsl(42, 0, 100);
+		int wood = ConfigDefinitions.voidRamp(26, 2), woodDark = ConfigDefinitions.voidRamp(16, 2), grip = hsl(27, 3, 42), cap = hsl(42, 1, 80), string = hsl(42, 0, 100);
 		// the limb: a chain of tapered 4-sided tubes through these (s, w) points, recurving at both tips
 		// (the magic shortbow's limb is a shallow double curve: grip ~5 off the tip-to-tip line, limbs ~8, tips back on it)
 		double[][] limb = { { 3, 4 }, { 8, -0.5 }, { 24, 7 }, { 44, 9.5 }, { 64, 6 }, { 84, 9.5 }, { 104, 7 }, { 119, -0.5 }, { 124, 4 } };
@@ -421,8 +421,8 @@ public final class QuestWeapons {
 	 */
 	static ModelData staffFrame() {
 		ModelData m = new ModelData();
-		int wood = hsl(50, 2, 20), woodDark = hsl(50, 2, 13), metal = hsl(42, 1, 84), metalDark = hsl(42, 1, 58), star = hsl(50, 6, 92),
-				starCore = hsl(50, 3, 120);
+		int wood = ConfigDefinitions.voidRamp(20, 2), woodDark = ConfigDefinitions.voidRamp(13, 2), metal = hsl(42, 1, 84), metalDark = hsl(42, 1, 58), star = ConfigDefinitions.voidRamp(92, 6),
+				starCore = ConfigDefinitions.voidRamp(120, 3);
 		// the shaft: a slightly knotted void-yew pole
 		tube(m, f(6, 0, 0), f(80, 0.8, 0), 4.0, 4.3, 5, 0, wood, wood);
 		tube(m, f(80, 0.8, 0), f(150, -0.6, 0), 4.3, 4.0, 5, 0.3, woodDark, woodDark);

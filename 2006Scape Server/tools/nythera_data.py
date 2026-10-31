@@ -32,7 +32,7 @@ people = [
     npcdef(3866, 'Warden Kael', "She hasn't taken her eyes off the Scar since you arrived."),
     npcdef(3867, 'Wandering pilgrim', 'Walking somewhere slowly, and in no hurry to arrive.'),
     npcdef(3868, 'Hollowed wolf', 'Its eyes are empty. Something else is looking out of them.', 34, 30, 4, 2, 4000, 75, 76, 78, 28, 22, True, True),
-    npcdef(3869, 'Hollow husk', 'Whoever this was, the Scar emptied them out and kept walking them around.', 41, 42, 5, 1, 4000, 299, 300, 302, 40, 34, True, True),
+    npcdef(3869, 'Hollow husk', 'Whoever this was, the Scar emptied them out and kept walking them around.', 41, 42, 5, 1, 4000, 422, 404, 836, 40, 34, True, True),
     npcdef(3870, 'Captain Ysolde', "Captain of Gatehold's watch. All six of them."),
     npcdef(3871, 'Pell the Trader', "He'll sell you anything. He'll buy most things, too."),
     npcdef(3872, 'Dorrin Anvilhand', 'A smith with forearms like hams and a voice like a bellows.'),
@@ -48,7 +48,7 @@ people = [
     npcdef(3881, 'Hollow Herald', 'It speaks with the Hollow King\'s voice, because it has none of its own.', 62, 160, 8, 2, 3000, 2655, 2653, 2654, 70, 60, True, True),
     npcdef(3882, 'Hollow shade', 'A scrap of the dark between the stars, wearing a shape.', 26, 26, 3, 1, 4000, 422, 1834, 836, 30, 22, True, True),
     # the saga: Hold the Gate, Heartforged, The Hollow King, and the Starless
-    npcdef(3883, 'Hollow ravager', 'Something big, emptied out, and pointed at the gate.', 48, 80, 6, 1, 4000, 299, 300, 302, 45, 40, True, True),
+    npcdef(3883, 'Hollow ravager', 'Something big, emptied out, and pointed at the gate.', 48, 80, 6, 1, 4000, 422, 404, 836, 45, 40, True, True),
     npcdef(3884, "Thane's oathsworn", 'It swore to guard the Thane\'s things. Death did not release it.', 40, 55, 5, 1, 4000, 260, 261, 263, 40, 35, True, True),
     npcdef(3885, 'Rimebound sentinel', 'Ice that remembers being a soldier.', 58, 110, 7, 1, 4000, 422, 404, 2304, 60, 55, True, True),
     npcdef(3886, 'Sir Vaelric', 'The last knight of King Aurel. Still keeping his oath.', 66, 170, 9, 1, 4000, 422, 404, 2304, 75, 65, True, True),
@@ -73,20 +73,11 @@ save('npc.json', n)
 
 drops = load('npcdrops.json')
 drops = [x for x in drops if x['id'] not in ids]
-drops.append({'id': 3868, 'items': [
-    {'item_id': 2859, 'chance': 0, 'amounts': [1, 1]},      # wolf bones
-    {'item_id': 995, 'chance': 2, 'amounts': [8, 40]},
-    {'item_id': 1617, 'chance': 200, 'amounts': [1, 1]},     # uncut diamond
-]})
-drops.append({'id': 3869, 'items': [
-    {'item_id': 526, 'chance': 0, 'amounts': [1, 1]},
-    {'item_id': 7989, 'chance': 63, 'amounts': [1, 1]},      # Warden's gauntlets: pried off a watchman who didn't come home
-    {'item_id': 995, 'chance': 2, 'amounts': [15, 70]},
-    {'item_id': 207, 'chance': 6, 'amounts': [1, 1]},        # grimy ranarr
-    {'item_id': 1623, 'chance': 20, 'amounts': [1, 1]},      # uncut sapphire
-    {'item_id': 1621, 'chance': 40, 'amounts': [1, 1]},      # uncut emerald
-    {'item_id': 1215, 'chance': 400, 'amounts': [1, 1]},     # dragon dagger
-]})
+# Nythera's ordinary monsters roll VoidLoot's tiers in the server (40% just bones / 30% misc / 20% useful / 5% valuable /
+# 5% gear, +1% bonus gear); their tables here hold only what they always drop
+for i, bones in ((3868, 2859), (3869, 526), (3882, 592), (3883, 532), (3884, 526), (3887, 526)):
+    drops = [x for x in drops if x['id'] != i]
+    drops.append({'id': i, 'items': [{'item_id': bones, 'chance': 0, 'amounts': [1, 1]}]})
 # the three bosses: always good loot, and a rare unique each
 boss_drops = {
     3876: [(532, 0, 1, 1), (995, 0, 800, 2000), (1319, 15, 1, 1), (1333, 10, 1, 1), (1127, 20, 1, 1), (1163, 12, 1, 1),
@@ -103,22 +94,17 @@ for i, items in boss_drops.items():
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
 # the quest's fights: no unique, but worth winning
-drops = [x for x in drops if x['id'] not in (3880, 3881, 3882)]
+drops = [x for x in drops if x['id'] not in (3880, 3881)]
 drops.append({'id': 3880, 'items': [{'item_id': 526, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [300, 900]},
     {'item_id': 1617, 'chance': 8, 'amounts': [1, 1]}, {'item_id': 2434, 'chance': 4, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 60, 'amounts': [1, 1]}]})
 drops.append({'id': 3881, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [2500, 5000]},
     {'item_id': 565, 'chance': 0, 'amounts': [40, 80]}, {'item_id': 1319, 'chance': 3, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 4, 'amounts': [1, 1]}]})
-drops.append({'id': 3882, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 3, 'amounts': [20, 90]},
-    {'item_id': 562, 'chance': 5, 'amounts': [5, 15]}]})
 def droptable(i, items):
     global drops
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
-droptable(3883, [(532, 0, 1, 1), (995, 0, 150, 400), (440, 2, 2, 4), (1617, 40, 1, 1)])            # ravager: big bones, iron ore
-droptable(3884, [(526, 0, 1, 1), (995, 0, 100, 300), (1163, 30, 1, 1)])                           # oathsworn
 droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])          # sentinel: water runes, rune legs
 droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
-droptable(3887, [(526, 0, 1, 1), (995, 1, 40, 120)])
 # the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
 droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (7983, 11, 1, 1), (7984, 11, 1, 1),
                  (7990, 35, 1, 1), (7991, 35, 1, 1), (7992, 35, 1, 1), (7993, 35, 1, 1), (7994, 35, 1, 1), (7995, 35, 1, 1),

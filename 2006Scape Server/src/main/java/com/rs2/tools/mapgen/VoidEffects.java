@@ -126,21 +126,21 @@ public final class VoidEffects {
 		ModelData m = new ModelData();
 		int f;
 		m.skin = 0; f = nf(m);
-		gemZ(m, -14, 13, 17, 4, Math.PI / 4, hsl(50, 4, 98), hsl(50, 5, 80));
+		gemZ(m, -14, 13, 17, 4, Math.PI / 4, ConfigDefinitions.voidRamp(98, 4), ConfigDefinitions.voidRamp(80, 5));
 		tag(m, f, 0, 0, 1);
 		m.skin = 1; f = nf(m);
-		gemZ(m, -12, 24, 26, 6, 0, hsl(50, 7, 40), hsl(50, 7, 26));
+		gemZ(m, -12, 24, 26, 6, 0, ConfigDefinitions.voidRamp(40, 7), ConfigDefinitions.voidRamp(26, 7));
 		tag(m, f, 1, 88, 0);
 		m.skin = 6; int[] r0 = zring(m, 2, 18, 5, 0.3);
 		m.skin = 2; int[] r1 = zring(m, 18, 15, 5, 0.9);
 		m.skin = 3; int[] r2 = zring(m, 34, 11, 5, 1.5);
 		m.skin = 4; int[] r3 = zring(m, 50, 7, 5, 2.1);
 		m.skin = 5; int tip = m.vertex(0, 0, 72);
-		f = nf(m); band(m, r0, r1, hsl(50, 7, 52), new double[] { 0, 0, 10 }); tag(m, f, 2, 120, 0);
-		f = nf(m); band(m, r1, r2, hsl(50, 7, 38), new double[] { 0, 0, 26 }); tag(m, f, 3, 136, 0);
-		f = nf(m); band(m, r2, r3, hsl(51, 6, 24), new double[] { 0, 0, 42 }); tag(m, f, 4, 152, 0);
+		f = nf(m); band(m, r0, r1, ConfigDefinitions.voidRamp(52, 7), new double[] { 0, 0, 10 }); tag(m, f, 2, 120, 0);
+		f = nf(m); band(m, r1, r2, ConfigDefinitions.voidRamp(38, 7), new double[] { 0, 0, 26 }); tag(m, f, 3, 136, 0);
+		f = nf(m); band(m, r2, r3, ConfigDefinitions.voidRamp(24, 6), new double[] { 0, 0, 42 }); tag(m, f, 4, 152, 0);
 		f = nf(m);
-		for (int s = 0; s < 5; s++) m.triOut(r3[s], r3[(s + 1) % 5], tip, hsl(50, 3, 12), new double[] { 0, 0, 58 });
+		for (int s = 0; s < 5; s++) m.triOut(r3[s], r3[(s + 1) % 5], tip, ConfigDefinitions.voidRamp(12, 3), new double[] { 0, 0, 58 });
 		tag(m, f, 5, 168, 0);
 		e.model = m;
 		e.reuseSeq = 663; e.reuseNote = "fire blast projectile (gfx 130/model 3087), frame file 214";
@@ -180,18 +180,18 @@ public final class VoidEffects {
 		ModelData m = new ModelData();
 		int f;
 		m.skin = 0; f = nf(m);
-		gem(m, 0, 0, 0, 13, 15, 6, 0, hsl(50, 4, 16), hsl(50, 3, 8));
+		gem(m, 0, 0, 0, 13, 15, 6, 0, ConfigDefinitions.voidRamp(16, 4), ConfigDefinitions.voidRamp(8, 3));
 		tag(m, f, 0, 0, 2);
 		double[][] dirs = { { 1, 0, 0 }, { -1, 0, 0 }, { 0, -1, 0 }, { 0, 1, 0 }, { 0, 0, 1 }, { 0, 0, -1 } };
 		for (int d = 0; d < 6; d++) {
 			m.skin = 1 + d; f = nf(m);
 			double[] p0 = { dirs[d][0] * 8, dirs[d][1] * 8, dirs[d][2] * 8 }, p1 = { dirs[d][0] * 44, dirs[d][1] * 44, dirs[d][2] * 44 };
-			m.tube(p0, p1, 7, 0, 4, Math.PI / 4, d % 2 == 0 ? hsl(50, 6, 74) : hsl(50, 7, 56), hsl(50, 7, 56));
+			m.tube(p0, p1, 7, 0, 4, Math.PI / 4, d % 2 == 0 ? ConfigDefinitions.voidRamp(74, 6) : ConfigDefinitions.voidRamp(56, 7), ConfigDefinitions.voidRamp(56, 7));
 			tag(m, f, 1 + d, 56, 1);
 		}
 		m.skin = 7; f = nf(m);
 		int[] in = yring(m, 0, 26, 8, Math.PI / 8), out = yring(m, 0, 36, 8, Math.PI / 8);
-		for (int s = 0; s < 8; s++) quad2(m, in[s], in[(s + 1) % 8], out[(s + 1) % 8], out[s], s % 2 == 0 ? hsl(50, 7, 60) : hsl(50, 7, 48));
+		for (int s = 0; s < 8; s++) quad2(m, in[s], in[(s + 1) % 8], out[(s + 1) % 8], out[s], s % 2 == 0 ? ConfigDefinitions.voidRamp(60, 7) : ConfigDefinitions.voidRamp(48, 7));
 		tag(m, f, 0, 96, 0);
 		e.model = m;
 		e.reuseSeq = 693; e.reuseNote = "fire wave impact (gfx 157/model 3116), frame file 186";
@@ -352,7 +352,7 @@ public final class VoidEffects {
 		ModelData m = new ModelData();
 		double[] hs = { -2, -13, -34, -69, -122, -177, -240, -328, -494, -720 };
 		int[] cols = { hsl(9, 4, 100), hsl(9, 5, 94), hsl(9, 6, 86), hsl(9, 6, 78), hsl(8, 6, 70), hsl(10, 4, 64), hsl(48, 3, 60),
-				hsl(50, 5, 54), hsl(50, 7, 44) };
+				ConfigDefinitions.voidRamp(54, 5), ConfigDefinitions.voidRamp(44, 7) };
 		int[][] rings = new int[hs.length][];
 		for (int k = 0; k < hs.length; k++) {
 			m.skin = k < 9 ? k : 10;
@@ -424,14 +424,14 @@ public final class VoidEffects {
 		ModelData m = new ModelData();
 		int f;
 		m.skin = 0; f = nf(m);
-		gem(m, 0, 0, 0, 15, 15, 8, 0, hsl(50, 3, 10), hsl(50, 2, 5));
+		gem(m, 0, 0, 0, 15, 15, 8, 0, ConfigDefinitions.voidRamp(10, 3), ConfigDefinitions.voidRamp(5, 2));
 		tag(m, f, 0, 0, 2);
 		m.skin = 1; f = nf(m);
 		int[] ci = yring(m, 0, 15, 8, Math.PI / 8), co = yring(m, 0, 27, 16, 0);
 		for (int s = 0; s < 8; s++) {
 			int a = ci[s], b = ci[(s + 1) % 8], tipv = co[2 * s + 1];
-			m.tri(a, tipv, b, hsl(50, 7, 54));
-			m.tri(a, b, tipv, hsl(50, 7, 40));
+			m.tri(a, tipv, b, ConfigDefinitions.voidRamp(54, 7));
+			m.tri(a, b, tipv, ConfigDefinitions.voidRamp(40, 7));
 		}
 		tag(m, f, 1, 72, 1);
 		StringBuilder map = new StringBuilder();
