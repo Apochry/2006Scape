@@ -96,6 +96,18 @@ final class VoidRealmGenerator {
 				.shorts(98, 175);
 		g.ghostly(g.npc(npcs, 111, RIMECLAW), npcs, 111, 36, 3, 1.1, 8).name("Rimeclaw")
 				.examine("Ice, with an opinion. A very old, very cold opinion.").shorts(95, 110).shorts(97, 135).shorts(98, 135);
+		// Ashes of the Crown
+		g.npc(npcs, 646, MAELIS).name("Archivist Maelis").examine("Ink to the elbows. He knows more about Nythera than Nythera does.")
+				.npcActions("Talk-to", null, null, null, null);
+		g.ghostly(g.npc(npcs, 60, BROODMOTHER), npcs, 60, 50, 2, 0.45, 2).name("Silkwood broodmother")
+				.examine("Every spider in Silkwood is one of hers. She'd like you to be one of hers too.").shorts(95, 58)
+				.shorts(97, 190).shorts(98, 190);
+		// the Herald: a smaller echo of the Hollow King, crowned in his colours
+		g.ghostly(g.npc(npcs, 2745, HOLLOW_HERALD), npcs, 2745, 56, 5, 0.5, 6).name("The Hollow Herald")
+				.examine("The King's voice, given a body. Smaller than him. That isn't much comfort.").shorts(95, 88)
+				.shorts(97, 52).shorts(98, 52).set(12, new byte[] { 2 });
+		g.ghostly(g.npc(npcs, 425, HOLLOW_SHADE), npcs, 425, 50, 3, 0.7, 10).name("Hollow shade")
+				.examine("A scrap of the void with a grudge.").shorts(95, 34);
 	}
 
 	void items(ConfigDefinitions.Table items) throws java.io.IOException {
@@ -128,6 +140,29 @@ final class VoidRealmGenerator {
 		ConfigDefinitions.Definition boots = g.item(items, 1061, FROSTBOUND_BOOTS).name("Frostbound boots")
 				.examine("Rimeclaw's hide, still frosted. Your feet will never be warm again. Worth it.").cost(50000);
 		tintItem(boots, 36, 3, 1.3, 20);
+		crownItems(items);
+	}
+
+	/** Items for Ashes of the Crown. */
+	void crownItems(ConfigDefinitions.Table items) throws java.io.IOException {
+		String[][] pages = { { "Chronicle page (Thane)", "Cold to the touch. It smells of the barrow." },
+				{ "Chronicle page (silk)", "Still sticky with spider silk." },
+				{ "Chronicle page (Nettle)", "Someone has used it as a coaster. Several times." } };
+		int[] ids = { THANE_PAGE, SILK_PAGE, NETTLE_PAGE };
+		for (int i = 0; i < 3; i++) {
+			g.item(items, 4569 + i, ids[i]).name(pages[i][0]).examine(pages[i][1]).cost(1);
+		}
+		ConfigDefinitions.Definition chron = g.item(items, 1509, ROYAL_CHRONICLE).name("Royal chronicle")
+				.examine("The last chronicle of Nythera's kings, bound back together.").itemActions("Read", null, null, null, "Drop")
+				.cost(1);
+		tintItem(chron, 50, 4, 0.8, 0);
+		ConfigDefinitions.Definition ember = g.item(items, 569, EMBER).name("The Ember")
+				.examine("King Aurel's heart. It's still warm. It's still beating.").cost(1);
+		tintItem(ember, 4, 7, 1.1, 20);
+		ConfigDefinitions.Definition signet = g.item(items, 2550, GATEHOLD_SIGNET).name("Signet of Gatehold")
+				.examine("Gatehold's seal, given to those who've earned the right to come home.")
+				.itemActions("Rub", "Wear", null, null, "Drop").cost(40000);
+		tintItem(signet, 50, 5, 1.0, 10);
 	}
 
 	void splinter(ConfigDefinitions.Table items, int id, String name, String examine, int hue, int sat) throws java.io.IOException {
@@ -210,13 +245,50 @@ final class VoidRealmGenerator {
 		g.tintLoc(frost, 36, 2, 1.4, 30, c -> true);
 		// scenery with hand-built models
 		forgedLoc(locs, WAYSTONE, forge.pack(forge.waystone()), "Waystone",
-				"An old road marker. The rune on it still glows, though nobody remembers what it says.");
+				"An old road marker. The rune on it still glows, though nobody remembers what it says.")
+				.set(30, ConfigDefinitions.string("Touch")); // the waystone network (Ashes of the Crown)
 		forgedLoc(locs, VOID_LANTERN, forge.pack(forge.voidLantern()), "Void lantern",
 				"Gatehold lights its streets with the Scar's own crystal. Nobody finds this as funny as Pell does.");
 		forgedLoc(locs, HOLLOWED_TREE, forge.pack(forge.hollowedTree()), "Hollowed tree",
 				"The Scar emptied it. Something violet is growing in the space it left.")
 				.scale(192, 192, 192); // 1.5x: built at person scale, it should tower over you
 		forge.finish();
+		crownLocs(locs);
+	}
+
+	/** Objects for Ashes of the Crown. */
+	void crownLocs(ConfigDefinitions.Table locs) throws java.io.IOException {
+		ConfigDefinitions.Definition coffer = g.loc(locs, 375, THANE_COFFER).name("Thane's coffer")
+				.examine("Bound in black iron. The Thane's mark is on the lock.").set(30, ConfigDefinitions.string("Open"));
+		g.tintLoc(coffer, GHOST_HUE, 2, 0.7, 0, c -> true);
+		g.loc(locs, 3833, SILK_COCOON).name("Silk cocoon").examine("Something paper-flat is wrapped up in it. Something else is guarding it.")
+				.set(30, ConfigDefinitions.string("Cut open"));
+		ConfigDefinitions.Definition hatch = g.loc(locs, 1570, VAULT_HATCH).name("Rusted hatch")
+				.examine("Half buried in the Gate's rubble. Steps go down into the dark.").set(30, ConfigDefinitions.string("Climb-down"))
+				.remove(31);
+		g.tintLoc(hatch, 7, 3, 0.7, 0, c -> true);
+		int[][] wards = { { SUN_WARD, 8, 6 }, { STAR_WARD, 36, 4 }, { MOON_WARD, 0, 0 } };
+		String[] names = { "Sun ward", "Star ward", "Moon ward" };
+		String[] exam = { "A brazier marked with a crowned sun.", "A brazier marked with a guiding star.",
+				"A brazier marked with a weeping moon." };
+		for (int i = 0; i < 3; i++) {
+			ConfigDefinitions.Definition w = g.loc(locs, 11017, wards[i][0]).name(names[i]).examine(exam[i])
+					.set(30, ConfigDefinitions.string("Light")).remove(31).scale(184, 184, 184);
+			g.tintLoc(w, wards[i][1], wards[i][2], 1.1, 10, c -> true);
+		}
+		ConfigDefinitions.Definition seal = g.loc(locs, VOID_CRYSTAL, VAULT_SEAL).name("Ward-seal")
+				.examine("A wall of void glass grown across the passage.").set(30, ConfigDefinitions.string("Touch"));
+		ConfigDefinitions.Definition ped = g.loc(locs, 10988, EMBER_PEDESTAL).name("Ember pedestal")
+				.examine("Something burns on it, very small and very bright.").set(30, ConfigDefinitions.string("Take"));
+		g.tintLoc(ped, 4, 6, 1.0, 10, c -> true);
+		g.loc(locs, 380, MAELIS_BOOKS).name("Maelis's books").examine("Every book left in Nythera, by the look of it.")
+				.set(30, ConfigDefinitions.string("Browse"));
+		int[] lit = { SUN_WARD_LIT, STAR_WARD_LIT, MOON_WARD_LIT };
+		for (int i = 0; i < 3; i++) { // burning: the iron keeps the ward's colour, the flame takes it too
+			ConfigDefinitions.Definition w = g.loc(locs, 11020, lit[i]).name(names[i]).examine(exam[i] + " It burns.").remove(30).scale(184, 184, 184)
+					.remove(31);
+			g.tintLoc(w, wards[i][1], Math.max(3, wards[i][2]), 1.4, 30, c -> (c >> 7 & 7) >= 5);
+		}
 	}
 
 	ModelForge forge;
@@ -762,11 +834,16 @@ final class VoidRealmGenerator {
 	static final int[][] CAMPS = { { FISH_CAMP_X, FISH_CAMP_Y, 9 }, { CROFT_X, CROFT_Y, 13 }, { WOOD_CAMP_X, WOOD_CAMP_Y, 7 },
 			{ WATCH_X, WATCH_Y, 6 }, { GATEHOLD_X, GATEHOLD_Y, 13 }, { QUARRY_X, QUARRY_Y, 10 }, { INN_X, INN_Y, 10 },
 			{ SMUGGLER_COVE_X, SMUGGLER_COVE_Y, 9 }, { SILKWOOD_X, SILKWOOD_Y, 10 }, { BARROW_DOOR_X, BARROW_DOOR_Y + 5, 9 },
-			{ FISSURE_X, FISSURE_Y, 4 }, { FROST_CAVE_X - 3, FROST_CAVE_Y, 4 } };
+			{ FISSURE_X, FISSURE_Y, 4 }, { FROST_CAVE_X - 3, FROST_CAVE_Y, 4 }, { MAELIS_X, MAELIS_Y, 6 } };
 
 	boolean nearCamp(int x, int y) {
 		for (int[] c : CAMPS) {
 			if (Math.hypot(x - c[0], y - c[1]) < c[2]) {
+				return true;
+			}
+		}
+		for (int[] w : WAYSTONE_SPOTS) {
+			if (Math.abs(x - w[0]) <= 2 && Math.abs(y - w[1]) <= 2) {
 				return true;
 			}
 		}
@@ -930,6 +1007,9 @@ final class VoidRealmGenerator {
 		barrowMound();
 		fissure();
 		frostCaveMouth();
+		// last, so nothing above clears them away
+		maelisCamp();
+		waystones();
 	}
 
 	/** Gatehold: two shacks, an open-air bank under the old gate's shadow, a smithy, a store, and the watch. */
@@ -963,11 +1043,44 @@ final class VoidRealmGenerator {
 		placeNear(VOID_LANTERN, cx - 6, cy + 1, 1);
 		placeNear(VOID_LANTERN, cx + 5, cy + 5, 1);
 		placeNear(VOID_LANTERN, cx - 1, cy - 4, 1);
-		placeNear(WAYSTONE, cx + 7, cy - 1, 0);
 		placeNear(HOLLOWED_TREE, cx + 9, cy + 9, 0);
 		person(YSOLDE, GATE_X - 1, GATE_Y - 1, 4);
 		person(GUARD, cx + 1, cy - 2, 1);
 		person(GUARD, cx - 4, cy + 4, 1);
+	}
+
+	/** Archivist Maelis's camp in the middle of the standing-stone circle above the Gate. */
+	void maelisCamp() {
+		int cx = MAELIS_X, cy = MAELIS_Y;
+		for (int x = cx - 4; x <= cx + 4; x++) {
+			for (int y = cy - 4; y <= cy + 4; y++) {
+				if (Math.hypot(x - cx, y - cy) < 4.5) {
+					g.removeObjectsAt(x, y);
+				}
+			}
+		}
+		g.object(TENT, cx - 2, cy + 2, TYPE_SCENERY, 2);
+		g.object(MAELIS_BOOKS, cx + 2, cy + 2, TYPE_SCENERY, 2);
+		g.object(5508, cx + 3, cy + 1, TYPE_SCENERY, 3); // a lectern
+		g.object(FIRE, cx, cy - 2, TYPE_SCENERY, 0);
+		g.object(CRATES, cx - 3, cy - 1, TYPE_SCENERY, 0);
+		person(MAELIS, cx + 1, cy, 1);
+		// the hatch down into the vault, half-buried in the Gate's rubble
+		g.removeObjectsAt(HATCH_X, HATCH_Y);
+		g.removeObjectsAt(HATCH_X, HATCH_Y - 1);
+		g.object(VAULT_HATCH, HATCH_X, HATCH_Y, TYPE_SCENERY, 0);
+	}
+
+	/** The waystones: one beside each place on the network, with the tile you arrive on kept clear. */
+	void waystones() {
+		for (int[] spot : WAYSTONE_SPOTS) {
+			int x = spot[0], y = spot[1];
+			for (int[] t : new int[][] { { x, y }, { x + 1, y } }) {
+				g.removeObjectsAt(t[0], t[1]);
+				g.regionAt(t[0], t[1]).settings[0][t[0] & 63][t[1] & 63] = 0;
+			}
+			g.object(WAYSTONE, x + 1, y, TYPE_SCENERY, 0);
+		}
 	}
 
 	/** Places an object on the nearest free, dry, unblocked tile to (x, y). */
@@ -1122,6 +1235,7 @@ final class VoidRealmGenerator {
 		g.object(SKELETON_DECOR, cx + 1, cy - 1, TYPE_GROUND_DECOR, 1);
 		g.object(SKELETON_DECOR, cx - 2, cy + 2, TYPE_GROUND_DECOR, 3);
 		g.object(FALLEN_TREE, cx + 3, cy + 1, TYPE_SCENERY, 1);
+		g.object(SILK_COCOON, cx - 1, cy + 4, TYPE_SCENERY, 0); // a page of the Royal Chronicle, wrapped up tight
 		for (int i = 0; i < 6; i++) {
 			person(SPIDER, cx - 4 + random.nextInt(9), cy - 4 + random.nextInt(9), 1);
 		}
@@ -1203,21 +1317,26 @@ final class VoidRealmGenerator {
 		g.regions.put(r.id(), r);
 		for (int x = 0; x < 64; x++) {
 			for (int y = 0; y < 64; y++) {
+				// gentle undulation underfoot; the rock rises in a rounded slope over three tiles, not a one-tile spike
 				if (open[x][y]) {
-					r.height[0][x][y] = 2 + (int) Math.round((noise(x * 4 + regionX, y * 4 + 9) + 1) * 1.5);
+					r.height[0][x][y] = 3 + (int) Math.round(fbm(x / 7.0, y / 7.0, regionX * 13 + 1) * 2);
 					floor.paint(r, x, y);
 				} else {
 					r.settings[0][x][y] = MapRegion.BLOCKED;
 					r.underlay[0][x][y] = wall;
+					double lump = fbm(x / 4.0, y / 4.0, regionX * 13 + 2);
 					if (bordersOpen(open, x, y, 1)) {
-						r.height[0][x][y] = 34 + (int) Math.round(noise(x * 5 + 1, y * 5 + regionX) * 8);
+						r.height[0][x][y] = 20 + (int) Math.round(lump * 7);
+					} else if (bordersOpen(open, x, y, 2)) {
+						r.height[0][x][y] = 38 + (int) Math.round(lump * 6);
 					} else {
 						r.overlay[0][x][y] = INVISIBLE;
-						r.height[0][x][y] = 50;
+						r.height[0][x][y] = 52;
 					}
 				}
 			}
 		}
+		smoothDungeon(r);
 		// the way back out
 		r.objects.add(new MapRegion.MapObject(DOOR_EXIT, 31, 2, 0, TYPE_SCENERY, 2));
 		return r;
@@ -1270,6 +1389,43 @@ final class VoidRealmGenerator {
 		sunkenBarrow();
 		hollowdeep();
 		frostfang();
+		vault();
+	}
+
+	/**
+	 * The Vault beneath the Gate (Ashes of the Crown): a stair down into an antechamber, the hall of the three wards,
+	 * a single passage sealed with void glass, and the sanctum where the Ember waits.
+	 */
+	void vault() {
+		boolean[][] o = new boolean[64][64];
+		CursedIslandGenerator.blob(o, 32, 7, 5, 4); // the foot of the stair
+		CursedIslandGenerator.tunnel(o, 32, 10, 32, 19, 2);
+		CursedIslandGenerator.blob(o, 32, 25, 9, 6); // the hall of wards
+		CursedIslandGenerator.tunnel(o, 32, 31, 32, 44, 1); // one tile wide: the seal closes it completely
+		CursedIslandGenerator.blob(o, 32, 50, 9, 6); // the sanctum
+		MapRegion r = carve(VAULT_REGION_X, o, (reg, x, y) -> {
+			double f = fbm(x / 5.0, y / 5.0, 74);
+			reg.underlay[0][x][y] = f > 0.25 ? DARK_PATH : f < -0.3 ? MUD : GREY_PATH; // worn stone; the client blends it
+			double d = Math.hypot(x - 32, y - 50);
+			if (d < 3.5) {
+				reg.overlay[0][x][y] = VOID_BLACK; // where the Ember's heat has burned the floor black
+			} else if (d < 5) {
+				reg.overlay[0][x][y] = CRYPT_PURPLE;
+			}
+		}, ROCK);
+		int[] wardIds = { SUN_WARD, STAR_WARD, MOON_WARD };
+		for (int i = 0; i < 3; i++) {
+			put(r, o, wardIds[i], WARD_SPOTS[i][0], WARD_SPOTS[i][1], TYPE_SCENERY, 0);
+		}
+		put(r, o, VAULT_SEAL, SEAL_LX, SEAL_LY, TYPE_SCENERY, 0);
+		put(r, o, EMBER_PEDESTAL, EMBER_LX, EMBER_LY, TYPE_SCENERY, 0);
+		for (int y = 12; y <= 18; y += 6) {
+			put(r, o, CAVE_TORCH_ID, 31, y, TYPE_SCENERY, 1);
+			put(r, o, CAVE_TORCH_ID, 33, y, TYPE_SCENERY, 3);
+		}
+		hug(r, o, new int[] { PILLAR, CAVE_TORCH_ID, PILLAR_2, SKULL_PILE }, 8, 32, 25, 10);
+		hug(r, o, new int[] { VOID_CRYSTAL, PILLAR, VOID_CRYSTAL_DARK, CAVE_TORCH_ID }, 8, 32, 50, 10);
+		lair(VAULT_REGION_X, r, o, HOLLOW_SHADE, 3, 32, 22, 6, 1); // shades drift through the hall
 	}
 
 	/** The Sunken Barrow: a straight processional hall, side crypts, an ossuary, and the Thane's tomb. */
@@ -1285,8 +1441,8 @@ final class VoidRealmGenerator {
 		CursedIslandGenerator.blob(o, 14, 45, 5, 5); // the ossuary
 		CursedIslandGenerator.blob(o, 32, 49, 8, 7); // the Thane's tomb
 		MapRegion r = carve(BARROW_REGION_X, o, (reg, x, y) -> {
-			reg.underlay[0][x][y] = MUD;
-			reg.overlay[0][x][y] = fbm(x / 4.0, y / 4.0, 71) > 0.25 ? DARK_PATH : GREY_PATH; // worn flagstones
+			double f = fbm(x / 5.0, y / 5.0, 71);
+			reg.underlay[0][x][y] = f > 0.25 ? DARK_PATH : f < -0.35 ? MUD : GREY_PATH; // worn flagstones, blended
 		}, ROCK);
 		for (int y = 12; y <= 38; y += 6) { // torches down both walls of the hall
 			int west = 32, east = 32;
@@ -1307,6 +1463,7 @@ final class VoidRealmGenerator {
 		hug(r, o, new int[] { BIG_GRAVE, CAVE_TORCH_ID, DUNGEON_SKULLS }, 8, 32, 49, 9);
 		put(r, o, BIG_GRAVE, 32, 53, TYPE_SCENERY, 0); // the Thane's own grave, empty
 		put(r, o, LONG_SKELETON, 29, 46, TYPE_GROUND_DECOR, 1);
+		put(r, o, THANE_COFFER, 35, 53, TYPE_SCENERY, 0); // where a chronicle page lies (Ashes of the Crown)
 		int bx = BARROW_REGION_X;
 		lair(bx, r, o, 90, 3, 32, 22, 4, 1);
 		lair(bx, r, o, 91, 3, 17, 23, 4, 1);
@@ -1523,28 +1680,12 @@ final class VoidRealmGenerator {
 		return true;
 	}
 
-	/** Cuts the corners of water, roads and patches diagonally (see CursedIslandGenerator#smoothOverlays). */
+	/** Softens the edges of water, roads and patches (see CursedIslandGenerator#smoothGrid). */
 	void smoothOverlays() {
-		List<int[]> changes = new ArrayList<>();
-		for (int x = NX0 + 1; x < NX0 + NSIZE - 1; x++) {
-			for (int y = NY0 + 1; y < NY0 + NSIZE - 1; y++) {
-				int ov = g.overlayAt(x, y);
-				if (ov == 0) {
-					continue;
-				}
-				boolean n = g.overlayAt(x, y + 1) == ov, e = g.overlayAt(x + 1, y) == ov, so = g.overlayAt(x, y - 1) == ov,
-						w = g.overlayAt(x - 1, y) == ov;
-				int count = (n ? 1 : 0) + (e ? 1 : 0) + (so ? 1 : 0) + (w ? 1 : 0);
-				if (count != 2 || n && so || e && w) {
-					continue;
-				}
-				changes.add(new int[] { x, y, so && w ? 0 : w && n ? 1 : n && e ? 2 : 3 });
-			}
-		}
-		for (int[] c : changes) {
+		List<int[]> halves = CursedIslandGenerator.smoothGrid(g.worldGrid(), NX0 + 1, NY0 + 1, NX0 + NSIZE - 2, NY0 + NSIZE - 2,
+				CursedIslandGenerator::overlayGroup, ov -> ov == WOOD, ov -> CursedIslandGenerator.overlayGroup(ov) != WATER);
+		for (int[] c : halves) {
 			MapRegion r = g.regionAt(c[0], c[1]);
-			r.overlayShape[0][c[0] & 63][c[1] & 63] = 1;
-			r.overlayRotation[0][c[0] & 63][c[1] & 63] = c[2];
 			// the cut-away half shows the tile's underlay: sea tiles have none (it renders black), so borrow the shore's
 			if (r.underlay[0][c[0] & 63][c[1] & 63] == 0) {
 				for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
@@ -1556,5 +1697,28 @@ final class VoidRealmGenerator {
 				}
 			}
 		}
+	}
+
+	/** Smooths a dungeon region's floor patches, in local coordinates; the invisible rock is left as it is. */
+	static void smoothDungeon(MapRegion r) {
+		CursedIslandGenerator.smoothGrid(new CursedIslandGenerator.OverlayGrid() {
+			public int overlay(int x, int y) {
+				return x < 0 || y < 0 || x > 63 || y > 63 ? 0 : r.overlay[0][x][y];
+			}
+
+			public int shape(int x, int y) {
+				return x < 0 || y < 0 || x > 63 || y > 63 ? 0 : r.overlayShape[0][x][y];
+			}
+
+			public void set(int x, int y, int overlay, int shape, int rotation) {
+				r.overlay[0][x][y] = overlay;
+				r.overlayShape[0][x][y] = shape;
+				r.overlayRotation[0][x][y] = rotation;
+			}
+
+			public boolean frozen(int x, int y) {
+				return (r.settings[0][x][y] & MapRegion.BLOCKED) != 0; // only the floor is softened
+			}
+		}, 1, 1, 62, 62, ov -> ov, ov -> ov == INVISIBLE, ov -> true);
 	}
 }

@@ -42,6 +42,11 @@ people = [
     npcdef(3876, 'The Barrow Thane', 'A king of the old barrows who would not stay buried.', 68, 110, 9, 1, 4000, 260, 261, 263, 70, 60, True, True),
     npcdef(3877, 'The Hollow Matriarch', 'The mother of husks. Her heart beats with nothing at all.', 92, 150, 12, 2, 4000, 75, 76, 78, 95, 80, True, True),
     npcdef(3878, 'Rimeclaw', 'The cold of the mountain, given claws.', 110, 180, 14, 2, 5000, 128, 129, 131, 115, 100, True, True),
+    # Ashes of the Crown
+    npcdef(3879, 'Archivist Maelis', 'Ink to the elbows. He knows more about Nythera than Nythera does.'),
+    npcdef(3880, 'Silkwood broodmother', 'Every spider in Silkwood came out of her. She would like you to go in.', 58, 95, 9, 2, 4000, 143, 144, 146, 65, 55, True, True),
+    npcdef(3881, 'Hollow Herald', 'It speaks with the Hollow King\'s voice, because it has none of its own.', 88, 220, 10, 2, 3000, 2655, 2653, 2654, 95, 85, True, True),
+    npcdef(3882, 'Hollow shade', 'A scrap of the dark between the stars, wearing a shape.', 34, 34, 5, 1, 4000, 422, 1834, 836, 40, 30, True, True),
 ]
 ids = {p['id'] for p in people}
 
@@ -87,6 +92,14 @@ for i, items in boss_drops.items():
             [d for d in items if d[1] != 0 and d[0] not in (7968, 7969, 7970)]
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
+# the quest's fights: no unique, but worth winning
+drops = [x for x in drops if x['id'] not in (3880, 3881, 3882)]
+drops.append({'id': 3880, 'items': [{'item_id': 526, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [300, 900]},
+    {'item_id': 1617, 'chance': 8, 'amounts': [1, 1]}, {'item_id': 2434, 'chance': 4, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 60, 'amounts': [1, 1]}]})
+drops.append({'id': 3881, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [2500, 5000]},
+    {'item_id': 565, 'chance': 0, 'amounts': [40, 80]}, {'item_id': 1319, 'chance': 3, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 4, 'amounts': [1, 1]}]})
+drops.append({'id': 3882, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 3, 'amounts': [20, 90]},
+    {'item_id': 562, 'chance': 5, 'amounts': [5, 15]}]})
 save('npcdrops.json', drops)
 
 # the bosses' uniques: equipment bonuses, in ItemDefinitions.json's own compact format
@@ -136,7 +149,7 @@ save('shops.json', shops)
 
 # spawns: drop everything previously in Nythera's regions except Oren, then add camps + generated wildlife
 X0, Y0, N = 20 * 64, 39 * 64, 7 * 64
-DUNGEONS = (20, 22, 24)  # the Sunken Barrow, Hollowdeep, Frostfang (region y 151)
+DUNGEONS = (20, 22, 24, 26)  # the Sunken Barrow, Hollowdeep, Frostfang (region y 151)
 inside = lambda s: s['height'] == 0 and ((X0 <= s['x'] < X0 + N and Y0 <= s['y'] < Y0 + N)
                                          or (s['x'] >> 6 in DUNGEONS and s['y'] >> 6 == 151))
 sp = load('spawns.json')
@@ -154,7 +167,7 @@ spawn(3867, 1553, 2731, 1)
 # combat stats for the monsters the generator places (maxHit, attack/strength)
 STATS = {3868: (4, 28), 3869: (5, 40), 3860: (3, 15), 90: (3, 20), 91: (3, 20), 92: (4, 25), 93: (6, 40), 103: (3, 20),
          60: (4, 25), 96: (3, 20), 111: (7, 50), 125: (7, 35), 184: (5, 25), 1883: (4, 30), 9: (6, 20),
-         3876: (9, 70), 3877: (12, 95), 3878: (14, 115)}
+         3876: (9, 70), 3877: (12, 95), 3878: (14, 115), 3882: (5, 40)}
 count = 0
 for line in open(spawnfile):
     i, x, y, w = map(int, line.split())

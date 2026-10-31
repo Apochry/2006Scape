@@ -475,7 +475,8 @@ public class Npc {
                 || absX >= 2371 && absX <= 2422 && absY >= 5062 && absY <= 5117
                 || absX >= 2896 && absX <= 2927 && absY >= 3595 && absY <= 3630
                 || absX >= 2892 && absX <= 2932 && absY >= 4435 && absY <= 4464
-                || absX >= 2256 && absX <= 2287 && absY >= 4680 && absY <= 4711) {
+                || absX >= 2256 && absX <= 2287 && absY >= 4680 && absY <= 4711
+                || absX >= 1280 && absX <= 1727 && absY >= 9664 && absY <= 9727) { // Nythera's dungeons
             return true;
         }
         return false;

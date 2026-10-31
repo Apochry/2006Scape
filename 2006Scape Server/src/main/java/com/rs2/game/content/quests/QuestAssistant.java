@@ -3,6 +3,7 @@ package com.rs2.game.content.quests;
 import com.rs2.game.content.quests.impl.BlackKnightsFortress;
 import com.rs2.game.content.quests.impl.CooksAssistant;
 import com.rs2.game.content.quests.impl.BeyondTheVeil;
+import com.rs2.game.content.quests.impl.AshesOfTheCrown;
 import com.rs2.game.content.quests.impl.CurseOfSkullbrine;
 import com.rs2.game.content.quests.impl.EchoesOfTheVoid;
 import com.rs2.game.content.quests.impl.DoricsQuest;
@@ -28,7 +29,7 @@ import com.rs2.game.players.Player;
 public class QuestAssistant {
 
 	public static final int MAXIMUM_QUESTPOINTS = 26 + CurseOfSkullbrine.QUEST_POINTS + EchoesOfTheVoid.QUEST_POINTS
-			+ BeyondTheVeil.QUEST_POINTS;
+			+ BeyondTheVeil.QUEST_POINTS + AshesOfTheCrown.QUEST_POINTS;
 
 	public static void sendStages(Player player) {
 		player.getPacketSender().sendString("QP: " + player.questPoints + " ", 3985);
@@ -140,6 +141,7 @@ public class QuestAssistant {
 		player.getPacketSender().sendString(CurseOfSkullbrine.questListName(player), Quests.CURSE_OF_SKULLBRINE.getStringId());
 		player.getPacketSender().sendString(EchoesOfTheVoid.questListName(player), Quests.ECHOES_OF_THE_VOID.getStringId());
 		player.getPacketSender().sendString(BeyondTheVeil.questListName(player), Quests.BEYOND_THE_VEIL.getStringId());
+		player.getPacketSender().sendString(AshesOfTheCrown.questListName(player), Quests.ASHES_OF_THE_CROWN.getStringId());
 		if (player.lostCity == 0) {
 			player.getPacketSender().sendString("Lost City", 7367);
 		} else if (player.lostCity == 3) {
@@ -182,7 +184,7 @@ public class QuestAssistant {
 		BEYOND_THE_VEIL(61225, 15841, BeyondTheVeil.NAME, true), // uses the unused Devious Minds slot
 		DIGSITE(28186, 7354, "Digsite Quest", false), 
 		ELEMENTAL(29035, 7459, "Elemental Workshop", false), 
-		ENAKHRA(63021, 16149, "Enakhra's Lamet", false), 
+		ASHES_OF_THE_CROWN(63021, 16149, AshesOfTheCrown.NAME, true), // uses the unused Enakhra's Lament slot
 		FAIRY1(27075, 6987, "A Fairy Tale Pt. 1", false), 
 		FAMILYCREST(28189, 7357, "Family Crest", false), 
 		FEUD(50036, 12836, "The Feud", false), 
@@ -348,6 +350,9 @@ public class QuestAssistant {
 			break;
 		case 61225:
 			BeyondTheVeil.showInformation(player);
+			break;
+		case 63021:
+			AshesOfTheCrown.showInformation(player);
 			break;
 
 

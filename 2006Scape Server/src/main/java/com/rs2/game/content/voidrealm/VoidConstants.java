@@ -23,6 +23,8 @@ public final class VoidConstants {
 	public static final int YSOLDE = 3870, PELL = 3871, DORRIN = 3872, TESS = 3873, MORRA = 3874, NETTLE = 3875;
 	/* dungeon bosses */
 	public static final int BARROW_THANE = 3876, HOLLOW_MATRIARCH = 3877, RIMECLAW = 3878;
+	/* Ashes of the Crown */
+	public static final int MAELIS = 3879, BROODMOTHER = 3880, HOLLOW_HERALD = 3881, HOLLOW_SHADE = 3882;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;
@@ -34,6 +36,9 @@ public final class VoidConstants {
 	public static final int HOLLOWFANG = 7967;
 	/* boss drops */
 	public static final int HOLLOWHEART_AMULET = 7968, BARROWSTEEL_LONGSWORD = 7969, FROSTBOUND_BOOTS = 7970;
+	/* Ashes of the Crown */
+	public static final int THANE_PAGE = 7971, SILK_PAGE = 7972, NETTLE_PAGE = 7973, ROYAL_CHRONICLE = 7974, EMBER = 7975,
+			GATEHOLD_SIGNET = 7976;
 
 	/* ---------------- objects (new definitions) ---------------- */
 	public static final int VOID_VEIN = 14986;
@@ -47,6 +52,11 @@ public final class VoidConstants {
 	public static final int BARROW_DOOR = 14992, HOLLOW_FISSURE = 14993, FROST_CAVE = 14994;
 	/** Scenery with hand-built models (tools/mapgen/ModelForge). */
 	public static final int WAYSTONE = 14995, VOID_LANTERN = 14996, HOLLOWED_TREE = 14997;
+	/* Ashes of the Crown */
+	public static final int THANE_COFFER = 14998, SILK_COCOON = 14999, VAULT_HATCH = 15000, SUN_WARD = 15001, STAR_WARD = 15002,
+			MOON_WARD = 15003, VAULT_SEAL = 15004, EMBER_PEDESTAL = 15005, MAELIS_BOOKS = 15006;
+	/** The wards once lit (shown to the player who lit them). */
+	public static final int SUN_WARD_LIT = 15007, STAR_WARD_LIT = 15008, MOON_WARD_LIT = 15009;
 
 	/* ---------------- Skullbrine Isle ---------------- */
 
@@ -125,6 +135,17 @@ public final class VoidConstants {
 
 	/** Region x of each dungeon (all at region y 151), and where you arrive inside (local 32, 9). */
 	public static final int BARROW_REGION_X = 20, HOLLOWDEEP_REGION_X = 22, FROSTFANG_REGION_X = 24, NY_DUNGEON_REGION_Y = 151;
+	/** The Vault beneath the Gate (Ashes of the Crown), also at region y 151. */
+	public static final int VAULT_REGION_X = 26;
+	/** Vault layout, in local tiles of its region: the three wards, the seal across the passage, the Ember, the Herald. */
+	public static final int[][] WARD_SPOTS = { { 25, 26 }, { 32, 30 }, { 39, 26 } }; // sun, star, moon
+	public static final int SEAL_LX = 32, SEAL_LY = 37, EMBER_LX = 32, EMBER_LY = 54, HERALD_LX = 32, HERALD_LY = 49;
+	/** The hatch into the vault, among the Broken Gate's rubble; Archivist Maelis's camp in the standing stones. */
+	public static final int HATCH_X = 1512, HATCH_Y = 2714, MAELIS_X = 1502, MAELIS_Y = 2738;
+	/** Waystones (the network Ashes of the Crown opens): name and the tile beside each stone you arrive on. */
+	public static final String[] WAYSTONE_NAMES = { "Gatehold", "Starfall Crater", "The Last Hearth", "Smugglers' Cove",
+			"The Scar Watch" };
+	public static final int[][] WAYSTONE_SPOTS = { { 1504, 2712 }, { 1566, 2664 }, { 1490, 2803 }, { 1476, 2624 }, { 1569, 2737 } };
 
 	public static int dungeonBaseX(int regionX) {
 		return regionX * 64;
@@ -138,7 +159,7 @@ public final class VoidConstants {
 			return -1;
 		}
 		int rx = x >> 6;
-		return rx == BARROW_REGION_X || rx == HOLLOWDEEP_REGION_X || rx == FROSTFANG_REGION_X ? rx : -1;
+		return rx == BARROW_REGION_X || rx == HOLLOWDEEP_REGION_X || rx == FROSTFANG_REGION_X || rx == VAULT_REGION_X ? rx : -1;
 	}
 
 	public static boolean onNythera(int x, int y) {

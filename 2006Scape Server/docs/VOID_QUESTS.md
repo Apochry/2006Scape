@@ -3,15 +3,17 @@
 The series continues from **Curse of Skullbrine**. The portal under Skull Rock wakes up. The player
 gathers the three splinters of its broken seal, opens the door, and meets **the Hollow King**, a
 boss who can't be beaten yet. He shatters the platform under them, and they fall to **Nythera**,
-a new continent. For now the story stops there ("To be continued...").
+a new continent. In **Ashes of the Crown**, the player learns who the King was, steals his heart from the Vault
+beneath the Gate, and finds out he is coming to take it back ("To be continued...").
 
 | Quest | QP | Requirements | Stage field |
 |---|---|---|---|
 | Echoes of the Void | 2 | Curse of Skullbrine; a spade and a pickaxe; able to fight level 10-30 undead | `Player.voidEchoes` (0-3) |
 | Beyond the Veil | 3 | Echoes of the Void | `Player.voidVeil` (0-4) |
+| Ashes of the Crown | 3 | Beyond the Veil; able to face a level-88 boss | `Player.voidCrown` (0-7), `crownFlags` |
 
-Both stage fields are saved in the character file. In the quest tab they take the slots of
-Desert Treasure and Devious Minds, which this server never implemented.
+All stage fields are saved in the character file. In the quest tab they take the slots of
+Desert Treasure, Devious Minds and Enakhra's Lament, which this server never implemented.
 
 ## Echoes of the Void: walkthrough
 
@@ -145,6 +147,65 @@ drops, shops and spawns into `data/cfg`.
 Regenerate a top-down preview with
 `-Dnythera=/path/nythera.png` when running `CursedIslandGenerator`.
 
+## Ashes of the Crown: walkthrough
+
+Part four, and the first quest on Nythera itself. Requires Beyond the Veil. 3 quest points.
+
+1. **Captain Ysolde** (Gatehold) says Kael's watch saw something tall and crowned walk out of the Scar and stare at
+   Gatehold for an hour. She sends you to **Archivist Maelis**, camped among the standing stones north of the Gate.
+2. Maelis tells you about Nythera's last king, Aurel, and the Royal Chronicle that was torn apart when his city fell.
+   He needs its three pages:
+   - **The Thane's page**: in the coffer at the back of the Sunken Barrow. It only opens once the Barrow Thane
+     has been put down.
+   - **The Silkwood page**: in a silk cocoon in Silkwood. Cutting it brings down the **Silkwood broodmother**
+     (level 58). Kill her, then cut the cocoon again.
+   - **Nettle's page**: Sly Nettle in Smugglers' Cove sells it for 3,000 coins, or for a raw shark (he'd rather have
+     the shark).
+3. Maelis binds the pages into the **Royal chronicle**, which you can "Read" at any time. It reveals the twist: the
+   Hollow King *is* Aurel. His champion cut out his heart, **the Ember**, and sealed it in the Vault beneath the Gate.
+   The riddle: *"First the SUN that crowned him; then the STAR that guided him; last the MOON that mourned him."*
+4. Climb down the **rusted hatch** in the Gate's rubble. In the hall of wards, light the braziers **Sun, Star, Moon**.
+   - A wrong order puts every flame out and sends two **Hollow shades** at you.
+   - The right order cracks the void-glass seal at the north end.
+5. Through the seal, the **Hollow Herald** (level 88, 220 hp) is waiting for you. At two-thirds and one-third health
+   it wraps itself in void and calls two shades. It can't be hurt until they're dead; if they somehow can't be
+   reached, the shroud gives out on its own after about thirty seconds. Every few seconds a lash of void hits you
+   whatever you're doing. Bring food and armour.
+6. Take the **Ember** from the pedestal and show it to Maelis. The Hollow King speaks through it: *"Keep it warm for
+   me. I am coming to collect it."*
+
+**Rewards:**
+- 3 quest points
+- the **Signet of Gatehold** ("Rub" to return to Gatehold's waystone)
+- 7,500 Slayer XP, plus 5,000 each in Magic and Prayer
+- the **waystone network**, described below
+
+### The waystones
+
+Five standing stones, each carved with a violet rune:
+- Gatehold
+- Starfall Crater
+- the Last Hearth
+- Smugglers' Cove
+- the Scar Watch
+
+After the quest, touching a stone **attunes** you to it; Gatehold's is attuned automatically. Touching any stone
+offers travel to every other stone you've attuned. Before the quest, the runes only flicker.
+
+### Terrain smoothing
+
+All map generators share `CursedIslandGenerator.smoothGrid`. It softens overlay edges the way Jagex's maps do:
+- lone one-tile speckles are removed
+- outside corners and dead ends become diagonal halves (shape 1)
+- inside corners get a small corner triangle (shape 7)
+- stamped buildings are left alone
+
+Shapes are 0-11 (the stored value; the client adds one). 12 would overflow the map opcode.
+
+Dungeon floors keep their colour variation in the **underlay**, which the client blends, and use overlays only for
+features. Their walls rise over three tiles from low-frequency noise instead of one-tile spikes. The dungeon row
+(x 1280-1727, y 9664-9727) is multi-combat, so a boss's summoned helpers can be fought.
+
 ## Where things live
 
 | What | Where |
@@ -152,12 +213,13 @@ Regenerate a top-down preview with
 | Ids and coordinates (NPCs 3858-3878, items 7961-7970, objects 14986-14994) | `game/content/voidrealm/VoidConstants.java` |
 | Dialogue, objects, the boss scene, lantern, drops | `game/content/voidrealm/VoidRealm.java` |
 | Gatehold, the inn, the cove; dungeon entrances; boss mechanics and Ysolde's bounty | `game/content/voidrealm/NytheraPlaces.java` |
-| Quest journals and rewards | `game/content/quests/impl/EchoesOfTheVoid.java`, `BeyondTheVeil.java` |
+| Quest journals and rewards | `game/content/quests/impl/EchoesOfTheVoid.java`, `BeyondTheVeil.java`, `AshesOfTheCrown.java` |
+| Ashes of the Crown: dialogue, the Vault, the Herald, the waystones | `game/content/voidrealm/CrownQuest.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
-Dialogue ids 9600-9899 belong to the series (9800+ are `NytheraPlaces`). `VoidRealm.wrap` reflows every NPC and player line
+Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
 to fit beside a chathead. Ilsabet and Oren borrow chatheads (from the Varrock witch and
 Kaqemeex) that only have the talking animations, so their other emotes fall back to talking.
 
@@ -168,12 +230,14 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::voidecho n` / `::voidveil n` | set a quest stage (no argument prints it) |
 | `::nythera` | teleport to Starfall Crater |
 | `::vt npc id` / `npc2 id` / `obj id x y` / `obj2 id x y` / `use objId x y itemId` / `item id` | fire the same handler a click would (testing) |
-| `::vt journal 1/2` | open either journal |
+| `::vt journal 1/2/4` | open a journal (4 = Ashes of the Crown) |
+| `::vt crown stage [flags] [veil]` | set Ashes of the Crown's stage, flags (bit 0 broodmother, bits 8+ waystones) and Beyond the Veil's stage |
 | `::vt list` | list NPCs spawned for you |
 
 ## Ideas for what comes next
 
 - The people inland Oren mentions: a settlement past the Broken Gate.
 - The Hollow Scar spreading: the Hollowed already prowl it, and Kael is watching.
+- The King is coming for the Ember. Whoever holds it can be found, and maybe it can be used against him.
 - A way to actually wound the Hollow King: the cape's "mark" and Hollowfang's "hunger" are
   hooks for that rematch.

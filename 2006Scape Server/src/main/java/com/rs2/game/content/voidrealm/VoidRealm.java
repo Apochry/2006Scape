@@ -54,6 +54,9 @@ public final class VoidRealm {
 	/* ====================================================================== */
 
 	public static boolean firstClickNpc(Player player, int npcType) {
+		if (CrownQuest.firstClickNpc(player, npcType)) {
+			return true;
+		}
 		if (NytheraPlaces.firstClickNpc(player, npcType)) {
 			return true;
 		}
@@ -176,6 +179,9 @@ public final class VoidRealm {
 
 	/** Called from SkullbrineIsle#sendDialogue for ids 9600-9799. */
 	public static boolean sendDialogue(Player p, int id, int npcId) {
+		if (CrownQuest.sendDialogue(p, id, npcId)) {
+			return true;
+		}
 		if (NytheraPlaces.sendDialogue(p, id, npcId)) {
 			return true;
 		}
@@ -539,6 +545,9 @@ public final class VoidRealm {
 
 	/** Called from SkullbrineIsle#handleOption. */
 	public static boolean handleOption(Player p, int buttonId) {
+		if (CrownQuest.handleOption(p, buttonId)) {
+			return true;
+		}
 		boolean first = buttonId == 9157, second = buttonId == 9158;
 		if (!first && !second) {
 			return false;
@@ -581,6 +590,9 @@ public final class VoidRealm {
 
 	/** Called first from SkullbrineIsle#firstClickObject. */
 	public static boolean firstClickObject(Player p, int objectId, int x, int y) {
+		if (CrownQuest.firstClickObject(p, objectId, x, y)) {
+			return true;
+		}
 		if (NytheraPlaces.firstClickObject(p, objectId, x, y)) {
 			return true;
 		}
@@ -1047,6 +1059,9 @@ public final class VoidRealm {
 
 	/** First click on an item. */
 	public static boolean clickItem(Player p, int itemId) {
+		if (CrownQuest.clickItem(p, itemId)) {
+			return true;
+		}
 		if (itemId != SEERS_LANTERN) {
 			return false;
 		}
@@ -1078,6 +1093,7 @@ public final class VoidRealm {
 			return;
 		}
 		NytheraPlaces.npcKilled(killer, npcType);
+		CrownQuest.npcKilled(killer, npcType);
 		switch (npcType) {
 		case HOLLOWED_WOLF:
 		case HOLLOW_HUSK:
@@ -1137,6 +1153,15 @@ public final class VoidRealm {
 			}
 		}
 		return null;
+	}
+
+	/** Removes a spawned NPC quietly: no death, no drop, no kill credit. */
+	static void banish(Npc n) {
+		n.isDead = true;
+		n.needRespawn = true;
+		n.actionTimer = 0;
+		n.absX = 0;
+		n.absY = 0;
 	}
 
 	/** The Hollow King speaks over his head and in the chatbox, so his words are never missed. */
@@ -1201,11 +1226,24 @@ public final class VoidRealm {
 			clickItem(p, n[1]);
 			break;
 		case "journal":
-			if (n[1] == 1) {
+			if (n[1] == 4) {
+				com.rs2.game.content.quests.impl.AshesOfTheCrown.showInformation(p);
+			} else if (n[1] == 1) {
 				EchoesOfTheVoid.showInformation(p);
 			} else {
 				BeyondTheVeil.showInformation(p);
 			}
+			break;
+		case "crown": // ::vt crown stage [flags] [veil]
+			p.voidCrown = n[1];
+			if (a.length > 2) {
+				p.crownFlags = n[2];
+			}
+			if (a.length > 3) {
+				p.voidVeil = n[3];
+			}
+			p.wardsLit = 0;
+			p.getPacketSender().sendMessage("crown " + p.voidCrown + " flags " + p.crownFlags + " veil " + p.voidVeil + " bosses " + p.nytheraBosses);
 			break;
 		case "list":
 			for (Npc npc : NpcHandler.npcs) {

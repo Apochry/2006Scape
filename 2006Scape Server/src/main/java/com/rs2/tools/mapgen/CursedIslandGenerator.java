@@ -364,29 +364,130 @@ public final class CursedIslandGenerator {
 	 * the corner the triangle sits in: 0 = south-west, 1 = north-west, 2 = north-east, 3 = south-east.
 	 */
 	void smoothOverlays() {
-		List<int[]> changes = new ArrayList<>();
-		for (int x = BASE_X + 1; x < BASE_X + 64 * SURFACE_REGIONS - 1; x++) {
-			for (int y = BASE_Y + 1; y < BASE_Y + 64 * SURFACE_REGIONS - 1; y++) {
-				int ov = overlayAt(x, y);
-				if (ov == 0 || ov == WOOD) {
+		smoothGrid(worldGrid(), BASE_X + 1, BASE_Y + 1, BASE_X + 64 * SURFACE_REGIONS - 2, BASE_Y + 64 * SURFACE_REGIONS - 2,
+				CursedIslandGenerator::overlayGroup, ov -> ov == WOOD, ov -> overlayGroup(ov) != WATER);
+	}
+
+	/** The surface overlays, in world coordinates. */
+	OverlayGrid worldGrid() {
+		return new OverlayGrid() {
+			public int overlay(int x, int y) {
+				return overlayAt(x, y);
+			}
+
+			public int shape(int x, int y) {
+				MapRegion r = regionAt(x, y);
+				return r == null ? 0 : r.overlayShape[0][x & 63][y & 63];
+			}
+
+			public void set(int x, int y, int overlay, int shape, int rotation) {
+				MapRegion r = regionAt(x, y);
+				r.overlay[0][x & 63][y & 63] = overlay;
+				r.overlayShape[0][x & 63][y & 63] = shape;
+				r.overlayRotation[0][x & 63][y & 63] = rotation;
+			}
+
+			public boolean frozen(int x, int y) {
+				return stamped.contains(x << 16 | y);
+			}
+		};
+	}
+
+	/** Tiles copied from the game's own buildings: their floors are already shaped, so smoothing leaves them alone. */
+	final java.util.Set<Integer> stamped = new java.util.HashSet<>();
+
+	/** Read/write access to one layer of overlays, in world or region-local coordinates. */
+	interface OverlayGrid {
+		int overlay(int x, int y);
+
+		int shape(int x, int y);
+
+		void set(int x, int y, int overlay, int shape, int rotation);
+
+		/** Tiles smoothing must not touch (stamped buildings). */
+		default boolean frozen(int x, int y) {
+			return false;
+		}
+	}
+
+	/** Overlay tile shapes, as the client numbers them (stored value; the client adds one). */
+	static final int SHAPE_HALF = 1, SHAPE_CORNER = 7;
+
+	/**
+	 * Softens overlay edges the way the game's own maps do, so patches stop reading as stacks of squares:
+	 * <ul>
+	 * <li>lone one-tile speckles are removed (where {@code speckles} allows it);</li>
+	 * <li>outside corners - a tile whose overlay continues to exactly two adjacent sides - and dead ends become a
+	 * diagonal half (shape 1);</li>
+	 * <li>inside corners - a bare tile cupped by two full overlay tiles and the diagonal between them - get a small
+	 * corner triangle (shape 7), so the patch's edge runs on diagonally instead of stepping.</li>
+	 * </ul>
+	 * Rotation picks the corner: 0 = south-west, 1 = north-west, 2 = north-east, 3 = south-east. {@code ignore}
+	 * overlays (wooden floors, invisible cave rock) are never changed. Returns the tiles that were cut to halves.
+	 */
+	static List<int[]> smoothGrid(OverlayGrid g, int x0, int y0, int x1, int y1, java.util.function.IntUnaryOperator group,
+			java.util.function.IntPredicate ignore, java.util.function.IntPredicate speckles) {
+		// lone speckles
+		for (int x = x0; x <= x1; x++) {
+			for (int y = y0; y <= y1; y++) {
+				int ov = g.overlay(x, y);
+				if (ov == 0 || ignore.test(ov) || !speckles.test(ov) || g.shape(x, y) != 0 || g.frozen(x, y)) {
 					continue;
 				}
-				int g = overlayGroup(ov);
-				boolean n = overlayGroup(overlayAt(x, y + 1)) == g, e = overlayGroup(overlayAt(x + 1, y)) == g,
-						so = overlayGroup(overlayAt(x, y - 1)) == g, w = overlayGroup(overlayAt(x - 1, y)) == g;
-				int count = (n ? 1 : 0) + (e ? 1 : 0) + (so ? 1 : 0) + (w ? 1 : 0);
-				if (count != 2 || n && so || e && w) {
-					continue;
+				int gr = group.applyAsInt(ov);
+				if (group.applyAsInt(g.overlay(x, y + 1)) != gr && group.applyAsInt(g.overlay(x + 1, y)) != gr
+						&& group.applyAsInt(g.overlay(x, y - 1)) != gr && group.applyAsInt(g.overlay(x - 1, y)) != gr) {
+					g.set(x, y, 0, 0, 0);
 				}
-				int rot = so && w ? 0 : w && n ? 1 : n && e ? 2 : 3;
-				changes.add(new int[] { x, y, rot });
 			}
 		}
-		for (int[] c : changes) {
-			MapRegion r = regionAt(c[0], c[1]);
-			r.overlayShape[0][c[0] & 63][c[1] & 63] = 1;
-			r.overlayRotation[0][c[0] & 63][c[1] & 63] = c[2];
+		// outside corners
+		List<int[]> halves = new ArrayList<>();
+		for (int x = x0; x <= x1; x++) {
+			for (int y = y0; y <= y1; y++) {
+				int ov = g.overlay(x, y);
+				if (ov == 0 || ignore.test(ov) || g.shape(x, y) != 0 || g.frozen(x, y)) {
+					continue;
+				}
+				int gr = group.applyAsInt(ov);
+				boolean n = group.applyAsInt(g.overlay(x, y + 1)) == gr, e = group.applyAsInt(g.overlay(x + 1, y)) == gr,
+						so = group.applyAsInt(g.overlay(x, y - 1)) == gr, w = group.applyAsInt(g.overlay(x - 1, y)) == gr;
+				int count = (n ? 1 : 0) + (e ? 1 : 0) + (so ? 1 : 0) + (w ? 1 : 0);
+				if (count == 2 && !(n && so) && !(e && w)) {
+					halves.add(new int[] { x, y, so && w ? 0 : w && n ? 1 : n && e ? 2 : 3 });
+				} else if (count == 1) { // a dead end: slant it off rather than stopping square
+					halves.add(new int[] { x, y, w ? 0 : n ? 1 : e ? 2 : 3 });
+				}
+			}
 		}
+		for (int[] c : halves) {
+			g.set(c[0], c[1], g.overlay(c[0], c[1]), SHAPE_HALF, c[2]);
+		}
+		// inside corners
+		List<int[]> corners = new ArrayList<>();
+		int[][] dirs = { { -1, 0, 0, -1 }, { -1, 0, 0, 1 }, { 1, 0, 0, 1 }, { 1, 0, 0, -1 } }; // SW, NW, NE, SE
+		for (int x = x0; x <= x1; x++) {
+			for (int y = y0; y <= y1; y++) {
+				if (g.overlay(x, y) != 0 || g.frozen(x, y)) {
+					continue;
+				}
+				for (int rot = 0; rot < 4; rot++) {
+					int[] d = dirs[rot];
+					int a = g.overlay(x + d[0], y + d[1]), b = g.overlay(x + d[2], y + d[3]);
+					int diag = g.overlay(x + d[0] + d[2], y + d[1] + d[3]);
+					int oppA = g.overlay(x - d[0], y - d[1]), oppB = g.overlay(x - d[2], y - d[3]);
+					if (a != 0 && a == b && a == diag && !ignore.test(a) && g.shape(x + d[0], y + d[1]) == 0
+							&& g.shape(x + d[2], y + d[3]) == 0 && oppA != a && oppB != a) {
+						corners.add(new int[] { x, y, a, rot });
+						break;
+					}
+				}
+			}
+		}
+		for (int[] c : corners) {
+			g.set(c[0], c[1], c[2], SHAPE_CORNER, c[3]);
+		}
+		return halves;
 	}
 
 	int overlayAt(int x, int y) {
@@ -613,6 +714,7 @@ public final class CursedIslandGenerator {
 		flatten(destX - 1, destY - 1, destX + w + 1, destY + h + 1);
 		for (int x = destX - 1; x <= destX + w + 1; x++) {
 			for (int y = destY - 1; y <= destY + h + 1; y++) {
+				stamped.add(x << 16 | y);
 				removeObjectsAt(x, y);
 			}
 		}
