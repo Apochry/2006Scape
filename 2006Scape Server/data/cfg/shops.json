@@ -12383,6 +12383,30 @@
       {
         "itemId": 1823,
         "itemAmount": 5
+      },
+      {
+        "itemId": 8146,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 8147,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 8148,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 8149,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 8150,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 8151,
+        "itemAmount": 2
       }
     ]
   },
@@ -12435,6 +12459,26 @@
       {
         "itemId": 1971,
         "itemAmount": 30
+      },
+      {
+        "itemId": 8162,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 8163,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 8164,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 8165,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 8166,
+        "itemAmount": 2
       }
     ]
   },

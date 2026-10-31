@@ -8,6 +8,7 @@ import com.rs2.game.content.minigames.FightCaves;
 import com.rs2.game.content.minigames.PestControl;
 import com.rs2.game.content.music.sound.CombatSounds;
 import com.rs2.game.content.music.sound.SoundList;
+import com.rs2.game.content.voidrealm.VoidConstants;
 import com.rs2.game.items.impl.Greegree.MonkeyData;
 import com.rs2.game.npcs.NPCDefinition;
 import com.rs2.game.npcs.NpcData;
@@ -279,6 +280,20 @@ public class NpcCombat {
 		case TZHAARMEJ:
 			NpcHandler.npcs[i].attackType = AttackType.MAGIC.getValue();
 			break;	
+		case VoidConstants.SILKWOOD_STALKER: // steel arrows from the Silkstring shortbow
+			NpcHandler.npcs[i].attackType = AttackType.RANGE.getValue();
+			NpcHandler.npcs[i].projectileId = 11;
+			break;
+		case VoidConstants.COVE_NIGHTRUNNER: // adamant arrows from the Nightrunner shortbow
+			NpcHandler.npcs[i].attackType = AttackType.RANGE.getValue();
+			NpcHandler.npcs[i].projectileId = 13;
+			break;
+		case VoidConstants.MOONMOURNER: // water bolt from the Moonmourn staff
+			NpcHandler.npcs[i].gfx100(120);
+			NpcHandler.npcs[i].projectileId = 121;
+			NpcHandler.npcs[i].endGfx = 122;
+			NpcHandler.npcs[i].attackType = AttackType.MAGIC.getValue();
+			break;
 		case DARK_WIZARD:
 		case DARK_WIZARD_174:
 			NpcHandler.npcs[i].gfx100(96); // Dark Wizards use earth strike

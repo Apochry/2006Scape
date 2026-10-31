@@ -32,10 +32,16 @@ final class ArmourSets {
 
 	enum Motif {
 		OATH, DUSK, SCAR, STAR, VOID, HEART, //
-		RECRUIT, WOODSMAN, CROFT, RATTLE, BRINE, INITIATE, BARROW, VEIL; // the low sets (LowArmour)
+		RECRUIT, WOODSMAN, CROFT, RATTLE, BRINE, INITIATE, BARROW, VEIL, // the low sets (LowArmour)
+		QUARRY, SILK, STONE, RIDGE, RAVAGER, MOON, RIME, NIGHT, SEER, KNIGHT; // the middle sets (MidArmour)
 
+		/** Built by LowArmour (which hands the middle sets on to MidArmour). */
 		boolean low() {
 			return ordinal() >= RECRUIT.ordinal();
+		}
+
+		boolean mid() {
+			return ordinal() >= QUARRY.ordinal();
 		}
 	}
 
@@ -138,8 +144,8 @@ final class ArmourSets {
 							"Aurel's own plate, re-lit. The sun on the chest is his heart, and it's burning.", "Gold-white tassets over plate that never cools.",
 							"The sun of the old kingdom, risen again.", "Every step leaves the ground a little warmer.", "Ember-cuffed gauntlets. A king's hands." }), };
 
-	/** All fourteen sets: the six of the saga, then the eight low ones. ArmourPreview's set numbers index this. */
-	static final Style[] SETS = concat(HIGH, LowArmour.LOW);
+	/** All twenty-four sets: the six of the saga, the eight low ones, then the ten middle ones. ArmourPreview's set numbers index this. */
+	static final Style[] SETS = concat(concat(HIGH, LowArmour.LOW), MidArmour.MID);
 
 	static Style[] concat(Style[] a, Style[] b) {
 		Style[] out = java.util.Arrays.copyOf(a, a.length + b.length);
@@ -255,8 +261,9 @@ final class ArmourSets {
 			case 6439:
 			case 7446:
 				return slot == GLOVES ? st.main : st.dark;
+			case 25238: // the cloth between the chaps (Silkspinner: leather, not silk)
+				return st.motif == Motif.SILK ? st.dark : st.trimDark;
 			case 5289:
-			case 25238:
 			case 8596:
 				return st.trimDark;
 			case 5012:
@@ -280,7 +287,8 @@ final class ArmourSets {
 			case 40384:
 				return st.light;
 			case 40918:
-				return slot == HELM && st.motif == Motif.CROFT ? st.dark : st.trim; // the croft hat is homespun all over
+				return slot == HELM && (st.motif == Motif.CROFT || st.motif == Motif.STONE || st.motif == Motif.MOON || st.motif == Motif.SEER) ? st.dark
+						: st.trim; // the croft hat is homespun all over; the stonecaller's slate, the mourner's midnight, the seer's teal
 			case 39463:
 				return st.dark;
 			case 119:

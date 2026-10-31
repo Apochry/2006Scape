@@ -9,16 +9,20 @@ import com.rs2.game.items.ItemConstants;
 import com.rs2.game.players.Player;
 
 /**
- * The fourteen armour sets. The saga's six: Oathsworn plate (Defence 40), Duskstalker hide (Ranged 50), Scarweave robes
- * (Magic 60), starmetal plate (Defence 60), voidsteel plate (Defence 75) and the Heartfire regalia (Defence 90). The
- * eight low sets: Gatehold recruit (Defence 10), Woodsman (Ranged 15), Croftwise (Magic 20), Rattlebone (Defence 25),
- * Blackbrine (Ranged 30), Warden initiate (Defence 30), Barrowbronze (Defence 35) and Veilsworn (Magic 40). Models are
- * built in {@code tools.mapgen.ArmourSets} and {@code LowArmour}; bonuses are in ItemDefinitions.json
+ * The twenty-four armour sets. The saga's six: Oathsworn plate (Defence 40), Duskstalker hide (Ranged 50), Scarweave
+ * robes (Magic 60), starmetal plate (Defence 60), voidsteel plate (Defence 75) and the Heartfire regalia (Defence 90).
+ * The eight low sets: Gatehold recruit (Defence 10), Woodsman (Ranged 15), Croftwise (Magic 20), Rattlebone (Defence
+ * 25), Blackbrine (Ranged 30), Warden initiate (Defence 30), Barrowbronze (Defence 35) and Veilsworn (Magic 40). The ten
+ * middle sets: Quarryhand chain (Defence 20), Silkspinner leather (Ranged 25), Stonecaller robes (Magic 30), Ridgerunner
+ * hide (Ranged 35), Ravager plate (Defence 40), Moonmourn robes (Magic 45), Rimebound chain (Defence 50), Nightrunner
+ * hide (Ranged 50), Farseer robes (Magic 55) and Last knight's plate (Defence 60). Models are built in
+ * {@code tools.mapgen.ArmourSets}, {@code LowArmour} and {@code MidArmour}; bonuses are in ItemDefinitions.json
  * (tools/nythera_data.py); drops and shops are listed in docs/VOID_QUESTS.md ("Armour sets").
  *
- * <p>This class holds the equipment slots, the wield levels, and the four smithing recipes (recruit's kit and starmetal at
- * Gatehold's anvil, voidsteel and Heartfire at the Starless Gate). Whether a body piece covers the arms, or a helm the face,
- * comes from its name, as for the stock items ("platebody", "robe top", "full helm", "coif").
+ * <p>This class holds the equipment slots, the wield levels, and the six smithing and crafting recipes (recruit's kit,
+ * starmetal and Last knight's plate at Gatehold's anvil, Stonecaller robes at a waystone, voidsteel and Heartfire at the
+ * Starless Gate). Whether a body piece covers the arms, or a helm the face, comes from its name, as for the stock items
+ * ("platebody", "robe top", "full helm", "coif").
  */
 public final class VoidArmoury {
 
@@ -28,7 +32,8 @@ public final class VoidArmoury {
 	static final int[] SLOTS = { ItemConstants.HAT, ItemConstants.CHEST, ItemConstants.LEGS, ItemConstants.SHIELD, ItemConstants.FEET,
 			ItemConstants.HANDS };
 	static final String[] SET_NAMES = { "Oathsworn", "Duskstalker", "Scarweave", "Starmetal", "Voidsteel", "Heartfire", "Gatehold recruit",
-			"Woodsman", "Croftwise", "Rattlebone", "Blackbrine", "Warden initiate", "Barrowbronze", "Veilsworn" };
+			"Woodsman", "Croftwise", "Rattlebone", "Blackbrine", "Warden initiate", "Barrowbronze", "Veilsworn", "Quarryhand", "Silkspinner",
+			"Stonecaller", "Ridgerunner", "Ravager", "Moonmourn", "Rimebound", "Nightrunner", "Farseer", "Last knight" };
 
 	public static void slots(int[] targetSlots) {
 		for (int[] set : ARMOUR_SETS) {
@@ -85,9 +90,34 @@ public final class VoidArmoury {
 			return new int[] { Constants.DEFENCE, 30 };
 		case 12:
 			return new int[] { Constants.DEFENCE, 35 };
-		default: // Veilsworn: the robe top and bottom want a little Defence, as mystic's do
-			return f[1] == 1 || f[1] == 2 ? new int[] { Constants.MAGIC, 40, Constants.DEFENCE, 10 } : new int[] { Constants.MAGIC, 40 };
+		case 13: // Veilsworn: the robe top and bottom want a little Defence, as mystic's do
+			return robe(f, 40, 10);
+		case 14:
+			return new int[] { Constants.DEFENCE, 20 };
+		case 15:
+			return new int[] { Constants.RANGED, 25 };
+		case 16:
+			return new int[] { Constants.MAGIC, 30 };
+		case 17: // Ridgerunner: the body and chaps also want Defence
+			return f[1] == 1 || f[1] == 2 ? new int[] { Constants.RANGED, 35, Constants.DEFENCE, 25 } : new int[] { Constants.RANGED, 35 };
+		case 18:
+			return new int[] { Constants.DEFENCE, 40 };
+		case 19:
+			return robe(f, 45, 10);
+		case 20:
+			return new int[] { Constants.DEFENCE, 50 };
+		case 21: // Nightrunner: as Duskstalker
+			return f[1] == 1 || f[1] == 2 ? new int[] { Constants.RANGED, 50, Constants.DEFENCE, 40 } : new int[] { Constants.RANGED, 50 };
+		case 22:
+			return robe(f, 55, 20);
+		default:
+			return new int[] { Constants.DEFENCE, 60 };
 		}
+	}
+
+	/** A robe set's rule: Magic for every piece, and a little Defence for the top and bottom. */
+	private static int[] robe(int[] f, int magic, int defence) {
+		return f[1] == 1 || f[1] == 2 ? new int[] { Constants.MAGIC, magic, Constants.DEFENCE, defence } : new int[] { Constants.MAGIC, magic };
 	}
 
 	public static String requirement(int id) {
@@ -136,6 +166,15 @@ public final class VoidArmoury {
 	static final int RECRUIT_SMITHING = 10, IRON_BAR = 2351;
 	/** The iron pieces a recruit's kit is re-worked from (helm, chainbody, platelegs, sq shield), an iron bar each. */
 	static final int[] IRON_ARMOUR = { 1137, 1101, 1067, 1175 };
+	/**
+	 * The pieces Last knight's plate is re-forged from, slot for slot: adamant full helm, platebody, platelegs,
+	 * kiteshield and boots, and (adamant has no gauntlets) a Warden's gauntlets; with starmetal for the royal trim.
+	 */
+	static final int[] ADAMANT_ARMOUR = { 1161, 1123, 1073, 1199, 4129, WARDEN_GAUNTLETS };
+	static final int[] KNIGHT_METAL = { 1, 2, 2, 1, 1, 1 };
+	static final int KNIGHT_SMITHING = 60;
+	/** Stonecaller robes: a Croftwise piece with earth and cosmic runes, laid on a waystone's rune. */
+	static final int STONECALLER_CRAFTING = 25, STONECALLER_MAGIC = 30, EARTH_RUNE = 557, COSMIC_RUNE = 564, STONE_EARTH = 20, STONE_COSMIC = 2;
 
 	static boolean itemOnObject(Player p, int objectId, int x, int y, int itemId) {
 		int i = VoidArsenal.indexOf(RUNE_ARMOUR, itemId);
@@ -145,6 +184,14 @@ public final class VoidArmoury {
 		}
 		if (objectId == ANVIL && (i = VoidArsenal.indexOf(IRON_ARMOUR, itemId)) >= 0 && onNythera(x, y)) {
 			recruit(p, i);
+			return true;
+		}
+		if (objectId == ANVIL && (i = VoidArsenal.indexOf(ADAMANT_ARMOUR, itemId)) >= 0 && onNythera(x, y)) {
+			lastKnight(p, i);
+			return true;
+		}
+		if (objectId == WAYSTONE && (i = VoidArsenal.indexOf(CROFTWISE_SET, itemId)) >= 0) {
+			stonecaller(p, i);
 			return true;
 		}
 		if (objectId == STARLESS_GATE) {
@@ -204,6 +251,50 @@ public final class VoidArmoury {
 		p.getPacketSender().sendMessage("You beat out the dents, rivet on a strap and stamp the gate's mark. Kit fit for the wall.");
 	}
 
+	/** An adamant piece (or a Warden's gauntlets) + starmetal at Gatehold's anvil, after Heartforged: Last knight's plate. */
+	private static void lastKnight(Player p, int i) {
+		if (p.voidForge < Heartforged.COMPLETE) {
+			p.getPacketSender().sendMessage("Dorrin shakes his head. \"Royal plate? Finish the heart-forge with me first.\"");
+			return;
+		}
+		if (level(p, Constants.SMITHING) < KNIGHT_SMITHING) {
+			p.getPacketSender().sendMessage("You need a Smithing level of " + KNIGHT_SMITHING + " to re-forge that in the old royal pattern.");
+			return;
+		}
+		int metal = KNIGHT_METAL[i];
+		if (!p.getItemAssistant().playerHasItem(HAMMER) || !p.getItemAssistant().playerHasItem(STARMETAL, metal)) {
+			p.getPacketSender().sendMessage("You need a hammer and " + metal + " starmetal for the trim.");
+			return;
+		}
+		p.getItemAssistant().deleteItem(ADAMANT_ARMOUR[i], 1);
+		p.getItemAssistant().deleteItem(STARMETAL, metal);
+		p.getItemAssistant().addItem(LAST_KNIGHT_SET[i], 1);
+		p.startAnimation(898);
+		p.getPlayerAssistant().addSkillXP(250 + 250 * metal, Constants.SMITHING);
+		p.getPacketSender().sendMessage("You hammer in Aurel's broken crown and gild the edges with starmetal. A knight's plate, the last of its kind.");
+	}
+
+	/** A Croftwise piece + earth and cosmic runes, laid on a waystone's rune: the matching Stonecaller piece. */
+	private static void stonecaller(Player p, int i) {
+		if (level(p, Constants.CRAFTING) < STONECALLER_CRAFTING || level(p, Constants.MAGIC) < STONECALLER_MAGIC) {
+			p.getPacketSender().sendMessage("You need Crafting " + STONECALLER_CRAFTING + " and Magic " + STONECALLER_MAGIC
+					+ " to wake the stone in the cloth.");
+			return;
+		}
+		if (!p.getItemAssistant().playerHasItem(EARTH_RUNE, STONE_EARTH) || !p.getItemAssistant().playerHasItem(COSMIC_RUNE, STONE_COSMIC)) {
+			p.getPacketSender().sendMessage("The rune wants " + STONE_EARTH + " earth runes and " + STONE_COSMIC + " cosmic runes for that.");
+			return;
+		}
+		p.getItemAssistant().deleteItem(CROFTWISE_SET[i], 1);
+		p.getItemAssistant().deleteItem(EARTH_RUNE, STONE_EARTH);
+		p.getItemAssistant().deleteItem(COSMIC_RUNE, STONE_COSMIC);
+		p.getItemAssistant().addItem(STONECALLER_SET[i], 1);
+		p.startAnimation(711);
+		p.getPlayerAssistant().addSkillXP(180, Constants.CRAFTING);
+		p.getPlayerAssistant().addSkillXP(120, Constants.MAGIC);
+		p.getPacketSender().sendMessage("The waystone's rune crawls into the cloth and settles there, grey as slate. Stonecaller's robes.");
+	}
+
 	private static void voidsteel(Player p, int i) {
 		if (p.voidKing < TheHollowKing.COMPLETE) {
 			p.getPacketSender().sendMessage("The gate is shut. Whatever's behind it isn't interested yet.");
@@ -255,7 +346,7 @@ public final class VoidArmoury {
 		p.getPacketSender().sendMessage("@red@The dark lets go of the fire it took. Aurel's plate comes back burning.");
 	}
 
-	/** ::vt armour n - set n (1-14) into the inventory, for testing. */
+	/** ::vt armour n - set n (1-24) into the inventory, for testing. */
 	static void spawnSet(Player p, int n) {
 		int s = Math.max(1, Math.min(ARMOUR_SETS.length, n)) - 1, added = 0;
 		for (int id : ARMOUR_SETS[s]) {
