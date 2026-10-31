@@ -366,7 +366,12 @@ public final class Sprite extends DrawingArea {
 				int k4 = j3 + i3 * i4;
 				int l4 = k3 - l2 * i4;
 				for (k1 = -ai[j1]; k1 < 0; k1++) {
-					if (ClientSettings.BILINEAR_MINIMAP_FILTERING) {
+					// When the minimap is zoomed out it can look past the edge of the loaded map
+					int sx = k4 >> 16;
+					int sy = l4 >> 16;
+					if (sx < 0 || sy < 0 || sx >= width || sy >= height) {
+						DrawingArea.pixels[j4++] = 0;
+					} else if (ClientSettings.BILINEAR_MINIMAP_FILTERING && sx < width - 1 && sy < height - 1) {
 						int x1 = k4 >> 16;
 						int y1 = l4 >> 16;
 						int x2 = x1 + 1;

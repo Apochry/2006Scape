@@ -7,6 +7,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 		this.setPreferredSize(new Dimension(this.myWidth, this.myHeight));
 
 		gameFrame = new RSFrame(this);
-		graphics = getGameComponent().getGraphics();
+		createBackBuffer();
 		fullGameScreen = new RSImageProducer(myWidth, myHeight, getGameComponent());
 
 		if (ClientSettings.SHOW_NAVBAR) {
@@ -223,6 +224,10 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 			}
 		}
 
+		// The game is stretched to fit, so open big and never shrink below its native size
+		gameFrame.setMinimumSize(gameFrame.getSize());
+		gameFrame.restoreWindowState();
+
 		startRunnable(this, 1);
 		this.requestFocus();
 	}
@@ -230,9 +235,64 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 	final void initClientFrame(int i, int j) {
 		myWidth = j;
 		myHeight = i;
-		graphics = getGameComponent().getGraphics();
+		createBackBuffer();
 		fullGameScreen = new RSImageProducer(myWidth, myHeight, getGameComponent());
 		startRunnable(this, 1);
+	}
+
+	/**
+	 * The game always draws at its native size into this buffer; presentFrame()
+	 * then stretches it to fill the window, letterboxed to keep its shape.
+	 */
+	private void createBackBuffer() {
+		backBuffer = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_RGB);
+		graphics = backBuffer.createGraphics();
+	}
+
+	final synchronized void presentFrame() {
+		Component component = getGameComponent();
+		Graphics g = component.getGraphics();
+		if (g == null || backBuffer == null) {
+			return;
+		}
+		try {
+			int w = component.getWidth();
+			int h = component.getHeight();
+			double scale = Math.min((double) w / myWidth, (double) h / myHeight);
+			int drawW = (int) (myWidth * scale);
+			int drawH = (int) (myHeight * scale);
+			int drawX = (w - drawW) / 2;
+			int drawY = (h - drawH) / 2;
+			viewX = drawX;
+			viewY = drawY;
+			viewW = drawW;
+			viewH = drawH;
+
+			g.setColor(Color.black);
+			if (drawX > 0) {
+				g.fillRect(0, 0, drawX, h);
+				g.fillRect(drawX + drawW, 0, w - drawX - drawW, h);
+			}
+			if (drawY > 0) {
+				g.fillRect(0, 0, w, drawY);
+				g.fillRect(0, drawY + drawH, w, h - drawY - drawH);
+			}
+			// Whole-number scales stay pixel-sharp; in-between scales are smoothed to avoid uneven pixels
+			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_INTERPOLATION, scale == Math.floor(scale)
+					? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+					: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			g.drawImage(backBuffer, drawX, drawY, drawW, drawH, null);
+		} finally {
+			g.dispose();
+		}
+	}
+
+	private int toGameX(int x) {
+		return viewW > 0 ? (x - viewX) * myWidth / viewW : x;
+	}
+
+	private int toGameY(int y) {
+		return viewH > 0 ? (y - viewY) * myHeight / viewH : y;
 	}
 
 	@Override
@@ -319,6 +379,8 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 				fps = 1000 * j / (delayTime * 256);
 			}
 			processDrawing();
+			drawFrameOverlays();
+			presentFrame();
 			if (shouldDebug) {
 				System.out.println("ntime:" + l1);
 				for (int l2 = 0; l2 < 10; l2++) {
@@ -390,6 +452,7 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 		}
 		shouldClearScreen = true;
 		raiseWelcomeScreen();
+		presentFrame();
 	}
 
 	@Override
@@ -399,22 +462,23 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 		}
 		shouldClearScreen = true;
 		raiseWelcomeScreen();
+		presentFrame();
 	}
 
 	public boolean mouseWheelDown;
 
 	@Override
 	public final void mousePressed(MouseEvent mouseevent) {
-		int i = mouseevent.getX();
-		int j = mouseevent.getY();
+		int i = toGameX(mouseevent.getX());
+		int j = toGameY(mouseevent.getY());
 		idleTime = 0;
 		clickX = i;
 		clickY = j;
 		clickTime = System.currentTimeMillis();
 		if (mouseevent.getButton() == MouseEvent.BUTTON2) {
 			mouseWheelDown = true;
-			mouseWheelX = mouseevent.getX();
-			mouseWheelY = mouseevent.getY();
+			mouseWheelX = i;
+			mouseWheelY = j;
 			return;
 		}
 
@@ -451,14 +515,14 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 	}
 
 	public final void mouseDragged(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
+		int x = toGameX(e.getX());
+		int y = toGameY(e.getY());
 		if (mouseWheelDown) {
-			y = mouseWheelX - e.getX();
-			int k = mouseWheelY - e.getY();
-			mouseWheelDragged(y, -k);
-			mouseWheelX = e.getX();
-			mouseWheelY = e.getY();
+			int dx = mouseWheelX - x;
+			int dy = mouseWheelY - y;
+			mouseWheelDragged(dx, -dy);
+			mouseWheelX = x;
+			mouseWheelY = y;
 			return;
 		}
 		idleTime = 0;
@@ -471,8 +535,8 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 
 	@Override
 	public void mouseMoved(MouseEvent mouseevent) {
-		int i = mouseevent.getX();
-		int j = mouseevent.getY();
+		int i = toGameX(mouseevent.getX());
+		int j = toGameY(mouseevent.getY());
 		idleTime = 0;
 		mouseX = i;
 		mouseY = j;
@@ -483,6 +547,10 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 
 	@Override
 	public void keyPressed(KeyEvent keyevent) {
+		if (keyevent.getKeyCode() == KeyEvent.VK_ENTER && keyevent.isAltDown() && gameFrame != null) {
+			gameFrame.toggleFullscreen();
+			return;
+		}
 		idleTime = 0;
 		int i = keyevent.getKeyCode();
 		int j = keyevent.getKeyChar();
@@ -642,6 +710,8 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 
 	@Override
 	public final void windowClosing(WindowEvent windowevent) {
+		gameFrame.storeWindowState();
+		saveSettings();
 		destroy();
 	}
 
@@ -668,6 +738,23 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 	}
 
 	void cleanUpForQuit() {
+	}
+
+	/**
+	 * Draws on top of the finished frame, across the boundaries between the
+	 * separately drawn parts of the screen (e.g. the minimap orbs).
+	 */
+	void drawFrameOverlays() {
+	}
+
+	/** The finished frame's pixels, for drawFrameOverlays to draw into. */
+	final int[] framePixels() {
+		return backBuffer == null ? null : ((java.awt.image.DataBufferInt) backBuffer.getRaster().getDataBuffer()).getData();
+	}
+
+	/** Writes the game's remembered settings to disk; Game fills in its own values. */
+	void saveSettings() {
+		ClientPrefs.save();
 	}
 
 	void processDrawing() {
@@ -717,6 +804,7 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 		graphics.setFont(font);
 		graphics.setColor(Color.white);
 		graphics.drawString(s, (myWidth - fontmetrics.stringWidth(s)) / 2, j + 22);
+		presentFrame();
 	}
 
 	RSApplet() {
@@ -739,6 +827,11 @@ public class RSApplet extends Applet implements Runnable, MouseListener, MouseWh
 	int myWidth;
 	int myHeight;
 	Graphics graphics;
+	private BufferedImage backBuffer;
+	private int viewX;
+	private int viewY;
+	private int viewW;
+	private int viewH;
 	RSImageProducer fullGameScreen;
 	RSFrame gameFrame;
 	private boolean shouldClearScreen;
