@@ -88,6 +88,41 @@ for the next quests. Until then the countryside already has people and wildlife 
 | **The Scar Watch** | west edge of the Hollow Scar (1574, 2741) | **Warden Kael**. She pays a bounty for every 10 **Hollowed wolves** (combat 34) and **Hollow husks** (combat 41) you kill in the Scar: 750 coins and 1,500 Slayer XP, repeatable. The tally (`Player.hollowKills`) is saved. |
 | The roads | | **Wandering pilgrims** rest along the way. A signpost stands at the Broken Gate. |
 
+### Places to visit
+
+| Place | Where | What's there |
+|---|---|---|
+| **Gatehold** | west of the Broken Gate (1497, 2713) | The outpost. A watch-house and store-house, an open-air **bank** (three booths and a banker), a **furnace and anvil**, a range, a well, a market stall and guards. **Captain Ysolde** points you at the three dungeons and pays for each boss you kill. **Pell the Trader** runs a general store (shop 352). **Dorrin Anvilhand** sells bars, hammers and mithril/adamant armour (shop 353). |
+| **Tess's quarry** | foothills north-east of the Gate (1532, 2765) | A sunken pit with iron, coal, silver, gold and mithril. **Tess Quarryhand** sells pickaxes up to adamant (shop 354). |
+| **The Last Hearth** | where the north road comes off the pass (1483, 2808) | An inn and a stable-house, with tables out front and a fire. **Morra** sells food and drink (shop 355) and passes on rumours about the dungeons. |
+| **Smugglers' Cove** | south coast (1470, 2619) | A smugglers' ship run aground, tents, contraband, pirates and bandits. **Sly Nettle** fences rope, gems, runes and the odd bit of rune (shop 356). Lobster/swordfish (cage, harpoon) and shark (net, harpoon) spots in the shallows. |
+| **Silkwood** | west of the river (1390, 2668) | Four **magic trees** and two yews in a hushed clearing guarded by giant spiders. A plank **bridge** crosses the river from Hob's camp (y 2653). |
+
+### Dungeons
+
+Each dungeon is a separate 64x64 region (y 9664+). Click the entrance to go in. The rock face
+beside where you arrive takes you back out.
+
+| Dungeon | Entrance | Inside | Boss |
+|---|---|---|---|
+| **The Sunken Barrow** | a stone door in a grassy mound west of the road, ringed by graves (1478, 2739) | Torch-lit processional hall, east and west crypts, an ossuary. Skeletons (combat 21-45) and ghosts. | **The Barrow Thane** (68, 110 HP). Below half health he raises two skeletons. |
+| **Hollowdeep** | a fissure in the Hollow Scar's black heart (1601, 2742) | Black glass and violet crystal: the husk pit, the kennel (Hollowed wolves), a crystal grotto (voidlings). | **The Hollow Matriarch** (92, 150 HP). She drains your Prayer, and below half health she calls three voidlings. |
+| **Frostfang Caves** | a cave on a ledge in the north pass's east wall (1489, 2789) | Ice halls with white wolves, ice warriors and ice giants. An **ore cavern** with mithril, adamantite and coal, and runite in the cavern and Rimeclaw's lair. | **Rimeclaw** (110, 180 HP). Its frost breath freezes and hits for 4-12. |
+
+**Boss loot:** big bones and a pile of coins every time, plus one roll on a table of rune gear,
+runes, potions, gems, sharks and runite. Each boss has a **1 in 12 unique**:
+
+| Unique | From | Stats |
+|---|---|---|
+| **Barrowsteel longsword** (7969) | Barrow Thane | +44 stab, +54 slash, +56 strength. Needs 60 Attack. |
+| **Hollowheart amulet** (7968) | Hollow Matriarch | +6 to every attack style, +3 to every defence, +12 strength, +2 prayer |
+| **Frostbound boots** (7970) | Rimeclaw | +6 stab/slash/crush/range defence, +3 magic defence, +2 strength, +1 prayer. Needs 40 Defence. |
+
+**Captain Ysolde's bounty:** the first time you kill each boss, report back to Ysolde for a
+one-off reward. The Thane pays 2,500 coins and 4,000 Slayer XP. The Matriarch pays 4,000 coins
+and 7,000 XP. Rimeclaw pays 6,000 coins and 10,000 XP. Clearing all three adds a 10,000-coin
+purse. Progress is saved in `Player.nytheraBosses`: bits 0-2 for slain, bits 4-6 for reported.
+
 **Wildlife:** rabbits and butterflies in the meadows, squirrels and the odd unicorn in the woods,
 grizzly bears in the foothills, white wolves on the ridge, seagulls on the beaches, ducks and swans
 on the lake, and crows on the edge of the Scar.
@@ -101,7 +136,8 @@ dialogue points newcomers towards the camps.
 Hollowed drops: wolves drop wolf bones and coins, with a rare uncut diamond. Husks drop bones,
 coins, grimy ranarr, uncut sapphires and emeralds, and very rarely a dragon dagger.
 
-**Regenerating:** the camps' scenery is built by `VoidRealmGenerator.camps()`.
+**Regenerating:** the camps' scenery is built by `VoidRealmGenerator.camps()`. The places and
+dungeons are built by `places()` and `dungeons()`. Dungeon monsters go into the same spawn list.
 `wildlife()` chooses the spawn tiles (meadow, wood, shore, Scar...) and writes them out when
 `-Dnythera.spawns=path` is set. `tools/nythera_data.py path` then writes the people, creatures,
 drops, shops and spawns into `data/cfg`.
@@ -113,14 +149,15 @@ Regenerate a top-down preview with
 
 | What | Where |
 |---|---|
-| Ids and coordinates (NPCs 3858-3869, items 7961-7967, objects 14986-14991) | `game/content/voidrealm/VoidConstants.java` |
+| Ids and coordinates (NPCs 3858-3878, items 7961-7970, objects 14986-14994) | `game/content/voidrealm/VoidConstants.java` |
 | Dialogue, objects, the boss scene, lantern, drops | `game/content/voidrealm/VoidRealm.java` |
+| Gatehold, the inn, the cove; dungeon entrances; boss mechanics and Ysolde's bounty | `game/content/voidrealm/NytheraPlaces.java` |
 | Quest journals and rewards | `game/content/quests/impl/EchoesOfTheVoid.java`, `BeyondTheVeil.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
-| Item stats | `data/cfg/ItemDefinitions.json` (7966, 7967); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
+| Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
-Dialogue ids 9600-9799 belong to the series. `VoidRealm.wrap` reflows every NPC and player line
+Dialogue ids 9600-9899 belong to the series (9800+ are `NytheraPlaces`). `VoidRealm.wrap` reflows every NPC and player line
 to fit beside a chathead. Ilsabet and Oren borrow chatheads (from the Varrock witch and
 Kaqemeex) that only have the talking animations, so their other emotes fall back to talking.
 

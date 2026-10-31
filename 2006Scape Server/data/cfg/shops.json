@@ -12109,5 +12109,285 @@
         "itemAmount": 3
       }
     ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "Pell's Provisions",
+    "id": 352,
+    "items": [
+      {
+        "itemId": 1931,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1935,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1925,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 590,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 954,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 946,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1755,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 2347,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1351,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1265,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 233,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 36,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1785,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 5341,
+        "itemAmount": 5
+      }
+    ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "Dorrin's Forge",
+    "id": 353,
+    "items": [
+      {
+        "itemId": 2347,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 2349,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 2351,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 2353,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 2359,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1117,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 1121,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 1073,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 1109,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1123,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1159,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1197,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1287,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 1301,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 453,
+        "itemAmount": 50
+      }
+    ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "Quarrywright's Picks",
+    "id": 354,
+    "items": [
+      {
+        "itemId": 1265,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1267,
+        "itemAmount": 8
+      },
+      {
+        "itemId": 1269,
+        "itemAmount": 6
+      },
+      {
+        "itemId": 1273,
+        "itemAmount": 4
+      },
+      {
+        "itemId": 1271,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1755,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1823,
+        "itemAmount": 5
+      }
+    ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "The Last Hearth",
+    "id": 355,
+    "items": [
+      {
+        "itemId": 2003,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 2289,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 1993,
+        "itemAmount": 15
+      },
+      {
+        "itemId": 1917,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 1891,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 2327,
+        "itemAmount": 15
+      },
+      {
+        "itemId": 1985,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 2011,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 379,
+        "itemAmount": 20
+      },
+      {
+        "itemId": 373,
+        "itemAmount": 15
+      },
+      {
+        "itemId": 1971,
+        "itemAmount": 30
+      }
+    ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "Nettle's Hold",
+    "id": 356,
+    "items": [
+      {
+        "itemId": 954,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 301,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 311,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1623,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1621,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 1619,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1617,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 1201,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 1347,
+        "itemAmount": 1
+      },
+      {
+        "itemId": 562,
+        "itemAmount": 100
+      },
+      {
+        "itemId": 561,
+        "itemAmount": 50
+      },
+      {
+        "itemId": 2489,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 1033,
+        "itemAmount": 2
+      }
+    ]
   }
 ]

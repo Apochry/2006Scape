@@ -1694,6 +1694,8 @@ public abstract class Player {
 	public int voidlingsLeft;
 	/** Hollowed wolves and husks killed since Warden Kael last paid (saved). */
 	public int hollowKills;
+	/** Nythera dungeon bosses: bits 0-2 slain, bits 4-6 reported to Captain Ysolde. */
+	public int nytheraBosses;
 	public boolean voidVeinCleared;
 	/** When a grave last grabbed this player (Echoes of the Void). */
 	public long lastGraveGrab;

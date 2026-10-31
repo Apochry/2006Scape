@@ -318,6 +318,9 @@ public class PlayerSave {
 							case "hollowKills":
 								player.hollowKills = Integer.parseInt(token2);
 								break;
+							case "nytheraBosses":
+								player.nytheraBosses = Integer.parseInt(token2);
+								break;
 							case "knightS":
 								player.knightS = Integer.parseInt(token2);
 								break;
@@ -797,6 +800,8 @@ public class PlayerSave {
 			characterfile.write("voidVeil = " + player.voidVeil);
 			characterfile.newLine();
 			characterfile.write("hollowKills = " + player.hollowKills);
+			characterfile.newLine();
+			characterfile.write("nytheraBosses = " + player.nytheraBosses);
 			characterfile.newLine();
 			characterfile.write("knightS = " + player.knightS);
 			characterfile.newLine();
