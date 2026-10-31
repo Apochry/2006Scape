@@ -344,6 +344,9 @@ public class ItemData {
 			System.out.println("Critical error while loading equipment data! Trace:");
 			e.printStackTrace();
 		}
+		// rewards from the Void quest series (ids past the end of equipment.dat)
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOW_CAPE] = ItemConstants.CAPE;
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOWFANG] = ItemConstants.WEAPON;
 	}
 
 }

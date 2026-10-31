@@ -16685,5 +16685,35 @@
     "name": "Ghost of Captain Blackbrine",
     "combat": 0,
     "id": 3857
+  },
+  {
+    "hitpoints": 0,
+    "name": "Seer Ilsabet",
+    "combat": 0,
+    "id": 3858
+  },
+  {
+    "hitpoints": 34,
+    "name": "Hollow wraith",
+    "combat": 30,
+    "id": 3859
+  },
+  {
+    "hitpoints": 10,
+    "name": "Voidling",
+    "combat": 9,
+    "id": 3860
+  },
+  {
+    "hitpoints": 2500,
+    "name": "The Hollow King",
+    "combat": 999,
+    "id": 3861
+  },
+  {
+    "hitpoints": 0,
+    "name": "Oren the Wanderer",
+    "combat": 0,
+    "id": 3862
   }
 ]

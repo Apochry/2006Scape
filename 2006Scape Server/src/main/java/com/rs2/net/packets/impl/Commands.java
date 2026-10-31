@@ -742,6 +742,28 @@ public class Commands implements PacketType {
                 }
                 player.getPacketSender().sendMessage("Curse of Skullbrine stage: " + player.skullbrine);
                 break;
+            case "voidecho": // set Echoes of the Void stage, e.g. ::voidecho 2
+                if (arguments.length == 1) {
+                    player.voidEchoes = Integer.parseInt(arguments[0]);
+                    com.rs2.game.content.quests.QuestAssistant.sendStages(player);
+                }
+                player.getPacketSender().sendMessage("Echoes of the Void stage: " + player.voidEchoes);
+                break;
+            case "voidveil": // set Beyond the Veil stage, e.g. ::voidveil 1
+                if (arguments.length == 1) {
+                    player.voidVeil = Integer.parseInt(arguments[0]);
+                    com.rs2.game.content.quests.QuestAssistant.sendStages(player);
+                }
+                player.getPacketSender().sendMessage("Beyond the Veil stage: " + player.voidVeil);
+                break;
+            case "vt": { // void quest test hooks: ::vt npc id | obj id x y | obj2 id x y | use item id x y | item id
+                com.rs2.game.content.voidrealm.VoidRealm.debug(player, arguments);
+                break;
+            }
+            case "nythera": // Starfall Crater on Nythera
+                player.getPlayerAssistant().movePlayer(com.rs2.game.content.voidrealm.VoidConstants.LANDING_X,
+                        com.rs2.game.content.voidrealm.VoidConstants.LANDING_Y, 0);
+                break;
             case "clearbank":
                 player.getItemAssistant().clearBank();
                 break;

@@ -309,6 +309,12 @@ public class PlayerSave {
 							case "skullbrine":
 								player.skullbrine = Integer.parseInt(token2);
 								break;
+							case "voidEchoes":
+								player.voidEchoes = Integer.parseInt(token2);
+								break;
+							case "voidVeil":
+								player.voidVeil = Integer.parseInt(token2);
+								break;
 							case "knightS":
 								player.knightS = Integer.parseInt(token2);
 								break;
@@ -782,6 +788,10 @@ public class PlayerSave {
 			characterfile.write("impsC = " + player.impsC);
 			characterfile.newLine();
 			characterfile.write("skullbrine = " + player.skullbrine);
+			characterfile.newLine();
+			characterfile.write("voidEchoes = " + player.voidEchoes);
+			characterfile.newLine();
+			characterfile.write("voidVeil = " + player.voidVeil);
 			characterfile.newLine();
 			characterfile.write("knightS = " + player.knightS);
 			characterfile.newLine();

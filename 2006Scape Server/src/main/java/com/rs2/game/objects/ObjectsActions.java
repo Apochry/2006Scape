@@ -2772,6 +2772,9 @@ public class ObjectsActions {
         if (!Region.objectExists(objectType, obX, obY, player.heightLevel)) {
             return;
         }
+        if (com.rs2.game.content.voidrealm.VoidRealm.secondClickObject(player, objectType, obX, obY)) {
+            return;
+        }
         if (Farming.inspectObject(player, obX, obY)) {
             return;
         }

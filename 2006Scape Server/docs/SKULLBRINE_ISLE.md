@@ -2,7 +2,7 @@
 
 A cursed pirate island south-west of the mainland, the dungeon beneath it, and the quest
 **Curse of Skullbrine** (2 QP), a quest for new players. The dungeon holds a dormant portal
-to another world, which is not connected to anything yet.
+to another world. The Void quest series opens it: see [VOID_QUESTS.md](VOID_QUESTS.md).
 
 ## The island
 
@@ -61,8 +61,9 @@ scimitar, a wooden shield and basic tools.
 | NPC stats, spawns, drops, shop | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json`, `npcdrops.json`, `shops.json` (shop 349) |
 | Map + cache generator | `src/main/java/com/rs2/tools/mapgen/` |
 
-To hook up the portal later, edit `SkullbrineIsle.enterVoidPortal(Player)`. It is the only
-place the portal leads anywhere.
+After Curse of Skullbrine, the portal is handled by
+`com.rs2.game.content.voidrealm.VoidRealm`, which `SkullbrineIsle` asks first for every click,
+dialogue and kill. See [VOID_QUESTS.md](VOID_QUESTS.md).
 
 ## Regenerating the map
 
