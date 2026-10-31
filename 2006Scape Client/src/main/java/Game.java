@@ -1812,35 +1812,7 @@ public class Game extends RSApplet {
 		if (invOverlayInterfaceID == -1) {
 			if (tabInterfaceIDs[tabID] != -1) {
 				if (tabID == 7 && ClientSettings.CUSTOM_SETTINGS_TAB) {
-					try {
-						int centerX = 95;
-						int currentY = 10;
-						int textMiddle = 22;
-						int textTop = 14;
-						int textBottom = 29;
-
-						drawButton(customSettingVisiblePlayerNames, centerX - 73, currentY, 146);
-						// buttonLeftDisabled.drawSprite(centerX - 73, currentY);
-						aTextDrawingArea_1271.textCenterShadow(Color.YELLOW.hashCode(), centerX, "always visible", currentY + textTop, true);
-						aTextDrawingArea_1271.textCenterShadow(Color.YELLOW.hashCode(), centerX, "player names", currentY + textBottom, true);
-						
-						drawButton(true, centerX - 73, currentY += 40, 146);
-						aTextDrawingArea_1271.textCenterShadow(Color.YELLOW.hashCode(), centerX, "item drops visible", currentY + textTop, true);
-						aTextDrawingArea_1271.textCenterShadow(Color.WHITE.hashCode(), centerX, intToKOrMil(customSettingMinItemValue) + " gp", currentY + textBottom, true);
-						
-						drawButton(true, centerX - 73, currentY += 40, 146);
-						aTextDrawingArea_1271.textCenterShadow(Color.YELLOW.hashCode(), centerX, "draw distance", currentY + textTop, true);
-						aTextDrawingArea_1271.textCenterShadow(Color.WHITE.hashCode(), centerX, WorldController.drawDistance + " tiles", currentY + textBottom, true);
-
-						drawButton(customSettingShowExperiencePerHour, centerX - 73, currentY += 40, 146);
-						aTextDrawingArea_1271.textCenterShadow(Color.YELLOW.hashCode(), centerX, "show exp info", currentY + textMiddle, true);
-						
-						drawButton(showInfo, centerX - 73, currentY += 40, 146);
-						aTextDrawingArea_1271.textCenterShadow(Color.YELLOW.hashCode(), centerX, "show debug info", currentY + textMiddle, true);
-
-						drawButton(customSettingVisualFixes, centerX - 73, currentY += 40, 146);
-						aTextDrawingArea_1271.textCenterShadow(Color.YELLOW.hashCode(), centerX, "visual fixes", currentY + textMiddle, true);
-					} catch (Exception e) { }
+					drawSettingsTab();
 				}
 			}
 		}
@@ -3631,6 +3603,9 @@ public class Game extends RSApplet {
 		if (l >= 2000) {
 			l -= 2000;
 		}
+		if (l == MinimapOrbs.TOGGLE_RUN_ACTION) {
+			MinimapOrbs.toggleRun(this);
+		}
 		if (l == 696) {
 			minimapInt1 = 0;
             anInt1184 = 120;
@@ -4865,10 +4840,11 @@ public class Game extends RSApplet {
 							}
 							if (customTabAction == 2) {
 								WorldController.drawDistance = Math.max(10, Math.min(100, Integer.parseInt(promptInput)));
-								zoom = Math.min(zoom, WorldController.drawDistance / 3);
+								zoom = Math.min(zoom, maxZoom());
 							}
 						}
 						customTabAction = 0;
+						saveSettings();
 						inputTaken = true;
 						messagePromptRaised = false;
 						drawTabArea();
@@ -5094,8 +5070,8 @@ public class Game extends RSApplet {
 								distance = 25;
 							}
 							WorldController.drawDistance = distance;
-							if (zoom > (WorldController.drawDistance / 3))
-								zoom = WorldController.drawDistance / 3;
+							if (zoom > (maxZoom()))
+								zoom = maxZoom();
 							inputString = "";
 							inputTaken = true;
 							return;
@@ -5655,6 +5631,9 @@ public class Game extends RSApplet {
 	}
 	
 	public void processMinimapActions() {
+		if (MinimapOrbs.addMenuOption(this)) {
+			return;
+		}
         int x = super.mouseX;
         int y = super.mouseY;
         if (x >= 551 && x <= 577 && y >= 7 && y <= 40) {
@@ -5672,6 +5651,251 @@ public class Game extends RSApplet {
 	long customSettingShowExperiencePerHourStart = System.currentTimeMillis();
 	int customSettingShowExperiencePerHourStartLevels = 0;
 	boolean customSettingVisualFixes = true;
+	final XpTracker xpTracker = new XpTracker(this);
+	boolean leftClickSwaps = true;
+	boolean ctrlToZoom = false;
+	/** Added to the minimap scale: positive zooms out, negative zooms in. */
+	int minimapZoom = 0;
+	private StreamLoader mediaArchive;
+
+	int maxZoom() {
+		return WorldController.drawDistance / 2;
+	}
+
+	int minimapScale() {
+		return 256 + minimapInt3 + minimapZoom;
+	}
+
+	StreamLoader mediaArchive() {
+		if (mediaArchive == null) {
+			mediaArchive = streamLoaderForName(4, "2d graphics", "media", expectedCRCs[4], 40);
+		}
+		return mediaArchive;
+	}
+
+	/** Option names that become the left-click action when an NPC or object has them. */
+	private static final String[] PREFERRED_LEFT_CLICK = {"bank", "use-quickly", "pickpocket", "trade", "travel", "collect"};
+	private static final int[] NPC_OPTION_IDS = {20, 412, 225, 965, 478};
+	private static final int[] OBJECT_OPTION_IDS = {502, 900, 113, 872, 1062};
+
+	/**
+	 * Makes the most useful option the left-click one, e.g. Bank on bankers
+	 * and Pickpocket on thieving targets, instead of Talk-to.
+	 */
+	private void applyLeftClickSwaps() {
+		int top = menuActionRow - 1;
+		if (!leftClickSwaps || top < 1) {
+			return;
+		}
+		int[] ids = contains(NPC_OPTION_IDS, menuActionID[top]) ? NPC_OPTION_IDS
+				: contains(OBJECT_OPTION_IDS, menuActionID[top]) ? OBJECT_OPTION_IDS : null;
+		if (ids == null) {
+			return;
+		}
+		for (String preferred : PREFERRED_LEFT_CLICK) {
+			for (int j = top; j >= 1; j--) {
+				boolean sameTarget = menuActionCmd1[j] == menuActionCmd1[top] && menuActionCmd2[j] == menuActionCmd2[top]
+						&& menuActionCmd3[j] == menuActionCmd3[top];
+				if (sameTarget && contains(ids, menuActionID[j]) && optionName(menuActionName[j]).equalsIgnoreCase(preferred)) {
+					if (j != top) {
+						swapMenuEntries(j, top);
+					}
+					return;
+				}
+			}
+		}
+	}
+
+	private static boolean contains(int[] values, int value) {
+		for (int v : values) {
+			if (v == value) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** "Talk-to @yel@Banker" -> "Talk-to" */
+	private static String optionName(String entry) {
+		int end = entry.indexOf(" @");
+		return end == -1 ? entry : entry.substring(0, end);
+	}
+
+	private void swapMenuEntries(int a, int b) {
+		String name = menuActionName[a];
+		menuActionName[a] = menuActionName[b];
+		menuActionName[b] = name;
+		int t = menuActionID[a];
+		menuActionID[a] = menuActionID[b];
+		menuActionID[b] = t;
+		t = menuActionCmd1[a];
+		menuActionCmd1[a] = menuActionCmd1[b];
+		menuActionCmd1[b] = t;
+		t = menuActionCmd2[a];
+		menuActionCmd2[a] = menuActionCmd2[b];
+		menuActionCmd2[b] = t;
+		t = menuActionCmd3[a];
+		menuActionCmd3[a] = menuActionCmd3[b];
+		menuActionCmd3[b] = t;
+	}
+
+	private static final int SETTINGS_TOP = 24;
+	private static final int SETTINGS_ROW_HEIGHT = 19;
+	private static final String[] SETTINGS_LABELS = {"Player names", "Drop value", "Draw distance", "Minimap orbs", "XP drops",
+			"XP counter", "XP/hr box", "Left-click swaps", "Ctrl to zoom", "Visual fixes", "Debug info", "Hide roofs"};
+	private static final int SETTINGS_ROWS = SETTINGS_LABELS.length;
+
+	/** The custom settings tab (bottom-left tab with -qol): one row per setting. */
+	private void drawSettingsTab() {
+		aTextDrawingArea_1271.textCenterShadow(0xff981f, 95, "Client Settings", 17, true);
+		for (int row = 0; row < SETTINGS_ROWS; row++) {
+			int top = SETTINGS_TOP + row * SETTINGS_ROW_HEIGHT;
+			DrawingArea.fillArea(0x000000, top + 1, 176, SETTINGS_ROW_HEIGHT - 2, row % 2 == 0 ? 60 : 30, 7);
+			aTextDrawingArea_1271.textLeftShadow(true, 12, 0xff981f, SETTINGS_LABELS[row], top + 14);
+			String value;
+			int color;
+			if (row == 1) {
+				value = customSettingMinItemValue == Integer.MAX_VALUE ? "Off" : intToKOrMil(customSettingMinItemValue) + " gp";
+				color = 0xffffff;
+			} else if (row == 2) {
+				value = WorldController.drawDistance + " tiles";
+				color = 0xffffff;
+			} else {
+				boolean on = settingEnabled(row);
+				value = on ? "On" : "Off";
+				color = on ? 0x00ff00 : 0xff3030;
+			}
+			aTextDrawingArea_1271.textRightShadow(true, 178, color, value, top + 14);
+		}
+	}
+
+	private boolean settingEnabled(int row) {
+		switch (row) {
+			case 0: return customSettingVisiblePlayerNames;
+			case 3: return MinimapOrbs.enabled;
+			case 4: return XpTracker.dropsEnabled;
+			case 5: return XpTracker.counterEnabled;
+			case 6: return customSettingShowExperiencePerHour;
+			case 7: return leftClickSwaps;
+			case 8: return ctrlToZoom;
+			case 9: return customSettingVisualFixes;
+			case 10: return showInfo;
+			case 11: return ClientSettings.HIDE_ROOFS;
+			default: return false;
+		}
+	}
+
+	private void onSettingClicked(int row) {
+		switch (row) {
+			case 0:
+				customSettingVisiblePlayerNames = !customSettingVisiblePlayerNames;
+				break;
+			case 1:
+			case 2:
+				inputTaken = true;
+				inputDialogState = 0;
+				messagePromptRaised = true;
+				promptInput = "";
+				aString1121 = row == 1 ? "Enter minimum item value" : "Enter new draw distance";
+				customTabAction = row;
+				break;
+			case 3:
+				MinimapOrbs.enabled = !MinimapOrbs.enabled;
+				// Repaint the frame so the orbs' value boxes are cleared away
+				welcomeScreenRaised = true;
+				break;
+			case 4:
+				XpTracker.dropsEnabled = !XpTracker.dropsEnabled;
+				break;
+			case 5:
+				XpTracker.counterEnabled = !XpTracker.counterEnabled;
+				break;
+			case 6:
+				customSettingShowExperiencePerHour = !customSettingShowExperiencePerHour;
+				customSettingShowExperiencePerHourStart = System.currentTimeMillis();
+				customSettingShowExperiencePerHourStartExp = calculateTotalExp();
+				customSettingShowExperiencePerHourStartLevels = calculateTotalLevels();
+				break;
+			case 7:
+				leftClickSwaps = !leftClickSwaps;
+				break;
+			case 8:
+				ctrlToZoom = !ctrlToZoom;
+				break;
+			case 9:
+				setVisualFixes(!customSettingVisualFixes);
+				break;
+			case 10:
+				showInfo = !showInfo;
+				break;
+			case 11:
+				ClientSettings.HIDE_ROOFS = !ClientSettings.HIDE_ROOFS;
+				// Roofs are left out when the scene is built, so rebuild it now
+				ObjectManager.hideRoofs = ClientSettings.HIDE_ROOFS && plane == 0;
+				if (loggedIn) {
+					method22();
+				}
+				break;
+		}
+	}
+
+	@Override
+	void drawFrameOverlays() {
+		int[] pixels = framePixels();
+		if (!loggedIn || pixels == null) {
+			return;
+		}
+		OverlayDraw.beginFrame(pixels, 765, 503);
+		MinimapOrbs.draw(this);
+		OverlayDraw.endFrame();
+	}
+
+	private void setVisualFixes(boolean enabled) {
+		customSettingVisualFixes = enabled;
+		ClientSettings.BILINEAR_MINIMAP_FILTERING = enabled;
+		ClientSettings.FIX_TRANSPARENCY_OVERFLOW = enabled;
+		ClientSettings.FULL_512PX_VIEWPORT = enabled;
+	}
+
+	/** Restores settings saved by a previous session (see {@link #saveSettings()}). */
+	private void loadSettings() {
+		customSettingVisiblePlayerNames = ClientPrefs.getBool("playerNames", customSettingVisiblePlayerNames);
+		customSettingMinItemValue = ClientPrefs.getInt("minItemValue", customSettingMinItemValue);
+		customSettingShowExperiencePerHour = ClientPrefs.getBool("xpPerHourBox", customSettingShowExperiencePerHour);
+		showInfo = ClientPrefs.getBool("debugInfo", showInfo);
+		if (ClientPrefs.has("visualFixes")) {
+			setVisualFixes(ClientPrefs.getBool("visualFixes", true));
+		}
+		WorldController.drawDistance = Math.max(10, Math.min(100, ClientPrefs.getInt("drawDistance", WorldController.drawDistance)));
+		zoom = Math.max(-1, Math.min(maxZoom(), ClientPrefs.getInt("zoom", zoom)));
+		minimapZoom = ClientPrefs.getInt("minimapZoom", 0);
+		MinimapOrbs.enabled = ClientPrefs.getBool("minimapOrbs", true);
+		XpTracker.dropsEnabled = ClientPrefs.getBool("xpDrops", true);
+		XpTracker.counterEnabled = ClientPrefs.getBool("xpCounter", true);
+		leftClickSwaps = ClientPrefs.getBool("leftClickSwaps", true);
+		ctrlToZoom = ClientPrefs.getBool("ctrlToZoom", false);
+		ClientSettings.HIDE_ROOFS = ClientPrefs.getBool("hideRoofs", ClientSettings.HIDE_ROOFS);
+		myUsername = ClientPrefs.getString("username", myUsername);
+	}
+
+	@Override
+	void saveSettings() {
+		ClientPrefs.set("playerNames", customSettingVisiblePlayerNames);
+		ClientPrefs.set("minItemValue", customSettingMinItemValue);
+		ClientPrefs.set("xpPerHourBox", customSettingShowExperiencePerHour);
+		ClientPrefs.set("debugInfo", showInfo);
+		ClientPrefs.set("visualFixes", customSettingVisualFixes);
+		ClientPrefs.set("drawDistance", WorldController.drawDistance);
+		ClientPrefs.set("zoom", zoom);
+		ClientPrefs.set("minimapZoom", minimapZoom);
+		ClientPrefs.set("minimapOrbs", MinimapOrbs.enabled);
+		ClientPrefs.set("xpDrops", XpTracker.dropsEnabled);
+		ClientPrefs.set("xpCounter", XpTracker.counterEnabled);
+		ClientPrefs.set("leftClickSwaps", leftClickSwaps);
+		ClientPrefs.set("ctrlToZoom", ctrlToZoom);
+		ClientPrefs.set("hideRoofs", ClientSettings.HIDE_ROOFS);
+		super.saveSettings();
+	}
 
 	public void processTabClick() {
 		if (super.clickMode3 == 1) {
@@ -5759,46 +5983,12 @@ public class Game extends RSApplet {
 			if (invOverlayInterfaceID == -1) {
 				if (tabInterfaceIDs[tabID] != -1) {
 					// Handle our custom tab
-					if (tabID == 7 && ClientSettings.CUSTOM_SETTINGS_TAB && super.saveClickX >= 575 && super.saveClickX <= 720 && super.saveClickY >= 210 && super.saveClickY <= 465) {
-						int startY = 217 + 3;
-						if (super.saveClickY >= startY && super.saveClickY <= (startY + 30)) {
-							customSettingVisiblePlayerNames = !customSettingVisiblePlayerNames;
-						}
-						startY += 40;
-						if (super.saveClickY >= startY && super.saveClickY <= (startY + 30)) {
-							inputTaken = true;
-							inputDialogState = 0;
-							messagePromptRaised = true;
-							promptInput = "";
-							aString1121 = "Enter minimum item value";
-							customTabAction = 1;
-						}
-						startY += 40;
-						if (super.saveClickY >= startY && super.saveClickY <= (startY + 30)) {
-							inputTaken = true;
-							inputDialogState = 0;
-							messagePromptRaised = true;
-							promptInput = "";
-							aString1121 = "Enter new draw distance";
-							customTabAction = 2;
-						}
-						startY += 40;
-						if (super.saveClickY >= startY && super.saveClickY <= (startY + 30)) {
-							customSettingShowExperiencePerHour= !customSettingShowExperiencePerHour;
-							customSettingShowExperiencePerHourStart = System.currentTimeMillis();
-							customSettingShowExperiencePerHourStartExp = calculateTotalExp();
-							customSettingShowExperiencePerHourStartLevels = calculateTotalLevels();
-						}
-						startY += 40;
-						if (super.saveClickY >= startY && super.saveClickY <= (startY + 30)) {
-							showInfo= !showInfo;
-						}
-						startY += 40;
-						if (super.saveClickY >= startY && super.saveClickY <= (startY + 30)) {
-							customSettingVisualFixes = !customSettingVisualFixes;
-							ClientSettings.BILINEAR_MINIMAP_FILTERING = !ClientSettings.BILINEAR_MINIMAP_FILTERING;
-							ClientSettings.FIX_TRANSPARENCY_OVERFLOW = !ClientSettings.FIX_TRANSPARENCY_OVERFLOW;
-							ClientSettings.FULL_512PX_VIEWPORT = !ClientSettings.FULL_512PX_VIEWPORT;
+					if (tabID == 7 && ClientSettings.CUSTOM_SETTINGS_TAB && super.saveClickX >= 553 && super.saveClickX < 743 && super.saveClickY >= 205 + SETTINGS_TOP && super.saveClickY < 466) {
+						int row = (super.saveClickY - 205 - SETTINGS_TOP) / SETTINGS_ROW_HEIGHT;
+						if (row >= 0 && row < SETTINGS_ROWS) {
+							onSettingClicked(row);
+							needDrawTabArea = true;
+							saveSettings();
 						}
 					}
 				}
@@ -5906,8 +6096,8 @@ public class Game extends RSApplet {
 			int i1 = minimapInt1 + minimapInt2 & 0x7ff;
 			int j1 = Model.modelIntArray1[i1];
 			int k1 = Model.modelIntArray2[i1];
-			j1 = (j1 * 256) / (minimapInt3 + 256);
-			k1 = (k1 * 256) / (minimapInt3 + 256);
+			j1 = (j1 * 256) / minimapScale();
+			k1 = (k1 * 256) / minimapScale();
 			int l1 = y * j1 + x * k1 >> 16;
 			int i2 = y * k1 - x * j1 >> 16;
 			double d = Math.atan2((double) l1, (double) i2);
@@ -5998,6 +6188,7 @@ public class Game extends RSApplet {
 			}
 
 		}
+		applyLeftClickSwaps();
 	}
 
 	public int method83(int i, int j, int k) {
@@ -6086,6 +6277,9 @@ public class Game extends RSApplet {
 				super.awtFocus = true;
 				aBoolean954 = true;
 				loggedIn = true;
+				xpTracker.reset();
+				ClientPrefs.set("username", myUsername);
+				saveSettings();
 				stream.currentOffset = 0;
 				inStream.currentOffset = 0;
 				pktType = -1;
@@ -7420,8 +7614,8 @@ public class Game extends RSApplet {
 				int k = minimapInt1 + minimapInt2 & 0x7ff;
 				int i1 = Texture.anIntArray1470[k];
 				int j1 = Texture.anIntArray1471[k];
-				i1 = i1 * (minimapInt3 + 256) >> 8;
-				j1 = j1 * (minimapInt3 + 256) >> 8;
+				i1 = i1 * minimapScale() >> 8;
+				j1 = j1 * minimapScale() >> 8;
 				int k1 = j * i1 + i * j1 >> 11;
 				int l1 = j * j1 - i * i1 >> 11;
 				int i2 = myPlayer.x + k1 >> 7;
@@ -9496,7 +9690,7 @@ public class Game extends RSApplet {
 		int i = minimapInt1 + minimapInt2 & 0x7ff;
 		int j = 48 + myPlayer.x / 32;
 		int l2 = 464 - myPlayer.y / 32;
-		aClass30_Sub2_Sub1_Sub1_1263.method352(151, i, anIntArray1229, 256 + minimapInt3, anIntArray1052, l2, 5, 25, 146, j);
+		aClass30_Sub2_Sub1_Sub1_1263.method352(151, i, anIntArray1229, minimapScale(), anIntArray1052, l2, 5, 25, 146, j);
 		compass.method352(33, minimapInt1, anIntArray1057, 256, anIntArray968, 25, 0, 0, 33, 25);
 		// Minimap icons (shops, quest etc)
 		for (int j5 = 0; j5 < anInt1071; j5++) {
@@ -10450,14 +10644,15 @@ public class Game extends RSApplet {
 
 	public void markMinimap(Sprite sprite, int i, int j) {
 		int k = minimapInt1 + minimapInt2 & 0x7ff;
-		int l = i * i + j * j;
+		// Distance as drawn on the minimap, so dots still fill the circle when zoomed
+		int l = (int) ((long) (i * i + j * j) * 65536 / ((long) minimapScale() * minimapScale()));
 		if (l > 6400) {
 			return;
 		}
 		int i1 = Model.modelIntArray1[k];
 		int j1 = Model.modelIntArray2[k];
-		i1 = i1 * 256 / (minimapInt3 + 256);
-		j1 = j1 * 256 / (minimapInt3 + 256);
+		i1 = i1 * 256 / minimapScale();
+		j1 = j1 * 256 / minimapScale();
 		int k1 = j * i1 + i * j1 >> 16;
 		int l1 = j * j1 - i * i1 >> 16;
 		if (l > 2500) {
@@ -10748,6 +10943,7 @@ public class Game extends RSApplet {
 				int skillID = inStream.readUnsignedByte();
 				int experience = inStream.method439();
 				int level = inStream.readUnsignedByte();
+				xpTracker.onExperience(skillID, experience);
 				currentExp[skillID] = experience;
 				currentStats[skillID] = level;
 				maxStats[skillID] = 1;
@@ -11971,6 +12167,8 @@ public class Game extends RSApplet {
 			chatTextDrawingArea.textRightShadow(true, debugX + debugWidth - 4, Color.YELLOW.hashCode(), "" + (calculateTotalLevels() - customSettingShowExperiencePerHourStartLevels), debugY);
 		}
 
+		xpTracker.draw();
+
 		// Draw main screen
 		aRSImageProducer_1165.drawGraphics(4, super.graphics, 4);
 
@@ -12131,6 +12329,7 @@ public class Game extends RSApplet {
 		anInt1171 = 1;
 		myUsername = "";
 		myPassword = "";
+		loadSettings();
 		genericLoadingError = false;
 		reportAbuseInterfaceID = -1;
 		aClass19_1179 = new NodeList();
@@ -12724,7 +12923,7 @@ public class Game extends RSApplet {
 				}
 				break;
 			case KeyEvent.VK_PAGE_DOWN:
-				if (zoom < (WorldController.drawDistance / 3)) {
+				if (zoom < (maxZoom())) {
 					zoom++;
 					if (ClientSettings.SHOW_ZOOM_LEVEL_MESSAGES) {
 						pushMessage("Your zoom level is now: " + zoom, 0, "");
@@ -12914,7 +13113,12 @@ public class Game extends RSApplet {
 
 	public final void mouseWheelMoved(MouseWheelEvent e) {
 		int notches = e.getWheelRotation();
-		if (ClientSettings.CONTROL_KEY_ZOOMING && !e.isControlDown()) {
+		// Scrolling over the minimap zooms the minimap
+		if (mouseX >= 575 && mouseX < 721 && mouseY >= 9 && mouseY < 160) {
+			minimapZoom = Math.max(-96, Math.min(256, minimapZoom + notches * 24));
+			return;
+		}
+		if (ctrlToZoom && !e.isControlDown()) {
 			return;
 		}
 		// If mouse over main game screen, without anything else opened
@@ -12927,7 +13131,7 @@ public class Game extends RSApplet {
 					}
 				}
 			} else {
-				if (zoom < (WorldController.drawDistance / 3)) {
+				if (zoom < (maxZoom())) {
 					zoom++;
 					if (ClientSettings.SHOW_ZOOM_LEVEL_MESSAGES) {
 						pushMessage("Your zoom level is now: " + zoom, 0, "");
