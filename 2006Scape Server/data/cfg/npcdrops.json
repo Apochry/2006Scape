@@ -173824,6 +173824,14 @@
         ]
       },
       {
+        "item_id": 8194,
+        "chance": 3,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
         "item_id": 1319,
         "chance": 5,
         "amounts": [

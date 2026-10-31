@@ -86,6 +86,14 @@ public final class VoidArsenal {
 	static final int[] SET_TABS = { TAB_SWORD, TAB_SWORD, TAB_LONGSWORD, TAB_LONGSWORD, TAB_MACE, TAB_WARHAMMER, TAB_AXE, TAB_LONGSWORD, TAB_SPEAR,
 			TAB_HALBERD, TAB_BOW };
 
+	/** The kit-wearers' weapons (VoidConstants.KIT_WEAPONS), in that order. */
+	static final int[][] KIT_RULES = { { TAB_BOW, RNG, 25 }, // Silkstring shortbow (arrows up to steel)
+			{ TAB_AXE, ATT, 40 }, // Ravager battleaxe
+			{ TAB_STAFF, MAG, 45, ATT, 40 }, // Moonmourn staff
+			{ TAB_WARHAMMER, ATT, 50, STR, 45 }, // Rimebound warhammer
+			{ TAB_BOW, RNG, 50 }, // Nightrunner shortbow (arrows up to rune)
+	};
+
 	/** Wield levels: starmetal Attack 50 (halberd also Strength 45); voidsteel Attack 70 (halberd also Strength 60, longbow Ranged 70). */
 	static final int STARMETAL_LEVEL = 50, VOIDSTEEL_LEVEL = 70;
 
@@ -104,7 +112,8 @@ public final class VoidArsenal {
 			return i == 10 ? new int[] { SET_TABS[i], RNG, VOIDSTEEL_LEVEL }
 					: i == 9 ? new int[] { SET_TABS[i], ATT, VOIDSTEEL_LEVEL, STR, 60 } : new int[] { SET_TABS[i], ATT, VOIDSTEEL_LEVEL };
 		}
-		return null;
+		i = indexOf(KIT_WEAPONS, id);
+		return i >= 0 ? KIT_RULES[i] : null;
 	}
 
 	static int indexOf(int[] a, int id) {

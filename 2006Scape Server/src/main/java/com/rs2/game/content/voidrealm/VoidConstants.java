@@ -28,6 +28,8 @@ public final class VoidConstants {
 	/* Hold the Gate, Ashes of the Crown's coffer guard, Heartforged, The Hollow King, and the Starless */
 	public static final int HOLLOW_RAVAGER = 3883, THANE_OATHSWORN = 3884, RIMEBOUND_SENTINEL = 3885, SIR_VAELRIC = 3886,
 			HOLLOW_KNIGHT = 3887, AUREL_SPIRIT = 3888, THE_STARLESS = 3889, STARLESS_SPAWN = 3890;
+	/* The five kit-wearers: each wears one of the middle armour sets and carries its matching weapon (VoidLoot.KITS) */
+	public static final int SILKWOOD_STALKER = 3891, SCAR_REAVER = 3892, MOONMOURNER = 3893, RIMEBOUND_WARRIOR = 3894, COVE_NIGHTRUNNER = 3895;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;
@@ -111,8 +113,33 @@ public final class VoidConstants {
 	public static final int[] INITIATE_SET = { 8129, 8130, 8131, 8132, 8133, 8134 };
 	public static final int[] BARROWBRONZE_SET = { 8135, 8136, 8137, 8138, 8139, 8140 };
 	public static final int[] VEILSWORN_SET = { 8141, 8142, 8143, -1, 8144, 8145 };
+	/*
+	 * Ten middle sets (MidArmour / VoidArmoury), levels 20-60: Quarryhand (Defence 20), Silkspinner (Ranged 25),
+	 * Stonecaller (Magic 30), Ridgerunner (Ranged 35), Ravager (Defence 40), Moonmourn (Magic 45), Rimebound (Defence 50),
+	 * Nightrunner (Ranged 50), Farseer (Magic 55), Last knight (Defence 60).
+	 */
+	public static final int[] QUARRYHAND_SET = { 8146, 8147, 8148, 8149, 8150, 8151 };
+	public static final int[] SILKSPINNER_SET = { 8152, 8153, 8154, -1, 8155, 8156 };
+	public static final int[] STONECALLER_SET = { 8157, 8158, 8159, -1, 8160, 8161 };
+	public static final int[] RIDGERUNNER_SET = { 8162, 8163, 8164, -1, 8165, 8166 };
+	public static final int[] RAVAGER_SET = { 8167, 8168, 8169, 8170, 8171, 8172 };
+	public static final int[] MOONMOURN_SET = { 8173, 8174, 8175, -1, 8176, 8177 };
+	public static final int[] RIMEBOUND_SET = { 8178, 8179, 8180, 8181, 8182, 8183 };
+	public static final int[] NIGHTRUNNER_SET = { 8184, 8185, 8186, -1, 8187, 8188 };
+	public static final int[] FARSEER_SET = { 8189, 8190, 8191, -1, 8192, 8193 };
+	public static final int[] LAST_KNIGHT_SET = { 8194, 8195, 8196, 8197, 8198, 8199 };
 	public static final int[][] ARMOUR_SETS = { OATHSWORN_SET, DUSKSTALKER_SET, SCARWEAVE_SET, STARMETAL_ARMOUR, VOIDSTEEL_ARMOUR, HEARTFIRE_SET,
-			RECRUIT_SET, WOODSMAN_SET, CROFTWISE_SET, RATTLEBONE_SET, BLACKBRINE_SET, INITIATE_SET, BARROWBRONZE_SET, VEILSWORN_SET };
+			RECRUIT_SET, WOODSMAN_SET, CROFTWISE_SET, RATTLEBONE_SET, BLACKBRINE_SET, INITIATE_SET, BARROWBRONZE_SET, VEILSWORN_SET,
+			QUARRYHAND_SET, SILKSPINNER_SET, STONECALLER_SET, RIDGERUNNER_SET, RAVAGER_SET, MOONMOURN_SET, RIMEBOUND_SET, NIGHTRUNNER_SET,
+			FARSEER_SET, LAST_KNIGHT_SET };
+	/* The kit-wearers' weapons: Silkstring shortbow (Ranged 25), Ravager battleaxe (Attack 40), Moonmourn staff (Magic 45),
+	 * Rimebound warhammer (Attack 50), Nightrunner shortbow (Ranged 50) */
+	public static final int SILKSTRING_SHORTBOW = 8200, RAVAGER_BATTLEAXE = 8201, MOONMOURN_STAFF = 8202, RIMEBOUND_WARHAMMER = 8203,
+			NIGHTRUNNER_SHORTBOW = 8204;
+	public static final int[] KIT_WEAPONS = { SILKSTRING_SHORTBOW, RAVAGER_BATTLEAXE, MOONMOURN_STAFF, RIMEBOUND_WARHAMMER, NIGHTRUNNER_SHORTBOW };
+	/* The kit-wearers, in KIT_WEAPONS order, and the set each one wears */
+	public static final int[] KIT_WEARERS = { SILKWOOD_STALKER, SCAR_REAVER, MOONMOURNER, RIMEBOUND_WARRIOR, COVE_NIGHTRUNNER };
+	public static final int[][] KIT_SETS = { SILKSPINNER_SET, RAVAGER_SET, MOONMOURN_SET, RIMEBOUND_SET, NIGHTRUNNER_SET };
 	public static final int[] LADDER = { GUTTING_DAGGER, FELLING_AXE, PILGRIM_STAFF, MILITIA_SPEAR, WOLFBONE_SHORTBOW,
 			WATCHMAN_SWORD, STEELCAP_MACE, SMUGGLER_SCIMITAR, BARROWSTONE_WARHAMMER, SILKWOOD_WAND, GATEHOLD_LONGSWORD,
 			WARDEN_HALBERD, WARDEN_LONGBOW, SCARGLASS_DAGGER, OATHSWORN_BATTLEAXE, FROSTFANG_SPEAR, GRAVEWARDEN_2H,
@@ -121,7 +148,7 @@ public final class VoidConstants {
 			WARDENSOATH_2H, HEART_OF_AUREL, SCARMAW_HALBERD, HOLLOW_CROWN_WARHAMMER, DAWNBRINGER_LONGBOW, UNMADE_WAND, FIRST_STAR_SPEAR,
 			CROWNFIRE_SCIMITAR, GATEBREAKER_BATTLEAXE, NIGHTFALL_SHORTBOW, RIFTCALLER_STAFF, SUNFALL_2H, BLACK_SUN_WARHAMMER,
 			CROWN_OF_STARS_STAFF, GODSFALL_2H };
-	// (the next new item is 8146)
+	// (the next new item is 8205; the next new npc 3896)
 	public static final int[] WARDEN_SET = { WARDEN_HELM, WARDEN_BODY, WARDEN_LEGS, WARDEN_BOOTS, WARDEN_GAUNTLETS };
 	public static final int[] ROYAL_SET = { ROYAL_HELM, ROYAL_BODY, ROYAL_LEGS, ROYAL_KITESHIELD, ROYAL_BOOTS, ROYAL_GAUNTLETS };
 

@@ -608,8 +608,8 @@ weapon in two metals. Previews: `ModelPreview data/cache outDir S1` (or `S2`) wr
 
 ## Armour sets
 
-Fourteen matched sets climb with the weapons: six for the saga (Defence 40 and up) and eight humbler ones for the
-early game (levels 10-40, below). Each is tied to a place or a chapter of the story. Plate has a full helm,
+Twenty-four matched sets climb with the weapons: six for the saga (Defence 40 and up), eight humbler ones for the
+early game (levels 10-40) and ten for the middle levels (20-60), below. Each is tied to a place or a chapter of the story. Plate has a full helm,
 platebody, platelegs, kiteshield, boots and gauntlets. Hide has a coif, body, chaps, boots and vambraces. Robes have a
 hat, robe top, robe bottom, boots and gloves. Hide and robes have no shield. Every piece is cut from the stock piece
 of the same kind (rune plate, green d'hide, mystic; for the low sets also the med helm, chainbody and sq shield, and
@@ -647,12 +647,50 @@ Warden initiate's is full plate. The models are in `tools/mapgen/LowArmour.java`
 | 13 | **Barrowbronze** (8135-8140) | Defence 35 | Verdigrised bronze from the Sunken Barrow's dead: scale mail, a crested helm, a sun-disc shield. Adamant-like, +prayer | med helm 24/26/21 +1 prayer; chainbody 42/56/62 +2 prayer; legs 40/38/36 +1 prayer; shield 34/36/32; boots 10/11/12; gloves +4 attack, +2 str | Only in the **Sunken Barrow**: half its monsters' gear rolls (helm, shield, boots, gloves) and half their bonus rolls (chainbody, legs) |
 | 14 | **Veilsworn** (8141-8145) | Magic 40, Defence 10 | The Hollowdeep cult's ash-and-violet robes: a violet-tipped hat, the white eye on the chest, a frayed hem. Wizard to mystic | hat +5 magic; top +20; bottom +15; boots +4; gloves +4 | Only in **Hollowdeep**: half its monsters' gear rolls (hat, boots, gloves) and half their bonus rolls (top, bottom) |
 
+### The middle sets (levels 20-60)
+
+Ten more sets fill the gaps between the low sets and the saga's: four melee (two chain, two plate), three ranged
+and three magic. Each belongs to a place or a people of Nythera. Five of them are worn by the
+monsters that drop them, the kit-wearers (below). The models are in `tools/mapgen/MidArmour.java`.
+
+| # | Set (ids) | Wear | Look and story | Pieces: key bonuses | Source |
+|---|---|---|---|---|---|
+| 15 | **Quarryhand** (8146-8151) | Defence 20 | Tess's quarry crews' work mail: grey chain under a leather apron, a candle-lamp on the helm, crossed picks on the shield. Iron-to-steel | med helm 12/13/10; chainbody 27/36/42; legs 24/23/22; shield 18/19/16; boots 4/5/6; gloves +1 attack, +1 str | **Quarrywright's Picks** (Tess Quarryhand, shop 354) |
+| 16 | **Silkspinner** (8152-8156) | Ranged 25 | Silkwood's stalkers: dark-green leathers bound in spider silk, a hood with fangs and red eyes, a web on the back. Studded-like | hood +3 ranged; jerkin +9 ranged, 18/22/24/12/22; chaps +6; boots +1; vambraces +5 ranged | Worn and dropped by **Silkwood stalkers** (kit roll) |
+| 17 | **Stonecaller** (8157-8161) | Magic 30 | Slate-grey robes that carry a waystone's rune: a hat set with standing stones, a carved stone on a cord, violet runes down the front | hat +4 magic; top +14; bottom +10; boots +3; gloves +3 | Use a **Croftwise** piece on any **waystone** with 20 earth and 2 cosmic runes (Crafting 25, Magic 30) |
+| 18 | **Ridgerunner** (8162-8166) | Ranged 35 (body and chaps also Defence 25) | Snow-white hide for the mountain pass: a rope over the shoulder, a fur hem, a snowflake on the back. Green d'hide-like | coif +5 ranged; body +17 ranged, 30/34/38/28/34; chaps +10; boots +3; vambraces +8 ranged | **The Last Hearth** (Morra, shop 355) |
+| 19 | **Ravager** (8167-8172) | Defence 40 | The Scar reavers' plate: a ravager's bleached bones over black, a gaping maw for a visor, clawed pauldrons, a violet slit. Rune-like, trades prayer for strength | full helm 30/32/27 +1 str; body 82/80/72 +2 str; legs 51/49/47 +1 str; kite 47/49/43; boots 12/13/14 +1 str; gauntlets +4 attack, +3 str | Worn and dropped by **Scar reavers** (kit roll) |
+| 20 | **Moonmourn** (8173-8177) | Magic 45, Defence 10 | The barrow mourners' midnight robes: a veiled hat with a silver crescent, the moon on the breast with three tears, crescents and stars round the hem | hat +5 magic; top +22; bottom +16; boots +5; gloves +5 | Worn and dropped by **Moonmourners** (kit roll) |
+| 21 | **Rimebound** (8178-8183) | Defence 50 | Frostfang's frozen soldiers: ice-blue mail with icicles, an icicle crown, crystal knee-guards, a snowflake shield | med helm 32/34/29; chainbody 58/74/82; legs 54/52/50; shield 46/48/44; boots 13/14/15; gloves +5 attack, +3 str | Worn and dropped by **Rimebound warriors** (kit roll, Frostfang) |
+| 22 | **Nightrunner** (8184-8188) | Ranged 50 (body and chaps also Defence 40) | The Cove's night crew: charcoal and sea-teal hide, a face-scarf, crossed belts, a lantern at the hip, a ragged half-cloak | coif +6 ranged; body +26 ranged, 44/38/50/46/46; chaps +15; boots +4; vambraces +10 ranged | Worn and dropped by **Cove nightrunners** (kit roll) |
+| 23 | **Farseer** (8189-8193) | Magic 55, Defence 20 | A seer's deep-teal and gold: a gold circlet with a seeing-crystal at the brow, a scrying mirror on the breast, gold bands down the robe | hat +6 magic; top +23; bottom +18; boots +5; gloves +5 | Hat, boots and gloves in the 50+ gear roll; top and bottom in the 50+ bonus roll |
+| 24 | **Last knight's plate** (8194-8199) | Defence 60 | Aurel's knights' plate, as Sir Vaelric wore it: grey steel and gold, a broken crown round the helm, a crimson tabard and plume. Just under starmetal, with prayer | full helm 38/40/35 +2 prayer; body 96/94/88 +3 prayer; legs 64/62/58; kite 60/62/56; boots 15/16/17; gauntlets +5 attack, +4 str (+1 prayer on each of these) | Use an **adamant** full helm, platebody, platelegs, kiteshield or boots, or a **Warden's gauntlets**, on **Gatehold's anvil** with a hammer and starmetal (1 helm, 2 body, 2 legs, 1 kite, 1 boots, 1 gauntlets), Smithing 60, after Heartforged. **Sir Vaelric** drops the helm (1/4) |
+
+### The kit-wearers
+
+Five monsters wear one of the middle sets, every piece of it, with the matching weapon in hand. Their model is built
+from the set's own worn models and the weapon's wielded model on the human rig (`KitWeapons.wearer`), so what you see
+on them is what you get. On top of Nythera's ordinary loot, each kill has a **15% chance of one piece of the kit**: a
+random piece of the set or the weapon, all equally likely (15% in all, not per piece; `VoidLoot.kit`).
+
+| NPC (id) | Combat, hp, max hit | Fights with | Wears / carries | Where |
+|---|---|---|---|---|
+| **Silkwood stalker** (3891) | 28, 30 hp, 3 | Ranged (steel arrows) | Silkspinner + **Silkstring shortbow** (8200: Ranged 25, +22 ranged) | Silkwood: 1376,2688; 1378,2685; 1382,2685; 1384,2686 (north edge) and 1401,2655; 1403,2659; 1406,2654 (south-east) |
+| **Scar reaver** (3892) | 45, 50 hp, 5 | Melee (battleaxe) | Ravager + **Ravager battleaxe** (8201: Attack 40, +44 slash, +38 crush, +52 str) | The Hollow Scar east of the fissure: 1633,2740; 1636,2737; 1634,2733; 1631,2743; 1637,2745 |
+| **Moonmourner** (3893) | 48, 45 hp, 6 | Magic (water bolt) | Moonmourn + **Moonmourn staff** (8202: Magic 45, Attack 40, +13 magic, +30 crush, +10 magic defence) | Round the Sunken Barrow's mound: 1468,2744; 1469,2738; 1474,2751; 1482,2751; 1488,2747 |
+| **Rimebound warrior** (3894) | 55, 65 hp, 7 | Melee (warhammer) | Rimebound + **Rimebound warhammer** (8203: Attack 50, Strength 45, +58 crush, +60 str) | Frostfang, the warriors' hall: 1582,9697; 1586,9701; 1587,9698; 1583,9702 |
+| **Cove nightrunner** (3895) | 54, 55 hp, 6 | Ranged (adamant arrows) | Nightrunner + **Nightrunner shortbow** (8204: Ranged 50, +62 ranged) | Smugglers' Cove, the east beach: 1486,2620; 1489,2617; 1492,2621; 1488,2624; 1494,2618 |
+
+All five are aggressive. Their attack, block and death animations are a player's (`NpcEmotes`); the ranged and magic
+ones are set up in `NpcCombat.loadSpell` and `NpcData` (range and hit delay). The Silkstring shortbow fires up to
+steel arrows, the Nightrunner shortbow up to rune.
+
 The models live in `tools/mapgen/ArmourSets.java`, one `Style` per set: palette, motif, ids, names and examines.
 `ArmourPreview data/cache outDir set [slot...|full]` writes one card per piece (the inventory icon, then the piece
 worn on the male and female bodies, front and back), `A1-01-oathsworn-helm.png` and so on, and `A1-full-...png` for
 the whole set. If a piece's decorations would spill out of its 32x32 sprite, the inventory camera is pulled back
 (`ArmourSets.fitCamera`). The generator does the same, so the game shows what the preview shows. Wield levels,
-slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour n` puts set n (1-14) into your
+slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour n` puts set n (1-24) into your
 inventory.
 
 ## Where things live
@@ -672,7 +710,8 @@ inventory.
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | The weapon ladder (items 8001-8030, and the god tier 8053-8067), the Starless shard (8031), the starmetal and voidsteel sets (8032-8052): rules, recipes, effects, `::vt weapons`/`sets`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`, `WeaponSets.java`, `GodWeapons.java`; `tools/mapgen/ModelPreview.java` |
-| The armour sets (items 8068-8145): slots, wield levels, recipes, `::vt armour`; models; offline previews | `game/content/voidrealm/VoidArmoury.java`; `tools/mapgen/ArmourSets.java` (the saga's six) and `tools/mapgen/LowArmour.java` (the eight low sets); `tools/mapgen/ArmourPreview.java`; drops in `VoidLoot.java` and `tools/nythera_data.py` |
+| The armour sets (items 8068-8199): slots, wield levels, recipes, `::vt armour`; models; offline previews | `game/content/voidrealm/VoidArmoury.java`; `tools/mapgen/ArmourSets.java` (the saga's six), `tools/mapgen/LowArmour.java` (the eight low sets) and `tools/mapgen/MidArmour.java` (the ten middle sets); `tools/mapgen/ArmourPreview.java`; drops in `VoidLoot.java` and `tools/nythera_data.py` |
+| The kit-wearers (NPCs 3891-3895) and their weapons (items 8200-8204): models, the 15% kit roll, combat | `tools/mapgen/KitWeapons.java` (weapons and the npc model), `VoidRealmGenerator.kitWearers`; `VoidLoot.kit`; `NpcEmotes`, `NpcCombat.loadSpell`, `NpcData`; rules in `VoidArsenal.KIT_RULES`; stats and spawns in `tools/nythera_data.py`; `ModelPreview data/cache outDir K` for the weapon cards |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
 Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
@@ -692,11 +731,11 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt journal 5/6/7` | Hold the Gate / Heartforged / The Hollow King journal |
 | `::vt hp n [npcId]` | cap the hp of NPCs spawned for you; 0 = instant kill with quest credit, -1 = a real death with drops |
 | `::vt list` | list NPCs spawned for you |
-| `::vt loot rolls npcId` | tally Nythera's loot tiers over `rolls` rolls, and drop ten real rolls at your feet |
+| `::vt loot rolls npcId` | tally Nythera's loot tiers over `rolls` rolls (and, for a kit-wearer, its 15% kit roll), and drop ten real rolls at your feet |
 | `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
 | `::vt weapons [from to]` | put the weapon ladder (ranks 1-45, or from-to; `31 45` is the god tier) into your inventory |
 | `::vt sets 1` / `::vt sets 2` | put the starmetal (1) or voidsteel (2) set into your inventory, with 10 starmetal or 10 Starless shards |
-| `::vt armour n` | put armour set n into your inventory (1 Oathsworn, 2 Duskstalker, 3 Scarweave, 4 starmetal, 5 voidsteel, 6 Heartfire, 7 Gatehold recruit, 8 Woodsman, 9 Croftwise, 10 Rattlebone, 11 Blackbrine, 12 Warden initiate, 13 Barrowbronze, 14 Veilsworn) |
+| `::vt armour n` | put armour set n into your inventory (1 Oathsworn, 2 Duskstalker, 3 Scarweave, 4 starmetal, 5 voidsteel, 6 Heartfire, 7 Gatehold recruit, 8 Woodsman, 9 Croftwise, 10 Rattlebone, 11 Blackbrine, 12 Warden initiate, 13 Barrowbronze, 14 Veilsworn, 15 Quarryhand, 16 Silkspinner, 17 Stonecaller, 18 Ridgerunner, 19 Ravager, 20 Moonmourn, 21 Rimebound, 22 Nightrunner, 23 Farseer, 24 Last knight) |
 
 ## Ideas for what comes next
 

@@ -2,6 +2,7 @@ package com.rs2.game.npcs;
 
 import com.rs2.game.content.combat.AttackType;
 import com.rs2.game.content.minigames.FightCaves;
+import com.rs2.game.content.voidrealm.VoidConstants;
 import com.rs2.game.players.PlayerHandler;
 import com.rs2.util.Misc;
 import com.rs2.world.Boundary;
@@ -227,6 +228,9 @@ public class NpcData {
 		case AHRIM_THE_BLIGHTED:
 			return 4;
 		case KARIL_THE_TAINTED:
+		case VoidConstants.SILKWOOD_STALKER:
+		case VoidConstants.MOONMOURNER:
+		case VoidConstants.COVE_NIGHTRUNNER:
 			return 3;
 
 		default:
@@ -302,6 +306,9 @@ public class NpcData {
 			case ELF_WARRIOR : // Elf ranger
 			case DARK_WIZARD: // dark wizards
 			case DARK_WIZARD_174:
+			case VoidConstants.SILKWOOD_STALKER: // Nythera's archers and the Moonmourners
+			case VoidConstants.COVE_NIGHTRUNNER:
+			case VoidConstants.MOONMOURNER:
 				return 8;
 			case GREEN_DRAGON : // Green drag
 			case KING_BLACK_DRAGON : // Kbd

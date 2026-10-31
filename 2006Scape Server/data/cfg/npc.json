@@ -16882,5 +16882,35 @@
     "name": "Starless spawn",
     "combat": 72,
     "id": 3890
+  },
+  {
+    "hitpoints": 30,
+    "name": "Silkwood stalker",
+    "combat": 28,
+    "id": 3891
+  },
+  {
+    "hitpoints": 50,
+    "name": "Scar reaver",
+    "combat": 45,
+    "id": 3892
+  },
+  {
+    "hitpoints": 45,
+    "name": "Moonmourner",
+    "combat": 48,
+    "id": 3893
+  },
+  {
+    "hitpoints": 65,
+    "name": "Rimebound warrior",
+    "combat": 55,
+    "id": 3894
+  },
+  {
+    "hitpoints": 55,
+    "name": "Cove nightrunner",
+    "combat": 54,
+    "id": 3895
   }
 ]

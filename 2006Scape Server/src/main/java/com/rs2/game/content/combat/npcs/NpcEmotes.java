@@ -3,6 +3,7 @@ package com.rs2.game.content.combat.npcs;
 import com.rs2.GameEngine;
 import com.rs2.game.content.StaticNpcList;
 import com.rs2.game.content.combat.AttackType;
+import com.rs2.game.content.voidrealm.VoidConstants;
 import com.rs2.game.npcs.NpcHandler;
 import com.rs2.game.players.Player;
 
@@ -103,7 +104,13 @@ public enum NpcEmotes {
 		RAT(new int[] {86, 87, 88, 224, 446, 748, 950, 978, 2033}, 138, 139, 141),
 		SMALL_RAT(new int[] {47, 2032}, 2705, 2706, 2707),
 		DAGGANOTH(new int[] {1338, 1340, 1341, 1342, 2455, 2456}, 1341, 1340, 1342),
-		SKELETON(new int[] {90, 91, 92, 93}, 260, 261, 263);
+		SKELETON(new int[] {90, 91, 92, 93}, 260, 261, 263),
+		// Nythera's kit-wearers: human rigs, so a player's weapon swings, blocks and death
+		SILKWOOD_STALKER(new int[] {VoidConstants.SILKWOOD_STALKER}, 426, 424, 836),
+		SCAR_REAVER(new int[] {VoidConstants.SCAR_REAVER}, 395, 1156, 836),
+		MOONMOURNER(new int[] {VoidConstants.MOONMOURNER}, 1162, 424, 836),
+		RIMEBOUND_WARRIOR(new int[] {VoidConstants.RIMEBOUND_WARRIOR}, 401, 1156, 836),
+		COVE_NIGHTRUNNER(new int[] {VoidConstants.COVE_NIGHTRUNNER}, 426, 424, 836);
 		
 		int[] npcId;
 		int attackAnim, blockAnim, deadAnim;

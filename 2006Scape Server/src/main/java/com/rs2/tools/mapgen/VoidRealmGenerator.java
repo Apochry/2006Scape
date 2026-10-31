@@ -57,8 +57,12 @@ final class VoidRealmGenerator {
 	/*                              DEFINITIONS                               */
 	/* ====================================================================== */
 
+	/** The npc table, kept for the kit-wearers, whose models are only built with the armour (see kitWearers). */
+	private ConfigDefinitions.Table npcTable;
+
 	void npcs(ConfigDefinitions.Table npcs) throws java.io.IOException {
 		forge = new ModelForge(g.cache);
+		npcTable = npcs;
 		// a seer in deep violet robes, drawn to the island by the portal's song
 		ConfigDefinitions.Definition seer = g.npc(npcs, 176, SEER_ILSABET).name("Seer Ilsabet")
 				.examine("Her eyes are the colour of the portal's light.").npcActions("Talk-to", null, null, null, null)
@@ -309,7 +313,30 @@ final class VoidRealmGenerator {
 		weaponItems(items, WeaponSets.STARMETAL_SET);
 		weaponItems(items, WeaponSets.VOIDSTEEL_SET);
 		weaponItems(items, GodWeapons.GOD); // ladder ranks 31-45, 8053-8067
-		armourItems(items); // the armour sets, from 8068
+		armourItems(items); // the armour sets, 8068-8199
+		weaponItems(items, KitWeapons.KIT); // the kit-wearers' weapons, 8200-8204
+		kitWearers(); // and the npcs who wear those sets and carry those weapons, 3891-3895
+	}
+
+	/**
+	 * The kit-wearers (KitWeapons.wearer): each is the black knight's definition (the human rig, its stand and walk
+	 * animations) with its own single model, the body wearing its set with the matching weapon in hand. The stock
+	 * recolour and chathead go: the model carries its own colours, and they have nothing to say.
+	 */
+	void kitWearers() throws java.io.IOException {
+		ArmourSets as = new ArmourSets(new ArmourForge(forge));
+		for (int i = 0; i < KIT_WEARERS.length; i++) {
+			int model;
+			try {
+				model = forge.pack(KitWeapons.wearer(forge, as, i));
+			} catch (java.io.IOException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new java.io.IOException(e);
+			}
+			g.npc(npcTable, 178, KIT_WEARERS[i]).remove(40).remove(60).set(1, new byte[] { 1, (byte) (model >> 8), (byte) model })
+					.name(KitWeapons.WEARER_NAMES[i]).examine(KitWeapons.WEARER_EXAMINES[i]).shorts(95, KitWeapons.WEARER_COMBAT[i]);
+		}
 	}
 
 	/**

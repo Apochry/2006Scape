@@ -1324,10 +1324,11 @@ public final class VoidRealm {
 			break;
 		case "loot": { // ::vt loot rolls npcId - tally Nythera's loot tiers over many rolls, and drop ten for real
 			int[] tally = new int[VoidLoot.TIER_NAMES.length];
-			int bonus = 0;
+			int bonus = 0, kit = 0;
 			for (int k = 0; k < n[1]; k++) {
 				tally[VoidLoot.tier()]++;
 				bonus += VoidLoot.bonus() ? 1 : 0;
+				kit += VoidLoot.kitRoll() ? 1 : 0;
 			}
 			StringBuilder sb = new StringBuilder();
 			for (int k = 0; k < tally.length; k++) {
@@ -1335,6 +1336,9 @@ public final class VoidRealm {
 			}
 			p.getPacketSender().sendMessage(sb.toString());
 			p.getPacketSender().sendMessage("bonus gear " + (bonus * 1000 / Math.max(1, n[1]) / 10.0) + "% of " + n[1] + " rolls");
+			if (VoidLoot.kit(n[2]) != null) { // a kit-wearer: its 15% kit roll, and how many pieces it picks from
+				p.getPacketSender().sendMessage("kit piece " + (kit * 1000 / Math.max(1, n[1]) / 10.0) + "% (one of " + VoidLoot.kit(n[2]).length + ")");
+			}
 			for (int k = 0; k < 10; k++) {
 				VoidLoot.roll(p, n[2], p.absX, p.absY);
 			}
@@ -1362,7 +1366,7 @@ public final class VoidRealm {
 		case "weapons": // ::vt weapons [from to] - the weapon ladder (ranks 1-30) into your inventory
 			VoidArsenal.spawnAll(p, a.length > 1 ? n[1] : 1, a.length > 2 ? n[2] : LADDER.length);
 			break;
-		case "armour": // ::vt armour 1-14 - an armour set (1-6 the saga's: Oathsworn ... Heartfire; 7-14 the low sets: recruit ... Veilsworn)
+		case "armour": // ::vt armour 1-24 - an armour set (1-6 the saga's: Oathsworn ... Heartfire; 7-14 the low sets: recruit ... Veilsworn; 15-24 the middle sets: Quarryhand ... Last knight)
 			VoidArmoury.spawnSet(p, a.length > 1 ? n[1] : 1);
 			break;
 		case "sets": // ::vt sets 1|2 - the starmetal (1) or voidsteel (2) set, and some metal to work

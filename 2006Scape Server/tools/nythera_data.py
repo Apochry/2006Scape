@@ -56,6 +56,12 @@ people = [
     npcdef(3888, 'Aurel', 'The last King of Nythera. Free, at the very end.'),
     npcdef(3889, 'The Starless', 'The dark between the stars, looking back at you.', 400, 900, 16, 3, 3000, 422, 404, 2304, 180, 150, True, True),
     npcdef(3890, 'Starless spawn', 'A piece of the Starless that wandered off. It wants to go back.', 72, 60, 8, 1, 4000, 422, 404, 2304, 90, 70, True, True),
+    # the kit-wearers: each wears one of the middle armour sets and carries its weapon (VoidLoot: a 15% kit roll per kill)
+    npcdef(3891, 'Silkwood stalker', "A hunter of Silkwood, wrapped in spider silk. You didn't hear the bow until it was drawn.", 28, 30, 3, 1, 4000, 426, 424, 836, 28, 24, True, True),
+    npcdef(3892, 'Scar reaver', "A raider from the Hollow Scar in a ravager's bones, axe and all.", 45, 50, 5, 1, 4000, 395, 1156, 836, 45, 42, True, True),
+    npcdef(3893, 'Moonmourner', "One of the mourners who keep watch over the barrow. They don't like visitors.", 48, 45, 6, 1, 4000, 1162, 424, 836, 50, 36, True, True),
+    npcdef(3894, 'Rimebound warrior', 'A warrior of the Frostfang deeps, armoured in ice that never melts.', 55, 65, 7, 1, 4000, 401, 1156, 836, 55, 55, True, True),
+    npcdef(3895, 'Cove nightrunner', "One of the Cove's night crew. Whatever they're smuggling, they'd rather you didn't see it.", 54, 55, 6, 1, 4000, 426, 424, 836, 55, 45, True, True),
 ]
 ids = {p['id'] for p in people}
 
@@ -72,12 +78,21 @@ n += [{'hitpoints': p['hitpoints'], 'name': p['name'], 'combat': p['combat'], 'i
 save('npc.json', n)
 
 drops = load('npcdrops.json')
-drops = [x for x in drops if x['id'] not in ids]
+drops = [x for x in drops if x['id'] not in ids or 3891 <= x['id'] <= 3895]  # (the kit-wearers' tables are kept: see below)
 # Nythera's ordinary monsters roll VoidLoot's tiers in the server (40% just bones / 30% misc / 20% useful / 5% valuable /
 # 5% gear, +1% bonus gear); their tables here hold only what they always drop
 for i, bones in ((3868, 2859), (3869, 526), (3882, 592), (3883, 532), (3884, 526), (3887, 526)):
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': bones, 'chance': 0, 'amounts': [1, 1]}]})
+# the kit-wearers: bones here, VoidLoot's tiers and their 15% kit roll in the server. Their ids already have tables in
+# this file (stock placeholders); add the bones to the front and keep the rest (VoidLoot skips their 1-in-N rolls on Nythera)
+BONES = {'item_id': 526, 'chance': 0, 'amounts': [1, 1]}
+for i in (3891, 3892, 3893, 3894, 3895):
+    have = [x for x in drops if x['id'] == i]
+    if not have:
+        drops.append({'id': i, 'items': [BONES]})
+    elif BONES not in have[0]['items']:
+        have[0]['items'].insert(0, dict(BONES))
 # the three bosses: always good loot, and a rare unique each
 boss_drops = {
     3876: [(532, 0, 1, 1), (995, 0, 800, 2000), (1319, 15, 1, 1), (1333, 10, 1, 1), (1127, 20, 1, 1), (1163, 12, 1, 1),
@@ -110,7 +125,8 @@ def droptable(i, items):
 droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (8022, 15, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])  # sentinel: Rimecleaver, Rimeheart staff, water runes, rune legs
 droptable(3884, [(526, 0, 1, 1), (995, 0, 120, 400), (8072, 19, 1, 1), (8073, 19, 1, 1), (8068, 24, 1, 1), (8070, 29, 1, 1),
                  (8071, 29, 1, 1), (8069, 39, 1, 1), (1123, 25, 1, 1), (2353, 3, 2, 5)])  # Thane's oathsworn: its own plate
-droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
+droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (8194, 3, 1, 1),  # Vaelric: a 1/4 chance at his own full helm first
+                 (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])
 # the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
 droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (8031, 0, 1, 2), (7983, 11, 1, 1), (7984, 11, 1, 1),
                  (8023, 23, 1, 1), (8024, 31, 1, 1), (8025, 63, 1, 1),  # the ladder's top rungs
@@ -376,6 +392,74 @@ low_armour = {
     8145: (0.2, {M: 4, DM: 4}),                                                     # Veilsworn gloves
 }
 uniques.update(low_armour)
+# the ten middle sets (MidArmour), levels 20-60: each sits between the sets either side of it, and none beats the
+# saga's set at its own level (Oathsworn at Defence 40, Duskstalker at Ranged 50, Starmetal at Defence 60, Scarweave at
+# Magic 60). Chain is still lighter than plate; Ravager trades prayer for strength, the Last knight defence for prayer.
+mid_armour = {
+    8146: (1.8, plate(A(12, 13, 10, -1, 12), 3)),                                   # Quarryhand med helm
+    8147: (5.5, plate(A(27, 36, 42, -3, 29), 9)),                                   # Quarryhand chainbody
+    8148: (8.5, plate(A(24, 23, 22, -3, 23), 12)),                                  # Quarryhand platelegs
+    8149: (3.8, plate(A(18, 19, 16, -1, 17), 4)),                                   # Quarryhand sq shield
+    8150: (1.0, plate(A(4, 5, 6, 0, 0), 0)),                                        # Quarryhand boots
+    8151: (0.3, {S: 1, SL: 1, C: 2, DS: 3, DSL: 3, DC: 3, DR: 1, ST: 1}),            # Quarryhand gloves
+    8152: (0.6, {R: 3, DS: 3, DSL: 4, DC: 5, DM: 3, DR: 4}),                         # Silkspinner hood
+    8153: (3.5, {M: -6, R: 9, DS: 18, DSL: 22, DC: 24, DM: 12, DR: 22}),             # Silkspinner jerkin
+    8154: (2.0, {M: -5, R: 6, DS: 8, DSL: 10, DC: 10, DM: 6, DR: 10}),               # Silkspinner chaps
+    8155: (0.4, {R: 1, DS: 1, DSL: 2, DC: 2, DM: 1, DR: 2}),                         # Silkspinner boots
+    8156: (0.2, {M: -6, R: 5, DS: 2, DSL: 2, DC: 2, DM: 1, DR: 2}),                  # Silkspinner vambraces
+    8157: (0.4, {M: 4, DM: 4}),                                                     # Stonecaller hat
+    8158: (1.8, {M: 14, DS: 1, DSL: 1, DC: 1, DM: 14}),                              # Stonecaller robe top
+    8159: (1.4, {M: 10, DS: 1, DSL: 1, DC: 1, DM: 10}),                              # Stonecaller robe bottom
+    8160: (0.4, {M: 3, DM: 3}),                                                     # Stonecaller boots
+    8161: (0.2, {M: 3, DM: 3}),                                                     # Stonecaller gloves
+    8162: (0.9, {R: 5, DS: 5, DSL: 7, DC: 8, DM: 5, DR: 6}),                         # Ridgerunner coif
+    8163: (5.5, {M: -12, R: 17, DS: 30, DSL: 34, DC: 38, DM: 28, DR: 34}),           # Ridgerunner body
+    8164: (4.5, {M: -8, R: 10, DS: 16, DSL: 16, DC: 19, DM: 14, DR: 16}),            # Ridgerunner chaps
+    8165: (0.5, {R: 3, DS: 3, DSL: 3, DC: 4, DM: 2, DR: 3}),                         # Ridgerunner boots
+    8166: (0.3, {M: -9, R: 8, DS: 2, DSL: 2, DC: 3, DM: 2, DR: 3}),                  # Ridgerunner vambraces
+    8167: (2.7, plate(A(30, 32, 27, -1, 29), 6, {ST: 1})),                          # Ravager full helm
+    8168: (9.5, plate(A(82, 80, 72, -6, 80), 30, {ST: 2})),                         # Ravager platebody
+    8169: (9.0, plate(A(51, 49, 47, -4, 49), 21, {ST: 1})),                         # Ravager platelegs
+    8170: (5.4, plate(A(47, 49, 43, -1, 47), 8)),                                   # Ravager kiteshield
+    8171: (1.0, plate(A(12, 13, 14, 0, 0), 3, {ST: 1})),                            # Ravager boots
+    8172: (0.5, plate(A(8, 8, 8, 2, 5), 0, {S: 4, SL: 4, C: 4, ST: 3})),             # Ravager gauntlets
+    8173: (0.4, {M: 5, DS: 1, DSL: 1, DC: 1, DM: 5}),                                # Moonmourn hat
+    8174: (1.8, {M: 22, DS: 3, DSL: 3, DC: 3, DM: 22}),                              # Moonmourn robe top
+    8175: (1.4, {M: 16, DS: 2, DSL: 2, DC: 2, DM: 16}),                              # Moonmourn robe bottom
+    8176: (0.4, {M: 5, DM: 5}),                                                     # Moonmourn boots
+    8177: (0.2, {M: 5, DM: 5}),                                                     # Moonmourn gloves
+    8178: (2.0, plate(A(32, 34, 29, -1, 31), 3)),                                   # Rimebound med helm
+    8179: (6.5, plate(A(58, 74, 82, -3, 62), 9)),                                   # Rimebound chainbody
+    8180: (9.0, plate(A(54, 52, 50, -3, 52), 15)),                                  # Rimebound platelegs
+    8181: (4.0, plate(A(46, 48, 44, -1, 46), 4)),                                   # Rimebound sq shield
+    8182: (1.0, plate(A(13, 14, 15, 0, 0), 0)),                                     # Rimebound boots
+    8183: (0.4, plate(A(10, 10, 10, 2, 5), 0, {S: 5, SL: 5, C: 5, ST: 3})),          # Rimebound gloves
+    8184: (0.9, {R: 6, DS: 5, DSL: 6, DC: 8, DM: 5, DR: 6}),                         # Nightrunner coif
+    8185: (6.0, {M: -15, R: 26, DS: 44, DSL: 38, DC: 50, DM: 46, DR: 46}),           # Nightrunner body
+    8186: (5.0, {M: -10, R: 15, DS: 24, DSL: 20, DC: 27, DM: 25, DR: 23}),           # Nightrunner chaps
+    8187: (0.5, {R: 4, DS: 4, DSL: 4, DC: 5, DM: 3, DR: 4}),                         # Nightrunner boots
+    8188: (0.3, {M: -10, R: 10, DS: 3, DSL: 3, DC: 4, DM: 3, DR: 4}),                # Nightrunner vambraces
+    8189: (0.4, {M: 6, DM: 6}),                                                     # Farseer hat
+    8190: (1.8, {M: 23, DS: 3, DSL: 3, DC: 3, DM: 23}),                              # Farseer robe top
+    8191: (1.4, {M: 18, DS: 3, DSL: 3, DC: 3, DM: 18}),                              # Farseer robe bottom
+    8192: (0.4, {M: 5, DM: 5}),                                                     # Farseer boots
+    8193: (0.2, {M: 5, DM: 5}),                                                     # Farseer gloves
+    8194: (2.5, plate(A(38, 40, 35, 0, 38), 6, {P: 2})),                            # Last knight's full helm
+    8195: (9.0, plate(A(96, 94, 88, -4, 94), 30, {P: 3})),                          # Last knight's platebody
+    8196: (8.5, plate(A(64, 62, 58, -2, 62), 21, {P: 1})),                          # Last knight's platelegs
+    8197: (5.0, plate(A(60, 62, 56, 0, 60), 8, {P: 1})),                            # Last knight's kiteshield
+    8198: (1.0, plate(A(15, 16, 17, 0, 0), 3, {P: 1})),                             # Last knight's boots
+    8199: (0.5, plate(A(11, 11, 11, 3, 7), 0, {S: 5, SL: 5, C: 5, ST: 4, P: 1})),    # Last knight's gauntlets
+}
+uniques.update(mid_armour)
+# the kit-wearers' weapons (KitWeapons), each a little behind the ladder rung at its level
+uniques.update({
+    8200: (1.0, {R: 22}),                                                           # Silkstring shortbow (Ranged 25)
+    8201: (2.6, {S: -2, SL: 44, C: 38, ST: 52}),                                    # Ravager battleaxe (Attack 40)
+    8202: (2.2, {S: 8, SL: -1, C: 30, M: 13, DS: 2, DSL: 3, DC: 1, DM: 10, ST: 40}), # Moonmourn staff (Magic 45)
+    8203: (3.0, {S: -4, SL: -4, C: 58, ST: 60}),                                    # Rimebound warhammer (Attack 50)
+    8204: (1.0, {R: 62}),                                                           # Nightrunner shortbow (Ranged 50)
+})
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re
 txt = open(cfg + 'ItemDefinitions.json').read()
@@ -411,9 +495,11 @@ shop(352, "Pell's Provisions", [(1931, 10), (1935, 10), (1925, 10), (590, 5), (9
 shop(353, "Dorrin's Forge", [(2347, 10), (2349, 20), (2351, 20), (2353, 10), (2359, 5), (1117, 3), (1121, 3), (1073, 3),
                              (1109, 2), (1123, 2), (1159, 2), (1197, 2), (1287, 3), (1301, 2), (453, 50), (8004, 3), (8006, 3),
                              (8007, 2), (8102, 2), (8103, 1), (8104, 1), (8105, 2), (8106, 2), (8107, 2)])  # ... recruit's kit
-shop(354, "Quarrywright's Picks", [(1265, 10), (1267, 8), (1269, 6), (1273, 4), (1271, 2), (1755, 5), (1823, 5)])
+shop(354, "Quarrywright's Picks", [(1265, 10), (1267, 8), (1269, 6), (1273, 4), (1271, 2), (1755, 5), (1823, 5),
+                                   (8146, 2), (8147, 1), (8148, 1), (8149, 2), (8150, 2), (8151, 2)])  # ... and Quarryhand mail
 shop(355, 'The Last Hearth', [(2003, 20), (2289, 10), (1993, 15), (1917, 20), (1891, 10), (2327, 15), (1985, 10),
-                              (2011, 10), (379, 20), (373, 15), (1971, 30)])
+                              (2011, 10), (379, 20), (373, 15), (1971, 30),
+                              (8162, 2), (8163, 1), (8164, 1), (8165, 2), (8166, 2)])  # ... and Ridgerunner hide for the pass
 shop(356, "Nettle's Hold", [(954, 10), (301, 10), (311, 5), (1623, 5), (1621, 3), (1619, 2), (1617, 1),
                             (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2), (8008, 1),
                             (8074, 2), (8075, 1), (8076, 1), (8077, 2), (8078, 2),  # ... and the Duskstalker hide
@@ -456,5 +542,16 @@ for line in open(spawnfile):
     mh, at = STATS.get(i, (0, 0))
     spawn(i, x, y, w, mh, at, at)
     count += 1
+# the kit-wearers, in groups where they live (open tiles checked against the map's clipping; Frostfang's in the core
+# of the warriors' hall, local 48,35, more than 3x3 from its walls)
+KIT = {3891: (3, 28, [(1376, 2688), (1378, 2685), (1382, 2685), (1384, 2686),        # Silkwood stalkers: north edge of the wood
+                      (1401, 2655), (1403, 2659), (1406, 2654)]),                     # and its south-east
+       3892: (5, 45, [(1633, 2740), (1636, 2737), (1634, 2733), (1631, 2743), (1637, 2745)]),  # Scar reavers, east of the fissure
+       3893: (6, 50, [(1468, 2744), (1469, 2738), (1474, 2751), (1482, 2751), (1488, 2747)]),  # Moonmourners round the barrow mound
+       3894: (7, 55, [(1582, 9697), (1586, 9701), (1587, 9698), (1583, 9702)]),        # Rimebound warriors, Frostfang
+       3895: (6, 55, [(1486, 2620), (1489, 2617), (1492, 2621), (1488, 2624), (1494, 2618)])}  # Cove nightrunners, the east beach
+for i, (mh, at, tiles) in KIT.items():
+    for x, y in tiles:
+        spawn(i, x, y, 1, mh, at, at)
 save('spawns.json', sp)
 print('wildlife spawns', count, 'total spawns', len(sp))

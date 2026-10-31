@@ -26338,5 +26338,265 @@
     "id": 3882,
     "walk": 1,
     "height": 0
+  },
+  {
+    "maxHit": 3,
+    "strength": 28,
+    "attack": 28,
+    "x": 1376,
+    "y": 2688,
+    "id": 3891,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 3,
+    "strength": 28,
+    "attack": 28,
+    "x": 1378,
+    "y": 2685,
+    "id": 3891,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 3,
+    "strength": 28,
+    "attack": 28,
+    "x": 1382,
+    "y": 2685,
+    "id": 3891,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 3,
+    "strength": 28,
+    "attack": 28,
+    "x": 1384,
+    "y": 2686,
+    "id": 3891,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 3,
+    "strength": 28,
+    "attack": 28,
+    "x": 1401,
+    "y": 2655,
+    "id": 3891,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 3,
+    "strength": 28,
+    "attack": 28,
+    "x": 1403,
+    "y": 2659,
+    "id": 3891,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 3,
+    "strength": 28,
+    "attack": 28,
+    "x": 1406,
+    "y": 2654,
+    "id": 3891,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 5,
+    "strength": 45,
+    "attack": 45,
+    "x": 1633,
+    "y": 2740,
+    "id": 3892,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 5,
+    "strength": 45,
+    "attack": 45,
+    "x": 1636,
+    "y": 2737,
+    "id": 3892,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 5,
+    "strength": 45,
+    "attack": 45,
+    "x": 1634,
+    "y": 2733,
+    "id": 3892,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 5,
+    "strength": 45,
+    "attack": 45,
+    "x": 1631,
+    "y": 2743,
+    "id": 3892,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 5,
+    "strength": 45,
+    "attack": 45,
+    "x": 1637,
+    "y": 2745,
+    "id": 3892,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 50,
+    "attack": 50,
+    "x": 1468,
+    "y": 2744,
+    "id": 3893,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 50,
+    "attack": 50,
+    "x": 1469,
+    "y": 2738,
+    "id": 3893,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 50,
+    "attack": 50,
+    "x": 1474,
+    "y": 2751,
+    "id": 3893,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 50,
+    "attack": 50,
+    "x": 1482,
+    "y": 2751,
+    "id": 3893,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 50,
+    "attack": 50,
+    "x": 1488,
+    "y": 2747,
+    "id": 3893,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 7,
+    "strength": 55,
+    "attack": 55,
+    "x": 1582,
+    "y": 9697,
+    "id": 3894,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 7,
+    "strength": 55,
+    "attack": 55,
+    "x": 1586,
+    "y": 9701,
+    "id": 3894,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 7,
+    "strength": 55,
+    "attack": 55,
+    "x": 1587,
+    "y": 9698,
+    "id": 3894,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 7,
+    "strength": 55,
+    "attack": 55,
+    "x": 1583,
+    "y": 9702,
+    "id": 3894,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 55,
+    "attack": 55,
+    "x": 1486,
+    "y": 2620,
+    "id": 3895,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 55,
+    "attack": 55,
+    "x": 1489,
+    "y": 2617,
+    "id": 3895,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 55,
+    "attack": 55,
+    "x": 1492,
+    "y": 2621,
+    "id": 3895,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 55,
+    "attack": 55,
+    "x": 1488,
+    "y": 2624,
+    "id": 3895,
+    "walk": 1,
+    "height": 0
+  },
+  {
+    "maxHit": 6,
+    "strength": 55,
+    "attack": 55,
+    "x": 1494,
+    "y": 2618,
+    "id": 3895,
+    "walk": 1,
+    "height": 0
   }
 ]
