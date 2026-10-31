@@ -13,7 +13,6 @@ UNREACHABLE 2027,2873  (the wreck)
 STEEP-FOOTPRINT 2004,2884  the wreck's broken hull lies tilted on the beach
 
 # Nythera
-STRAIGHT-PATH 1510,2708    the old kingdom's stone road, laid true where it runs up to the Gate
 UNREACHABLE 1480,2602      the smugglers' ship lies off the cove: its ladders are set dressing out in the water
 UNREACHABLE 1480,2606      (the smugglers' ship)
 UNREACHABLE 1480,2610      (the smugglers' ship)

@@ -158,7 +158,8 @@ final class WorldAreas {
 				spot("the smugglers' cove", SMUGGLER_COVE_X, SMUGGLER_COVE_Y), spot("Silkwood", SILKWOOD_X, SILKWOOD_Y),
 				spot("the barrow door", BARROW_DOOR_X, BARROW_DOOR_Y), spot("the Hollow fissure", FISSURE_X, FISSURE_Y),
 				spot("the Frostfang cave", FROST_CAVE_X, FROST_CAVE_Y), spot("the Gatehold hatch", HATCH_X, HATCH_Y),
-				spot("Maelis", MAELIS_X, MAELIS_Y)).landmarkAt(RIFT_X, RIFT_Y));
+				spot("Maelis", MAELIS_X, MAELIS_Y), spot("the old beacon", BEACON_X, BEACON_Y))
+				.landmarkAt(RIFT_X, RIFT_Y));
 		ALL.add(new Area("The Void arena", ARENA_REGION_X * 64, ARENA_REGION_Y * 64, ARENA_REGION_X * 64 + 63, ARENA_REGION_Y * 64 + 63,
 				ARENA_ARRIVAL_X, ARENA_ARRIVAL_Y,
 				new Brief("The Hollow King's arena: a floating platform in the void where the saga's boss fight is held.",

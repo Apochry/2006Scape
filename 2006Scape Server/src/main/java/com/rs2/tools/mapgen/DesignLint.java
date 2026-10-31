@@ -293,10 +293,7 @@ final class DesignLint {
 		}
 		Set<Integer> main = new HashSet<>();
 		for (int[] a : arrivals) {
-			int c = firstComponentWalked(comp, a[0], a[1], 40);
-			if (c > 0) {
-				main.add(c);
-			}
+			main.addAll(componentsWalked(comp, a[0], a[1], 40));
 		}
 		for (WorldAreas.Spot s : spots) {
 			// served if any path within reach of it is part of the network (a stamped doorstep nearer by doesn't count against it)
@@ -323,30 +320,41 @@ final class DesignLint {
 		}
 	}
 
-	/** The first part of the path network the player walks onto from (x, y), within {@code max} steps. */
-	int firstComponentWalked(int[][] comp, int x, int y, int max) {
+	/**
+	 * The parts of the path network the player walks onto from (x, y): the first one reached within {@code max} steps,
+	 * and any other reached within a dozen steps more (an arrival in the middle of a crater may have a road out on
+	 * each side, and both are what the player meets).
+	 */
+	Set<Integer> componentsWalked(int[][] comp, int x, int y, int max) {
 		int w = l.x1 - l.x0 + 1, h = l.y1 - l.y0 + 1;
 		int[][] dist = new int[w][h];
+		Set<Integer> found = new HashSet<>();
+		int limit = max;
 		ArrayDeque<int[]> q = new ArrayDeque<>();
 		q.add(new int[] { x, y });
 		dist[x - l.x0][y - l.y0] = 1;
 		while (!q.isEmpty()) {
 			int[] p = q.poll();
-			if (comp[p[0] - l.x0][p[1] - l.y0] != 0) {
-				return comp[p[0] - l.x0][p[1] - l.y0];
+			int dp = dist[p[0] - l.x0][p[1] - l.y0];
+			if (dp > limit) {
+				break;
 			}
-			if (dist[p[0] - l.x0][p[1] - l.y0] > max) {
+			if (comp[p[0] - l.x0][p[1] - l.y0] != 0) {
+				if (found.isEmpty()) {
+					limit = Math.min(max, dp + 12);
+				}
+				found.add(comp[p[0] - l.x0][p[1] - l.y0]);
 				continue;
 			}
 			for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
 				int a = p[0] + d[0], b = p[1] + d[1];
 				if (l.in(a, b) && dist[a - l.x0][b - l.y0] == 0 && (walkable(a, b) || pathLike(a, b))) {
-					dist[a - l.x0][b - l.y0] = dist[p[0] - l.x0][p[1] - l.y0] + 1;
+					dist[a - l.x0][b - l.y0] = dp + 1;
 					q.add(new int[] { a, b });
 				}
 			}
 		}
-		return 0;
+		return found;
 	}
 
 	int nearestComponent(int[][] comp, int x, int y, int r) {

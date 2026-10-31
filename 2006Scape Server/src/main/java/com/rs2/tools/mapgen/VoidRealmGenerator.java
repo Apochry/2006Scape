@@ -984,14 +984,31 @@ final class VoidRealmGenerator {
 
 	/** Starfall Crater: 0..1 towards its centre. */
 	static double crater(int x, int y) {
-		return smooth(1 - Math.hypot(x - CRATER_X, y - CRATER_Y) / 9.0);
+		return smooth(1 - Math.hypot(x - CRATER_X, y - CRATER_Y) / CRATER_RADIUS);
+	}
+
+	/** The crater's rim, thrown up by the fall: 0..1 on the ring just outside the bowl, ragged, and low on the west lip. */
+	static double craterRim(int x, int y) {
+		double d = Math.hypot(x - CRATER_X, y - CRATER_Y);
+		double west = x < CRATER_X - 6 && Math.abs(y - CRATER_Y) < 6 ? 0.35 : 1; // where the road climbs out
+		return smooth(1 - Math.abs(d - CRATER_RADIUS - 1.5) / 3.2) * (0.75 + 0.35 * fbm(x / 5.0, y / 5.0, 83)) * west;
+	}
+
+	/** Inside the crater or on its rim: kept clear of trees, scrub and wandering animals. */
+	static boolean inCrater(int x, int y) {
+		return Math.hypot(x - CRATER_X, y - CRATER_Y) < CRATER_RADIUS + 4;
 	}
 
 	/** Forest density 0..1: thick in the west and the foothills, open meadows in the middle and south. */
 	static double forest(int x, int y) {
-		double west = smooth((1480 - x) / 60.0);
-		double foothills = smooth(1 - Math.abs(y - 2768) / 18.0) * 0.8;
-		return Math.max(0, Math.max(west, foothills) * 0.9 + 0.45 * fbm(x / 18.0, y / 18.0, 51) - 0.1);
+		// the woods' eastern edge wanders, and thins out over a long way rather than stopping
+		double west = smooth((1480 + 16 * fbm(y / 24.0, 3, 55) - x) / 70.0);
+		// the foothill woods under the ridge follow the hills: a band that bends, swells, narrows and breaks
+		double bandY = 2768 + 10 * Math.sin((x - NYTHERA_CX) / 41.0) + 7 * fbm(x / 30.0, 5, 52);
+		double width = 13 + 9 * fbm(x / 26.0, 7, 53);
+		double foothills = smooth(1 - Math.abs(y - bandY) / Math.max(5, width)) * 0.8 * smooth(0.55 + 1.6 * fbm(x / 45.0, 11, 54));
+		double clearing = smooth((fbm(x / 14.0, y / 14.0, 57) - 0.35) * 4); // glades inside the woods
+		return Math.max(0, Math.max(west, foothills) * 0.9 * (1 - 0.7 * clearing) + 0.45 * fbm(x / 18.0, y / 18.0, 51) - 0.1);
 	}
 
 	void nythera() {
@@ -1009,8 +1026,10 @@ final class VoidRealmGenerator {
 		}
 		slopes();
 		// the old stone road from the crater to the Broken Gate, then dirt tracks north to the pass and east to the scar
-		road(2.6, STONE_ROAD, new int[][] { { 1564, 2662 }, { 1558, 2670 }, { 1546, 2676 }, { 1538, 2688 }, { 1526, 2694 },
-				{ 1518, 2704 }, { 1510, 2710 } }, 2.2, 11, 91);
+		// (it climbs out of the crater over the low west lip by Oren's camp; from the lip you can see the Gate)
+		// and comes up to the Gate from the south, through the passage between its towers
+		road(3.0, STONE_ROAD, new int[][] { { 1546, 2704 }, { 1539, 2701 }, { 1531, 2699 }, { 1523, 2700 }, { 1517, 2703 },
+				{ 1513, 2707 }, { 1510, 2710 } }, 1.6, 9, 91);
 		road(2.2, DIRT_ROAD, new int[][] { { 1510, 2710 }, { 1508, 2718 }, { 1506, 2726 }, { 1496, 2732 }, { 1492, 2746 }, { 1484, 2754 },
 				{ 1482, 2768 }, { 1480, 2782 }, { 1482, 2800 }, { 1483, 2804 } }, 2.4, 10, 92); // to the inn's yard
 		road(2.0, DIRT_ROAD, new int[][] { { 1511, 2710 }, { 1516, 2713 }, { 1526, 2718 }, { 1538, 2728 }, { 1552, 2730 }, { 1566, 2738 },
@@ -1049,7 +1068,7 @@ final class VoidRealmGenerator {
 		} else if (lk > -4 || river < 3) {
 			h = Math.min(h, 3 + Math.max(0, Math.min(lk < -4 ? 99 : -lk, river)) * 1.6); // banks slope down to the water
 		}
-		h -= 9 * crater(x, y); // the crater's bowl
+		h += 4 * craterRim(x, y) - 12 * crater(x, y); // the crater's raised rim and its bowl
 		g.setHeight(x, y, (int) Math.round(Math.max(1, h)));
 		if (water) {
 			g.setOverlay(x, y, WATER);
@@ -1162,8 +1181,10 @@ final class VoidRealmGenerator {
 		road(2.0, DIRT_ROAD, new int[][] { { 1445, 2655 }, { 1436, 2659 }, { 1428, 2662 }, { 1421, 2665 }, { 1416, 2666 } }, 1.2, 8, 97);
 		road(1.4, DIRT_ROAD, new int[][] { { 1409, 2666 }, { 1402, 2667 }, { 1396, 2668 }, { 1392, 2668 } }, 0.8, 6, 98);
 		// off the stone road and down the lane between the croft's pens into its yard
-		road(1.8, DIRT_ROAD, new int[][] { { 1536, 2690 }, { 1530, 2686 }, { 1525, 2682 }, { 1523, 2677 }, { 1522, 2672 },
-				{ 1521, 2668 } }, 0.6, 7, 99);
+		road(1.8, DIRT_ROAD, new int[][] { { 1528, 2700 }, { 1527, 2694 }, { 1526, 2689 }, { 1524, 2682 }, { 1523, 2677 },
+				{ 1522, 2672 }, { 1521, 2668 } }, 0.8, 7, 99);
+		// from the crater's east rim to the old kingdom's ruined beacon on the hill
+		road(1.8, DIRT_ROAD, new int[][] { { 1570, 2699 }, { 1580, 2690 }, { 1589, 2682 }, { 1597, 2675 }, { 1603, 2670 } }, 1.4, 8, 106);
 		// the east road north to the quarry
 		road(1.8, DIRT_ROAD, new int[][] { { 1538, 2729 }, { 1535, 2740 }, { 1534, 2751 }, { 1532, 2760 } }, 1.4, 8, 100);
 		// the inn road to the barrow mound's door, and to the Frostfang cave mouth
@@ -1193,29 +1214,43 @@ final class VoidRealmGenerator {
 	}
 
 	void craterAndCamp() {
-		// scorched, glassy ground where you fell, crystals thrown up around the rim
-		for (int x = CRATER_X - 12; x <= CRATER_X + 12; x++) {
-			for (int y = CRATER_Y - 12; y <= CRATER_Y + 12; y++) {
-				double d = Math.hypot(x - CRATER_X, y - CRATER_Y);
-				if (d < 7.5) {
-					g.setUnderlay(x, y, d < 4 ? ASH : BURGH_SOIL);
-					if (d < 3.4) {
+		// scorched, glassy ground where you fell, darkening towards the rift; dead grass thrown out over the rim
+		int r = CRATER_RADIUS + 6;
+		for (int x = CRATER_X - r; x <= CRATER_X + r; x++) {
+			for (int y = CRATER_Y - r; y <= CRATER_Y + r; y++) {
+				double d = Math.hypot(x - CRATER_X, y - CRATER_Y), n = fbm(x / 3.0, y / 3.0, 81);
+				if (d < CRATER_RADIUS * 0.8 + 1.5 * n) {
+					g.setUnderlay(x, y, d < CRATER_RADIUS * 0.4 + n ? ASH : BURGH_SOIL);
+					if (d < 4.2 + 1.2 * n) {
 						g.setOverlay(x, y, VOID_GLASS); // glassy violet where the rift burned the ground
 					}
-				} else if (d < 11 && fbm(x / 3.0, y / 3.0, 81) > 0) {
+				} else if (d < r && n > (d - CRATER_RADIUS) / 6.0 - 0.15) {
 					g.setUnderlay(x, y, DEAD_GRASS);
 				}
 			}
 		}
 		g.object(RIFT, RIFT_X - 1, RIFT_Y, TYPE_SCENERY, 0);
-		int[][] crystals = { { -7, 2 }, { 6, 4 }, { 7, -4 }, { -5, -6 }, { 1, 8 }, { -9, -1 } };
+		// crystals thrown up in the bowl and on the rim, more of them on the far (east) side
+		int[][] crystals = { { -9, 4 }, { 8, 6 }, { 10, -5 }, { -6, -9 }, { 2, 11 }, { -12, -2 }, { 12, 2 }, { 5, -11 } };
 		for (int i = 0; i < crystals.length; i++) {
-			g.object(i % 2 == 0 ? VOID_CRYSTAL : VOID_CRYSTAL_DARK, CRATER_X + crystals[i][0] - 1, CRATER_Y + crystals[i][1] - 1,
-					TYPE_SCENERY, i & 3);
+			int cx = CRATER_X + crystals[i][0] - 1, cy = CRATER_Y + crystals[i][1] - 1;
+			if (g.footprintFree(cx, cy, 1)) {
+				g.object(i % 2 == 0 ? VOID_CRYSTAL : VOID_CRYSTAL_DARK, cx, cy, TYPE_SCENERY, CursedIslandGenerator.turn(cx, cy));
+			}
+		}
+		// rocks heaved out onto the rim, in clumps, never on the road out
+		for (int i = 0; i < 26; i++) {
+			double a = i * 2 * Math.PI / 26 + 0.4 * fbm(i, 0, 84);
+			double d = CRATER_RADIUS + 1 + 2.5 * Math.abs(fbm(i, 3, 85)) + (i % 3 == 0 ? 2 : 0);
+			int x = CRATER_X + (int) Math.round(Math.cos(a) * d), y = CRATER_Y + (int) Math.round(Math.sin(a) * d);
+			if (fbm(x / 6.0, y / 6.0, 86) < -0.15 || !free(x, y, 1) || craterRim(x, y) < 0.3) {
+				continue; // gaps in the rim
+			}
+			rock(i % 4 == 0 ? MOSSY_ROCK : SMALL_MOSSY_ROCK, x, y, CursedIslandGenerator.turn(x, y));
 		}
 		// the ground still smoulders where you fell
-		g.object(FIRE, CRATER_X + 3, CRATER_Y - 3, TYPE_SCENERY, 0);
-		g.object(FIRE, CRATER_X - 4, CRATER_Y + 2, TYPE_SCENERY, 0);
+		g.object(FIRE, CRATER_X + 4, CRATER_Y - 4, TYPE_SCENERY, CursedIslandGenerator.turn(CRATER_X + 4, CRATER_Y - 4));
+		g.object(FIRE, CRATER_X - 6, CRATER_Y + 3, TYPE_SCENERY, CursedIslandGenerator.turn(CRATER_X - 6, CRATER_Y + 3));
 		// Oren's camp on the rim: he pitched his tent to watch the crater, with its back to the wind off the hills
 		tent(OREN_X - 4, OREN_Y + 1, DOOR_EAST);
 		campfire(OREN_X + 1, OREN_Y + 1, true);
@@ -1306,7 +1341,7 @@ final class VoidRealmGenerator {
 			for (int x = NX0 + 2; x < NX0 + NSIZE - 2; x++) {
 				for (int y = NY0 + 2; y < NY0 + NSIZE - 2; y++) {
 					double inland = coast(x, y);
-					if (inland < 1 || blocked(x, y) || !free(x, y, 0) || crater(x, y) > 0 || scar(x, y) > 0.3
+					if (inland < 1 || blocked(x, y) || !free(x, y, 0) || inCrater(x, y) || scar(x, y) > 0.3
 							|| Math.hypot(x - OREN_X, y - OREN_Y) < 6 || nearCamp(x, y)) {
 						continue;
 					}
@@ -1354,19 +1389,19 @@ final class VoidRealmGenerator {
 			g.object(random.nextInt(3) == 0 ? BIG_BUSH : random.nextBoolean() ? BUSH : BUSH_2, x, y, TYPE_SCENERY, rot);
 		} else if (roll < treeChance + 12 && free(x, y, 3) && f > 0.4) {
 			g.object(FALLEN_TREE, x, y, TYPE_SCENERY, rot);
-		} else if (roll < treeChance + 15 && free(x, y, 1)) {
-			rock(SMALL_MOSSY_ROCK, x, y, rot);
+		} else if (roll < treeChance + 10 + (int) (120 * outcrop(x, y)) && roll >= treeChance + 10 && free(x, y, 1)) {
+			rock(outcrop(x, y) > 0.6 && free(x, y, 2) ? MOSSY_ROCK : SMALL_MOSSY_ROCK, x, y, rot); // in outcrops, not sprinkled
 		}
 	}
 
-	/** Where the big boulders went, to keep them out of ruled rows (see extendsRow). */
+	/** Where the boulders and the flower clumps went, to keep them out of ruled rows (see extendsRow). */
 	final java.util.Map<Long, Integer> rocks = new java.util.HashMap<>();
 
 	/**
 	 * Whether placing {@code id} at (x, y) would make a third in a line, evenly spaced, with two already placed: the
 	 * scan over the map lays things down in order, and dense ground then fills with rows that read as walls nobody built.
 	 */
-	/** A boulder, unless it would line up with two others of its kind (see extendsRow). */
+	/** A boulder (or any clump of a thing), unless it would line up with two others of its kind (see extendsRow). */
 	void rock(int id, int x, int y, int rot) {
 		if (!extendsRow(id, x, y)) {
 			g.object(id, x, y, TYPE_SCENERY, rot);
@@ -1390,18 +1425,28 @@ final class VoidRealmGenerator {
 		return false;
 	}
 
+	/** Where the bedrock breaks the surface: 0..1, in patches, more of them in the hills. */
+	static double outcrop(int x, int y) {
+		return smooth((fbm(x / 13.0, y / 13.0, 61) + 0.4 * mountain(x, y) - 0.3) * 2.5);
+	}
+
+	/** Where wildflowers grow thick: drifts in the meadows, not an even sprinkle. */
+	static double flowerDrift(int x, int y) {
+		return smooth((fbm(x / 9.0, y / 9.0, 62) - 0.05) * 3);
+	}
+
 	void groundCover(int x, int y, double inland) {
 		if (inland < 4 || mountain(x, y) > 0.35) {
 			return;
 		}
 		int roll = random.nextInt(1000), rot = random.nextInt(4);
 		double f = forest(x, y);
-		if (f < 0.5 && roll < 40) {
+		if (f < 0.5 && roll < (int) (90 * flowerDrift(x, y))) {
 			g.object(GROUND_FLOWERS + random.nextInt(4), x, y, TYPE_GROUND_DECOR, rot);
 		} else if (roll < 60 && f >= 0.5) {
 			g.object(FERN + random.nextInt(3), x, y, TYPE_SCENERY, rot);
 		} else if (roll < 75) {
-			g.object(FLOWERS + random.nextInt(2), x, y, TYPE_SCENERY, rot);
+			rock(FLOWERS + random.nextInt(2), x, y, rot); // (never three in a ruled line, like the boulders)
 		} else if (roll < 110) {
 			g.object(LONG_GRASS, x, y, TYPE_GROUND_DECOR, rot);
 		}
@@ -1420,7 +1465,7 @@ final class VoidRealmGenerator {
 	static final int[][] CAMPS = { { FISH_CAMP_X, FISH_CAMP_Y, 9 }, { CROFT_X, CROFT_Y, 13 }, { WOOD_CAMP_X, WOOD_CAMP_Y, 7 },
 			{ WATCH_X, WATCH_Y, 6 }, { GATEHOLD_X, GATEHOLD_Y, 13 }, { QUARRY_X, QUARRY_Y, 10 }, { INN_X, INN_Y, 10 },
 			{ SMUGGLER_COVE_X, SMUGGLER_COVE_Y, 9 }, { SILKWOOD_X, SILKWOOD_Y, 10 }, { BARROW_DOOR_X, BARROW_DOOR_Y + 5, 9 },
-			{ FISSURE_X, FISSURE_Y, 4 }, { FROST_CAVE_X - 3, FROST_CAVE_Y, 4 }, { MAELIS_X, MAELIS_Y, 6 } };
+			{ FISSURE_X, FISSURE_Y, 4 }, { BEACON_X + 1, BEACON_Y + 1, 7 }, { FROST_CAVE_X - 3, FROST_CAVE_Y, 4 }, { MAELIS_X, MAELIS_Y, 6 } };
 
 	boolean nearCamp(int x, int y) {
 		for (int[] c : CAMPS) {
@@ -1680,6 +1725,19 @@ final class VoidRealmGenerator {
 		spawns.add(new int[] { id, x, y, walk });
 	}
 
+	void oldBeacon() {
+		int[][] debris = { { 0, 0, GATE_TOWER_BROKEN, 1 }, { 4, -2, RUBBLE, 0 }, { -3, -3, RUBBLE, 2 }, { 3, 3, FALLEN_MASONRY, 1 },
+				{ -2, 4, GATE_WALL_LOW, 3 }, { 6, 1, RUBBLE, 3 } };
+		for (int[] d : debris) {
+			for (int dx = 0; dx < 3; dx++) {
+				for (int dy = 0; dy < 3; dy++) {
+					g.removeObjectsAt(BEACON_X + d[0] + dx, BEACON_Y + d[1] + dy);
+				}
+			}
+			g.object(d[2], BEACON_X + d[0], BEACON_Y + d[1], TYPE_SCENERY, d[3]);
+		}
+	}
+
 	void places() {
 		gatehold();
 		quarry();
@@ -1689,6 +1747,7 @@ final class VoidRealmGenerator {
 		barrowMound();
 		fissure();
 		frostCaveMouth();
+		oldBeacon();
 		// last, so nothing above clears them away
 		maelisCamp();
 		waystones();
@@ -2375,7 +2434,7 @@ final class VoidRealmGenerator {
 	}
 
 	boolean open(int x, int y) {
-		return !water(x, y) && !blocked(x, y) && free(x, y, 0) && !nearCamp(x, y) && crater(x, y) <= 0;
+		return !water(x, y) && !blocked(x, y) && free(x, y, 0) && !nearCamp(x, y) && !inCrater(x, y);
 	}
 
 	/** Water with dry, walkable land beside it (where a fishing spot or a duck makes sense). */

@@ -98,7 +98,7 @@ public final class VoidConstants {
 
 	/* ---------------- Heartforged ---------------- */
 	/** The fallen star in Starfall Crater; the rime altar deep in the Frostfang Caves (local tiles of its region). */
-	public static final int STAR_X = 1580, STAR_Y = 2652, ALTAR_LX = 19, ALTAR_LY = 13;
+	public static final int STAR_X = 1562, STAR_Y = 2704, ALTAR_LX = 19, ALTAR_LY = 13;
 
 	/* ---------------- the Starless Expanse (the optional mega boss) ---------------- */
 	public static final int STARLESS_REGION_X = 26, STARLESS_REGION_Y = 148;
@@ -147,12 +147,17 @@ public final class VoidConstants {
 	/* ---------------- Nythera ---------------- */
 	public static final int NYTHERA_REGION_X0 = 20, NYTHERA_REGION_Y0 = 39, NYTHERA_REGIONS = 7;
 	public static final int NYTHERA_CX = 1504, NYTHERA_CY = 2720;
-	/** Starfall Crater, where you land, with the rift your fall tore open in its middle. */
-	public static final int CRATER_X = 1574, CRATER_Y = 2650;
-	public static final int RIFT_X = 1573, RIFT_Y = 2650;
-	public static final int LANDING_X = 1574, LANDING_Y = 2646;
-	/** Oren's camp on the crater's north-west rim. */
-	public static final int OREN_X = 1562, OREN_Y = 2661;
+	/**
+	 * Starfall Crater, where you land, with the rift your fall tore open in its middle: a great scorched bowl near the
+	 * heart of the land, its west lip a short walk from the Broken Gate along the old stone road.
+	 */
+	public static final int CRATER_X = 1556, CRATER_Y = 2702, CRATER_RADIUS = 13;
+	public static final int RIFT_X = 1555, RIFT_Y = 2702;
+	public static final int LANDING_X = 1556, LANDING_Y = 2698;
+	/** The old kingdom's beacon on the east headland, where a fire once answered the Gate's: fallen, left to the gulls. */
+	public static final int BEACON_X = 1607, BEACON_Y = 2668;
+	/** Oren's camp on the crater's north-west rim, where the stone road leaves it. */
+	public static final int OREN_X = 1541, OREN_Y = 2708;
 
 	/* camps (scenery in VoidRealmGenerator#camps, people in spawns.json) */
 	/** Netwright's landing: Bram's fishing camp on the lake's east shore. */
@@ -202,7 +207,7 @@ public final class VoidConstants {
 	/** Waystones (the network Ashes of the Crown opens): name and the tile beside each stone you arrive on. */
 	public static final String[] WAYSTONE_NAMES = { "Gatehold", "Starfall Crater", "The Last Hearth", "Smugglers' Cove",
 			"The Scar Watch" };
-	public static final int[][] WAYSTONE_SPOTS = { { 1504, 2712 }, { 1566, 2664 }, { 1490, 2803 }, { 1476, 2624 }, { 1569, 2737 } };
+	public static final int[][] WAYSTONE_SPOTS = { { 1504, 2712 }, { 1538, 2700 }, { 1490, 2803 }, { 1476, 2624 }, { 1569, 2737 } };
 
 	public static int dungeonBaseX(int regionX) {
 		return regionX * 64;

@@ -94,8 +94,14 @@ Nythera is a 7×7 region continent (448×448 tiles) at regions (20-26, 39-45), c
 - a ridge of snow-capped mountains with a single pass;
 - a lake;
 - a winding river (Catmull-Rom curves with noise wobble);
-- roads that follow the land: stone from the crater to the **Broken Gate** ruins, then dirt
-  north to the pass and east;
+- **Starfall Crater** near the heart of the land (1556, 2702): a scorched bowl about 26 tiles
+  across with a raised, rock-strewn rim, glassy violet round the rift and dead grass thrown out
+  over the lip. Oren's camp is on the low west lip, where the old stone road climbs out;
+- roads that follow the land: stone from the crater's lip to the **Broken Gate** ruins, entering
+  between its towers, then dirt north to the pass and east, and worn tracks to every place the
+  saga sends you (the gate requires it);
+- the **old beacon**, a fallen tower on the east headland, reached by a track from the crater's
+  east rim;
 - the **Hollow Scar** in the east, a dying, blackened land;
 - forests, ore clusters (copper through mithril), ruins and a standing-stone circle.
 
@@ -107,7 +113,7 @@ for the next quests. Until then the countryside already has people and wildlife 
 | Place | Where | Who and what |
 |---|---|---|
 | **Netwright's Landing** | lake's east shore (1459, 2712) | **Bram Netwright** fishes off a jetty. A shack, rowboats, nets drying, a spit-roast. He sells tackle and buys fish (shop 350). Net/bait spots in the lake, lure/bait spots along the river. |
-| **Tollan's Croft** | hills between the crater and the Broken Gate (1522, 2662) | **Marta Tollan**'s farmhouse. Flax, wheat and cabbages you can pick in fenced fields, a well, hay, a scarecrow, a sheep pen (shearable), a cow pasture and chickens loose in the yard. She sells bread, eggs, milk, wool, shears and the like (shop 351). |
+| **Tollan's Croft** | hills south of the Broken Gate, down a lane off the stone road (1522, 2662) | **Marta Tollan**'s farmhouse. Flax, wheat and cabbages you can pick in fenced fields, a well, hay, a scarecrow, a sheep pen (shearable), a cow pasture and chickens loose in the yard. She sells bread, eggs, milk, wool, shears and the like (shop 351). |
 | **Hob's camp** | edge of the western forest (1446, 2652) | **Hob Ashby** the woodcutter: two tents facing a cookfire with logs to sit on, a woodpile and chopping block, a half-loaded cart, and stumps on the forest side. |
 | **The Scar Watch** | west edge of the Hollow Scar (1574, 2741) | **Warden Kael**. She pays a bounty for every 10 **Hollowed wolves** (combat 34) and **Hollow husks** (combat 41) you kill in the Scar: 750 coins and 1,500 Slayer XP, repeatable. The tally (`Player.hollowKills`) is saved. |
 | The roads | | **Wandering pilgrims** rest along the way. A signpost stands where the roads part at the Broken Gate. |
