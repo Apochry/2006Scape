@@ -21,9 +21,16 @@ after a large rework.
 2. Spawn a **fresh** subagent (Agent tool, general-purpose). Don't fork, because a fork inherits your context, and
    your context is the bias being removed. Give it the prompt below, with the paths filled in. Don't add your design
    notes, the code, or what you were going for.
-3. Treat its findings as you would the gate's. Fix the real ones at the source, then regenerate and gate. If a finding
+   Tell it the map's legend: what the dots, strips and colours are, and where the named places stand, by
+   coordinates. A reviewer with only a bare map will misread things. The first Nythera review took a thin dirt track
+   for "no path", and a pier for a ladder.
+3. **Check every finding before you act on it.** A reviewer's report is a set of claims, written as confidently when
+   it's wrong as when it's right. Look at the spot (`PathMap`, `Ascii` or a screenshot), and sort each finding into
+   real, misread, or real-but-a-tradeoff (moving the crater would move every quest that uses it). Fix only what is
+   real.
+4. Treat the real findings as you would the gate's. Fix the real ones at the source, then regenerate and gate. If a finding
    is wrong because the reviewer lacked context (a quest needs it that way), note why in your summary.
-4. **Ratchet.** If a reviewer reports the same kind of thing a second time, in any area, it's a rule. Write it into
+5. **Ratchet.** If a reviewer reports the same kind of thing a second time, in any area, it's a rule. Write it into
    `DesignLint`, plant it in `GateSelfTest`, add it to the skill's findings table, and stop relying on reviewers for
    it.
 
