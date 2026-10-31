@@ -28,6 +28,8 @@ public final class VoidConstants {
 	/* Hold the Gate, Ashes of the Crown's coffer guard, Heartforged, The Hollow King, and the Starless */
 	public static final int HOLLOW_RAVAGER = 3883, THANE_OATHSWORN = 3884, RIMEBOUND_SENTINEL = 3885, SIR_VAELRIC = 3886,
 			HOLLOW_KNIGHT = 3887, AUREL_SPIRIT = 3888, THE_STARLESS = 3889, STARLESS_SPAWN = 3890;
+	/* the Shardback, a crater beast with its own model and animations (tools/mapgen/Shardback): defined, not yet placed */
+	public static final int SHARDBACK = 4000;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;

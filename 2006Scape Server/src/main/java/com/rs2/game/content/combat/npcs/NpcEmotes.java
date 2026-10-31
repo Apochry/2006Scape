@@ -103,7 +103,8 @@ public enum NpcEmotes {
 		RAT(new int[] {86, 87, 88, 224, 446, 748, 950, 978, 2033}, 138, 139, 141),
 		SMALL_RAT(new int[] {47, 2032}, 2705, 2706, 2707),
 		DAGGANOTH(new int[] {1338, 1340, 1341, 1342, 2455, 2456}, 1341, 1340, 1342),
-		SKELETON(new int[] {90, 91, 92, 93}, 260, 261, 263);
+		SKELETON(new int[] {90, 91, 92, 93}, 260, 261, 263),
+		SHARDBACK(new int[] {4000}, 4102, 4104, 4103); // its own frames (tools/mapgen/Shardback): bite, flinch, collapse
 		
 		int[] npcId;
 		int attackAnim, blockAnim, deadAnim;

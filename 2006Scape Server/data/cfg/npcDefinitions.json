@@ -134242,5 +134242,27 @@
     "aggressive": true,
     "retreats": false,
     "poisonous": false
+  },
+  {
+    "id": 4000,
+    "name": "Shardback",
+    "examine": "Its back bristles with the glass the star left behind. So does its temper.",
+    "respawn": 30,
+    "combat": 47,
+    "hitpoints": 48,
+    "maxHit": 6,
+    "size": 2,
+    "attackSpeed": 2400,
+    "attackAnim": 4102,
+    "defenceAnim": 4104,
+    "deathAnim": 4103,
+    "attackBonus": 45,
+    "defenceMelee": 50,
+    "defenceRange": 75,
+    "defenceMage": 10,
+    "attackable": true,
+    "aggressive": true,
+    "retreats": false,
+    "poisonous": false
   }
 ]
