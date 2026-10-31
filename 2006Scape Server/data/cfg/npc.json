@@ -16756,5 +16756,59 @@
     "name": "Hollow husk",
     "combat": 41,
     "id": 3869
+  },
+  {
+    "hitpoints": 0,
+    "name": "Captain Ysolde",
+    "combat": 0,
+    "id": 3870
+  },
+  {
+    "hitpoints": 0,
+    "name": "Pell the Trader",
+    "combat": 0,
+    "id": 3871
+  },
+  {
+    "hitpoints": 0,
+    "name": "Dorrin Anvilhand",
+    "combat": 0,
+    "id": 3872
+  },
+  {
+    "hitpoints": 0,
+    "name": "Tess Quarryhand",
+    "combat": 0,
+    "id": 3873
+  },
+  {
+    "hitpoints": 0,
+    "name": "Morra",
+    "combat": 0,
+    "id": 3874
+  },
+  {
+    "hitpoints": 0,
+    "name": "Sly Nettle",
+    "combat": 0,
+    "id": 3875
+  },
+  {
+    "hitpoints": 110,
+    "name": "The Barrow Thane",
+    "combat": 68,
+    "id": 3876
+  },
+  {
+    "hitpoints": 150,
+    "name": "The Hollow Matriarch",
+    "combat": 92,
+    "id": 3877
+  },
+  {
+    "hitpoints": 180,
+    "name": "Rimeclaw",
+    "combat": 110,
+    "id": 3878
   }
 ]

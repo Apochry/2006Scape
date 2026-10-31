@@ -394,6 +394,11 @@ public final class CursedIslandGenerator {
 		return r == null ? 0 : r.overlay[0][x & 63][y & 63];
 	}
 
+	int underlayAt(int x, int y) {
+		MapRegion r = regionAt(x, y);
+		return r == null ? 0 : r.underlay[0][x & 63][y & 63];
+	}
+
 	/** The graveyard sits on a low plateau in the west. */
 	static double westPlateau(int x, int y) {
 		return 7 * smooth(1 - Math.hypot(x - 1989, y - 2918) / 13.0);

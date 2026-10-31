@@ -54,6 +54,9 @@ public final class VoidRealm {
 	/* ====================================================================== */
 
 	public static boolean firstClickNpc(Player player, int npcType) {
+		if (NytheraPlaces.firstClickNpc(player, npcType)) {
+			return true;
+		}
 		switch (npcType) {
 		case GHOST:
 			if (player.skullbrine < CurseOfSkullbrine.COMPLETE) {
@@ -98,6 +101,9 @@ public final class VoidRealm {
 
 	/** Right-click "Trade" on the camp folk who sell things. */
 	public static boolean secondClickNpc(Player player, int npcType) {
+		if (NytheraPlaces.secondClickNpc(player, npcType)) {
+			return true;
+		}
 		if (npcType == BRAM || npcType == MARTA) {
 			player.getShopAssistant().openShop(npcType == BRAM ? BRAM_SHOP : MARTA_SHOP);
 			return true;
@@ -108,12 +114,12 @@ public final class VoidRealm {
 	/** Hollowed creatures Warden Kael pays for, per batch. */
 	private static final int KAEL_BOUNTY = 10;
 
-	private static void dialogue(Player player, int id, int npcType) {
+	static void dialogue(Player player, int id, int npcType) {
 		player.getDialogueHandler().sendDialogues(id, npcType);
 	}
 
 	/** One line of NPC chat; continues to the next id unless {@code last}. */
-	private static void npc(Player p, int id, int npc, ChatEmotes emote, boolean last, String... lines) {
+	static void npc(Player p, int id, int npc, ChatEmotes emote, boolean last, String... lines) {
 		if ((npc == SEER_ILSABET || npc == OREN) && emote != ChatEmotes.HAPPY_JOYFUL && emote != ChatEmotes.CALM_TALK2
 				&& emote != ChatEmotes.DEFAULT) {
 			emote = ChatEmotes.CALM_TALK1; // their borrowed chatheads only have the talking animations
@@ -163,13 +169,16 @@ public final class VoidRealm {
 		return out;
 	}
 
-	private static void me(Player p, int id, boolean last, String line) {
+	static void me(Player p, int id, boolean last, String line) {
 		p.getDialogueHandler().sendPlayerChat(wrap(line));
 		p.nextChat = last ? 0 : id + 1;
 	}
 
 	/** Called from SkullbrineIsle#sendDialogue for ids 9600-9799. */
 	public static boolean sendDialogue(Player p, int id, int npcId) {
+		if (NytheraPlaces.sendDialogue(p, id, npcId)) {
+			return true;
+		}
 		if (id < 9600 || id >= 9800) {
 			return false;
 		}
@@ -534,6 +543,9 @@ public final class VoidRealm {
 		if (!first && !second) {
 			return false;
 		}
+		if (NytheraPlaces.handleOption(p, first)) {
+			return true;
+		}
 		switch (p.dialogueAction) {
 		case A_SEER_ASK:
 			p.dialogueAction = -1;
@@ -569,6 +581,9 @@ public final class VoidRealm {
 
 	/** Called first from SkullbrineIsle#firstClickObject. */
 	public static boolean firstClickObject(Player p, int objectId, int x, int y) {
+		if (NytheraPlaces.firstClickObject(p, objectId, x, y)) {
+			return true;
+		}
 		switch (objectId) {
 		case EYE_FIRE:
 			reachIntoEye(p, x);
@@ -966,6 +981,7 @@ public final class VoidRealm {
 		WORK.put(BRAM, 622); // casting a rod
 		WORK.put(HOB, 879); // swinging an axe
 		WORK.put(MARTA, 827); // stooping to the crops
+		NytheraPlaces.chatter(CHATTER, WORK);
 	}
 
 	private static final Object AMBIENCE = new Object();
@@ -981,6 +997,9 @@ public final class VoidRealm {
 			@Override
 			public void execute(CycleEventContainer container) {
 				for (Npc n : NpcHandler.npcs) {
+					if (n != null && NytheraPlaces.bossPulse(n)) {
+						continue;
+					}
 					if (n == null || n.isDead || n.underAttack || !playerNear(n, 12)) {
 						continue;
 					}
@@ -1058,6 +1077,7 @@ public final class VoidRealm {
 		if (killer == null) {
 			return;
 		}
+		NytheraPlaces.npcKilled(killer, npcType);
 		switch (npcType) {
 		case HOLLOWED_WOLF:
 		case HOLLOW_HUSK:

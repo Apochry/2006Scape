@@ -91,7 +91,7 @@ public class ItemData {
 			2570, 2572, 4202, 4657, 6465, 6737, 6731, 6735, 6583, 6733 };
 	public static int body[] = { 7608, 2520, 430, 7362, 7364, 636, 638, 640,
 			642, 644, 8064, 426, 430, 1005, 1757, 7592, 8031, 8027, 6617, 8019,
-			8014, 8002, 7376, 544, 7372, 7370, 577, 7974, 7970, 7965, 7961,
+			8014, 8002, 7376, 544, 7372, 7370, 577, 7974, 7965, 7961,
 			7960, 3793, 3775, 3773, 3771, 3769, 3767, 6139, 1135, 2499, 2501,
 			1035, 540, 5553, 4757, 1833, 6388, 6384, 4111, 4101, 4091, 6186,
 			6184, 6180, 3058, 4509, 4504, 4069, 4728, 4736, 4712, 6107, 2661,
@@ -103,7 +103,7 @@ public class ItemData {
 			5032, 5034,7390 , 7392, 546, 581 };
 	public static int legs[] = { 7609, 2522, 7378, 7380, 7382, 7368, 7366,
 			7388, 646, 648, 650, 652, 654, 428, 1097, 1095, 7593, 8032, 8028,
-			6625, 8020, 8015, 7384, 7969, 7966, 7962, 6141, 538, 1033, 5555,
+			6625, 8020, 8015, 7384, 7966, 7962, 6141, 538, 1033, 5555,
 			4759, 6386, 6390, 2497, 2495, 2493, 1099, 4113, 4103, 4093, 6924,
 			6187, 6185, 6181, 3059, 4510, 4505, 4070, 6108, 542, 548, 1011,
 			1013, 1015, 1067, 1069, 1071, 1073, 1075, 1077, 1079, 1081, 1083,
@@ -119,7 +119,7 @@ public class ItemData {
 			7132, 7138 };
 	public static int platebody[] = { 10338, 7608, 2520, 430, 636, 638, 640,
 			642, 644, 426, 430, 8031, 8027, 6617, 8019, 8014, 8002, 544, 577,
-			7974, 7970, 7965, 7961, 7960, 3793, 3773, 3775, 3771, 3769, 3767,
+			7974, 7965, 7961, 7960, 3793, 3773, 3775, 3771, 3769, 3767,
 			6139, 1035, 540, 5553, 4757, 1833, 1835, 6388, 6384, 4111, 4101,
 			4868, 4869, 4870, 4871, 4892, 4893, 4894, 4895, 4916, 4917, 4918,
 			4919, 4940, 4941, 4942, 4943, 4964, 4965, 4966, 4967, 4988, 4989,
@@ -347,6 +347,10 @@ public class ItemData {
 		// rewards from the Void quest series (ids past the end of equipment.dat)
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOW_CAPE] = ItemConstants.CAPE;
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOWFANG] = ItemConstants.WEAPON;
+		// Nythera boss uniques
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOWHEART_AMULET] = ItemConstants.AMULET;
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.BARROWSTEEL_LONGSWORD] = ItemConstants.WEAPON;
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.FROSTBOUND_BOOTS] = ItemConstants.FEET;
 	}
 
 }

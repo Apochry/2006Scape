@@ -74,6 +74,28 @@ final class VoidRealmGenerator {
 				.examine("Its eyes are empty. Something else is looking out of them.").shorts(95, 34);
 		g.ghostly(g.npc(npcs, 75, HOLLOW_HUSK), npcs, 75, 50, 3, 0.6, 6).name("Hollow husk")
 				.examine("Whoever this was, the Scar emptied them out and kept walking them around.").shorts(95, 41);
+		// Gatehold, the quarry, the inn and the cove
+		g.npc(npcs, 17, YSOLDE).name("Captain Ysolde").examine("Captain of Gatehold's watch. All six of them.")
+				.npcActions("Talk-to", null, null, null, null);
+		g.npc(npcs, 3, PELL).name("Pell the Trader").examine("He'll sell you anything. He'll buy most things, too.")
+				.npcActions("Talk-to", "Trade", null, null, null);
+		g.npc(npcs, 24, DORRIN).name("Dorrin Anvilhand").examine("A smith with forearms like hams and a voice like a bellows.")
+				.npcActions("Talk-to", "Trade", null, null, null);
+		g.npc(npcs, 25, TESS).name("Tess Quarryhand").examine("Covered in rock dust from boots to eyebrows.")
+				.npcActions("Talk-to", "Trade", null, null, null);
+		g.npc(npcs, 352, MORRA).name("Morra").examine("Keeper of the Last Hearth. The fire never goes out, and neither does she.")
+				.npcActions("Talk-to", "Trade", null, null, null);
+		g.npc(npcs, 359, NETTLE).name("Sly Nettle").examine("Smiles with every tooth he's got. That's not many.")
+				.npcActions("Talk-to", "Trade", null, null, null);
+		// the dungeon bosses: grown, tinted versions of the creatures around them
+		g.ghostly(g.npc(npcs, 93, BARROW_THANE), npcs, 93, GHOST_HUE, 3, 0.8, 4).name("The Barrow Thane")
+				.examine("He was buried a king. He doesn't seem to have accepted the demotion.").shorts(95, 68).shorts(97, 140)
+				.shorts(98, 140);
+		g.ghostly(g.npc(npcs, 95, HOLLOW_MATRIARCH), npcs, 95, 50, 5, 0.5, 2).name("The Hollow Matriarch")
+				.examine("The first wolf the Scar took. Every Hollowed wolf is hers.").shorts(95, 92).shorts(97, 175)
+				.shorts(98, 175);
+		g.ghostly(g.npc(npcs, 111, RIMECLAW), npcs, 111, 36, 3, 1.1, 8).name("Rimeclaw")
+				.examine("Ice, with an opinion. A very old, very cold opinion.").shorts(95, 110).shorts(97, 135).shorts(98, 135);
 	}
 
 	void items(ConfigDefinitions.Table items) throws java.io.IOException {
@@ -93,6 +115,15 @@ final class VoidRealmGenerator {
 		ConfigDefinitions.Definition fang = g.item(items, 4587, HOLLOWFANG).name("Hollowfang scimitar")
 				.examine("Forged from a sliver of the platform that shattered under you. It hums when it's hungry.").cost(80000);
 		tintItem(fang, 50, 3, 0.6, 6);
+		ConfigDefinitions.Definition heart = g.item(items, 1725, HOLLOWHEART_AMULET).name("Hollowheart amulet")
+				.examine("Cut from the Hollow Matriarch's heart. It beats when you're angry.").cost(90000);
+		tintItem(heart, 50, 6, 0.9, 10);
+		ConfigDefinitions.Definition barrow = g.item(items, 1303, BARROWSTEEL_LONGSWORD).name("Barrowsteel longsword")
+				.examine("The Barrow Thane's blade. Grave-cold, and very, very sharp.").cost(70000);
+		tintItem(barrow, GHOST_HUE, 2, 0.75, 4);
+		ConfigDefinitions.Definition boots = g.item(items, 1061, FROSTBOUND_BOOTS).name("Frostbound boots")
+				.examine("Rimeclaw's hide, still frosted. Your feet will never be warm again. Worth it.").cost(50000);
+		tintItem(boots, 36, 3, 1.3, 20);
 	}
 
 	void splinter(ConfigDefinitions.Table items, int id, String name, String examine, int hue, int sat) throws java.io.IOException {
@@ -163,6 +194,16 @@ final class VoidRealmGenerator {
 		ConfigDefinitions.Definition rift = g.loc(locs, com.rs2.game.content.skullbrine.SkullbrineConstants.VOID_PORTAL, RIFT)
 				.name("Rift").examine("The hole your fall tore in the sky. It hasn't closed.").set(30, ConfigDefinitions.string("Enter"));
 		g.tintLoc(rift, 50, 6, 1.0, 12, c -> true);
+		int cave = com.rs2.game.content.skullbrine.SkullbrineConstants.CAVE_ENTRANCE;
+		ConfigDefinitions.Definition door = g.loc(locs, cave, BARROW_DOOR).name("Barrow door")
+				.examine("Someone carved a warning over it. Someone else scratched it out.").set(30, ConfigDefinitions.string("Enter"));
+		g.tintLoc(door, GHOST_HUE, 1, 0.7, 0, c -> true);
+		ConfigDefinitions.Definition fissure = g.loc(locs, cave, HOLLOW_FISSURE).name("Hollow fissure")
+				.examine("The Scar's heart. The dark down there is the wrong shape.").set(30, ConfigDefinitions.string("Descend"));
+		g.tintLoc(fissure, 50, 5, 0.6, 2, c -> true);
+		ConfigDefinitions.Definition frost = g.loc(locs, cave, FROST_CAVE).name("Frostfang cave")
+				.examine("Cold breath rolls out of it. Something in there is breathing it.").set(30, ConfigDefinitions.string("Enter"));
+		g.tintLoc(frost, 36, 2, 1.4, 30, c -> true);
 	}
 
 	/* ====================================================================== */
@@ -439,9 +480,12 @@ final class VoidRealmGenerator {
 		scarScenery();
 		ores();
 		camps();
+		places();
 		vegetation();
 		smoothOverlays();
 		wildlife();
+		dungeons();
+		writeSpawns();
 	}
 
 	void terrain(int x, int y) {
@@ -695,7 +739,9 @@ final class VoidRealmGenerator {
 			WOOD_FLOOR = 5, TRODDEN = 96;
 
 	static final int[][] CAMPS = { { FISH_CAMP_X, FISH_CAMP_Y, 9 }, { CROFT_X, CROFT_Y, 13 }, { WOOD_CAMP_X, WOOD_CAMP_Y, 7 },
-			{ WATCH_X, WATCH_Y, 6 } };
+			{ WATCH_X, WATCH_Y, 6 }, { GATEHOLD_X, GATEHOLD_Y, 13 }, { QUARRY_X, QUARRY_Y, 10 }, { INN_X, INN_Y, 10 },
+			{ SMUGGLER_COVE_X, SMUGGLER_COVE_Y, 9 }, { SILKWOOD_X, SILKWOOD_Y, 10 }, { BARROW_DOOR_X, BARROW_DOOR_Y + 5, 9 },
+			{ FISSURE_X, FISSURE_Y, 4 }, { FROST_CAVE_X - 3, FROST_CAVE_Y, 4 } };
 
 	boolean nearCamp(int x, int y) {
 		for (int[] c : CAMPS) {
@@ -838,6 +884,460 @@ final class VoidRealmGenerator {
 	}
 
 	/* ====================================================================== */
+	/*        PLACES - Gatehold, the quarry, the inn, the cove, Silkwood       */
+	/* ====================================================================== */
+
+	static final int BANK_BOOTH = 2213, FURNACE = 11666, ANVIL = 2783, RANGE = 2728, MARKET_STALL = 634, BENCH = 1104,
+			TABLE = 595, MINE_CART = 637, MAGIC_TREE = 1306, GRAVE = 404, BIG_GRAVE = 406, SKELETON_DECOR = 5358,
+			IRON_2 = 2093, COAL_2 = 2097, GOLD = 2098, GOLD_2 = 2099, SILVER = 2100, MITHRIL_2 = 2103, ADAMANT = 2104,
+			ADAMANT_2 = 2105, RUNITE = 2106, GUARD = 9, BANKER = 494, SPIDER = 60, BANDIT = 1883, PIRATE = 184;
+
+	/** A person or creature placed with the scenery (people stand at fixed spots, walk 1 = mill about). */
+	void person(int id, int x, int y, int walk) {
+		spawns.add(new int[] { id, x, y, walk });
+	}
+
+	void places() {
+		gatehold();
+		quarry();
+		inn();
+		cove();
+		bridgeAndSilkwood();
+		barrowMound();
+		fissure();
+		frostCaveMouth();
+	}
+
+	/** Gatehold: two shacks, an open-air bank under the old gate's shadow, a smithy, a store, and the watch. */
+	void gatehold() {
+		int cx = GATEHOLD_X, cy = GATEHOLD_Y;
+		site(cx, cy, 12);
+		g.stampBuilding(3670, 2963, 3678, 2972, cx - 11, cy - 10); // the watch-house
+		g.stampBuilding(3652, 2969, 3658, 2979, cx - 11, cy + 2); // Pell's store-house
+		// the bank: three booths in a row, guarded, with the banker behind them
+		for (int i = -1; i <= 1; i++) {
+			g.object(BANK_BOOTH, cx + i, cy + 6, TYPE_SCENERY, 0);
+		}
+		g.object(FLAGPOLE, cx - 3, cy + 7, TYPE_SCENERY, 0);
+		g.object(FLAGPOLE, cx + 3, cy + 7, TYPE_SCENERY, 0);
+		person(BANKER, cx, cy + 7, 3);
+		// the smithy, open to the air
+		g.object(FURNACE, cx + 5, cy - 7, TYPE_SCENERY, 0);
+		g.object(ANVIL, cx + 3, cy - 5, TYPE_SCENERY, 1);
+		g.object(BARREL, cx + 7, cy - 5, TYPE_SCENERY, 0);
+		g.object(CRATES, cx + 7, cy - 8, TYPE_SCENERY, 0);
+		person(DORRIN, cx + 4, cy - 4, 1);
+		// a range by the watch-house, the market stall, the well
+		g.object(RANGE, cx - 2, cy - 8, TYPE_SCENERY, 0);
+		g.object(MARKET_STALL, cx - 2, cy + 3, TYPE_SCENERY, 1);
+		person(PELL, cx - 1, cy + 2, 1);
+		g.object(WELL, cx + 2, cy, TYPE_SCENERY, 0);
+		g.object(CART, cx + 6, cy + 3, TYPE_SCENERY, 1);
+		g.object(STACKED_BARRELS, cx - 3, cy + 9, TYPE_SCENERY, 0);
+		g.object(SACKS, cx + 5, cy + 9, TYPE_SCENERY, 0);
+		person(YSOLDE, GATE_X - 1, GATE_Y - 1, 4);
+		person(GUARD, cx + 1, cy - 2, 1);
+		person(GUARD, cx - 4, cy + 4, 1);
+	}
+
+	/** Tess's quarry: a pit cut into the foothills, rich in iron, coal, silver, gold and mithril. */
+	void quarry() {
+		int cx = QUARRY_X, cy = QUARRY_Y;
+		site(cx, cy, 9);
+		for (int x = cx - 8; x <= cx + 8; x++) {
+			for (int y = cy - 8; y <= cy + 8; y++) {
+				double d = Math.hypot(x - cx, (y - cy) * 1.2);
+				if (d < 7.5) {
+					g.setHeight(x, y, g.heightAt(x, y) - (int) Math.round(6 * (1 - d / 7.5)));
+					g.setUnderlay(x, y, fbm(x / 2.0, y / 2.0, 98) > 0 ? MOUNTAIN : SLOPE);
+				}
+			}
+		}
+		int[] ores = { IRON, IRON_2, IRON, COAL, COAL_2, COAL, COAL_2, SILVER, SILVER, GOLD, GOLD_2, MITHRIL, MITHRIL_2 };
+		int placed = 0;
+		for (int attempt = 0; attempt < 400 && placed < ores.length; attempt++) {
+			double a = random.nextDouble() * Math.PI * 2, r = 3 + random.nextDouble() * 3.5;
+			int x = cx + (int) Math.round(Math.cos(a) * r), y = cy + (int) Math.round(Math.sin(a) * r);
+			if (free(x, y, 1) && !blocked(x, y)) {
+				g.object(ores[placed++], x, y, TYPE_SCENERY, random.nextInt(4));
+			}
+		}
+		g.object(MINE_CART, cx - 1, cy - 8, TYPE_SCENERY, 1);
+		g.object(TENT, cx + 9, cy - 3, TYPE_SCENERY, 3);
+		g.object(CRATES, cx + 8, cy + 3, TYPE_SCENERY, 0);
+		g.object(BARREL, cx + 9, cy + 1, TYPE_SCENERY, 0);
+		person(TESS, cx + 7, cy, 1);
+	}
+
+	/** The Last Hearth: an inn where the north road comes down off the pass, with tables out front. */
+	void inn() {
+		int cx = INN_X, cy = INN_Y;
+		site(cx, cy, 9);
+		g.stampBuilding(3673, 2985, 3679, 2993, cx - 3, cy); // the inn, door to the south
+		g.stampBuilding(3678, 2978, 3684, 2985, cx + 5, cy - 1); // the stable-house
+		g.object(TABLE, cx - 1, cy - 4, TYPE_SCENERY, 0);
+		g.object(BENCH, cx - 1, cy - 5, TYPE_SCENERY, 0);
+		g.object(BENCH, cx - 1, cy - 3, TYPE_SCENERY, 2);
+		g.object(TABLE, cx + 3, cy - 4, TYPE_SCENERY, 0);
+		g.object(BENCH, cx + 3, cy - 5, TYPE_SCENERY, 0);
+		g.object(FIRE, cx - 5, cy - 3, TYPE_SCENERY, 0);
+		g.object(STACKED_BARRELS, cx - 5, cy + 2, TYPE_SCENERY, 0);
+		g.object(CART, cx + 7, cy - 4, TYPE_SCENERY, 1);
+		g.object(TROUGH, cx + 6, cy - 6, TYPE_SCENERY, 1);
+		person(MORRA, cx + 1, cy - 2, 1);
+		person(PILGRIM, cx - 2, cy - 6, 1);
+		person(PILGRIM, cx + 4, cy - 6, 1);
+	}
+
+	/** Smugglers' Cove: a beached ship, a camp of crates and contraband, and lobster pots in the shallows. */
+	void cove() {
+		int cx = SMUGGLER_COVE_X, cy = SMUGGLER_COVE_Y;
+		site(cx, cy, 8);
+		// the smugglers' ship, run aground with her stern in the surf (the Port Sarim ship, as at Skullbrine)
+		int y = cy - 2;
+		while (y > cy - 30 && !water(cx + 10, y)) {
+			y--;
+		}
+		g.stamp(12082, 22, 9, 30, 28, cx + 6, y - 16, new int[] { 2083, 2084 }, false);
+		g.object(TENT, cx - 4, cy + 2, TYPE_SCENERY, 2);
+		g.object(TENT, cx + 1, cy + 4, TYPE_SCENERY, 2);
+		g.object(FIRE, cx, cy, TYPE_SCENERY, 0);
+		g.object(CRATES, cx + 3, cy + 1, TYPE_SCENERY, 0);
+		g.object(CRATE, cx + 4, cy - 1, TYPE_SCENERY, 0);
+		g.object(STACKED_BARRELS, cx - 3, cy - 2, TYPE_SCENERY, 0);
+		g.object(BARREL, cx - 1, cy - 3, TYPE_SCENERY, 0);
+		g.object(ROW_BOAT, cx - 6, y, TYPE_SCENERY, 1);
+		person(NETTLE, cx + 1, cy - 1, 1);
+		for (int[] b : new int[][] { { -3, 1 }, { 3, -3 }, { 5, 3 }, { -5, -1 }, { 0, 5 } }) {
+			person(b[0] % 2 == 0 ? PIRATE : BANDIT, cx + b[0], cy + b[1], 1);
+		}
+		// fishing in the cove: lobster and swordfish (cage/harpoon), sharks (net/harpoon)
+		int fished = 0;
+		for (int dx = -14; dx <= 14 && fished < 5; dx += 3) {
+			for (int fy = cy - 2; fy > cy - 20; fy--) {
+				if (shoreWater(cx + dx, fy)) {
+					person(fished < 3 ? 312 : 313, cx + dx, fy, 0);
+					fished++;
+					break;
+				}
+			}
+		}
+	}
+
+	/** A plank bridge over the river west of Hob's camp, and Silkwood beyond it. */
+	void bridgeAndSilkwood() {
+		// find the narrowest crossing between Hob's camp and Silkwood
+		int bestY = -1, bestFrom = 0, bestTo = 0;
+		for (int y = WOOD_CAMP_Y; y <= SILKWOOD_Y + 6; y++) {
+			int from = -1, to = -1;
+			for (int x = WOOD_CAMP_X - 6; x > SILKWOOD_X + 6; x--) {
+				if (water(x, y)) {
+					if (from < 0) {
+						from = x;
+					}
+					to = x;
+				} else if (from >= 0) {
+					break;
+				}
+			}
+			if (from >= 0 && !water(to - 1, y) && (bestY < 0 || from - to < bestFrom - bestTo)) {
+				bestY = y;
+				bestFrom = from;
+				bestTo = to;
+			}
+		}
+		if (bestY >= 0) {
+			// a flat deck at the height of the banks (tile heights are corner heights, so level a ring around it too)
+			int deck = (g.heightAt(bestFrom + 2, bestY) + g.heightAt(bestTo - 2, bestY)) / 2;
+			for (int x = bestFrom + 2; x >= bestTo - 2; x--) {
+				for (int y = bestY - 1; y <= bestY + 2; y++) {
+					g.setHeight(x, y, deck);
+				}
+			}
+			for (int x = bestFrom + 1; x >= bestTo - 1; x--) {
+				for (int y = bestY; y <= bestY + 1; y++) {
+					MapRegion r = g.regionAt(x, y);
+					r.overlay[0][x & 63][y & 63] = WOOD_FLOOR;
+					r.overlayShape[0][x & 63][y & 63] = 0;
+					r.settings[0][x & 63][y & 63] = 0;
+					g.removeObjectsAt(x, y);
+				}
+			}
+			System.out.println("Bridge over the river at y " + bestY + ", x " + bestTo + ".." + bestFrom);
+		}
+		// Silkwood: magic and yew trees in a hushed clearing, bones of those who came for them
+		int cx = SILKWOOD_X, cy = SILKWOOD_Y;
+		site(cx, cy, 9);
+		int[][] trees = { { -5, 3, MAGIC_TREE }, { 4, 5, MAGIC_TREE }, { 6, -3, MAGIC_TREE }, { -3, -6, MAGIC_TREE },
+				{ 0, 7, YEW }, { -7, -2, YEW } };
+		for (int[] t : trees) {
+			g.object(t[2], cx + t[0], cy + t[1], TYPE_SCENERY, random.nextInt(4));
+		}
+		g.object(SKELETON_DECOR, cx + 1, cy - 1, TYPE_GROUND_DECOR, 1);
+		g.object(SKELETON_DECOR, cx - 2, cy + 2, TYPE_GROUND_DECOR, 3);
+		g.object(FALLEN_TREE, cx + 3, cy + 1, TYPE_SCENERY, 1);
+		for (int i = 0; i < 6; i++) {
+			person(SPIDER, cx - 4 + random.nextInt(9), cy - 4 + random.nextInt(9), 1);
+		}
+	}
+
+	/** The Sunken Barrow: a grassy mound with a stone door, old graves around it. */
+	void barrowMound() {
+		int dx = BARROW_DOOR_X, dy = BARROW_DOOR_Y, mx = dx, my = dy + 5;
+		site(mx, my, 8);
+		for (int x = mx - 7; x <= mx + 7; x++) {
+			for (int y = my - 7; y <= my + 7; y++) {
+				double d = Math.hypot(x - mx, (y - my) * 1.1);
+				if (d < 5.5) {
+					g.setHeight(x, y, g.heightAt(x, y) + (int) Math.round(22 * Math.cos(d / 5.5 * Math.PI / 2)));
+					g.block(x, y);
+					g.setUnderlay(x, y, DEAD_GRASS);
+				}
+			}
+		}
+		System.out.println("Barrow mound: ground " + g.heightAt(dx, dy - 2) + ", crown " + g.heightAt(mx, my));
+		g.object(BARROW_DOOR, dx, dy, TYPE_SCENERY, 0);
+		int[][] graves = { { -5, -2 }, { -3, -4 }, { 3, -4 }, { 5, -2 }, { -6, 3 }, { 6, 4 } };
+		for (int i = 0; i < graves.length; i++) {
+			g.object(i % 3 == 0 ? BIG_GRAVE : GRAVE, mx + graves[i][0], dy + graves[i][1], TYPE_SCENERY, random.nextInt(4));
+		}
+		g.object(STANDING_STONE, dx - 2, dy - 1, TYPE_SCENERY, 0);
+		g.object(STANDING_STONE, dx + 2, dy - 1, TYPE_SCENERY, 0);
+	}
+
+	/** Hollowdeep's mouth: a fissure in the Scar's black heart, ringed with crystals. */
+	void fissure() {
+		int cx = FISSURE_X, cy = FISSURE_Y;
+		for (int x = cx - 3; x <= cx + 3; x++) {
+			for (int y = cy - 3; y <= cy + 3; y++) {
+				g.removeObjectsAt(x, y);
+				double d = Math.hypot(x - cx, y - cy);
+				if (d < 3.2) {
+					g.setOverlay(x, y, d < 1.6 ? VOID_BLACK : CRYPT_PURPLE);
+				}
+			}
+		}
+		g.object(HOLLOW_FISSURE, cx, cy, TYPE_SCENERY, 0);
+		g.object(VOID_CRYSTAL, cx - 3, cy + 2, TYPE_SCENERY, 0);
+		g.object(VOID_CRYSTAL_DARK, cx + 3, cy + 3, TYPE_SCENERY, 1);
+		g.object(VOID_CRYSTAL, cx + 3, cy - 3, TYPE_SCENERY, 2);
+	}
+
+	/** Frostfang's mouth: a ledge cut from the pass road into the mountain's flank. */
+	void frostCaveMouth() {
+		int cx = FROST_CAVE_X, cy = FROST_CAVE_Y;
+		int level = g.heightAt(cx - 7, cy);
+		for (int x = cx - 7; x <= cx + 1; x++) {
+			for (int y = cy - 1; y <= cy + 1; y++) {
+				MapRegion r = g.regionAt(x, y);
+				r.settings[0][x & 63][y & 63] = 0;
+				g.removeObjectsAt(x, y);
+				g.setHeight(x, y, level);
+				g.setUnderlay(x, y, SLOPE);
+			}
+		}
+		g.object(FROST_CAVE, cx, cy, TYPE_SCENERY, 3);
+		person(96, cx - 5, cy + 2, 1); // white wolves prowl the ledge
+	}
+
+	/* ====================================================================== */
+	/*          DUNGEONS - the Sunken Barrow, Hollowdeep, Frostfang           */
+	/* ====================================================================== */
+
+	static final int DOOR_EXIT = com.rs2.game.content.skullbrine.SkullbrineConstants.CAVE_EXIT;
+	static final int CAVE_TORCH_ID = 724, ICE_FLOOR = 58, BLUE_ICE = 59;
+
+	interface Floor {
+		void paint(MapRegion r, int x, int y);
+	}
+
+	/** Carves an open/closed grid into a region: floors from {@code floor}, rock walls rising off them. */
+	MapRegion carve(int regionX, boolean[][] open, Floor floor, int wall) {
+		MapRegion r = new MapRegion(regionX, NY_DUNGEON_REGION_Y);
+		g.regions.put(r.id(), r);
+		for (int x = 0; x < 64; x++) {
+			for (int y = 0; y < 64; y++) {
+				if (open[x][y]) {
+					r.height[0][x][y] = 2 + (int) Math.round((noise(x * 4 + regionX, y * 4 + 9) + 1) * 1.5);
+					floor.paint(r, x, y);
+				} else {
+					r.settings[0][x][y] = MapRegion.BLOCKED;
+					r.underlay[0][x][y] = wall;
+					if (bordersOpen(open, x, y, 1)) {
+						r.height[0][x][y] = 34 + (int) Math.round(noise(x * 5 + 1, y * 5 + regionX) * 8);
+					} else {
+						r.overlay[0][x][y] = INVISIBLE;
+						r.height[0][x][y] = 50;
+					}
+				}
+			}
+		}
+		// the way back out
+		r.objects.add(new MapRegion.MapObject(DOOR_EXIT, 31, 2, 0, TYPE_SCENERY, 2));
+		return r;
+	}
+
+	void put(MapRegion r, boolean[][] open, int id, int x, int y, int type, int rot) {
+		if (!open[x][y]) {
+			System.out.println("warning: dungeon object " + id + " at local " + x + "," + y + " is inside rock");
+			return;
+		}
+		r.objects.removeIf(o -> o.x == x && o.y == y);
+		r.objects.add(new MapRegion.MapObject(id, x, y, 0, type, rot));
+	}
+
+	/** Scatters {@code count} of an object against the walls of a chamber. */
+	void hug(MapRegion r, boolean[][] open, int[] ids, int count, int cx, int cy, int radius) {
+		int placed = 0;
+		for (int attempt = 0; attempt < 600 && placed < count; attempt++) {
+			int x = cx - radius + random.nextInt(radius * 2 + 1), y = cy - radius + random.nextInt(radius * 2 + 1);
+			if (x < 2 || y < 2 || x > 61 || y > 61 || !open[x][y] || !bordersClosed(open, x, y) || openAround(open, x, y, 1) < 5) {
+				continue;
+			}
+			final int fx = x, fy = y;
+			if (r.objects.stream().anyMatch(o -> Math.abs(o.x - fx) + Math.abs(o.y - fy) < 3)) {
+				continue;
+			}
+			r.objects.add(new MapRegion.MapObject(ids[placed % ids.length], x, y, 0, TYPE_SCENERY, random.nextInt(4)));
+			placed++;
+		}
+	}
+
+	/** Places monsters on open floor in a chamber. */
+	void lair(int regionX, MapRegion r, boolean[][] open, int id, int count, int cx, int cy, int radius, int walk) {
+		int placed = 0;
+		for (int attempt = 0; attempt < 600 && placed < count; attempt++) {
+			int x = cx - radius + random.nextInt(radius * 2 + 1), y = cy - radius + random.nextInt(radius * 2 + 1);
+			if (x < 2 || y < 2 || x > 61 || y > 61 || !open[x][y] || openAround(open, x, y, 1) < 9) {
+				continue;
+			}
+			final int fx = x, fy = y;
+			if (r.objects.stream().anyMatch(o -> o.x == fx && o.y == fy)) {
+				continue;
+			}
+			spawns.add(new int[] { id, regionX * 64 + x, DUNGEON_BASE_Y + y, walk });
+			placed++;
+		}
+	}
+
+	void dungeons() {
+		sunkenBarrow();
+		hollowdeep();
+		frostfang();
+	}
+
+	/** The Sunken Barrow: a straight processional hall, side crypts, an ossuary, and the Thane's tomb. */
+	void sunkenBarrow() {
+		boolean[][] o = new boolean[64][64];
+		CursedIslandGenerator.blob(o, 32, 7, 5, 4); // antechamber
+		CursedIslandGenerator.tunnel(o, 32, 10, 32, 40, 3); // the processional hall
+		CursedIslandGenerator.tunnel(o, 32, 20, 20, 22, 2);
+		CursedIslandGenerator.blob(o, 17, 23, 5, 4); // west crypt
+		CursedIslandGenerator.tunnel(o, 32, 26, 44, 26, 2);
+		CursedIslandGenerator.blob(o, 47, 27, 5, 5); // east crypt
+		CursedIslandGenerator.tunnel(o, 31, 36, 18, 43, 2);
+		CursedIslandGenerator.blob(o, 14, 45, 5, 5); // the ossuary
+		CursedIslandGenerator.blob(o, 32, 49, 8, 7); // the Thane's tomb
+		MapRegion r = carve(BARROW_REGION_X, o, (reg, x, y) -> {
+			reg.underlay[0][x][y] = MUD;
+			reg.overlay[0][x][y] = fbm(x / 4.0, y / 4.0, 71) > 0.25 ? DARK_PATH : GREY_PATH; // worn flagstones
+		}, ROCK);
+		for (int y = 12; y <= 38; y += 6) { // torches down both walls of the hall
+			int west = 32, east = 32;
+			while (o[west - 1][y]) {
+				west--;
+			}
+			while (o[east + 1][y]) {
+				east++;
+			}
+			if (east - west >= 2) {
+				put(r, o, CAVE_TORCH_ID, west, y, TYPE_SCENERY, 1);
+				put(r, o, CAVE_TORCH_ID, east, y, TYPE_SCENERY, 3);
+			}
+		}
+		hug(r, o, new int[] { GRAVE, BIG_GRAVE, GRAVE }, 5, 17, 23, 6);
+		hug(r, o, new int[] { GRAVE, BIG_GRAVE }, 5, 47, 27, 6);
+		hug(r, o, new int[] { SKULL_PILE, DUNGEON_SKULLS, SKULL_PILE }, 6, 14, 45, 6);
+		hug(r, o, new int[] { BIG_GRAVE, CAVE_TORCH_ID, DUNGEON_SKULLS }, 8, 32, 49, 9);
+		put(r, o, BIG_GRAVE, 32, 53, TYPE_SCENERY, 0); // the Thane's own grave, empty
+		put(r, o, LONG_SKELETON, 29, 46, TYPE_GROUND_DECOR, 1);
+		int bx = BARROW_REGION_X;
+		lair(bx, r, o, 90, 3, 32, 22, 4, 1);
+		lair(bx, r, o, 91, 3, 17, 23, 4, 1);
+		lair(bx, r, o, 92, 3, 47, 27, 4, 1);
+		lair(bx, r, o, 103, 4, 14, 45, 4, 1);
+		lair(bx, r, o, 93, 2, 32, 34, 3, 1);
+		lair(bx, r, o, BARROW_THANE, 1, 32, 50, 2, 1);
+	}
+
+	/** Hollowdeep: caves the Scar has eaten through, black glass and crystal, the Matriarch's den at the bottom. */
+	void hollowdeep() {
+		boolean[][] o = new boolean[64][64];
+		CursedIslandGenerator.blob(o, 32, 7, 5, 4);
+		CursedIslandGenerator.tunnel(o, 32, 10, 26, 16, 2);
+		CursedIslandGenerator.tunnel(o, 26, 16, 22, 22, 2);
+		CursedIslandGenerator.blob(o, 19, 25, 7, 6); // the husk pit
+		CursedIslandGenerator.tunnel(o, 24, 28, 38, 26, 2);
+		CursedIslandGenerator.tunnel(o, 38, 26, 44, 30, 2);
+		CursedIslandGenerator.blob(o, 46, 32, 7, 6); // the kennel
+		CursedIslandGenerator.tunnel(o, 44, 37, 38, 42, 2);
+		CursedIslandGenerator.blob(o, 31, 49, 9, 7); // the Matriarch's den
+		CursedIslandGenerator.tunnel(o, 16, 30, 14, 42, 2);
+		CursedIslandGenerator.blob(o, 13, 45, 4, 4); // a crystal grotto
+		MapRegion r = carve(HOLLOWDEEP_REGION_X, o, (reg, x, y) -> {
+			double n = fbm(x / 6.0, y / 6.0, 72);
+			reg.underlay[0][x][y] = n > -0.1 ? ASH : CAVE_FLOOR;
+			if (n > 0.45) {
+				reg.overlay[0][x][y] = VOID_BLACK; // pools of the Scar's black glass
+			} else if (n < -0.5) {
+				reg.overlay[0][x][y] = CRYPT_PURPLE;
+			}
+		}, SHADOW_ROCK);
+		hug(r, o, new int[] { VOID_CRYSTAL, VOID_CRYSTAL_DARK }, 5, 19, 25, 8);
+		hug(r, o, new int[] { VOID_CRYSTAL_DARK, ROOTS, VOID_CRYSTAL }, 5, 46, 32, 8);
+		hug(r, o, new int[] { VOID_CRYSTAL, VOID_CRYSTAL_DARK, SKULL_PILE }, 8, 31, 49, 10);
+		hug(r, o, new int[] { VOID_CRYSTAL, VOID_CRYSTAL }, 4, 13, 45, 5);
+		int hx = HOLLOWDEEP_REGION_X;
+		lair(hx, r, o, HOLLOW_HUSK, 5, 19, 25, 5, 1);
+		lair(hx, r, o, HOLLOWED_WOLF, 5, 46, 32, 5, 1);
+		lair(hx, r, o, VOIDLING, 4, 13, 45, 3, 1);
+		lair(hx, r, o, HOLLOWED_WOLF, 2, 31, 47, 5, 1);
+		lair(hx, r, o, HOLLOW_MATRIARCH, 1, 31, 51, 2, 1);
+	}
+
+	/** Frostfang Caves: ice halls, a rich ore cavern, and Rimeclaw's lair. */
+	void frostfang() {
+		boolean[][] o = new boolean[64][64];
+		CursedIslandGenerator.blob(o, 32, 7, 5, 4);
+		CursedIslandGenerator.tunnel(o, 32, 10, 32, 18, 2);
+		CursedIslandGenerator.blob(o, 32, 22, 6, 5); // the frozen hall
+		CursedIslandGenerator.tunnel(o, 27, 23, 18, 28, 2);
+		CursedIslandGenerator.blob(o, 14, 31, 7, 6); // the ore cavern
+		CursedIslandGenerator.tunnel(o, 37, 24, 46, 32, 2);
+		CursedIslandGenerator.blob(o, 48, 35, 6, 6); // the warriors' hall
+		CursedIslandGenerator.tunnel(o, 46, 41, 38, 45, 2);
+		CursedIslandGenerator.blob(o, 31, 50, 9, 7); // Rimeclaw's lair
+		MapRegion r = carve(FROSTFANG_REGION_X, o, (reg, x, y) -> {
+			reg.underlay[0][x][y] = ICE_FLOOR;
+			if (fbm(x / 5.0, y / 5.0, 73) > 0.3) {
+				reg.overlay[0][x][y] = BLUE_ICE;
+			}
+		}, ROCK);
+		hug(r, o, new int[] { STALAGMITE, STALAGMITE_2 }, 5, 32, 22, 7);
+		// the reward for braving it: a cavern rich in high ore, with a little runite at the back
+		int[] ores = { MITHRIL, MITHRIL_2, ADAMANT, ADAMANT_2, ADAMANT, MITHRIL, COAL, COAL_2, RUNITE };
+		hug(r, o, ores, ores.length, 14, 31, 8);
+		hug(r, o, new int[] { STALAGMITE, STALAGMITE_2 }, 4, 48, 35, 7);
+		hug(r, o, new int[] { STALAGMITE_2, STALAGMITE, RUNITE }, 7, 31, 50, 10);
+		int fx = FROSTFANG_REGION_X;
+		lair(fx, r, o, 96, 3, 32, 22, 4, 1); // white wolves
+		lair(fx, r, o, 125, 3, 14, 31, 5, 1); // ice warriors among the ore
+		lair(fx, r, o, 125, 2, 48, 35, 4, 1);
+		lair(fx, r, o, 111, 3, 48, 35, 4, 1); // ice giants
+		lair(fx, r, o, RIMECLAW, 1, 31, 52, 2, 1);
+	}
+
+	/* ====================================================================== */
 	/*                    WILDLIFE - spawns for spawns.json                   */
 	/* ====================================================================== */
 
@@ -933,6 +1433,10 @@ final class VoidRealmGenerator {
 		// fishing: net/bait in the lake (one at the end of Bram's jetty), lure/bait in the river
 		scatter(new int[] { 316 }, 4, 0, 10, lakeShore);
 		scatter(new int[] { 309 }, 5, 0, 12, riverBank);
+		System.out.println("Nythera wildlife: " + spawns.size() + " spawns");
+	}
+
+	void writeSpawns() {
 		String out = System.getProperty("nythera.spawns");
 		if (out != null) {
 			try (java.io.PrintWriter pw = new java.io.PrintWriter(out)) {
@@ -943,7 +1447,7 @@ final class VoidRealmGenerator {
 				throw new IllegalStateException(e);
 			}
 		}
-		System.out.println("Nythera wildlife: " + spawns.size() + " spawns");
+		System.out.println("Nythera spawns in all: " + spawns.size());
 	}
 
 	boolean blocked(int x, int y) {
@@ -995,6 +1499,16 @@ final class VoidRealmGenerator {
 			MapRegion r = g.regionAt(c[0], c[1]);
 			r.overlayShape[0][c[0] & 63][c[1] & 63] = 1;
 			r.overlayRotation[0][c[0] & 63][c[1] & 63] = c[2];
+			// the cut-away half shows the tile's underlay: sea tiles have none (it renders black), so borrow the shore's
+			if (r.underlay[0][c[0] & 63][c[1] & 63] == 0) {
+				for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
+					int u = g.underlayAt(c[0] + d[0], c[1] + d[1]);
+					if (u != 0 && g.overlayAt(c[0] + d[0], c[1] + d[1]) == 0) {
+						r.underlay[0][c[0] & 63][c[1] & 63] = u;
+						break;
+					}
+				}
+			}
 		}
 	}
 }

@@ -21031,5 +21031,20 @@
       "id":7967,
       "weight":1.8,
       "bonuses":{"attackStab":9,"attackSlash":58,"attackCrush":-2,"defenceSlash":1,"strengthBonus":57}
+   },
+   {
+      "id":7968,
+      "weight":0.3,
+      "bonuses":{"attackStab":6,"attackSlash":6,"attackCrush":6,"attackMagic":6,"attackRange":6,"defenceStab":3,"defenceSlash":3,"defenceCrush":3,"defenceMagic":3,"defenceRange":3,"strengthBonus":12,"prayerBonus":2}
+   },
+   {
+      "id":7969,
+      "weight":1.8,
+      "bonuses":{"attackStab":44,"attackSlash":54,"attackCrush":-2,"defenceSlash":3,"defenceCrush":2,"strengthBonus":56}
+   },
+   {
+      "id":7970,
+      "weight":0.9,
+      "bonuses":{"defenceStab":6,"defenceSlash":6,"defenceCrush":6,"defenceMagic":3,"defenceRange":6,"strengthBonus":2,"prayerBonus":1}
    }
 ]

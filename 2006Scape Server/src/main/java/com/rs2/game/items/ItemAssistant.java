@@ -668,6 +668,14 @@ public class ItemAssistant {
 			player.attackLevelReq = 50;
 			return;
 		}
+		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.BARROWSTEEL_LONGSWORD) {
+			player.attackLevelReq = 60;
+			return;
+		}
+		if (itemId == com.rs2.game.content.voidrealm.VoidConstants.FROSTBOUND_BOOTS) {
+			player.defenceLevelReq = 40;
+			return;
+		}
 		if (itemName.contains("mystic") || itemName.contains("nchanted")) {
 			if (itemName.contains("staff")) {
 				player.magicLevelReq = 20;
