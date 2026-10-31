@@ -18,6 +18,9 @@ import com.rs2.world.clip.Region;
 
 public class ItemOnObject implements PacketType {
 
+	private static final java.util.Set<Integer> FURNACES = java.util.Set.of(14921, 9390, 2781, 2785, 2966, 3294, 3413,
+			4304, 4305, 6189, 6190, 11009, 11010, 11666, 12100, 12809, 3044);
+
 	@Override
 	public void processPacket(Player player, Packet packet) {
 		packet.readUnsignedWord();
@@ -51,6 +54,10 @@ public class ItemOnObject implements PacketType {
 							+ " ObjectY: " + objectY + ".");
 		}
 		player.post(new ItemOnObjectEvent(itemId, objectId));
+		if (itemId == com.rs2.game.content.skills.smithing.DragonMetal.DRAGON_ORE && FURNACES.contains(objectId)) {
+			com.rs2.game.content.skills.smithing.Smelting.smeltDragon(player, itemId);
+			return;
+		}
 		switch (objectId) {
 		case 3044:
 			if (itemId == 438 || itemId == 436) {

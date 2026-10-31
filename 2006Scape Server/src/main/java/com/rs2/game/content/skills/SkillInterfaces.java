@@ -1,5 +1,7 @@
 package com.rs2.game.content.skills;
 
+import com.rs2.game.content.skills.smithing.DragonMetal;
+
 import com.rs2.game.players.Player;
 
 public class SkillInterfaces {
@@ -110,10 +112,27 @@ public class SkillInterfaces {
 	 *         text, and the item description, along with the line Counter to
 	 *         ensure it is placed in the right spot
 	 */
-	private void menuLine(final String levels, final String lines,
+	/** A guide line for dragon metal, whose levels are not scaled. */
+	private void dragonLine(int level, String line, int item, int lineCounter) {
+		boolean scaled = scaleLevels;
+		scaleLevels = false;
+		menuLine(String.valueOf(level), line, item, lineCounter);
+		scaleLevels = scaled;
+	}
+
+	/** Set while the Mining/Smithing guides are drawn: their original levels are shown scaled down. */
+	private boolean scaleLevels;
+	/** Ores, pickaxes and bars use levels rounded to a multiple of 5. */
+	private boolean roundLevels;
+
+	private void menuLine(String levels, final String lines,
 			final int ids, final int lineCounter) {
 		if (SkillHandler.isSkilling(c)) {
 			return;
+		}
+		if (scaleLevels && levels.matches("\\d+") && !lines.contains("Guild")) {
+			int original = Integer.parseInt(levels);
+			levels = String.valueOf(roundLevels ? com.rs2.Constants.roundedLevel(original) : com.rs2.Constants.scaledLevel(original));
 		}
 		c.getPacketSender().sendString(lines, 8760 + lineCounter);
 		c.getPacketSender().sendString(levels, 8720 + lineCounter);
@@ -1558,6 +1577,17 @@ public class SkillInterfaces {
 	 * @return
 	 */
 	public void miningComplex(int screen) {
+		scaleLevels = true;
+		roundLevels = true;
+		try {
+			miningGuide(screen);
+		} finally {
+			scaleLevels = false;
+			roundLevels = false;
+		}
+	}
+
+	private void miningGuide(int screen) {
 		if (screen == 1) {
 			clearMenu();
 			menuLine("1", "Rune Essence(After Rune Mysteries)", 1436, 0);
@@ -1578,6 +1608,7 @@ public class SkillInterfaces {
 			menuLine("55", "Mithril Ore", 447, 15);
 			menuLine("70", "Adamantite Ore", 449, 16);
 			menuLine("85", "Runite Ore", 451, 17);
+			dragonLine(DragonMetal.MINING_LEVEL, "Dragon Ore (Skullbrine Isle, under Skull Rock)", DragonMetal.DRAGON_ORE, 18);
 			optionTab("Mining", "Ores", "Ores", "Pickaxes", "", "",
 					"", "", "", "", "", "", "", "", "");
 		}
@@ -1610,6 +1641,17 @@ public class SkillInterfaces {
 	 * @return
 	 */
 	public void smithingComplex(int screen) {
+		scaleLevels = true;
+		roundLevels = screen == 1; // the smelting page
+		try {
+			smithingGuide(screen);
+		} finally {
+			scaleLevels = false;
+			roundLevels = false;
+		}
+	}
+
+	private void smithingGuide(int screen) {
 		if (screen == 1) {
 			clearMenu();
 			menuLine("1", "Bronze(1 Tin Ore + 1 Copper Ore)", 2349, 0);
@@ -1621,9 +1663,10 @@ public class SkillInterfaces {
 			menuLine("50", "Mithril(4 Coal + 1 Mithril Ore)", 2359, 6);
 			menuLine("70", "Adamant(6 Coal + 1 Adamantite Ore)", 2361, 7);
 			menuLine("85", "Runite(8 Coal + 1 Runite Ore)", 2363, 8);
+			dragonLine(DragonMetal.SMELT_LEVEL, "Dragon(4 Coal + 1 Dragon Ore, use on a furnace)", DragonMetal.DRAGON_BAR, 9);
 			optionTab("Smithing", "Smelting", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		}
 
 		else if (screen == 2) {
@@ -1656,7 +1699,7 @@ public class SkillInterfaces {
 			menuLine("18", type + " Platebody - 5 Bars", 1117, 23);
 			optionTab("Smithing", "Bronze", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		} else if (screen == 3) {
 			clearMenu();
 			String type = "Iron";
@@ -1688,7 +1731,7 @@ public class SkillInterfaces {
 			menuLine("33", type + " Platebody - 5 Bars", 1115, 24);
 			optionTab("Smithing", "Iron", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		}
 
 		else if (screen == 4) {
@@ -1721,7 +1764,7 @@ public class SkillInterfaces {
 			menuLine("48", type + " Platebody - 5 Bars", 1119, 23);
 			optionTab("Smithing", "Steel", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		} else if (screen == 5) {
 			clearMenu();
 			String type = "Mithril";
@@ -1751,7 +1794,7 @@ public class SkillInterfaces {
 			menuLine("68", type + " Platebody - 5 Bars", 1121, 22);
 			optionTab("Smithing", "Mithril", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		} else if (screen == 6) {
 			clearMenu();
 			String type = "Adamant";
@@ -1781,7 +1824,7 @@ public class SkillInterfaces {
 			menuLine("88", type + " Platebody - 5 Bars", 1123, 22);
 			optionTab("Smithing", "Adamantite", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		} else if (screen == 7) {
 			clearMenu();
 			String type = "Rune";
@@ -1811,27 +1854,30 @@ public class SkillInterfaces {
 			menuLine("99", type + " Platebody - 5 Bars", 1127, 22);
 			optionTab("Smithing", "Runite", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		} else if (screen == 8) {
 			clearMenu();
 			menuLine("50", "Gold Bowl(After Starting Legends' Quest)", 721, 0);
 			menuLine("50", "Gold Helmet(After starting Between a Rock)", 	4567, 1);
 			optionTab("Smithing", "Gold", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		} else if (screen == 9) {
 			clearMenu();
 			menuLine("20", "Elemental Shield(After Elemental Workshop)", 2890,
 					0);
 			optionTab("Smithing", "Elemental", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		} else if (screen == 10) {
 			clearMenu();
-			menuLine("60", "Dragon Square Shield", 1187, 0);
-			optionTab("Smithing", "Other", "Smelting", "Bronze", "Iron",
+			int line = 0;
+			for (int[] d : java.util.Arrays.stream(DragonMetal.ITEMS).sorted(java.util.Comparator.comparingInt(d -> d[4])).toArray(int[][]::new)) {
+				dragonLine(d[4], com.rs2.game.items.DeprecatedItems.getItemName(d[0]) + " - " + d[3] + (d[3] == 1 ? " Bar" : " Bars"), d[0], line++);
+			}
+			optionTab("Smithing", "Dragon", "Smelting", "Bronze", "Iron",
 					"Steel", "Mithril", "Adamantite", "Runite", "Gold",
-					"Elemental", "Other", "", "", "");
+					"Elemental", "Dragon", "", "", "");
 		}
 	}
 

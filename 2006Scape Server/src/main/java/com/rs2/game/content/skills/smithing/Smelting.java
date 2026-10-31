@@ -29,13 +29,31 @@ public class Smelting extends SkillHandler {
 			// index ,lvl required, XP, primary item required, secondary item required, secondary item amount, output item(BAR)
 			{ 1, 1, 6, COPPER, TIN, 1, 2349 }, // Bronze
 			{ 2, 15, 12, IRON, -1, -1, 2351 }, // iron
-			{ 3, 20, 17, IRON, COAL, 2, 2353 }, // Steel
+			{ 3, 30, 17, IRON, COAL, 2, 2353 }, // Steel (was 20; 30 as in Superheat)
 			{ 4, 50, 30, MITH, COAL, 4, 2359 }, // Mith
 			{ 5, 70, 37, ADDY, COAL, 6, 2361 }, // Addy
 			{ 6, 85, 50, RUNE, COAL, 8, 2363 }, // Rune
 			{ 7, 20, 13, SILVER, -1, -1, 2355 }, // Silver
 			{ 8, 40, 22, GOLD, -1, -1, 2357 }, // GOLD
+			{ DragonMetal.SMELT_INDEX, DragonMetal.SMELT_LEVEL, DragonMetal.SMELT_XP, DragonMetal.DRAGON_ORE, COAL,
+					DragonMetal.COAL_NEEDED, DragonMetal.DRAGON_BAR }, // Dragon (use the ore on a furnace)
 	};
+
+	/** The level needed for a bar: the original levels are scaled down, dragon is not. */
+	public static int levelFor(int[] bar) {
+		return bar[0] == DragonMetal.SMELT_INDEX ? bar[1] : Constants.roundedLevel(bar[1]);
+	}
+
+	/** Using dragon ore on a furnace smelts as many dragon bars as the player has ore for. */
+	public static boolean smeltDragon(Player c, int itemId) {
+		if (itemId != DragonMetal.DRAGON_ORE) {
+			return false;
+		}
+		c.isSmelting = true;
+		c.doAmount = c.getItemAssistant().getItemAmount(DragonMetal.DRAGON_ORE);
+		smeltBar(c, DragonMetal.SMELT_INDEX);
+		return true;
+	}
 
 	/**
 	 * Sends the interface
@@ -75,8 +93,8 @@ public class Smelting extends SkillHandler {
 		for (int i = 0; i < data.length; i++) {
 			if (bartype == data[i][0]) {
 				// Check player has the correct smithing level
-				if (c.playerLevel[Constants.SMITHING] < data[i][1]) { // Smithing level
-					c.getDialogueHandler().sendStatement("You need a smithing level of at least "+ data[i][1] + " in order smelt this bar.");
+				if (c.playerLevel[Constants.SMITHING] < levelFor(data[i])) { // Smithing level
+					c.getDialogueHandler().sendStatement("You need a smithing level of at least "+ levelFor(data[i]) + " in order smelt this bar.");
 					return;
 				}
 
@@ -103,7 +121,7 @@ public class Smelting extends SkillHandler {
 				c.stopPlayerSkill = true;
 
 				c.playerSkillProp[Constants.SMITHING][0] = data[i][0];// index
-				c.playerSkillProp[Constants.SMITHING][1] = data[i][1];// Level required
+				c.playerSkillProp[Constants.SMITHING][1] = levelFor(data[i]);// Level required
 				c.playerSkillProp[Constants.SMITHING][2] = data[i][2];// XP
 				c.playerSkillProp[Constants.SMITHING][3] = data[i][3];// primary item required
 				c.playerSkillProp[Constants.SMITHING][4] = data[i][4];// secondary item required

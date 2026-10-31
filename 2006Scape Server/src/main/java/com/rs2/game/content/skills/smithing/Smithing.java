@@ -16,6 +16,15 @@ public class Smithing {
 	}
 
 	public void readInput(Player player, int levelReq, int type, int amountToMake) {
+		int[] dragon = DragonMetal.forItem(type);
+		if (dragon != null) {
+			if (player.playerLevel[Constants.SMITHING] < dragon[4]) {
+				player.getPacketSender().sendMessage("You need a Smithing level of " + dragon[4] + " to make this item.");
+				return;
+			}
+			smithItem(player, type, DragonMetal.DRAGON_BAR, dragon[3], amountToMake, dragon[5]);
+			return;
+		}
 		if (hasItem(player, type, "Bronze")) {
 			 removeItem = 2349;
 		} else if (hasItem(player, type, "Iron")) {
@@ -35,7 +44,7 @@ public class Smithing {
 	private void checkBar(Player player, int level, int amountToMake, int type) {
     	SmithingData item = SmithingData.forId(type);
 		if (item != null) {
-			if (player.playerLevel[Constants.SMITHING] >= item.getLvl()) {
+			if (player.playerLevel[Constants.SMITHING] >= item.getLvl()) { // scaled, see SmithingData
 				if (type == item.getId()) {
 					addItem = item.getId();
 					removeAmount = item.getAmount();
@@ -44,7 +53,7 @@ public class Smithing {
 			    	smithItem(player, addItem, removeItem, removeAmount, makeTimes, xp);
 				}
 			} else {
-				 player.getPacketSender().sendMessage("You don't have a high enough level to make this item.");
+				 player.getPacketSender().sendMessage("You need a Smithing level of " + item.getLvl() + " to make this item.");
 			}
 		}
     }

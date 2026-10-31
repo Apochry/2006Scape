@@ -18,6 +18,9 @@ to another world, which is not connected to anything yet.
 - Black volcanic sand, ash and dead grass, withered palms, Morytanian trees and giant mushrooms.
   Green ghostfire torches and lamps are the island's signature light.
 
+- **The Dragonvein cavern**: a side cave west of the portal chamber in Blackbrine's Hold, with six
+  dragon rocks (level 60 Mining). See `docs/MINING_SMITHING.md`.
+
 ## Getting there
 
 - **Bosun Grimsby** on the Port Sarim docks starts the quest and sails you to the island.
@@ -63,9 +66,9 @@ place the portal leads anywhere.
 
 ## Regenerating the map
 
-The island, dungeon, new NPCs (ids 3852-3857), new items (7956-7958) and new scenery
-(objects 14974-14984: ghostfire, ghostfire torches and lamps, bone fangs, the serpent skull
-and ribs, black flags, withered palms) are written into `data/cache` by
+The island, dungeon, new NPCs (ids 3852-3857), new items (7956-7958, and dragon ore/bar 7959-7960)
+and new scenery (objects 14974-14985: ghostfire, ghostfire torches and lamps, bone fangs, the serpent skull
+and ribs, black flags, withered palms, dragon rocks) are written into `data/cache` by
 `CursedIslandGenerator`. To change the layout, edit that class, then rebuild from the
 original cache so old map data doesn't pile up in `main_file_cache.dat`:
 

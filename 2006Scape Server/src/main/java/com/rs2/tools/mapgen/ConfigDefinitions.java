@@ -112,6 +112,11 @@ public final class ConfigDefinitions {
 			return set(opcode, b.array());
 		}
 
+		/** Item value (opcode 12). */
+		public Definition cost(int value) {
+			return set(12, ByteBuffer.allocate(4).putInt(value).array());
+		}
+
 		public Definition recolor(int[] from, int[] to) {
 			if (from.length == 0) {
 				return remove(40);

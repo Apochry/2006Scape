@@ -10,6 +10,30 @@ import java.util.LinkedHashSet;
 public class Constants {
 
     /**
+     * Mining and Smithing level requirements for the original content (rocks, pickaxes, bars and
+     * smithed items) are multiplied by this. Ores, pickaxes and bars are also rounded to a multiple of 5
+     * (rune ore and bars 50 instead of 85); smithed items keep their 1-level steps (rune dagger 51).
+     * Dragon ore and dragon smithing use their own levels and are not scaled.
+     */
+    public static final double MINING_SMITHING_LEVEL_SCALE = 0.6;
+
+    public static int scaledLevel(int level) {
+        return Math.max(1, (int) Math.round(level * MINING_SMITHING_LEVEL_SCALE));
+    }
+
+    /** As {@link #scaledLevel}, rounded to a multiple of 5 - used for ores, pickaxes and bars (rune 85 -> 50). */
+    public static int roundedLevel(int level) {
+        return Math.max(1, (int) Math.round(level * MINING_SMITHING_LEVEL_SCALE / 5.0) * 5);
+    }
+
+    /** Rocks and trees grow back this many times faster than in the original game. */
+    public static final int RESOURCE_RESPAWN_SPEED = 3;
+
+    public static int respawnTicks(int ticks) {
+        return ticks <= 0 ? ticks : Math.max(1, ticks / RESOURCE_RESPAWN_SPEED);
+    }
+
+    /**
      * The Variables Below Can Be Also Changed On Server Startup By Using The ConfigLoader
      *
      * SERVER_NAME Sets The Name The Server Will Use

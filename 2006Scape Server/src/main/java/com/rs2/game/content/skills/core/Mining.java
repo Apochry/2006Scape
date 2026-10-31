@@ -1,6 +1,8 @@
 package com.rs2.game.content.skills.core;
 
 import com.rs2.Constants;
+import com.rs2.game.content.skills.RespawnWait;
+import com.rs2.game.content.skills.smithing.DragonMetal;
 import com.rs2.event.CycleEvent;
 import com.rs2.event.CycleEventContainer;
 import com.rs2.event.CycleEventHandler;
@@ -38,12 +40,12 @@ public class Mining {
     }
 
     public final int[][] Pick_Settings = {
-            {StaticItemList.BRONZE_PICKAXE, 1, 1, 625}, //Bronze
-            {StaticItemList.IRON_PICKAXE, 1, 2, 626}, //Iron
-            {StaticItemList.STEEL_PICKAXE, 6, 3, 627}, //Steel
-            {StaticItemList.MITHRIL_PICKAXE, 21, 4, 629}, //Mithril
-            {StaticItemList.ADAMANT_PICKAXE, 31, 5, 628}, //Addy
-            {StaticItemList.RUNE_PICKAXE, 41, 6, 624}, //Rune
+            {StaticItemList.BRONZE_PICKAXE, Constants.roundedLevel(1), 1, 625}, //Bronze
+            {StaticItemList.IRON_PICKAXE, Constants.roundedLevel(1), 2, 626}, //Iron
+            {StaticItemList.STEEL_PICKAXE, Constants.roundedLevel(6), 3, 627}, //Steel
+            {StaticItemList.MITHRIL_PICKAXE, Constants.roundedLevel(21), 4, 629}, //Mithril
+            {StaticItemList.ADAMANT_PICKAXE, Constants.roundedLevel(31), 5, 628}, //Addy
+            {StaticItemList.RUNE_PICKAXE, Constants.roundedLevel(41), 6, 624}, //Rune
     };
 
     public static enum gems {
@@ -91,6 +93,8 @@ public class Mining {
         MITHRIL(new int[]{StaticObjectList.ROCKS_2103, StaticObjectList.ROCKS_2102, StaticObjectList.ROCKS_14853, StaticObjectList.ROCKS_14854, StaticObjectList.ROCKS_14855}, 55, 80, 8, 200, new int[]{StaticItemList.MITHRIL_ORE}),
         ADAMANT(new int[]{StaticObjectList.ROCKS_2104, StaticObjectList.ROCKS_2105, StaticObjectList.ROCKS_14862, StaticObjectList.ROCKS_14863, StaticObjectList.ROCKS_14864}, 70, 95, 10, 400, new int[]{StaticItemList.ADAMANTITE_ORE}),
         RUNE(new int[]{StaticObjectList.ROCKS_14859, StaticObjectList.ROCKS_14860, StaticObjectList.ROCKS_2106, StaticObjectList.ROCKS_2107}, 85, 125, 20, 1200, new int[]{StaticItemList.RUNITE_ORE}),
+        /** Dragon rocks (Skullbrine Isle). Level 60 regardless of the level scale. */
+        DRAGON(new int[]{DragonMetal.DRAGON_ROCK}, DragonMetal.MINING_LEVEL, 175, 25, 900, new int[]{DragonMetal.DRAGON_ORE}),
         GRANITE(new int[]{StaticObjectList.ROCKS_10947}, 45, 75, 10, 8, new int[]{StaticItemList.GRANITE_500G, StaticItemList.GRANITE_2KG, StaticItemList.GRANITE_5KG}),
         SANDSTONE(new int[]{StaticObjectList.ROCKS_10946}, 35, 60, 5, 8, new int[]{StaticItemList.SANDSTONE_1KG, StaticItemList.SANDSTONE_2KG, StaticItemList.SANDSTONE_5KG, StaticItemList.SANDSTONE_10KG}),
         GEM(new int[]{StaticObjectList.ROCKS_2111}, 40, 65, 6, 175, new int[]{});
@@ -126,8 +130,14 @@ public class Mining {
             return null;
         }
 
+        /** The level needed to mine this rock (scaled down and rounded to 5, see {@link Constants#roundedLevel}). */
         public int getRequiredLevel() {
-            return levelReq;
+            return this == DRAGON ? levelReq : Constants.roundedLevel(levelReq);
+        }
+
+        /** The original level, which still sets how long the rock takes to mine (dragon mines like mithril). */
+        public int getBaseLevel() {
+            return this == DRAGON ? 55 : levelReq;
         }
 
         public int getXp() {
@@ -148,7 +158,7 @@ public class Mining {
 
         public int getOre(int playerLevel) {
             if (this == rockData.ESSENCE)
-                return playerLevel < 30 ? oreIds[0] : oreIds[1];
+                return playerLevel < Constants.roundedLevel(30) ? oreIds[0] : oreIds[1];
             if (this == rockData.GEM)
                 return gems.getRandom();
 
@@ -272,6 +282,11 @@ public class Mining {
                 container.stop();
                 if (rock == rockData.ESSENCE) {
                     startMining(player, objectID, objectX, objectY, type);
+                } else {
+                    // keep mining this rock once it grows back
+                    RespawnWait.start(player, objectX, objectY, Constants.respawnTicks(rock.getRespawnTimer()),
+                            "You wait for the rock to replenish.",
+                            () -> startMining(player, objectID, objectX, objectY, type));
                 }
             }
 
@@ -298,7 +313,7 @@ public class Mining {
     }
 
     public int getTimer(rockData rock, int pick, int level) {
-        double timer = (int) ((rock.getRequiredLevel() * 2) + 20 + Misc.random(20)) - ((Pick_Settings[pick][2] * (Pick_Settings[pick][2] * 0.75)) + level);
+        double timer = (int) ((rock.getBaseLevel() * 2) + 20 + Misc.random(20)) - ((Pick_Settings[pick][2] * (Pick_Settings[pick][2] * 0.75)) + level);
         if (timer < 2.0) {
             return 2;
         } else {
@@ -308,7 +323,7 @@ public class Mining {
 
     public void mineRock(int respawnTime, int x, int y, int type, int i) {
         if (i != StaticObjectList.RUNE_ESSENCE) {
-            new Object(StaticObjectList.ROCKS_452, x, y, 0, type, 10, i, respawnTime);
+            new Object(StaticObjectList.ROCKS_452, x, y, 0, type, 10, i, Constants.respawnTicks(respawnTime));
             Region.addObject(StaticObjectList.ROCKS_452, x, y, 0, 10, type, false);
 
             for (int t = 0; t < PlayerHandler.players.length; t++) {

@@ -1,6 +1,7 @@
 package com.rs2.game.content.skills.woodcutting;
 
 import com.rs2.Constants;
+import com.rs2.game.content.skills.RespawnWait;
 import com.rs2.event.CycleEvent;
 import com.rs2.event.CycleEventContainer;
 import com.rs2.event.CycleEventHandler;
@@ -335,6 +336,9 @@ public class Woodcutting {
 						cutDownTree(tree.getRespawnTime(), x, y, type, tree.getStump(), objectId);
 						p.getPacketSender().sendSound(SoundList.TREE_EMPTY, 100, 0);
 						container.stop();
+						// keep chopping this tree once it grows back
+						RespawnWait.start(p, x, y, Constants.respawnTicks(tree.getRespawnTime()),
+								"You wait for the tree to grow back.", () -> startWoodcutting(p, objectId, x, y, type));
 					}
 				}
 				@Override
@@ -414,7 +418,7 @@ public class Woodcutting {
 					8406, 8407, 8408, 8409, 13417, 13424, } };
 
 	public static void cutDownTree(int respawnTime, int objectX, int objectY, int type, int stumpID, int treeID) {
-		new Object(stumpID, objectX, objectY, 0, type, 10, treeID, respawnTime);
+		new Object(stumpID, objectX, objectY, 0, type, 10, treeID, Constants.respawnTicks(respawnTime));
 		for (int t = 0; t < PlayerHandler.players.length; t++) {
 			if (PlayerHandler.players[t] != null) {
 				if (PlayerHandler.players[t].treeX == objectX && PlayerHandler.players[t].treeY == objectY) {
