@@ -10,7 +10,8 @@
 # Then restart the server to see it, and read target/worldgate/report.txt and the area maps in target/worldgate/.
 set -eo pipefail
 cd "$(dirname "$0")/.."
-(cd .. && mvn -B -q -pl "2006Scape Server" package -DskipTests 2>&1 | grep -v JAVA_TOOL || true)
+# (a build that fails stops here: the last good jar would build yesterday's world and judge that instead)
+(cd .. && mvn -B -q -pl "2006Scape Server" package -DskipTests 2>&1 | { grep -v JAVA_TOOL || true; }) || { echo "BUILD FAILED: nothing generated" >&2; exit 2; }
 git checkout 7f1dc47 -- data/cache && git reset -q data/cache   # the cache as it was before any of the generated world
 java -Dworldgate="${WORLDGATE:-enforce}" $GENOPTS -cp target/server-1.0-jar-with-dependencies.jar \
 	com.rs2.tools.mapgen.CursedIslandGenerator 2>&1 | grep -v -e JAVA_TOOL -e '^Wrote region'

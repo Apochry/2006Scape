@@ -30,6 +30,9 @@ Discipline alone kept failing, so the toolchain now makes the right way the only
 | **The gate** | After building, before a byte is written, `WorldGate` lints every declared area in memory with every WorldLint check, floods reach from each arrival, and checks every must-reach spot. Any unaccepted finding means **the cache is not written** (exit 3). | `WorldGate.java`, called from `CursedIslandGenerator.main` |
 | **Findings point at code** | Every map object records the generator frames that placed it (`MapObject.origin`); every painted path tile records who painted it. Each finding prints `<- Door from CursedIslandGenerator.object:1514 < seededMistakes:687`, the line to change. | `Origin.java` |
 | **Accepting is explicit and expires** | An accepted finding needs `KIND x,y  reason`; a line with no reason is `ACCEPT-UNREADABLE`, and a line that no longer matches anything is `ACCEPT-STALE`. Both fail the gate, so the accepted list can't rot into a blanket pardon. | `tools/worldlint-accepted.txt` |
+| **The design gate** | Broken isn't the only failure: `DesignLint` refuses the tells of a place written as code. Every prop of a kind turned one way, props ruled into rows, the same camp pasted twice, ground the player walks straight up like a wall, one-tile spikes, floors cut in rectangles, named places no path serves, roads that join nothing, a brief's landmark that isn't built or that no path passes, npcs spawned inside rock, and options ("Search", "Shake") that no game code answers. | `DesignLint.java` |
+| **The gate tests itself** | `GENOPTS=-Dworldgate.selftest=true tools/regen-world.sh` plants one of every amateur mistake into an empty meadow and fails unless the gate reports each one. It writes nothing. Run it after any change to the lint, the design checks or the gate: a check loosened for one false positive can quietly go blind. | `GateSelfTest.java` |
+| **A second pair of eyes** | No rule sees ugliness. After the gate passes, a fresh reviewer who hasn't seen the code judges each changed area from its brief, its map and screenshots, using `design-review.md`. Anything it finds twice becomes a new DesignLint check. | `design-review.md` (this folder) |
 | **Stamp and hooks** | A pass writes `tools/worldgate.stamp`, a hash of the world code listed in `tools/worldgate.files`. Claude Code hooks (`.claude/hooks/worldgate.sh`) put these rules in front of you the first time world code is edited in a session, **deny any `git commit` that includes world code without a matching, staged stamp**, and **block ending a session** with ungated world changes. | `.claude/settings.json` |
 
 The one command is `"2006Scape Server/tools/regen-world.sh"`: it compiles, restores the pristine cache, generates, and
@@ -48,6 +51,16 @@ still catches it. The proof run that added these layers seeded:
 
 All five were refused, with their lines. It also caught a real quest-breaker: a 3x3 crystal plugging the Crown Vault's
 only tunnel to the Ember.
+
+The design gate's first run over the finished world found 94 things, nearly all real: every Nythera destination but
+three had no path that joined the road from the rift (the inn road and the east road started three tiles short of the
+stone road's end, and Gatehold, the croft, the quarry, the barrow, the fissure and Silkwood had no track at all),
+Skullbrine's east road was cut off from the town deck by a shack stamped across its start, the ridge pass had unblocked
+a 66-level drop to the tarn beside the road, 21 npcs stood inside crystals, graves, boats and rocks (their placers
+checked anchors, not footprints), the camps' fires and the graveyard's braziers all faced one way, boulders lay in
+ruled rows, Hollowdeep had no void pool for its brief's landmark, and the withered palms offered a "Shake" that did
+nothing. Each was fixed at its source. The self-test then caught that the terrain checks had been tested only with
+seeds that never fired.
 
 ## 1. Design first: a place, not a list of objects
 
@@ -183,11 +196,18 @@ Sketch it on a grid, with ASCII in a comment or the `-Dzoom` / `MapRender` top-d
    dressing out in the water" is a reason. "It's fine" is not. For a closer look at one spot, WorldLint still runs on
    its own against the written cache:
    `WorldLint x0 y0 x1 y1 -from X,Y -png f.png`.
-5. **Look at it from the player's eye.** Log in, teleport to each arrival point and landmark, and take screenshots
+5. **Get an independent design review** of every area you changed (see `design-review.md`): hand a fresh subagent
+   the area's brief, `target/worldgate/<area>.png` and the `design:` line from the report, plus screenshots if you
+   have them, but no code and no account of what you meant. It reports the worst amateur tells first. Fix what's real at
+   the source and regenerate. When a reviewer flags the same kind of thing twice, write it into `DesignLint` as a check,
+   seed it in `GateSelfTest`, and it never needs a reviewer again.
+6. **Look at it from the player's eye.** Log in, teleport to each arrival point and landmark, and take screenshots
    at a moderate pitch from two or three angles. Walk each route. The linter can't see ugliness, scale, colour, or a
    model that isn't drawn. Compare before and after shots side by side.
-6. **Document** the place and its object ids in `docs/SKULLBRINE_ISLE.md` or `docs/VOID_QUESTS.md`, and keep the
+7. **Document** the place and its object ids in `docs/SKULLBRINE_ISLE.md` or `docs/VOID_QUESTS.md`, and keep the
    "next new object/item id" notes in `VoidConstants` current.
+8. **Changed a check?** Run the self-test (`GENOPTS=-Dworldgate.selftest=true tools/regen-world.sh`). It must say
+   `GATE SELF-TEST: PASSED` before you trust a green gate.
 
 ## 4. WorldLint findings and what to do about each
 
@@ -211,6 +231,20 @@ Sketch it on a grid, with ASCII in a comment or the `-Dzoom` / `MapRender` top-d
 | `STEEP-FOOTPRINT` | A flat-bottomed thing on sloping ground | `flatten` under it (`LEVEL_BEDDED`, `tent()`) |
 | `OVERLAP` | Two solid objects in one tile | Move one; fix the free-space test if it's scatter |
 | `PATH-SCRAP` | A few path tiles on their own | Remove them, or connect them |
+| **Design** (`DesignLint`) | | |
+| `NPC-STUCK` | An npc spawns inside something solid, blocked ground, or water (fishing spots, ducks and swans may stand in water) | Move the spawn; make the placer test whole footprints (`footprintFree`, `dungeonSize`), not anchors |
+| `NPC-UNREACHABLE` | An npc the player can't walk up to | Move it, or open the way |
+| `UNSERVED` | A must-reach place has no path within 6 tiles, or only a path that never joins the one from the arrival | Lead a track to its door, gate or fire from the nearest road (`tracks()`); accept only if being hard to find is the point |
+| `PATH-ISLAND` | A path of 8+ tiles that joins nothing the player arrives by (often a doorstep stamped too far from the street, or a road whose start was built over) | Connect it, or re-route what cut it off |
+| `LANDMARK-UNPLACED` / `LANDMARK-MISSING` | The area doesn't say where its brief's landmark stands, or nothing of ours is built there | `landmarkAt(x, y)` in `WorldAreas`; then build the landmark the brief promises |
+| `LANDMARK-UNSEEN` | No walkable path comes within 20 tiles of the landmark | Route a path past it: a landmark is for seeing |
+| `CLIFF-WALKABLE` | Neighbouring walkable tiles 14+ height levels apart: the player strolls up a wall | Block the cliff (`slopes()` does on mountains) or grade it; never unblock a box that takes in a drop |
+| `HEIGHT-SPIKE` | One walkable tile sticks up or drops 7+ levels from all four neighbours | Smooth the heightmap there |
+| `COPY-PASTE` | The same arrangement of 4+ props in two places 10+ tiles apart | Compose each place for itself: vary pieces, spacing and turn (deliberate symmetry, like a face's two eyes, is acceptable with that reason) |
+| `GRID-PATTERN` | 4+ of one prop at equal spacing on a line, standing clear of others of their kind | Scatter them; for scans, refuse a placement that would line up a third (`rock()` / `extendsRow`) |
+| `UNIFORM-ROTATION` | 8+ of one prop, 90% turned the same way | `CursedIslandGenerator.turn(x, y)` for things with no front, or a random turn |
+| `STRAIGHT-FLOOR-EDGE` | A ground (underlay) or decorative floor edge ruled straight along the grid for 14+ tiles (22+ on a slant): a rectangle showing | Shape it with noise or a curve; accept it only if it's built (a hall, a paved yard) |
+| `DEAD-OPTION` | One of our objects offers an option ("Search", "Shake") that no game code handles, usually inherited from the stock object it was cloned from | `.remove(30)` (or the op's opcode) on its definition, or handle it |
 
 The kinds of floor it treats as paths, water and built floors are listed at the top of `WorldLint.java`. Extend
 those lists when you add new floors.
@@ -227,4 +261,10 @@ those lists when you add new floors.
 - [ ] `tools/regen-world.sh` says `WORLD GATE: PASSED`, every accepted finding is explained, and the new
       `tools/worldgate.stamp` is committed with the code and the cache.
 - [ ] You've looked at in-game screenshots from the arrival point and each landmark, at two angles each.
+- [ ] Every named place is on the path network, and the brief's landmark is built where `landmarkAt` says, with a path
+      passing within sight of it.
+- [ ] Nothing is ruled, pasted or turned in step; no npc stands in anything; no prop offers an option that does nothing.
+- [ ] A fresh reviewer has judged the area from its brief, map and screenshots (`design-review.md`), and what it found
+      is fixed or answered.
+- [ ] If you changed a check, the self-test passes.
 - [ ] The docs and the object/item id notes are updated.

@@ -69,7 +69,10 @@ public final class WorldLint {
 	final List<int[]> marks = new ArrayList<>(); // x, y, kind index
 	static final String[] ORDER = { "MUST-REACH", "UNREACHABLE", "TILE-OVERFULL", "DOOR-NO-WALL", "OPENING-UNBACKED", "PATH-DEAD-END",
 			"PATH-DIAGONAL-JOIN", "PATH-OBSTRUCTED", "STRAIGHT-PATH", "STRAIGHT-WATER", "WALL-FRAGMENT", "WALL-LOOSE-END",
-			"ON-WATER", "WATER-WALKABLE", "STEEP-FOOTPRINT", "OVERLAP", "PATH-SCRAP" };
+			"ON-WATER", "WATER-WALKABLE", "STEEP-FOOTPRINT", "OVERLAP", "PATH-SCRAP",
+			// design (DesignLint): not broken, but amateur
+			"NPC-STUCK", "NPC-UNREACHABLE", "UNSERVED", "LANDMARK-UNPLACED", "LANDMARK-MISSING", "LANDMARK-UNSEEN", "PATH-ISLAND",
+			"CLIFF-WALKABLE", "HEIGHT-SPIKE", "COPY-PASTE", "GRID-PATTERN", "UNIFORM-ROTATION", "STRAIGHT-FLOOR-EDGE" };
 
 	/** An object in the area, with what the lint needs from its definition. */
 	final class Obj {
@@ -409,6 +412,11 @@ public final class WorldLint {
 	 * rivers and shores wander; a ruler-straight edge is the generator showing through.
 	 */
 	void straightEdges(TileSet set, String kind, int straight) {
+		straightEdges(set, kind, straight, straight);
+	}
+
+	/** As above, with a separate (longer) allowance for runs that aren't along the grid. */
+	void straightEdges(TileSet set, String kind, int straight, int slanted) {
 		int[][] dirs = { { 1, 0 }, { 0, 1 }, { 1, 1 }, { 1, -1 }, { 2, 1 }, { 1, 2 }, { 2, -1 }, { 1, -2 } };
 		Set<Long> reported = new HashSet<>();
 		for (int[] d : dirs) {
@@ -435,7 +443,7 @@ public final class WorldLint {
 						cy += d[1];
 					}
 					double len = n * Math.hypot(d[0], d[1]);
-					if (len >= straight && !edgeOfArea(x, y, 2) && !edgeOfArea(cx - d[0], cy - d[1], 2)) {
+					if (len >= (d[0] == 0 || d[1] == 0 ? straight : slanted) && !edgeOfArea(x, y, 2) && !edgeOfArea(cx - d[0], cy - d[1], 2)) {
 						int mx = (x + cx - d[0]) / 2, my = (y + cy - d[1]) / 2;
 						if (reported.add(key(mx / 3, my / 3))) {
 							report(kind, mx, my, String.format("edge runs dead straight for %.0f tiles (%d,%d to %d,%d)", len, x, y,
@@ -927,7 +935,9 @@ public final class WorldLint {
 		BufferedImage img = new MapRender(cache).render(id -> regions.get(id), x0, y0, x1 - x0 + 1, y1 - y0 + 1, scale, false);
 		Graphics2D g = img.createGraphics();
 		Color[] colors = { Color.RED, Color.RED, Color.MAGENTA, Color.ORANGE, Color.ORANGE, Color.YELLOW, Color.YELLOW, Color.PINK, Color.CYAN,
-				Color.CYAN, Color.WHITE, Color.WHITE, Color.BLUE, Color.BLUE, Color.GREEN, Color.LIGHT_GRAY, Color.LIGHT_GRAY };
+				Color.CYAN, Color.WHITE, Color.WHITE, Color.BLUE, Color.BLUE, Color.GREEN, Color.LIGHT_GRAY, Color.LIGHT_GRAY,
+				Color.RED, Color.RED, Color.MAGENTA, Color.MAGENTA, Color.MAGENTA, Color.MAGENTA, Color.ORANGE, Color.YELLOW, Color.YELLOW,
+				Color.PINK, Color.PINK, Color.PINK, Color.CYAN };
 		g.setStroke(new BasicStroke(2));
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		for (int[] m : marks) {
@@ -937,7 +947,7 @@ public final class WorldLint {
 			int px = (m[0] - x0) * scale + scale / 2, py = (y1 - m[1]) * scale + scale / 2;
 			g.setColor(Color.BLACK);
 			g.drawOval(px - 9, py - 9, 18, 18);
-			g.setColor(colors[m[2]]);
+			g.setColor(colors[m[2] % colors.length]);
 			g.drawOval(px - 8, py - 8, 16, 16);
 			g.drawString(ORDER[m[2]].substring(0, 4), px + 9, py - 6);
 		}

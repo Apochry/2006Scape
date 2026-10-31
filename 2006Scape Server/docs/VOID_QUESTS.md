@@ -408,11 +408,16 @@ Other rules the generator follows:
   - scenery in roads or water, and water a player can walk on
   - props on slopes, and overlapping or overfull tiles
   - places and must-reach spots that can't be reached, and anything built outside a declared area
+  - amateur design (`DesignLint`): props turned in step, ruled into rows or pasted in two places; walkable cliffs and
+    one-tile spikes; floors cut in rectangles; named places no path serves and roads that join nothing; a brief's
+    landmark that isn't built or that no path passes; npcs spawned inside things; and options no game code answers
 
   Any finding refuses the whole world and names the generator line behind it. Findings that are right as they are go
   in `tools/worldlint-accepted.txt` with the reason; a stale or unexplained line fails too. A pass stamps
-  `tools/worldgate.stamp`, and the Claude Code hooks in `.claude/` refuse commits of world code without it. See the
-  world-building skill.
+  `tools/worldgate.stamp`, and the Claude Code hooks in `.claude/` refuse commits of world code without it. The gate
+  tests itself: `GENOPTS=-Dworldgate.selftest=true tools/regen-world.sh` plants one of each mistake and fails unless
+  every one is caught. After the gate, each changed area gets a review from a fresh reviewer who sees only its brief,
+  map and screenshots (`.claude/skills/world-building/design-review.md`). See the world-building skill.
 - Floors and objects share no id space. An object id passed as a floor (the dungeons once got the mossy rock, 478, as
   their wall underlay) wraps inside the map format's one-byte opcodes and scrambles the rest of the region;
   `MapRegion.encodeTerrain` now refuses to write it.

@@ -71,6 +71,16 @@ public final class CursedIslandGenerator {
 
 	final Map<Integer, MapRegion> regions = new HashMap<>();
 	private final Random random = new Random(0x5C011);
+
+	/**
+	 * A turn for a prop that has no "front" (a fire, a rock, a crate): fixed by where it stands, so it's stable from run
+	 * to run and never draws on the generators' random stream, but no two neighbours are likely to share it. Nothing
+	 * natural or thrown down faces the same way as its fellows.
+	 */
+	static int turn(int x, int y) {
+		int h = x * 73856093 ^ y * 19349663;
+		return (h ^ h >>> 13) & 3;
+	}
 	CacheEditor cache;
 	/** The Void quest series and the continent of Nythera. */
 	final VoidRealmGenerator voidRealm = new VoidRealmGenerator(this);
@@ -107,7 +117,15 @@ public final class CursedIslandGenerator {
 						new java.io.File(System.getProperty("nythera")));
 			}
 			// nothing reaches the cache until the world passes the gate (see WorldGate and WorldAreas)
-			if (!WorldGate.check(gen.regions, ConfigDefinitions.load(gen.config, "loc", false), cache)) {
+			java.util.Map<String, String> planted = GateSelfTest.enabled() ? GateSelfTest.plant(gen) : null;
+			boolean pass = WorldGate.check(gen.regions, ConfigDefinitions.load(gen.config, "loc", false),
+					ConfigDefinitions.load(gen.config, "npc", true), gen.voidRealm.spawns, cache);
+			if (planted != null) {
+				String report = new String(java.nio.file.Files.readAllBytes(WorldGate.OUT.resolve("report.txt")),
+						java.nio.charset.StandardCharsets.UTF_8);
+				System.exit(GateSelfTest.judge(planted, report) ? 0 : 4); // the planted world is never written
+			}
+			if (!pass) {
 				System.exit(3);
 			}
 		}
@@ -649,9 +667,14 @@ public final class CursedIslandGenerator {
 		road(2.2, ROAD, new int[][] { { 2011, 2906 }, { 2005, 2909 }, { 1999, 2913 }, { 1993, 2916 } });
 		// deck -> swamp -> serpent beach (east): it bends south round the serpent's ribcage and ends at its skull, rather
 		// than running through the ribs
-		road(2.2, ROAD, new int[][] { { 2021, 2906 }, { 2027, 2909 }, { 2033, 2908 }, { 2037, 2903 }, { 2042, 2899 }, { 2047, 2897 } });
+		// (it leaves the deck's north-east corner and passes north of the shack on the corner: through it, the shack
+		// would cut the road off from the deck)
+		road(2.2, ROAD, new int[][] { { 2020, 2909 }, { 2025, 2910 }, { 2030, 2910 }, { 2033, 2908 }, { 2037, 2903 }, { 2042, 2899 },
+				{ 2047, 2897 } });
 		// Mad Pete's camp, off the east road (wide enough that it joins the road along an edge, not at a corner)
-		road(2.4, ROAD, new int[][] { { 2027, 2909 }, { 2029, 2906 }, { 2030, 2904 } });
+		road(2.4, ROAD, new int[][] { { 2030, 2909 }, { 2030, 2906 }, { 2030, 2904 } });
+		// the west shack's doorstep along to the main street
+		road(2.0, ROAD, new int[][] { { 2009, 2896 }, { 2012, 2895 }, { 2016, 2895 } });
 	}
 
 	/**
@@ -860,8 +883,8 @@ public final class CursedIslandGenerator {
 		}
 		// the captain's empty grave, with ghostfire braziers
 		object(LARGE_GRAVE, cx, cy, TYPE_SCENERY, 1);
-		object(GHOSTFIRE, cx - 2, cy + 2, TYPE_SCENERY, 0);
-		object(GHOSTFIRE, cx + 2, cy + 2, TYPE_SCENERY, 0);
+		object(GHOSTFIRE, cx - 2, cy + 2, TYPE_SCENERY, turn(cx - 2, cy + 2));
+		object(GHOSTFIRE, cx + 2, cy + 2, TYPE_SCENERY, turn(cx + 2, cy + 2));
 		object(SKULL_PILE, cx + 5, cy - 7, TYPE_SCENERY, 0);
 		object(LONG_SKELETON, cx - 7, cy - 3, TYPE_GROUND_DECOR, 0);
 		object(MORY_TREE_BIG, cx - 9, cy + 6, TYPE_SCENERY, 0);
@@ -926,9 +949,9 @@ public final class CursedIslandGenerator {
 		int eyeY = FACE_Y0 + (int) Math.round(0.62 * FACE_DEPTH);
 		for (int side = -1; side <= 1; side += 2) {
 			int ex = SKX + side * 6 - (side < 0 ? 1 : 0);
-			object(GHOSTFIRE, ex, eyeY, TYPE_SCENERY, 0);
-			object(GHOSTFIRE, ex - 1, eyeY + 1, TYPE_SCENERY, 0);
-			object(GHOSTFIRE, ex + 1, eyeY - 1, TYPE_SCENERY, 0);
+			object(GHOSTFIRE, ex, eyeY, TYPE_SCENERY, turn(ex, eyeY));
+			object(GHOSTFIRE, ex - 1, eyeY + 1, TYPE_SCENERY, turn(ex - 1, eyeY + 1));
+			object(GHOSTFIRE, ex + 1, eyeY - 1, TYPE_SCENERY, turn(ex + 1, eyeY - 1));
 		}
 		// torches lead the way in
 		object(GHOST_TORCH, SKX - 3, FACE_Y0 - 3, TYPE_SCENERY, 0);
@@ -1384,7 +1407,8 @@ public final class CursedIslandGenerator {
 		// palms withered by the curse
 		ConfigDefinitions.Definition palm = loc(locs, 1311, WITHERED_PALM).examine("This palm has seen better centuries.");
 		tintLoc(palm, 9, 2, 0.9, 0, c -> (c >> 10) == 21);
-		ConfigDefinitions.Definition leafy = loc(locs, 2975, WITHERED_LEAFY_PALM).examine("Its leaves rattle like dry bones.");
+		// (the stock palm's "Shake" drops coconuts; nothing grows on these, so the option goes rather than doing nothing)
+		ConfigDefinitions.Definition leafy = loc(locs, 2975, WITHERED_LEAFY_PALM).examine("Its leaves rattle like dry bones.").remove(30);
 		tintLoc(leafy, 9, 2, 0.9, 0, c -> (c >> 10) == 15);
 		// lamps burning with ghostfire
 		tintLoc(loc(locs, 201, GHOST_LAMP).examine("The flame inside is the wrong colour."), 23, 6, 1.0, 4, c -> (c >> 7 & 7) == 7);

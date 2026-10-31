@@ -1011,16 +1011,19 @@ final class VoidRealmGenerator {
 		// the old stone road from the crater to the Broken Gate, then dirt tracks north to the pass and east to the scar
 		road(2.6, STONE_ROAD, new int[][] { { 1564, 2662 }, { 1558, 2670 }, { 1546, 2676 }, { 1538, 2688 }, { 1526, 2694 },
 				{ 1518, 2704 }, { 1510, 2710 } }, 2.2, 11, 91);
-		road(2.2, DIRT_ROAD, new int[][] { { 1510, 2714 }, { 1506, 2726 }, { 1496, 2732 }, { 1492, 2746 }, { 1484, 2754 },
+		road(2.2, DIRT_ROAD, new int[][] { { 1510, 2710 }, { 1508, 2718 }, { 1506, 2726 }, { 1496, 2732 }, { 1492, 2746 }, { 1484, 2754 },
 				{ 1482, 2768 }, { 1480, 2782 }, { 1482, 2800 }, { 1483, 2804 } }, 2.4, 10, 92); // to the inn's yard
-		road(2.0, DIRT_ROAD, new int[][] { { 1514, 2712 }, { 1526, 2718 }, { 1538, 2728 }, { 1552, 2730 }, { 1566, 2738 },
+		road(2.0, DIRT_ROAD, new int[][] { { 1511, 2710 }, { 1516, 2713 }, { 1526, 2718 }, { 1538, 2728 }, { 1552, 2730 }, { 1566, 2738 },
 				{ 1578, 2736 } }, 2.2, 10, 93);
+		tracks();
+		ridgePass();
 		craterAndCamp();
 		ruins();
 		scarScenery();
 		ores();
 		camps();
 		places();
+		lateTracks();
 		vegetation();
 		smoothOverlays();
 		g.drownedScenery(NX0, NY0, NSIZE);
@@ -1093,16 +1096,85 @@ final class VoidRealmGenerator {
 				}
 			}
 		}
-		// a pass over the ridge where the north road goes (the ground only: the tarn under the ridge stays water)
+	}
+
+	/**
+	 * The way over the ridge where the north road goes (after the roads are down): the road itself is graded into a
+	 * ramp, and its ground opened; the drop beside it, down to the tarn, stays a cliff.
+	 */
+	void ridgePass() {
+		for (int pass = 0; pass < 6; pass++) {
+			for (int x = 1474; x <= 1486; x++) {
+				for (int y = 2760; y <= 2820; y++) {
+					if (!WorldLint.PATH_FLOORS.contains(g.overlayAt(x, y))) {
+						continue;
+					}
+					int sum = 0, n = 0;
+					for (int dx = -1; dx <= 1; dx++) {
+						for (int dy = -1; dy <= 1; dy++) {
+							if (WorldLint.PATH_FLOORS.contains(g.overlayAt(x + dx, y + dy))) {
+								sum += g.heightAt(x + dx, y + dy);
+								n++;
+							}
+						}
+					}
+					g.setHeight(x, y, sum / n);
+				}
+			}
+		}
 		for (int x = 1474; x <= 1486; x++) {
 			for (int y = 2760; y <= 2820; y++) {
 				MapRegion r = g.regionAt(x, y);
 				if (WorldLint.WATER_FLOORS.contains(r.overlay[0][x & 63][y & 63])) {
 					continue;
 				}
+				int h = g.heightAt(x, y), steep = 0;
+				for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
+					steep = Math.max(steep, Math.abs(h - g.heightAt(x + d[0], y + d[1])));
+				}
+				if (steep > 9 && !WorldLint.PATH_FLOORS.contains(r.overlay[0][x & 63][y & 63])) {
+					g.block(x, y);
+					continue;
+				}
 				r.settings[0][x & 63][y & 63] &= ~MapRegion.BLOCKED;
 			}
 		}
+	}
+
+	/**
+	 * The worn tracks off the roads: every place the player is sent has a way there that they can follow, beaten by the
+	 * people who use it. Each leaves a road at a bend and ends at the place's door, gate or fire.
+	 */
+	void tracks() {
+		// Gatehold's south gate down to the stone road
+		road(1.8, DIRT_ROAD, new int[][] { { 1494, 2703 }, { 1503, 2701 }, { 1510, 2702 }, { 1516, 2703 } }, 1.0, 7, 94);
+		// in from the road across Gatehold's square to the hall door
+		// (round the well and the stalls, and along the hall's flank to its door)
+		road(1.8, DIRT_ROAD, new int[][] { { 1509, 2712 }, { 1503, 2712 }, { 1498, 2713 }, { 1494, 2714 }, { 1494, 2717 },
+				{ 1493, 2720 } }, 0.4, 6, 104);
+		// the fishing camp's doorstep down to its jetty
+		road(2.0, DIRT_ROAD, new int[][] { { 1462, 2708 }, { 1458, 2708 }, { 1456, 2710 }, { 1456, 2712 } }, 0.2, 5, 105);
+		// out of Gatehold's west side to the fishing camp on the lake shore
+		road(1.6, DIRT_ROAD, new int[][] { { 1486, 2703 }, { 1478, 2705 }, { 1471, 2707 }, { 1466, 2710 } }, 1.2, 7, 95);
+		// the fishing camp south to the woodcutters, then over the bridge into Silkwood
+		road(2.0, DIRT_ROAD, new int[][] { { 1457, 2709 }, { 1456, 2703 }, { 1455, 2697 }, { 1452, 2686 }, { 1450, 2674 }, { 1447, 2662 },
+				{ 1446, 2656 } }, 1.6, 9, 96);
+		road(2.0, DIRT_ROAD, new int[][] { { 1445, 2655 }, { 1436, 2659 }, { 1428, 2662 }, { 1421, 2665 }, { 1416, 2666 } }, 1.2, 8, 97);
+		road(1.4, DIRT_ROAD, new int[][] { { 1409, 2666 }, { 1402, 2667 }, { 1396, 2668 }, { 1392, 2668 } }, 0.8, 6, 98);
+		// off the stone road and down the lane between the croft's pens into its yard
+		road(1.8, DIRT_ROAD, new int[][] { { 1536, 2690 }, { 1530, 2686 }, { 1525, 2682 }, { 1523, 2677 }, { 1522, 2672 },
+				{ 1521, 2668 } }, 0.6, 7, 99);
+		// the east road north to the quarry
+		road(1.8, DIRT_ROAD, new int[][] { { 1538, 2729 }, { 1535, 2740 }, { 1534, 2751 }, { 1532, 2760 } }, 1.4, 8, 100);
+		// the inn road to the barrow mound's door, and to the Frostfang cave mouth
+		road(1.4, DIRT_ROAD, new int[][] { { 1491, 2745 }, { 1485, 2743 }, { 1480, 2740 } }, 0.8, 6, 101);
+		road(2.0, DIRT_ROAD, new int[][] { { 1481, 2784 }, { 1484, 2786 }, { 1488, 2788 } }, 0.4, 6, 102);
+	}
+
+	/** Tracks into ground that's dressed after the roads (the Scar's ash would swallow them if they went down first). */
+	void lateTracks() {
+		// past the Scar watch and on to the fissure, the ash trodden down into a track by the watch's patrols
+		road(1.8, DIRT_ROAD, new int[][] { { 1578, 2737 }, { 1581, 2741 }, { 1585, 2739 }, { 1590, 2742 }, { 1595, 2741 }, { 1599, 2742 } }, 1.0, 5, 103);
 	}
 
 	/** A winding road: every tile within width/2 of the meandering line gets the floor (no gaps, no diagonal-only joins). */
@@ -1254,7 +1326,7 @@ final class VoidRealmGenerator {
 		boolean nearWater = lake(x, y) > -5 || riverDistance(x, y) < 4;
 		if (inland < 4) {
 			if (roll < 8 && free(x, y, 2)) {
-				g.object(SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
+				rock(SMALL_MOSSY_ROCK, x, y, rot);
 			}
 			return;
 		}
@@ -1262,9 +1334,9 @@ final class VoidRealmGenerator {
 			if (roll < 25 && free(x, y, 2)) {
 				g.object(random.nextBoolean() ? EVERGREEN : EVERGREEN_BIG, x, y, TYPE_SCENERY, rot);
 			} else if (roll < 36 && free(x, y, 2)) {
-				g.object(MOSSY_ROCK, x, y, TYPE_SCENERY, rot); // 2x2: free(x, y, 2) covers it
+				rock(MOSSY_ROCK, x, y, rot); // 2x2: free(x, y, 2) covers it
 			} else if (roll < 45 && free(x, y, 1)) {
-				g.object(SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
+				rock(SMALL_MOSSY_ROCK, x, y, rot);
 			}
 			return;
 		}
@@ -1283,8 +1355,39 @@ final class VoidRealmGenerator {
 		} else if (roll < treeChance + 12 && free(x, y, 3) && f > 0.4) {
 			g.object(FALLEN_TREE, x, y, TYPE_SCENERY, rot);
 		} else if (roll < treeChance + 15 && free(x, y, 1)) {
-			g.object(SMALL_MOSSY_ROCK, x, y, TYPE_SCENERY, rot);
+			rock(SMALL_MOSSY_ROCK, x, y, rot);
 		}
+	}
+
+	/** Where the big boulders went, to keep them out of ruled rows (see extendsRow). */
+	final java.util.Map<Long, Integer> rocks = new java.util.HashMap<>();
+
+	/**
+	 * Whether placing {@code id} at (x, y) would make a third in a line, evenly spaced, with two already placed: the
+	 * scan over the map lays things down in order, and dense ground then fills with rows that read as walls nobody built.
+	 */
+	/** A boulder, unless it would line up with two others of its kind (see extendsRow). */
+	void rock(int id, int x, int y, int rot) {
+		if (!extendsRow(id, x, y)) {
+			g.object(id, x, y, TYPE_SCENERY, rot);
+			rocks.put(WorldLint.key(x, y), id);
+		}
+	}
+
+	boolean extendsRow(int id, int x, int y) {
+		for (int dx = -8; dx <= 8; dx++) {
+			for (int dy = -8; dy <= 0; dy++) {
+				if ((dx == 0 && dy == 0) || Math.max(Math.abs(dx), Math.abs(dy)) < 2) {
+					continue;
+				}
+				Integer a = rocks.get(WorldLint.key(x + dx, y + dy)), b = rocks.get(WorldLint.key(x + 2 * dx, y + 2 * dy));
+				Integer c = rocks.get(WorldLint.key(x - dx, y - dy));
+				if (a != null && a == id && (b != null && b == id || c != null && c == id)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	void groundCover(int x, int y, double inland) {
@@ -1382,7 +1485,7 @@ final class VoidRealmGenerator {
 	void campfire(int x, int y, boolean cooking) {
 		g.removeObjectsAt(x, y);
 		g.object(cooking ? COOK_FIRE_RING : FIRE_RING, x, y, TYPE_GROUND_DECOR, 0);
-		g.object(FIRE, x, y, TYPE_SCENERY, 0);
+		g.object(FIRE, x, y, TYPE_SCENERY, CursedIslandGenerator.turn(x, y));
 	}
 
 	/** A log to sit on. */
@@ -1846,9 +1949,7 @@ final class VoidRealmGenerator {
 			g.removeObjectsAt(cx + w[0], cy + w[1]);
 			g.object(WEB, cx + w[0], cy + w[1], TYPE_SCENERY, w[2]);
 		}
-		for (int i = 0; i < 6; i++) {
-			person(SPIDER, cx - 4 + random.nextInt(9), cy - 4 + random.nextInt(9), 1);
-		}
+		around(SPIDER, 6, cx, cy, 5, 1); // on clear ground only: never inside the fallen tree or a web-hung trunk
 	}
 
 	/** The Sunken Barrow: a grassy mound with a stone door, old graves around it. */
@@ -1892,6 +1993,14 @@ final class VoidRealmGenerator {
 			}
 		}
 		g.object(HOLLOW_FISSURE, cx, cy, TYPE_SCENERY, 0);
+		// the crystals have grown up through whatever stood here: clear their whole footprints first
+		for (int[] c : new int[][] { { cx - 3, cy + 2 }, { cx + 3, cy + 3 }, { cx + 3, cy - 3 } }) {
+			for (int dx = 0; dx < 3; dx++) {
+				for (int dy = 0; dy < 3; dy++) {
+					g.removeObjectsAt(c[0] + dx, c[1] + dy);
+				}
+			}
+		}
 		g.object(VOID_CRYSTAL, cx - 3, cy + 2, TYPE_SCENERY, 0);
 		g.object(VOID_CRYSTAL_DARK, cx + 3, cy + 3, TYPE_SCENERY, 1);
 		g.object(VOID_CRYSTAL, cx + 3, cy - 3, TYPE_SCENERY, 2);
@@ -2065,7 +2174,10 @@ final class VoidRealmGenerator {
 				continue;
 			}
 			final int fx = x, fy = y;
-			if (r.objects.stream().anyMatch(o -> o.x == fx && o.y == fy)) {
+			if (r.objects.stream().anyMatch(o -> {
+				int[] s = dungeonSize(o.id, o.rotation); // the whole footprint: a 3 x 3 crystal anchored beside us still stands here
+				return fx >= o.x && fx < o.x + s[0] && fy >= o.y && fy < o.y + s[1];
+			})) {
 				continue;
 			}
 			spawns.add(new int[] { id, regionX * 64 + x, DUNGEON_BASE_Y + y, walk });
@@ -2187,6 +2299,22 @@ final class VoidRealmGenerator {
 				reg.overlay[0][x][y] = VOID_GLASS;
 			}
 		}, SHADOW_ROCK);
+		// the landmark: the black pool at the back of the den where the void wells up, crystals growing out of its rim
+		for (int x = 27; x <= 35; x++) {
+			for (int y = 51; y <= 59; y++) {
+				double d = Math.hypot(x - 31, (y - 55) * 1.2);
+				if (!o[x][y] || d > 3.2) {
+					continue;
+				}
+				r.overlay[0][x][y] = d < 2.0 ? VOID_POOL : VOID_GLASS;
+				if (d < 2.0) {
+					r.settings[0][x][y] |= MapRegion.BLOCKED;
+					o[x][y] = false;
+				}
+			}
+		}
+		put(r, o, VOID_CRYSTAL, 27, 55, TYPE_SCENERY, 1);
+		put(r, o, VOID_CRYSTAL_DARK, 34, 53, TYPE_SCENERY, 2);
 		hug(r, o, new int[] { VOID_CRYSTAL, VOID_CRYSTAL_DARK }, 5, 19, 25, 8);
 		hug(r, o, new int[] { VOID_CRYSTAL_DARK, ROOTS, VOID_CRYSTAL }, 5, 46, 32, 8);
 		hug(r, o, new int[] { VOID_CRYSTAL, VOID_CRYSTAL_DARK, SKULL_PILE }, 8, 31, 49, 10);
@@ -2272,8 +2400,8 @@ final class VoidRealmGenerator {
 		int placed = 0;
 		for (int attempt = 0; attempt < 20000 && placed < count; attempt++) {
 			int x = NX0 + 4 + random.nextInt(NSIZE - 8), y = NY0 + 4 + random.nextInt(NSIZE - 8);
-			if (!where.ok(x, y)) {
-				continue;
+			if (!where.ok(x, y) || !g.footprintFree(x, y, 0)) {
+				continue; // (not inside a boat, a rock or a tree: ducks swim, they don't nest in hulls)
 			}
 			boolean crowded = false;
 			for (int[] s : spawns) {

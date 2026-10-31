@@ -38,7 +38,9 @@ final class WorldGate {
 	}
 
 	/** Lints the world; true when it may be written. Prints the report either way. */
-	static boolean check(Map<Integer, MapRegion> world, ConfigDefinitions.Table locs, CacheEditor cache) throws Exception {
+	static boolean check(Map<Integer, MapRegion> world, ConfigDefinitions.Table locs, ConfigDefinitions.Table npcDefs, List<int[]> generatedSpawns,
+			CacheEditor cache) throws Exception {
+		List<int[]> spawns = spawns(generatedSpawns);
 		boolean warnOnly = "warn".equals(System.getProperty("worldgate"));
 		Files.createDirectories(OUT);
 		List<String> bad = new ArrayList<>();
@@ -56,6 +58,14 @@ final class WorldGate {
 					lint.report("MUST-REACH", s.x, s.y, s.name + " can't be walked to from the arrival at " + area.fromX + "," + area.fromY);
 				}
 			}
+			// the design half: not broken, but amateur (DesignLint)
+			DesignLint design = new DesignLint(lint);
+			design.terrain();
+			design.floorEdges();
+			design.clones();
+			design.network(area.arrivals(), area.mustReach);
+			design.landmark(area);
+			design.npcs(spawns, npcDefs);
 			acceptedHits += lint.acceptedHits;
 			List<String> found = new ArrayList<>();
 			for (String kind : WorldLint.ORDER) {
@@ -64,6 +74,7 @@ final class WorldGate {
 			report.append("== ").append(area.name).append(" (").append(area.x0).append(',').append(area.y0).append(" to ").append(area.x1)
 					.append(',').append(area.y1).append(")\n   purpose:  ").append(area.brief.purpose).append("\n   arrival:  ")
 					.append(area.brief.arrival).append("\n   landmark: ").append(area.brief.landmark).append('\n');
+			report.append("   design:   ").append(stats(lint, spawns)).append('\n');
 			found.forEach(f -> report.append("   ").append(f.replace("\n", "\n   ")).append('\n'));
 			report.append("   -> ").append(found.isEmpty() ? "clean" : found.size() + " finding(s)").append(", map: ")
 					.append(OUT.resolve(area.slug() + ".png")).append("\n\n");
@@ -103,6 +114,7 @@ final class WorldGate {
 			stray.forEach((origin, p) -> world0.add(String.format("%-18s %d,%d  placed outside every declared area\n%-18s <- %s", "UNREGISTERED",
 					p[0], p[1], "", origin)));
 		}
+		world0.addAll(DesignLint.deadOptions(world, locs, CursedIslandGenerator.LOC_BASE));
 		for (String b : bad) {
 			world0.add(String.format("%-18s %s", "ACCEPT-UNREADABLE", b));
 		}
@@ -128,7 +140,7 @@ final class WorldGate {
 		System.out.println();
 		if (total == 0) {
 			System.out.println(verdict);
-			if (!warnOnly) {
+			if (!warnOnly && !GateSelfTest.enabled()) {
 				String hash = sourceHash();
 				Files.write(STAMP, (hash + "\n# Written by WorldGate when the world built from the files in tools/worldgate.files passed the gate.\n"
 						+ "# The Claude Code hooks (.claude/hooks/worldgate-*.sh) compare it with those files before world code can be\n"
@@ -148,6 +160,73 @@ final class WorldGate {
 		System.out.println("Fix each finding at the line it names. Only if one is truly right as it is, add it to " + ACCEPTED
 				+ " with the reason why.");
 		return warnOnly;
+	}
+
+	/**
+	 * The numbers a reviewer reads an area by: how much was placed and how varied it is (one prop making up a third of
+	 * an area is a tell of its own), how much path there is, and how much of the area the player can actually walk.
+	 */
+	static String stats(WorldLint lint, List<int[]> spawns) {
+		Map<Integer, Integer> byId = new java.util.HashMap<>();
+		int placed = 0;
+		for (WorldLint.Obj o : lint.objects) {
+			if (o.scenery() && DesignLint.ours(o)) {
+				placed++;
+				byId.merge(o.id, 1, Integer::sum);
+			}
+		}
+		int paths = 0, walk = 0, npcs = 0;
+		for (int x = lint.x0; x <= lint.x1; x++) {
+			for (int y = lint.y0; y <= lint.y1; y++) {
+				paths += lint.path(x, y) ? 1 : 0;
+				walk += lint.reached != null && lint.reached[x - lint.x0][y - lint.y0] ? 1 : 0;
+			}
+		}
+		for (int[] s : spawns) {
+			npcs += lint.in(s[1], s[2]) ? 1 : 0;
+		}
+		String common = "";
+		if (placed > 0) {
+			Map.Entry<Integer, Integer> top = java.util.Collections.max(byId.entrySet(), Map.Entry.comparingByValue());
+			String name = "#" + top.getKey();
+			for (WorldLint.Obj o : lint.objects) {
+				if (o.id == top.getKey()) {
+					name = o.name;
+					break;
+				}
+			}
+			common = String.format("; most common %s, %d%%", name, top.getValue() * 100 / placed);
+		}
+		return String.format("%d objects placed (%d kinds%s), %d path tiles, %d tiles walkable from the arrival, %d npcs", placed,
+				byId.size(), common, paths, walk, npcs);
+	}
+
+	/**
+	 * Every npc standing in the generated world: what the generators place this run, plus the hand-kept spawns in
+	 * data/cfg/spawns.json (height 0) of npcs the generators don't place (their old copies there are this run's to
+	 * replace, so they're left out).
+	 */
+	static List<int[]> spawns(List<int[]> generated) throws Exception {
+		List<int[]> all = new ArrayList<>(generated);
+		java.util.Set<Integer> generatedIds = new java.util.HashSet<>();
+		for (int[] s : generated) {
+			generatedIds.add(s[0]);
+		}
+		Path json = Paths.get("data/cfg/spawns.json");
+		if (Files.exists(json)) {
+			for (com.google.gson.JsonElement e : com.google.gson.JsonParser.parseString(new String(Files.readAllBytes(json), StandardCharsets.UTF_8))
+					.getAsJsonArray()) {
+				com.google.gson.JsonObject o = e.getAsJsonObject();
+				if (o.has("height") && o.get("height").getAsInt() != 0) {
+					continue;
+				}
+				int[] s = { o.get("id").getAsInt(), o.get("x").getAsInt(), o.get("y").getAsInt(), o.has("walk") ? o.get("walk").getAsInt() : 0 };
+				if (!generatedIds.contains(s[0])) {
+					all.add(s);
+				}
+			}
+		}
+		return all;
 	}
 
 	/** SHA-256 of the world code: the files listed in tools/worldgate.files, in that order, concatenated. */

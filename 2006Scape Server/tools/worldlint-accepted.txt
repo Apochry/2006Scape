@@ -13,6 +13,7 @@ UNREACHABLE 2027,2873  (the wreck)
 STEEP-FOOTPRINT 2004,2884  the wreck's broken hull lies tilted on the beach
 
 # Nythera
+STRAIGHT-PATH 1510,2708    the old kingdom's stone road, laid true where it runs up to the Gate
 UNREACHABLE 1480,2602      the smugglers' ship lies off the cove: its ladders are set dressing out in the water
 UNREACHABLE 1480,2606      (the smugglers' ship)
 UNREACHABLE 1480,2610      (the smugglers' ship)
@@ -20,12 +21,17 @@ STEEP-FOOTPRINT 1477,2613  the smugglers' ship's hull, run aground and tilted in
 STEEP-FOOTPRINT 1482,2615  the smugglers' ship's hull, run aground and tilted in the surf
 STEEP-FOOTPRINT 1478,2739  the Barrow door is set into the side of its mound: the ground is meant to rise behind it
 ON-WATER 1601,2742         the Hollow fissure opens in the Scar's void pool
-OVERLAP 1598,2746          the Scar's crystal has grown up through a dead tree
 OVERLAP 1386,2672          Silkwood: a web strung through the branches of the magic tree
-STRAIGHT-PATH 1512,2706    the old kingdom's stone road, laid true where it runs up to the Gate
 WALL-LOOSE-END 1522,2659   the croft's field entrance, beside the cart
 STRAIGHT-WATER 1374,2702   the west coast's one long gentle curve
 
 # Dungeons
-ON-WATER 1442,9706         Hollowdeep: a void crystal growing out of the dark pool
+ON-WATER 1440,9706         Hollowdeep: a void crystal growing out of the dark pool
 STEEP-FOOTPRINT 1696,9701  the Vault's ward-seal fills the passage between its rock walls
+
+# Design (DesignLint): composed on purpose
+COPY-PASTE 2022,2940          Skull Rock's two eye sockets: a face is symmetrical, so its ghostfires mirror each other
+STRAIGHT-FLOOR-EDGE 2015,2928 the shadow under Skull Rock's jaw: the sculpted teeth make its edge, and the model stands over it
+STRAIGHT-FLOOR-EDGE 1314,9681 the Sunken Barrow's processional hall: built, and laid straight as halls are
+STRAIGHT-FLOOR-EDGE 1314,9698 the Sunken Barrow's processional hall, its north half
+UNSERVED 1470,2619            the smugglers' cove is hidden on purpose: no road leads to a smugglers' landing

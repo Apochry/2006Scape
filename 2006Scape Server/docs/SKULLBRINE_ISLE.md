@@ -93,6 +93,9 @@ The world gate (`WorldGate`) checks every area declared in `WorldAreas` before a
 written, and refuses the whole world if anything is wrong, naming the generator line behind
 each finding. The report and a map of each area are written to `target/worldgate/`. A pass stamps
 `tools/worldgate.stamp`, which the Claude Code hooks require before world code can be committed.
+Besides broken things, the gate refuses amateur design (`DesignLint`), and each area's report
+carries a `design:` line of numbers to review it by. `GENOPTS=-Dworldgate.selftest=true` plants a
+set of known mistakes and checks the gate still catches all of them (nothing is written).
 `GENOPTS="-Dpreview=island.png"` also writes a top-down picture of the island.
 
 Clients download the changed files from the server automatically, because the CRCs change.
@@ -106,7 +109,7 @@ Handy tools in the same package:
 - `MapRender x0 y0 width height out.png [scale] [labels]` draws a top-down map of any part of
   the world, with a coordinate grid. With `labels`, objects are tagged with their ids.
 - `DefDump loc|npc|obj` lists every object, NPC or item definition (id, name, size, models).
-- `WorldGate`, `WorldAreas` and `Origin` make up the gate described above. `WorldGate` is run by the
+- `WorldGate`, `WorldAreas`, `Origin`, `DesignLint` and `GateSelfTest` make up the gate described above. `WorldGate` is run by the
   generator; `java ... WorldGate` on its own prints the current world-code hash.
 - `WorldLint x0 y0 x1 y1 [-from x,y] [-png out.png]` (the checks behind the gate, run on their own against the cache) checks an area for slap-dash world-building: dead-end and
   pinched paths, ruler-straight roads and shores, stray walls and doors, unbacked cave mouths, scenery in roads or

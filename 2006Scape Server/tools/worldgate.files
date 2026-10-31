@@ -10,5 +10,8 @@ src/main/java/com/rs2/tools/mapgen/MapRegion.java
 src/main/java/com/rs2/tools/mapgen/WorldAreas.java
 src/main/java/com/rs2/tools/mapgen/WorldGate.java
 src/main/java/com/rs2/tools/mapgen/WorldLint.java
+src/main/java/com/rs2/tools/mapgen/DesignLint.java
+src/main/java/com/rs2/tools/mapgen/GateSelfTest.java
 src/main/java/com/rs2/tools/mapgen/Origin.java
 tools/worldlint-accepted.txt
+data/cfg/spawns.json
