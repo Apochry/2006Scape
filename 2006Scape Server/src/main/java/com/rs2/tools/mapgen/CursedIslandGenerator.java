@@ -10,6 +10,7 @@ import java.util.Random;
 
 import com.rs2.game.content.skills.smithing.DragonMetal;
 import com.rs2.game.content.skullbrine.SkullbrineConstants;
+import static com.rs2.game.content.voidrealm.VoidConstants.PIRATE_FLAG;
 import static com.rs2.game.content.skullbrine.SkullbrineConstants.*;
 
 /**
@@ -90,6 +91,15 @@ public final class CursedIslandGenerator {
 				javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), BASE_X, BASE_Y,
 						64 * SURFACE_REGIONS, 64 * SURFACE_REGIONS, 6, false), "png", new java.io.File(System.getProperty("preview")));
 			}
+			if (System.getProperty("zoom") != null) {
+				// dev only: top-down close-ups, "x0,y0,w,h,scale,file;..."
+				for (String z : System.getProperty("zoom").split(";")) {
+					String[] f = z.split(",");
+					javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), Integer.parseInt(f[0]),
+							Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), Integer.parseInt(f[4]), true), "png",
+							new java.io.File(f[5]));
+				}
+			}
 			if (System.getProperty("nythera") != null) {
 				javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), VoidRealmGenerator.NX0,
 						VoidRealmGenerator.NY0, VoidRealmGenerator.NSIZE, VoidRealmGenerator.NSIZE, 2, false), "png",
@@ -138,7 +148,7 @@ public final class CursedIslandGenerator {
 			ROTTING_BRANCH = 3510, HUGE_MUSHROOM = 4055, ROOTS = 1363, SMALL_FERN = 1173, MOSSY_ROCK = 477,
 			SMALL_MOSSY_ROCK = 478, SWAMP_BUBBLES = 684, LARGE_BONE = 702, CURVED_BONE = 700, FUNGUS = 1171,
 			GALLOWS = 649, PILE_OF_SKULLS = 658, SMALL_BUSH = 3512, ROW_BOAT = 2515, ROW_BOAT_2 = 2516,
-			TORN_SAIL = 212, STOCKS = 648, CAGE = 3351, OPEN_COFFIN = 399, CROSS = 898, FISHING_NET = 969, HAMMOCK = 430,
+			TORN_SAIL = 212, STOCKS = 648, CAGE = 3351, OPEN_COFFIN = 399, CROSS = 898, NET_DRYING = 14972, HAMMOCK = 430,
 			LONG_GRASS = 4815, GRASS = 3795, TOTEM = 870;
 
 	/** Radius of the coastline (in tiles) at a given angle - a wobbly circle. */
@@ -343,6 +353,7 @@ public final class CursedIslandGenerator {
 			}
 		}
 		jetty();
+		fishingBeach();
 		rattleboneRow();
 		shipwreck();
 		coveWrecks();
@@ -619,7 +630,18 @@ public final class CursedIslandGenerator {
 		object(GHOST_TORCH, 2020, 2879, TYPE_SCENERY, 0);
 		object(BARREL, 2013, 2876, TYPE_SCENERY, 0);
 		object(CRATE, 2020, 2876, TYPE_SCENERY, 0);
-		object(BLACK_FLAG, 2018, 2890, TYPE_SCENERY, 1);
+		object(PIRATE_FLAG, 2018, 2890, TYPE_SCENERY, 1);
+	}
+
+	/**
+	 * The west beach, where the crew still net shrimp off the shingle: one bare dead tree leans out over the tide line
+	 * (a choppable tree - the only firewood near town), with a beached row boat and nets drying beside it.
+	 * The fishing spot itself is an npc (316) just off this beach, in spawns.json.
+	 */
+	void fishingBeach() {
+		object(DEAD_TREE, 1983, 2897, TYPE_SCENERY, 1);
+		object(ROW_BOAT_2, 1981, 2891, TYPE_SCENERY, 0);
+		object(NET_DRYING, 1984, 2893, TYPE_SCENERY, 1);
 	}
 
 	void plank(int x, int y) {
@@ -671,7 +693,7 @@ public final class CursedIslandGenerator {
 		}
 		object(ROW_BOAT, 2025, 2888, TYPE_SCENERY, 1);
 		object(ROW_BOAT_2, 2029, 2886, TYPE_SCENERY, 2);
-		object(FISHING_NET, 2022, 2891, TYPE_SCENERY, 0);
+		object(NET_DRYING, 2022, 2891, TYPE_SCENERY, 0);
 		object(TORN_SAIL, 2034, 2889, TYPE_SCENERY, 1);
 		object(GHOST_LAMP_POST, 2014, 2894, TYPE_SCENERY, 0);
 		object(GHOST_LAMP_POST, 2018, 2894, TYPE_SCENERY, 0);
@@ -691,7 +713,7 @@ public final class CursedIslandGenerator {
 		object(CANNON, 2033, 2904, TYPE_SCENERY, 1);
 		object(CANNONBALLS, 2033, 2907, TYPE_SCENERY, 0);
 		object(GHOST_TORCH, 2022, 2896, TYPE_SCENERY, 0);
-		object(BLACK_FLAG, 2026, 2896, TYPE_SCENERY, 0);
+		object(PIRATE_FLAG, 2026, 2896, TYPE_SCENERY, 0);
 	}
 
 	/** Flattens the ground to the average height of a rectangle. */
@@ -774,7 +796,7 @@ public final class CursedIslandGenerator {
 		object(MORY_TREE_BIG, cx - 9, cy + 6, TYPE_SCENERY, 0);
 		object(MORY_TREE, cx + 8, cy + 7, TYPE_SCENERY, 0);
 		object(BIG_DEAD_TREE, cx - 8, cy - 8, TYPE_SCENERY, 0);
-		object(BLACK_FLAG, cx + 1, cy + 8, TYPE_SCENERY, 0);
+		object(PIRATE_FLAG, cx + 1, cy + 8, TYPE_SCENERY, 0);
 		object(OPEN_COFFIN, cx + 4, cy + 4, TYPE_SCENERY, 1);
 		object(OPEN_COFFIN, cx - 5, cy - 5, TYPE_SCENERY, 0);
 		object(CROSS, cx - 3, cy + 6, TYPE_SCENERY, 0);
@@ -843,7 +865,7 @@ public final class CursedIslandGenerator {
 		object(SKULL_PILE, SKX - 8, FACE_Y0 - 2, TYPE_SCENERY, 0);
 		object(SKULL_PILE, SKX + 7, FACE_Y0 - 2, TYPE_SCENERY, 0);
 		// a black flag flies from the crown
-		object(BLACK_FLAG, SKX, FACE_Y0 + FACE_DEPTH + 5, TYPE_SCENERY, 0);
+		object(PIRATE_FLAG, SKX, FACE_Y0 + FACE_DEPTH + 5, TYPE_SCENERY, 0);
 	}
 
 	void vegetation() {
@@ -1391,6 +1413,10 @@ public final class CursedIslandGenerator {
 
 	void removeObjectsAt(int x, int y) {
 		regionAt(x, y).objects.removeIf(o -> o.x == (x & 63) && o.y == (y & 63));
+	}
+
+	void removeObjects(int x, int y, java.util.function.Predicate<MapRegion.MapObject> which) {
+		regionAt(x, y).objects.removeIf(o -> o.x == (x & 63) && o.y == (y & 63) && which.test(o));
 	}
 
 	/** Removes scattered scenery in a radius and marks the ground as trodden. */

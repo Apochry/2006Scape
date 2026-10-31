@@ -49,8 +49,8 @@ final class VoidRealmGenerator {
 	/* ---------- scenery ---------- */
 	static final int TREE = 1276, TREE_2 = 1278, OAK = 1281, WILLOW = 1308, MAPLE = 1307, YEW = 1309, EVERGREEN = 1315,
 			EVERGREEN_BIG = 1316, FLOWERS = 1192, FERN = 1298, BUSH = 1124, BUSH_2 = 1125, BIG_BUSH = 1123, FALLEN_TREE = 1296,
-			BOULDER = 5604, STANDING_STONE = 11782, PILLAR = 2440, PILLAR_2 = 2441, RUBBLE = 2508, TENT = 3984,
-			FIRE = 2732, LOGS = 5581, COOKING_POT = 2727, CRYSTAL_SRC = 10014, CRYSTAL_DARK_SRC = 9751, COPPER = 2090,
+			ROCK = 6950, BIG_ROCK = 444, STANDING_STONE = 11782, PILLAR = 2440, PILLAR_2 = 2441, RUBBLE = 2508,
+			FIRE = 2732, LOGS = 5581, CRYSTAL_SRC = 10014, CRYSTAL_DARK_SRC = 9751, COPPER = 2090,
 			TIN = 2094, IRON = 2092, COAL = 2096, MITHRIL = 2102, GROUND_FLOWERS = 4735;
 
 	/* ====================================================================== */
@@ -549,6 +549,7 @@ final class VoidRealmGenerator {
 		forgedLoc(locs, HOLLOWED_TREE, forge.pack(forge.hollowedTree()), "Hollowed tree",
 				"The Scar emptied it. Something violet is growing in the space it left.")
 				.scale(192, 192, 192); // 1.5x: built at person scale, it should tower over you
+		int[] props = packWorldProps();
 		int[] saga = { forge.pack(forge.brokenBarricade()), forge.pack(forge.spikedBarricade()), forge.pack(forge.fallenStar()),
 				forge.pack(forge.rimeAltar()), forge.pack(forge.starlessGate()), forge.pack(forge.starPillar(false)),
 				forge.pack(forge.starPillar(true)) };
@@ -560,6 +561,44 @@ final class VoidRealmGenerator {
 				com.rs2.game.content.skullbrine.SkullbrineConstants.VOID_PORTAL)
 				.examine("Dark and still. Something on the other side is waiting for a key.");
 		g.tintLoc(portal, ConfigDefinitions.VOID, 3, 0.75, 4, c -> true);
+		worldProps(locs, props); // after the portal: definitions are appended in id order
+	}
+
+	/** Packs the models of {@link #worldProps}, in its order (models must be packed before the forge finishes). */
+	int[] packWorldProps() throws java.io.IOException {
+		WorldProps w = new WorldProps();
+		ModelData[] models = { w.campTent(), w.fireRing(false), w.fireRing(true), w.logSeat(), w.gateholdBanner(), w.menhir(),
+				w.menhir(), w.menhir(), w.gateTower(true), w.gateTower(false), w.fallenMasonry(), w.pirateFlag(), w.gateWall(true),
+				w.gateWall(false) };
+		int[] ids = new int[models.length];
+		for (int i = 0; i < models.length; i++) {
+			ids[i] = forge.pack(models[i]);
+		}
+		return ids;
+	}
+
+	/** Camp furniture, flags, the old stone circle and the Broken Gate (see {@link WorldProps}). */
+	void worldProps(ConfigDefinitions.Table locs, int[] m) {
+		forgedLoc(locs, CAMP_TENT, m[0], "Tent", "Patched canvas, pegged down tight. Someone sleeps here.").footprint(2, 2);
+		// hearth stones go under a burning fire as ground decoration: nothing to bump into, nothing to click
+		forgedLoc(locs, FIRE_RING, m[1], "Hearth stones", "Blackened stones round the fire.").set(17, new byte[0]);
+		forgedLoc(locs, COOK_FIRE_RING, m[2], "Cooking tripod", "Whatever's in the pot smells better than it looks.").set(17,
+				new byte[0]);
+		forgedLoc(locs, LOG_SEAT, m[3], "Log", "Worn smooth on top by a lot of sitting.");
+		forgedLoc(locs, GATEHOLD_BANNER, m[4], "Banner", "The Wardens' star on night-blue. Gatehold still flies it, for whoever is left to see.");
+		int[] menhirs = { MENHIR, MENHIR_2, MENHIR_3 };
+		for (int i = 0; i < 3; i++) {
+			forgedLoc(locs, menhirs[i], m[5 + i], "Standing stone", "Older than the kingdom. Older than the Gate.");
+		}
+		forgedLoc(locs, GATE_TOWER, m[8], "Gate tower", "One side of the Broken Gate, still standing. The arch it held up is lying in the road.")
+				.footprint(2, 2);
+		forgedLoc(locs, GATE_TOWER_BROKEN, m[9], "Gate tower", "Broken off at half its height. The rest of it is all around your feet.")
+				.footprint(2, 2);
+		forgedLoc(locs, FALLEN_MASONRY, m[10], "Fallen masonry", "Blocks the size of a cart, and a piece of the arch still in one lump.")
+				.footprint(2, 2);
+		forgedLoc(locs, PIRATE_FLAG, m[11], "Black flag", "The colours of the Drowned Maiden, run up on a broken spar.");
+		forgedLoc(locs, GATE_WALL, m[12], "Old wall", "The wall that ran out from the Gate. The kingdom ended a long way before it did.");
+		forgedLoc(locs, GATE_WALL_LOW, m[13], "Old wall", "A stump of the old wall, waist-high and mossed over.");
 	}
 
 	/** Objects for the later quests and the Starless, all on hand-built models. */
@@ -650,9 +689,9 @@ final class VoidRealmGenerator {
 			g.removeObjectsAt(grave[0], grave[1]);
 			g.object(EPITAPH_GRAVE, grave[0], grave[1], TYPE_SCENERY, 1);
 		}
-		// Ilsabet's camp east of the jaw plaza: a tent, a fire and her reading stone
-		g.removeObjectsAt(ILSABET_X + 2, ILSABET_Y + 1);
-		g.object(TENT, ILSABET_X + 2, ILSABET_Y + 1, TYPE_SCENERY, 3);
+		// Ilsabet's camp east of the jaw plaza: a tent, a fire, and the void crystal she reads
+		tent(ILSABET_X + 2, ILSABET_Y + 1, DOOR_WEST);
+		campfire(ILSABET_X - 1, ILSABET_Y + 2, false);
 		g.object(VOID_CRYSTAL, ILSABET_X + 1, ILSABET_Y - 3, TYPE_SCENERY, 0);
 	}
 
@@ -1062,29 +1101,58 @@ final class VoidRealmGenerator {
 			g.object(i % 2 == 0 ? VOID_CRYSTAL : VOID_CRYSTAL_DARK, CRATER_X + crystals[i][0] - 1, CRATER_Y + crystals[i][1] - 1,
 					TYPE_SCENERY, i & 3);
 		}
+		// the ground still smoulders where you fell
 		g.object(FIRE, CRATER_X + 3, CRATER_Y - 3, TYPE_SCENERY, 0);
 		g.object(FIRE, CRATER_X - 4, CRATER_Y + 2, TYPE_SCENERY, 0);
-		// Oren's camp on the rim
-		g.object(TENT, OREN_X - 3, OREN_Y + 2, TYPE_SCENERY, 2);
-		g.object(FIRE, OREN_X + 1, OREN_Y + 1, TYPE_SCENERY, 0);
-		g.object(LOGS, OREN_X + 3, OREN_Y + 1, TYPE_SCENERY, 1);
-		g.object(LOGS, OREN_X + 1, OREN_Y + 3, TYPE_SCENERY, 0);
-		g.object(COOKING_POT, OREN_X + 1, OREN_Y - 1, TYPE_SCENERY, 0);
+		// Oren's camp on the rim: he pitched his tent to watch the crater, with its back to the wind off the hills
+		tent(OREN_X - 4, OREN_Y + 1, DOOR_EAST);
+		campfire(OREN_X + 1, OREN_Y + 1, true);
+		seat(OREN_X + 1, OREN_Y + 3, ALONG_X);
+		seat(OREN_X + 3, OREN_Y + 1, ALONG_Y);
+		g.object(LOGS, OREN_X + 3, OREN_Y + 3, TYPE_SCENERY, 1); // firewood, stacked handy
+		g.object(CRATE, OREN_X - 4, OREN_Y - 1, TYPE_SCENERY, 0);
+		g.object(SACKS, OREN_X - 3, OREN_Y - 1, TYPE_SCENERY, 1);
 	}
 
-	/** The Broken Gate where the old road ends, and a circle of standing stones on the hill above it. */
+	/**
+	 * The Broken Gate: the old kingdom's gate across the stone road, where it comes up from the crater. The west tower
+	 * still stands to its full height with the stub of the arch reaching out over the road; the east tower is broken
+	 * off at half height; the arch lies in pieces beside the road, half burying the hatch to the vault. Above it on the
+	 * hill, a circle of plain standing stones, older than the gate.
+	 */
 	void ruins() {
-		int gx = 1510, gy = 2712;
-		g.object(PILLAR, gx - 3, gy + 1, TYPE_SCENERY, 0);
-		g.object(PILLAR_2, gx + 3, gy + 1, TYPE_SCENERY, 0);
-		g.object(RUBBLE, gx - 2, gy + 3, TYPE_SCENERY, 1);
-		g.object(RUBBLE, gx + 2, gy - 2, TYPE_SCENERY, 2);
-		g.object(PILLAR, gx - 3, gy - 3, TYPE_SCENERY, 0);
+		int[][] towers = { { GATE_X, GATE_Y - 6 }, { GATE_X + GATE_SPAN, GATE_Y - 6 } };
+		for (int[] t : towers) {
+			for (int dx = -1; dx <= 2; dx++) {
+				for (int dy = -1; dy <= 2; dy++) {
+					g.removeObjectsAt(t[0] + dx, t[1] + dy);
+				}
+			}
+		}
+		keepClear.add(new int[] { towers[0][0] - 5, towers[0][1] - 6, towers[1][0] + 4, towers[1][1] + 2 }); // and the road up to it
+		g.object(GATE_TOWER, towers[0][0], towers[0][1], TYPE_SCENERY, 2); // its arch reaches east, towards its partner
+		g.object(GATE_TOWER_BROKEN, towers[1][0], towers[1][1], TYPE_SCENERY, 0);
+		// the curtain wall running out either side, crumbling away with distance from the towers
+		int wy = towers[0][1];
+		int[][] wall = { { towers[0][0] - 1, wy, GATE_WALL }, { towers[0][0] - 2, wy, GATE_WALL_LOW }, { towers[0][0] - 3, wy, GATE_WALL_LOW },
+				{ towers[1][0] + 2, wy + 1, GATE_WALL }, { towers[1][0] + 3, wy + 1, GATE_WALL_LOW } };
+		for (int[] w : wall) {
+			g.removeObjectsAt(w[0], w[1]);
+			g.object(w[2], w[0], w[1], TYPE_SCENERY, w[0] < towers[0][0] ? 2 : 0); // stepping down away from the gate
+		}
+		g.object(RUBBLE, towers[0][0] - 5, wy, TYPE_SCENERY, 0);
+		g.removeObjectsAt(HATCH_X + 1, HATCH_Y + 1);
+		g.object(FALLEN_MASONRY, HATCH_X + 1, HATCH_Y + 1, TYPE_SCENERY, 1);
+		g.object(RUBBLE, towers[1][0] + 2, towers[1][1] + 2, TYPE_SCENERY, 1);
+		g.object(RUBBLE, towers[0][0] - 1, towers[0][1] + 2, TYPE_SCENERY, 2);
+		int[] stones = { MENHIR, MENHIR_2, MENHIR_3 };
 		for (int i = 0; i < 7; i++) {
-			double a = i * Math.PI * 2 / 7;
-			int x = 1502 + (int) Math.round(Math.cos(a) * 7), y = 2738 + (int) Math.round(Math.sin(a) * 7);
+			double a = i * Math.PI * 2 / 7 + 0.3;
+			int x = MAELIS_X + (int) Math.round(Math.cos(a) * 7), y = MAELIS_Y + (int) Math.round(Math.sin(a) * 7);
 			g.removeObjectsAt(x, y);
-			g.object(STANDING_STONE, x, y, TYPE_SCENERY, i & 3);
+			if (i != 4) { // one has fallen, long ago
+				g.object(stones[i % 3], x, y, TYPE_SCENERY, i & 3);
+			}
 		}
 	}
 
@@ -1146,15 +1214,17 @@ final class VoidRealmGenerator {
 		boolean nearWater = lake(x, y) > -5 || riverDistance(x, y) < 4;
 		if (inland < 4) {
 			if (roll < 8 && free(x, y, 2)) {
-				g.object(BOULDER, x, y, TYPE_SCENERY, rot);
+				g.object(ROCK, x, y, TYPE_SCENERY, rot);
 			}
 			return;
 		}
 		if (m > 0.35) {
 			if (roll < 25 && free(x, y, 2)) {
 				g.object(random.nextBoolean() ? EVERGREEN : EVERGREEN_BIG, x, y, TYPE_SCENERY, rot);
+			} else if (roll < 36 && free(x, y, 2)) {
+				g.object(BIG_ROCK, x, y, TYPE_SCENERY, rot); // 2x2: free(x, y, 2) covers it
 			} else if (roll < 45 && free(x, y, 1)) {
-				g.object(BOULDER, x, y, TYPE_SCENERY, rot);
+				g.object(ROCK, x, y, TYPE_SCENERY, rot);
 			}
 			return;
 		}
@@ -1173,7 +1243,7 @@ final class VoidRealmGenerator {
 		} else if (roll < treeChance + 12 && free(x, y, 3) && f > 0.4) {
 			g.object(FALLEN_TREE, x, y, TYPE_SCENERY, rot);
 		} else if (roll < treeChance + 15 && free(x, y, 1)) {
-			g.object(BOULDER, x, y, TYPE_SCENERY, rot);
+			g.object(ROCK, x, y, TYPE_SCENERY, rot);
 		}
 	}
 
@@ -1198,10 +1268,10 @@ final class VoidRealmGenerator {
 	/*                       CAMPS - the lived-in bits                        */
 	/* ====================================================================== */
 
-	static final int ROW_BOAT = 2515, FISHING_NET = 969, NET_DRYING = 14972, CRATE = 9533, CRATES = 9535, BARREL = 9519,
+	static final int ROW_BOAT = 2515, NET_DRYING = 14972, CRATE = 9533, CRATES = 9535, BARREL = 9519,
 			STACKED_BARRELS = 4641, FLAX = 2646, CABBAGE = 1161, WHEAT = 313, SCARECROW = 297, HAYSTACK = 10086,
 			HAY_BALES = 10084, WELL = 884, TROUGH = 2044, CART = 307, PLOUGH = 296, LOG_PILE = 309, AXE_LOGS = 5582,
-			STUMP = 1341, BEDROLL = 2379, SIGNPOST = 1033, FLAGPOLE = 3680, SPIT_ROAST = 4267, SACKS = 7512,
+			STUMP = 1341, BEDROLL = 2379, SIGNPOST = 1034, FLAGPOLE = 3680, SPIT_ROAST = 4267, SACKS = 7512,
 			WOOD_FLOOR = 5, TRODDEN = 96;
 
 	static final int[][] CAMPS = { { FISH_CAMP_X, FISH_CAMP_Y, 9 }, { CROFT_X, CROFT_Y, 13 }, { WOOD_CAMP_X, WOOD_CAMP_Y, 7 },
@@ -1220,7 +1290,12 @@ final class VoidRealmGenerator {
 				return true;
 			}
 		}
-		return Math.hypot(x - GATE_X, y - GATE_Y) < 5;
+		for (int[] k : keepClear) {
+			if (x >= k[0] - 1 && x <= k[2] + 1 && y >= k[1] - 1 && y <= k[3] + 1) {
+				return true;
+			}
+		}
+		return Math.hypot(x - GATE_X, y - GATE_Y) < 7;
 	}
 
 	/** Clears scenery around a camp, eases the ground towards level and wears a little path into the grass. */
@@ -1248,6 +1323,73 @@ final class VoidRealmGenerator {
 			}
 		}
 	}
+
+	/* Rotations of the hand-built camp pieces: which way a tent's door faces, which way a log seat lies. */
+	static final int DOOR_SOUTH = 0, DOOR_WEST = 1, DOOR_NORTH = 2, DOOR_EAST = 3, ALONG_X = 0, ALONG_Y = 1;
+
+	/** A canvas tent (2x2, its south-west tile at x, y) with its door facing the way given. */
+	void tent(int x, int y, int door) {
+		for (int dx = 0; dx < 2; dx++) {
+			for (int dy = 0; dy < 2; dy++) {
+				g.removeObjectsAt(x + dx, y + dy);
+			}
+		}
+		g.object(CAMP_TENT, x, y, TYPE_SCENERY, door);
+	}
+
+	/** A fire burning in a ring of hearth stones, with a cooking tripod over it if anyone here cooks. */
+	void campfire(int x, int y, boolean cooking) {
+		g.removeObjectsAt(x, y);
+		g.object(cooking ? COOK_FIRE_RING : FIRE_RING, x, y, TYPE_GROUND_DECOR, 0);
+		g.object(FIRE, x, y, TYPE_SCENERY, 0);
+	}
+
+	/** A log to sit on. */
+	void seat(int x, int y, int along) {
+		g.removeObjectsAt(x, y);
+		g.object(LOG_SEAT, x, y, TYPE_SCENERY, along);
+	}
+
+	static final int FENCE = 980;
+	/** Tiles between the Broken Gate's two towers, centre to centre (the arch in WorldProps is built to span it). */
+	static final int GATE_SPAN = WorldProps.GATE_SPAN;
+
+	/**
+	 * A wooden fence round the tiles x0..x1, y0..y1 (inclusive), clearing whatever grew inside but the crops, with a
+	 * one-tile gap to walk through beside the edge tile (gapX, gapY) (none if gapX < 0). A wall sits on one edge of a
+	 * tile (rotation 0 west, 1 north, 2 east, 3 south) and a tile holds one, so the west and east sides run along the
+	 * inside tiles and the north and south sides along the row of tiles just outside: the corners meet without sharing.
+	 */
+	void fence(int x0, int y0, int x1, int y1, int gapX, int gapY) {
+		for (int x = x0; x <= x1; x++) {
+			for (int y = y0; y <= y1; y++) {
+				g.removeObjects(x, y, o -> o.type != TYPE_SCENERY || !isCrop(o.id));
+			}
+		}
+		for (int y = y0; y <= y1; y++) {
+			fencePiece(x0, y, 0, x0 == gapX && y == gapY);
+			fencePiece(x1, y, 2, x1 == gapX && y == gapY);
+		}
+		for (int x = x0; x <= x1; x++) {
+			fencePiece(x, y1 + 1, 3, x == gapX && y1 == gapY && gapX != x0 && gapX != x1);
+			fencePiece(x, y0 - 1, 1, x == gapX && y0 == gapY && gapX != x0 && gapX != x1);
+		}
+		keepClear.add(new int[] { x0, y0, x1, y1 });
+	}
+
+	void fencePiece(int x, int y, int rot, boolean gap) {
+		g.removeObjects(x, y, o -> o.type <= 3 || !gap && o.type == TYPE_SCENERY && !isCrop(o.id));
+		if (!gap) {
+			g.object(FENCE, x, y, 0, rot);
+		}
+	}
+
+	static boolean isCrop(int id) {
+		return id == FLAX || id == WHEAT || id == CABBAGE || id == SCARECROW;
+	}
+
+	/** Rectangles the scattered scenery and wildlife stay out of (fields, pens). */
+	final List<int[]> keepClear = new ArrayList<>();
 
 	void camps() {
 		fishingCamp();
@@ -1283,7 +1425,6 @@ final class VoidRealmGenerator {
 				+ (end - 1) + "," + cy + " and " + (shore - 2) + "," + (cy + 3) + " and " + (shore - 2) + "," + (cy - 2));
 		g.object(ROW_BOAT, end + 1, cy + 3, TYPE_SCENERY, 1);
 		g.object(ROW_BOAT, shore - 2, cy - 3, TYPE_SCENERY, 3);
-		g.object(FISHING_NET, shore + 1, cy + 2, TYPE_SCENERY, 0);
 		g.object(NET_DRYING, cx - 1, cy + 3, TYPE_SCENERY, 1);
 		g.object(BARREL, cx, cy - 2, TYPE_SCENERY, 0);
 		g.object(STACKED_BARRELS, cx + 1, cy - 4, TYPE_SCENERY, 0);
@@ -1292,7 +1433,10 @@ final class VoidRealmGenerator {
 		g.object(SPIT_ROAST, cx - 1, cy - 5, TYPE_SCENERY, 0); // the day's catch, roasting
 	}
 
-	/** Tollan's Croft: a farmhouse, flax and cabbages, hay and a scarecrow keeping watch. */
+	/**
+	 * Tollan's Croft: a farmhouse in a yard, the flax and wheat field to the north and the cabbage patch to the east
+	 * fenced against the animals, a sheep pen and a cow pasture to the south, and the hay, well and trough between.
+	 */
 	void croft() {
 		int cx = CROFT_X, cy = CROFT_Y;
 		site(cx, cy, 13);
@@ -1318,40 +1462,56 @@ final class VoidRealmGenerator {
 		g.object(HAYSTACK, cx - 2, cy + 6, TYPE_SCENERY, 0);
 		g.object(HAY_BALES, cx, cy + 7, TYPE_SCENERY, 1);
 		g.object(WELL, cx - 1, cy + 1, TYPE_SCENERY, 0);
-		g.object(TROUGH, cx - 4, cy + 8, TYPE_SCENERY, 1);
-		g.object(CART, cx + 10, cy + 1, TYPE_SCENERY, 2);
-		g.object(PLOUGH, cx + 10, cy - 4, TYPE_SCENERY, 1);
+		// fences: the fields' gaps face the yard, the pens open towards the trough and the hay
+		fence(cx, cy - 9, cx + 10, cy - 1, cx, cy - 4);
+		fence(cx + 1, cy + 2, cx + 8, cy + 7, cx + 1, cy + 4);
+		fence(cx - 9, cy + 9, cx - 1, cy + 15, cx - 1, cy + 11);
+		fence(cx + 2, cy + 10, cx + 11, cy + 17, cx + 2, cy + 12);
+		g.object(TROUGH, cx - 4, cy + 10, TYPE_SCENERY, 1); // water for the sheep
+		g.object(TROUGH, cx + 6, cy + 11, TYPE_SCENERY, 1);
+		g.object(HAY_BALES, cx - 6, cy + 14, TYPE_SCENERY, 0);
+		g.object(CART, cx - 3, cy - 6, TYPE_SCENERY, 1); // in the yard, by the field gate
+		g.object(PLOUGH, cx + 11, cy - 11, TYPE_SCENERY, 1); // left at the field's corner
 		g.object(SACKS, cx - 3, cy + 2, TYPE_SCENERY, 0);
 	}
 
-	/** Hob's camp on the forest edge: tents, a cookfire, stumps and stacked timber. */
+	/**
+	 * Hob's camp on the forest edge: two tents facing a cookfire, logs to sit on round it, the woodpile and chopping
+	 * block on the forest side, a cart half-loaded for Gatehold, and the stumps of what they've already felled.
+	 */
 	void woodCamp() {
 		int cx = WOOD_CAMP_X, cy = WOOD_CAMP_Y;
 		site(cx, cy, 7);
-		g.object(TENT, cx - 4, cy + 1, TYPE_SCENERY, 1);
-		g.object(TENT, cx - 1, cy + 3, TYPE_SCENERY, 2);
-		g.object(FIRE, cx + 1, cy, TYPE_SCENERY, 0);
-		g.object(COOKING_POT, cx + 2, cy - 1, TYPE_SCENERY, 0);
-		g.object(BEDROLL, cx + 3, cy + 2, TYPE_SCENERY, 1);
-		g.object(LOG_PILE, cx + 3, cy - 3, TYPE_SCENERY, 0);
-		g.object(AXE_LOGS, cx - 2, cy - 3, TYPE_SCENERY, 1);
-		g.object(CART, cx - 5, cy - 3, TYPE_SCENERY, 1);
-		int[][] stumps = { { 5, 4 }, { -6, 4 }, { -3, -6 }, { 6, -2 }, { 0, -5 }, { -6, -1 } };
+		tent(cx - 4, cy, DOOR_EAST);
+		tent(cx, cy + 3, DOOR_SOUTH);
+		campfire(cx + 1, cy, true);
+		seat(cx + 1, cy - 2, ALONG_X);
+		seat(cx + 3, cy, ALONG_Y);
+		g.object(BEDROLL, cx - 1, cy - 2, TYPE_SCENERY, 1); // someone sleeps out by the fire
+		g.object(LOG_PILE, cx + 4, cy + 3, TYPE_SCENERY, 0);
+		g.object(AXE_LOGS, cx + 3, cy + 5, TYPE_SCENERY, 1);
+		g.object(CART, cx - 5, cy - 4, TYPE_SCENERY, 1);
+		g.object(LOGS, cx - 3, cy - 4, TYPE_SCENERY, 0);
+		int[][] stumps = { { -6, 4 }, { -3, 6 }, { 1, 6 }, { 5, 6 }, { -7, 1 }, { 6, 3 } }; // towards the trees
 		for (int[] st : stumps) {
 			g.object(STUMP + random.nextInt(4), cx + st[0], cy + st[1], TYPE_SCENERY, random.nextInt(4));
 		}
 	}
 
-	/** The Scar Watch: a lookout on the edge of the dying land. */
+	/**
+	 * The Scar Watch: a lookout on the edge of the dying land - one tent, a fire, the Wardens' flag on its pole where
+	 * the Scar can see it, supplies stacked out of the weather, and the hollowed trees the Scar has already reached.
+	 */
 	void scarWatch() {
 		int cx = WATCH_X, cy = WATCH_Y;
 		site(cx, cy, 6);
-		g.object(TENT, cx - 3, cy - 1, TYPE_SCENERY, 1);
-		g.object(FIRE, cx, cy - 1, TYPE_SCENERY, 0);
+		tent(cx - 5, cy - 1, DOOR_EAST);
+		campfire(cx - 1, cy - 1, false);
+		seat(cx - 1, cy - 3, ALONG_X);
 		g.object(FLAGPOLE, cx + 2, cy + 2, TYPE_SCENERY, 0);
-		g.object(CRATES, cx - 3, cy + 2, TYPE_SCENERY, 0);
-		g.object(BARREL, cx - 1, cy + 3, TYPE_SCENERY, 0);
-		g.object(BEDROLL, cx + 1, cy - 3, TYPE_SCENERY, 0);		// the Scar reaching for the trees at its edge
+		g.object(CRATES, cx - 5, cy + 2, TYPE_SCENERY, 0);
+		g.object(BARREL, cx - 3, cy + 2, TYPE_SCENERY, 0);
+		// the Scar reaching for the trees at its edge
 		placeNear(HOLLOWED_TREE, cx + 6, cy - 5, 0);
 		placeNear(HOLLOWED_TREE, cx + 8, cy + 4, 0);
 		placeNear(HOLLOWED_TREE, cx + 5, cy + 8, 0);
@@ -1362,7 +1522,7 @@ final class VoidRealmGenerator {
 	/* ====================================================================== */
 
 	static final int BANK_BOOTH = 2213, FURNACE = 11666, ANVIL = 2783, RANGE = 2728, MARKET_STALL = 634, BENCH = 1104,
-			TABLE = 595, MINE_CART = 637, MAGIC_TREE = 1306, GRAVE = 404, BIG_GRAVE = 406, SKELETON_DECOR = 5358,
+			TABLE = 595, MINE_CART = 637, MAGIC_TREE = 1306, GRAVE = 404, BIG_GRAVE = 406, SKELETON_DECOR = 5358, WEB = 733,
 			IRON_2 = 2093, COAL_2 = 2097, GOLD = 2098, GOLD_2 = 2099, SILVER = 2100, MITHRIL_2 = 2103, ADAMANT = 2104,
 			ADAMANT_2 = 2105, RUNITE = 2106, GUARD = 9, BANKER = 494, SPIDER = 60, BANDIT = 1883, PIRATE = 184;
 
@@ -1415,8 +1575,8 @@ final class VoidRealmGenerator {
 		for (int i = -1; i <= 1; i++) {
 			g.object(BANK_BOOTH, cx + i, cy + 6, TYPE_SCENERY, 0);
 		}
-		g.object(FLAGPOLE, cx - 3, cy + 7, TYPE_SCENERY, 0);
-		g.object(FLAGPOLE, cx + 3, cy + 7, TYPE_SCENERY, 0);
+		g.object(GATEHOLD_BANNER, cx - 3, cy + 7, TYPE_SCENERY, 0);
+		g.object(GATEHOLD_BANNER, cx + 3, cy + 7, TYPE_SCENERY, 0);
 		person(BANKER, cx, cy + 7, 3);
 		// the smithy, open to the air
 		g.object(FURNACE, cx + 5, cy - 7, TYPE_SCENERY, 0);
@@ -1432,11 +1592,10 @@ final class VoidRealmGenerator {
 		g.object(CART, cx + 6, cy + 3, TYPE_SCENERY, 1);
 		g.object(STACKED_BARRELS, cx - 3, cy + 9, TYPE_SCENERY, 0);
 		g.object(SACKS, cx + 5, cy + 9, TYPE_SCENERY, 0);
-		// hand-built scenery: lanterns along the square, a waystone, and a tree the Scar has reached
+		// lanterns along the square
 		placeNear(VOID_LANTERN, cx - 6, cy + 1, 1);
 		placeNear(VOID_LANTERN, cx + 5, cy + 5, 1);
 		placeNear(VOID_LANTERN, cx - 1, cy - 4, 1);
-		placeNear(HOLLOWED_TREE, cx + 9, cy + 9, 0);
 		person(YSOLDE, GATE_X - 1, GATE_Y - 1, 4);
 		person(GUARD, cx + 1, cy - 2, 1);
 		person(GUARD, cx - 4, cy + 4, 1);
@@ -1452,10 +1611,11 @@ final class VoidRealmGenerator {
 				}
 			}
 		}
-		g.object(TENT, cx - 2, cy + 2, TYPE_SCENERY, 2);
+		tent(cx - 3, cy + 1, DOOR_SOUTH);
 		g.object(380, cx + 3, cy + 1, TYPE_SCENERY, 1); // his shelves, facing the fire
 		g.object(MAELIS_BOOKS, cx + 2, cy + 2, TYPE_SCENERY, 3);
-		g.object(FIRE, cx, cy - 2, TYPE_SCENERY, 0);
+		campfire(cx, cy - 2, false);
+		seat(cx - 2, cy - 2, ALONG_Y);
 		g.object(CRATES, cx - 3, cy - 1, TYPE_SCENERY, 0);
 		person(MAELIS, cx + 1, cy, 1);
 		// the hatch down into the vault, half-buried in the Gate's rubble
@@ -1505,19 +1665,22 @@ final class VoidRealmGenerator {
 				}
 			}
 		}
-		int[] ores = { IRON, IRON_2, IRON, COAL, COAL_2, COAL, COAL_2, SILVER, SILVER, GOLD, GOLD_2, MITHRIL, MITHRIL_2 };
+		// the ore is worked out of the pit's walls, richest at the back (north); the floor is kept clear, and the way in
+		// is the ramp on the south side where the cart stands
+		int[] ores = { IRON, IRON_2, COAL, COAL_2, IRON, COAL, SILVER, GOLD, MITHRIL, SILVER, GOLD_2, MITHRIL_2, COAL_2 };
 		int placed = 0;
-		for (int attempt = 0; attempt < 400 && placed < ores.length; attempt++) {
-			double a = random.nextDouble() * Math.PI * 2, r = 3 + random.nextDouble() * 3.5;
-			int x = cx + (int) Math.round(Math.cos(a) * r), y = cy + (int) Math.round(Math.sin(a) * r);
-			if (free(x, y, 1) && !blocked(x, y)) {
+		for (int i = 0; i < 26 && placed < ores.length; i++) {
+			double a = Math.toRadians(-70 + i * 320.0 / 25); // round the pit, leaving the south-east ramp open
+			int x = cx + (int) Math.round(Math.cos(a) * 6), y = cy + (int) Math.round(Math.sin(a) * 5);
+			if (free(x, y, 0) && !blocked(x, y) && (i % 2 == 0 || placed < i / 2)) {
 				g.object(ores[placed++], x, y, TYPE_SCENERY, random.nextInt(4));
 			}
 		}
-		g.object(MINE_CART, cx - 1, cy - 8, TYPE_SCENERY, 1);
-		g.object(TENT, cx + 9, cy - 3, TYPE_SCENERY, 3);
-		g.object(CRATES, cx + 8, cy + 3, TYPE_SCENERY, 0);
-		g.object(BARREL, cx + 9, cy + 1, TYPE_SCENERY, 0);
+		g.object(MINE_CART, cx + 3, cy - 4, TYPE_SCENERY, 1);
+		tent(cx + 9, cy - 3, DOOR_WEST);
+		campfire(cx + 8, cy + 1, false);
+		g.object(CRATES, cx + 10, cy + 1, TYPE_SCENERY, 0);
+		g.object(BARREL, cx + 10, cy + 3, TYPE_SCENERY, 0);
 		person(TESS, cx + 7, cy, 1);
 	}
 
@@ -1532,7 +1695,8 @@ final class VoidRealmGenerator {
 		g.object(BENCH, cx - 1, cy - 3, TYPE_SCENERY, 2);
 		g.object(TABLE, cx + 3, cy - 4, TYPE_SCENERY, 0);
 		g.object(BENCH, cx + 3, cy - 5, TYPE_SCENERY, 0);
-		g.object(FIRE, cx - 5, cy - 3, TYPE_SCENERY, 0);
+		g.object(BENCH, cx + 3, cy - 3, TYPE_SCENERY, 2);
+		campfire(cx - 5, cy - 3, true);
 		g.object(STACKED_BARRELS, cx - 5, cy + 2, TYPE_SCENERY, 0);
 		g.object(CART, cx + 7, cy - 4, TYPE_SCENERY, 1);
 		g.object(TROUGH, cx + 6, cy - 6, TYPE_SCENERY, 1);
@@ -1551,9 +1715,10 @@ final class VoidRealmGenerator {
 			y--;
 		}
 		g.stamp(12082, 22, 9, 30, 28, cx + 6, y - 16, new int[] { 2083, 2084 }, false);
-		g.object(TENT, cx - 4, cy + 2, TYPE_SCENERY, 2);
-		g.object(TENT, cx + 1, cy + 4, TYPE_SCENERY, 2);
-		g.object(FIRE, cx, cy, TYPE_SCENERY, 0);
+		tent(cx - 5, cy + 2, DOOR_SOUTH);
+		tent(cx + 1, cy + 4, DOOR_SOUTH);
+		campfire(cx, cy, true);
+		seat(cx - 2, cy, ALONG_Y);
 		g.object(CRATES, cx + 3, cy + 1, TYPE_SCENERY, 0);
 		g.object(CRATE, cx + 4, cy - 1, TYPE_SCENERY, 0);
 		g.object(STACKED_BARRELS, cx - 3, cy - 2, TYPE_SCENERY, 0);
@@ -1629,6 +1794,12 @@ final class VoidRealmGenerator {
 		g.object(SKELETON_DECOR, cx - 2, cy + 2, TYPE_GROUND_DECOR, 3);
 		g.object(FALLEN_TREE, cx + 3, cy + 1, TYPE_SCENERY, 1);
 		g.object(SILK_COCOON, cx - 1, cy + 4, TYPE_SCENERY, 0); // a page of the Royal Chronicle, wrapped up tight
+		// webs hung across the gaps between the trees, thickest round the cocoon
+		int[][] webs = { { -4, 4, 1 }, { 2, 6, 0 }, { 5, 1, 1 }, { -6, -4, 0 }, { 1, -5, 1 }, { -2, 5, 0 } };
+		for (int[] w : webs) {
+			g.removeObjectsAt(cx + w[0], cy + w[1]);
+			g.object(WEB, cx + w[0], cy + w[1], TYPE_SCENERY, w[2]);
+		}
 		for (int i = 0; i < 6; i++) {
 			person(SPIDER, cx - 4 + random.nextInt(9), cy - 4 + random.nextInt(9), 1);
 		}
@@ -1650,9 +1821,12 @@ final class VoidRealmGenerator {
 		}
 		System.out.println("Barrow mound: ground " + g.heightAt(dx, dy - 2) + ", crown " + g.heightAt(mx, my));
 		g.object(BARROW_DOOR, dx, dy, TYPE_SCENERY, 0);
-		int[][] graves = { { -5, -2 }, { -3, -4 }, { 3, -4 }, { 5, -2 }, { -6, 3 }, { 6, 4 } };
+		// the Thane's household, buried in two rows either side of the way up to his door, all facing it
+		keepClear.add(new int[] { dx - 6, dy - 7, dx + 6, dy - 1 });
+		int[][] graves = { { -3, -3 }, { -5, -3 }, { 3, -3 }, { 5, -3 }, { -3, -6 }, { -5, -6 }, { 3, -6 }, { 5, -6 } };
 		for (int i = 0; i < graves.length; i++) {
-			g.object(i % 3 == 0 ? BIG_GRAVE : GRAVE, mx + graves[i][0], dy + graves[i][1], TYPE_SCENERY, random.nextInt(4));
+			g.removeObjectsAt(dx + graves[i][0], dy + graves[i][1]);
+			g.object(i < 4 ? BIG_GRAVE : GRAVE, dx + graves[i][0], dy + graves[i][1], TYPE_SCENERY, 0);
 		}
 		g.object(STANDING_STONE, dx - 2, dy - 1, TYPE_SCENERY, 0);
 		g.object(STANDING_STONE, dx + 2, dy - 1, TYPE_SCENERY, 0);
@@ -2027,9 +2201,9 @@ final class VoidRealmGenerator {
 		scatter(new int[] { HOLLOWED_WOLF }, 7, 1, 5, scarEdge);
 		scatter(new int[] { HOLLOW_HUSK }, 8, 1, 5, scarDeep);
 		// the croft's animals
-		around(43, 6, CROFT_X - 4, CROFT_Y + 11, 5, 1); // sheep
-		around(81, 3, CROFT_X + 6, CROFT_Y + 12, 4, 1); // cows
-		around(41, 4, CROFT_X - 3, CROFT_Y + 4, 3, 1); // chickens
+		around(43, 5, CROFT_X - 5, CROFT_Y + 12, 2, 1); // sheep, in their pen
+		around(81, 3, CROFT_X + 7, CROFT_Y + 14, 3, 1); // cows, in the pasture
+		around(41, 4, CROFT_X - 3, CROFT_Y + 4, 3, 1); // chickens, loose in the yard
 		// fishing: net/bait in the lake (one at the end of Bram's jetty), lure/bait in the river
 		scatter(new int[] { 316 }, 4, 0, 10, lakeShore);
 		scatter(new int[] { 309 }, 5, 0, 12, riverBank);
