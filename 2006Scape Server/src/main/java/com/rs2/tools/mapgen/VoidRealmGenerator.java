@@ -292,6 +292,25 @@ final class VoidRealmGenerator {
 					.cost(wcost[i]).remove(40).remove(41).remove(24).remove(26).shorts(1, inv);
 			d.set(23, new byte[] { (byte) (held >> 8), (byte) held, 0 }).set(25, new byte[] { (byte) (held >> 8), (byte) held, 6 });
 		}
+		ladderItems(items);
+	}
+
+	/**
+	 * The weapon ladder (LadderWeapons, ids 8001-8025, appended in rank order): each clones its base item (so the camera,
+	 * actions and slot data match the pose its models were placed in), drops the base's recolours and extra wielded
+	 * model, and points the inventory and wielded models at the hand-built ones. Women wear the male model, at the
+	 * base item's own female offset.
+	 */
+	void ladderItems(ConfigDefinitions.Table items) throws java.io.IOException {
+		for (LadderWeapons.Rung r : LadderWeapons.LADDER) {
+			QuestWeapons.Weapon w = r.weapon;
+			int inv = forge.pack(w.inventoryModel()), held = forge.pack(w.wieldedModel());
+			ConfigDefinitions.Definition d = g.item(items, w.pose.baseItem, r.id);
+			byte[] female = d.get(25);
+			int femaleOffset = female == null ? 0 : female[2];
+			d.name(r.name).examine(r.examine).cost(r.cost).remove(40).remove(41).remove(24).remove(26).shorts(1, inv);
+			d.set(23, new byte[] { (byte) (held >> 8), (byte) held, 0 }).set(25, new byte[] { (byte) (held >> 8), (byte) held, (byte) femaleOffset });
+		}
 	}
 
 	/** Points an item's worn models (male, and female as a stop-gap) at a new model, keeping each base's offsets. */

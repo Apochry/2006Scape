@@ -1152,6 +1152,8 @@ public class ItemAssistant {
 
 			case 4587: // dscimmy
 			case com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND: // Heartfire (the longsword tab shares the scimitar's bar)
+			case com.rs2.game.content.voidrealm.VoidConstants.NIGHTGLASS_SCIMITAR: // Rend
+			case com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD: // Eclipse
 				player.getPacketSender().sendHideInterfaceLayer(7599, false);
 				specialAmount(weapon, player.specAmount, 7611);
 				break;
@@ -1191,6 +1193,7 @@ public class ItemAssistant {
 				break;
 
 			case 1434: // dragon mace
+			case com.rs2.game.content.voidrealm.VoidConstants.CROWNBREAKER_MACE: // Shatter
 				player.getPacketSender().sendHideInterfaceLayer(7624, false);
 				specialAmount(weapon, player.specAmount, 7636);
 				break;

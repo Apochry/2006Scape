@@ -431,6 +431,69 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 - Monsters built on the stock zombie rig looked broken: it has only five animations, which fling its limbs about. The
   Drowned deckhand (pirate), Hollow husk (man) and Hollow ravager (thug) now use human rigs.
 
+## The weapon ladder
+
+Twenty-five hand-built weapons, each a step cooler than the last. They run from Bram's fish knife to a blade the
+Starless sheds like a scale. The low rungs are plain iron, wood and twine in the old-school style. Gatehold's blue
+and the Wardens' star come in through the middle. The first violet appears at the Scarglass dagger (35). From the Wand of the Scar (50) up, the
+edges and cores glow. The top three have special attacks that throw the saga's own spotanims. Models are in
+`tools/mapgen/LadderWeapons.java`. Rules (levels, tabs, recipes, `::vt weapons`) are in
+`game/content/voidrealm/VoidArsenal.java`, and bonuses are in `tools/nythera_data.py`. Item ids run from 8001 to 8025 in rank order.
+
+| # | Weapon | Type | Wield | Key bonuses | Where from |
+|---|---|---|---|---|---|
+| 1 | Netwright's gutting dagger | dagger | Attack 1 | +5 stab, +4 str | Bram's tackle shop (350) |
+| 2 | Hob's felling axe | axe | Attack 3 | +7 slash, +8 str | Pell's store (352) |
+| 3 | Pilgrim's staff | staff | Magic 5 | +6 magic, +9 crush | Pell's store |
+| 4 | Militia spear | spear | Attack 5 | +12 all, +11 str | Dorrin's forge (353) |
+| 5 | Wolfbone shortbow | shortbow (iron arrows) | Ranged 5 | +12 ranged | Pell's store; Nythera gear drop, under 30 |
+| 6 | Watchman's sword | sword | Attack 10 | +16 stab, +14 str | Dorrin's forge |
+| 7 | Steelcap mace | mace | Attack 15 | +19 crush, +17 str, +2 prayer | Dorrin's forge |
+| 8 | Smuggler's scimitar | scimitar | Attack 20 | +25 slash, +24 str | Sly Nettle (356) |
+| 9 | Barrowstone warhammer | warhammer | Attack 25, Str 20 | +32 crush, +33 str | Nythera gear drop, under 30 (the Barrow's skeletons) |
+| 10 | Silkwood wand | wand | Magic 25 | +12 magic | Nythera gear drop, 30-49 |
+| 11 | Gatehold longsword | longsword | Attack 30 | +41 slash, +42 str | Warden's armoury (357) |
+| 12 | Warden's halberd | halberd | Attack 30, Str 30 | +50 slash, +50 str | Warden's armoury |
+| 13 | Warden's longbow | longbow (mithril arrows) | Ranged 30 | +38 ranged | Warden's armoury |
+| 14 | Scarglass dagger | dagger | Attack 35 | +31 stab, +29 str | Nythera gear drop, 30-49 |
+| 15 | Oathsworn battleaxe | battleaxe | Attack 40 | +52 slash, +62 str | the Barrow Thane, about 1/16 |
+| 16 | Frostfang spear | spear | Attack 40 | +41 all, +45 str | Rimeclaw, about 1/14 |
+| 17 | Gravewarden 2h sword | 2h sword | Attack 45, Str 40 | +74 slash, +76 str | Nythera bonus roll, 30-49 |
+| 18 | Hollowheart shortbow | shortbow (adamant arrows) | Ranged 45 | +60 ranged | the Hollow Matriarch, about 1/14 |
+| 19 | Wand of the Scar | wand | Magic 50 | +15 magic, +10 magic def | **recipe**: use a Silkwood wand on a waystone with 1 starmetal and 25 cosmic runes (Crafting 50, after Ashes of the Crown) |
+| 20 | Starmetal warhammer | warhammer | Attack 55, Str 50 | +64 crush, +68 str | **recipe**: use a Barrowstone warhammer on Gatehold's anvil with 2 starmetal and a hammer (Smithing 55, after Heartforged) |
+| 21 | Riftglass halberd | halberd | Attack 60, Str 40 | +90 slash, +88 str | Nythera bonus roll, 50+ |
+| 22 | Rimeheart staff | staff | Magic 65, Attack 40 | +18 magic, +44 crush; **never needs water runes** | the Rimebound sentinel, about 1/16 |
+| 23 | Nightglass scimitar | scimitar | Attack 70 | +72 slash, +72 str; special **Rend** | the Starless, about 1/24 |
+| 24 | Crownbreaker mace | mace | Attack 75 | +84 crush, +78 str, +6 prayer; special **Shatter** | the Starless, about 1/32 |
+| 25 | Starless longsword | longsword | Attack 80 | +90 slash, +70 stab, +92 str; special **Eclipse** | the Starless, about 1/64 |
+
+Boss drops roll in table order and stop at the first hit. The ladder weapon rolls straight after the boss's own
+unique, so "about 1/N" is a little under 1/N.
+
+**Specials.** These use the stock spec bars: the longsword/scimitar tab's bar, which the Emberbrand also uses, and the mace tab's bar.
+- **Rend** (Nightglass scimitar, 50%): 115% damage, 135% accuracy, the dragon scimitar's swing. The target gets the
+  void impact.
+- **Shatter** (Crownbreaker mace, 50%): 140% damage, 120% accuracy, the dragon mace's blow. A falling star lands on
+  the target.
+- **Eclipse** (Starless longsword, 60%): 135% damage, 130% accuracy, the dragon longsword's cleave. The eclipse ring
+  closes on the target.
+
+**How they're built.** Each weapon is one frame placed into the inventory and wielded pose of a comparable cache
+item, as in `QuestWeapons`. The ladder adds nine poses read off the cache: longsword, sword, dagger, scimitar, warhammer,
+spear, 2h sword, magic longbow and master wand. Their coordinates are in the class comment. The wielded pose keeps
+the base's skin label: 27 for the longsword, spear, warhammer, mace and bows, and 50 for the dagger, sword, scimitar, 2h sword, battleaxe,
+halberd, staff and wand. The stock attack, stand and walk animations then move them. Names keep the stock words
+(dagger, scimitar, 2h sword, longbow...), because attack speed, animations and two-handedness come from the name.
+`VoidArsenal` sets each one's tab explicitly. No crossbow: the engine only fires bolt racks from Karil's crossbow,
+and stock bolts aren't wired up.
+
+**Previewing without the game.** `tools/mapgen/ModelPreview` renders each rung offline: flat-shaded, painter-sorted,
+with the client's item-sprite camera for the icon. It draws the base item's own icon beside it to check the fit, and the
+wielded model on the default body with the hand ringed at (-30, -97, 0). It also writes a contact sheet. From
+`2006Scape Server`:
+`java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.ModelPreview data/cache outDir [rank...]`.
+
 ## Where things live
 
 | What | Where |
@@ -447,6 +510,7 @@ Everything the Scar has touched shares one palette, so nothing reads as bolted o
 | Hand-built scenery (tents, hearths, seats, banners, standing stones, the Broken Gate, the black flag) | `tools/mapgen/WorldProps.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
+| The weapon ladder (items 8001-8025): rules, recipes, `::vt weapons`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`; `tools/mapgen/ModelPreview.java` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
 Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
@@ -468,6 +532,7 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt list` | list NPCs spawned for you |
 | `::vt loot rolls npcId` | tally Nythera's loot tiers over `rolls` rolls, and drop ten real rolls at your feet |
 | `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
+| `::vt weapons [from to]` | put the weapon ladder (ranks 1-25, or from-to) into your inventory |
 
 ## Ideas for what comes next
 

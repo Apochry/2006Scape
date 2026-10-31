@@ -38,7 +38,14 @@ public class Specials {
 		MAGIC_LONGBOW(StaticItemList.MAGIC_LONGBOW, 1.20, 1.05, 5.5, 426, -1, -1, false, 0),
 		// Heartfire: the Emberbrand's special - Aurel's heart flares along the blade (the arc sits at chest height, so gfx0)
 		EMBERBRAND(com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND, 1.20, 1.25, 5, 1058, -1,
-				com.rs2.game.content.voidrealm.VoidConstants.GFX_HEARTFIRE, false, 0);
+				com.rs2.game.content.voidrealm.VoidConstants.GFX_HEARTFIRE, false, 0),
+		// the weapon ladder's top three (VoidArsenal): each throws one of the saga's spotanims onto the target
+		// Rend: the Nightglass scimitar opens a wound of void (the d scimitar's slash)
+		NIGHTGLASS_SCIMITAR(com.rs2.game.content.voidrealm.VoidConstants.NIGHTGLASS_SCIMITAR, 1.15, 1.35, 5, 1872, com.rs2.game.content.voidrealm.VoidConstants.GFX_VOID_IMPACT, -1, false, 0),
+		// Shatter: the Crownbreaker brings a falling star down on the target (the d mace's blow)
+		CROWNBREAKER_MACE(com.rs2.game.content.voidrealm.VoidConstants.CROWNBREAKER_MACE, 1.40, 1.20, 5, 1060, com.rs2.game.content.voidrealm.VoidConstants.GFX_FALLING_STAR, -1, false, 0),
+		// Eclipse: the Starless longsword closes the sky round the target (the d longsword's cleave)
+		STARLESS_LONGSWORD(com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD, 1.35, 1.30, 6, 1058, com.rs2.game.content.voidrealm.VoidConstants.GFX_ECLIPSE, -1, false, 0);
 		
 		private int weapon, anim, gfx1, gfx2, specEffect;
 		private double specDamage, specAccuracy, specAmount;
@@ -165,6 +172,12 @@ public class Specials {
 					player.hitDelay = player.getCombatAssistant().getHitDelay();
 					player.doubleHit = SA.getDoubleHit();
 				} else {
+					String cry = SA == specialAttack.NIGHTGLASS_SCIMITAR ? "The nightglass opens the air, and the void pours into the wound!"
+							: SA == specialAttack.CROWNBREAKER_MACE ? "The star in the mace breaks free and falls!"
+									: SA == specialAttack.STARLESS_LONGSWORD ? "The eye in the guard opens. The sky closes." : null;
+					if (cry != null) {
+						player.getPacketSender().sendMessage("@red@" + cry);
+					}
 					if (other != null) {
 						other.gfx0(SA.getGfx1());
 					} else if (NpcHandler.npcs[player.npcIndex] != null) {
@@ -245,7 +258,8 @@ public class Specials {
    public static void specialClicking(Player player2, int actionButtonId) {
 	   switch (actionButtonId) {
 		case 29188:
-			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_MACE) {
+			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_MACE
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.CROWNBREAKER_MACE) {
 				player2.specBarId = 7636;
 				player2.usingSpecial = !player2.usingSpecial;
 				player2.getItemAssistant().updateSpecialBar();
@@ -254,7 +268,9 @@ public class Specials {
 
 		case 29163:
 			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_SCIMITAR
-					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND) {
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.NIGHTGLASS_SCIMITAR
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD) {
 				player2.specBarId = 7611;
 				player2.usingSpecial = !player2.usingSpecial;
 				player2.getItemAssistant().updateSpecialBar();

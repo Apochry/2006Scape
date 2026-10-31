@@ -81,16 +81,17 @@ for i, bones in ((3868, 2859), (3869, 526), (3882, 592), (3883, 532), (3884, 526
 # the three bosses: always good loot, and a rare unique each
 boss_drops = {
     3876: [(532, 0, 1, 1), (995, 0, 800, 2000), (1319, 15, 1, 1), (1333, 10, 1, 1), (1127, 20, 1, 1), (1163, 12, 1, 1),
-           (565, 3, 20, 40), (2440, 6, 1, 1), (7969, 11, 1, 1)],  # big bones, coins, rune gear, blood runes, pots, Barrowsteel
+           (565, 3, 20, 40), (2440, 6, 1, 1), (7969, 11, 1, 1), (8015, 15, 1, 1)],  # ... Barrowsteel, Oathsworn battleaxe
     3877: [(532, 0, 1, 1), (995, 0, 1200, 3000), (1617, 4, 1, 2), (1615, 30, 1, 1), (564, 3, 30, 60), (3024, 5, 1, 2),
-           (1213, 10, 1, 1), (1149, 12, 1, 1), (7968, 11, 1, 1)],  # gems, cosmics, restores, rune dagger, dragon helm, Hollowheart
+           (1213, 10, 1, 1), (1149, 12, 1, 1), (7968, 11, 1, 1), (8018, 13, 1, 1)],  # ... Hollowheart amulet and shortbow
     3878: [(532, 0, 1, 1), (995, 0, 1500, 4000), (451, 2, 1, 2), (2363, 6, 1, 1), (560, 3, 30, 60), (385, 2, 3, 6),
-           (1079, 12, 1, 1), (1201, 12, 1, 1), (7970, 11, 1, 1)],  # runite ore & bar, death runes, sharks, rune legs/kite, Frostbound
+           (1079, 12, 1, 1), (1201, 12, 1, 1), (7970, 11, 1, 1), (8016, 13, 1, 1)],  # ... Frostbound, Frostfang spear
 }
 for i, items in boss_drops.items():
-    # drops roll in order and stop at the first hit, so the unique goes first (after the always-drops): a true 1/12
-    items = [d for d in items if d[1] == 0] + [d for d in items if d[0] in (7968, 7969, 7970)] + \
-            [d for d in items if d[1] != 0 and d[0] not in (7968, 7969, 7970)]
+    # drops roll in order and stop at the first hit, so the unique goes first (after the always-drops): a true 1/12;
+    # the ladder weapon rolls right after it
+    rare = lambda d: d[0] in (7968, 7969, 7970) or d[0] > 8000
+    items = [d for d in items if d[1] == 0] + [d for d in items if rare(d)] + [d for d in items if d[1] != 0 and not rare(d)]
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
 # the quest's fights: no unique, but worth winning
@@ -103,10 +104,11 @@ def droptable(i, items):
     global drops
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
-droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])          # sentinel: water runes, rune legs
+droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (8022, 15, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])  # sentinel: Rimecleaver, Rimeheart staff, water runes, rune legs
 droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
 # the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
 droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (7983, 11, 1, 1), (7984, 11, 1, 1),
+                 (8023, 23, 1, 1), (8024, 31, 1, 1), (8025, 63, 1, 1),  # the ladder's top three
                  (7990, 35, 1, 1), (7991, 35, 1, 1), (7992, 35, 1, 1), (7993, 35, 1, 1), (7994, 35, 1, 1), (7995, 35, 1, 1),
                  (1149, 7, 1, 1),
                  (1215, 5, 1, 1), (1187, 40, 1, 1), (1615, 9, 1, 1), (2363, 2, 3, 6), (560, 1, 50, 150), (385, 1, 5, 10)])
@@ -168,6 +170,38 @@ uniques = {
     7984: (0.1, {'attackStab': 12, 'attackSlash': 12, 'attackCrush': 12, 'attackMagic': 12, 'attackRange': 12, 'defenceStab': 8,
                  'defenceSlash': 8, 'defenceCrush': 8, 'defenceMagic': 8, 'defenceRange': 8, 'strengthBonus': 8, 'prayerBonus': 4}),
 }
+# the weapon ladder (VoidArsenal / LadderWeapons): 25 weapons, each a step past the last. Rank, then weight and bonuses.
+S, SL, C, M, R, DS, DSL, DC, DM, DR, ST, P = ('attackStab', 'attackSlash', 'attackCrush', 'attackMagic', 'attackRange', 'defenceStab',
+                                              'defenceSlash', 'defenceCrush', 'defenceMagic', 'defenceRange', 'strengthBonus', 'prayerBonus')
+ladder = [
+    (0.4, {S: 5, SL: 3, C: -4, ST: 4}),                                            # 1  Netwright's gutting dagger (Att 1)
+    (1.6, {S: -2, SL: 7, C: 5, ST: 8}),                                            # 2  Hob's felling axe (Att 3)
+    (2.0, {S: 3, SL: -1, C: 9, M: 6, DM: 5, ST: 6}),                               # 3  Pilgrim's staff (Magic 5)
+    (2.2, {S: 12, SL: 12, C: 12, DS: 1, DSL: 1, DC: 1, ST: 11}),                   # 4  Militia spear (Att 5)
+    (0.9, {R: 12}),                                                                # 5  Wolfbone shortbow (Ranged 5)
+    (1.4, {S: 16, SL: 11, C: -2, DSL: 1, ST: 14}),                                 # 6  Watchman's sword (Att 10)
+    (1.8, {S: 10, SL: -2, C: 19, DSL: 1, ST: 17, P: 2}),                           # 7  Steelcap mace (Att 15)
+    (1.4, {S: 6, SL: 25, C: -2, ST: 24}),                                          # 8  Smuggler's scimitar (Att 20)
+    (2.7, {S: -4, SL: -4, C: 32, ST: 33, P: 1}),                                   # 9  Barrowstone warhammer (Att 25)
+    (0.3, {M: 12, DM: 6}),                                                         # 10 Silkwood wand (Magic 25)
+    (1.8, {S: 30, SL: 41, C: -2, DSL: 2, DC: 1, ST: 42}),                          # 11 Gatehold longsword (Att 30)
+    (3.0, {S: 31, SL: 50, M: -4, DS: -1, DSL: 4, DR: 4, ST: 50}),                  # 12 Warden's halberd (Att 30, Str 30)
+    (1.3, {R: 38}),                                                                # 13 Warden's longbow (Ranged 30)
+    (0.4, {S: 31, SL: 18, C: -4, M: 2, ST: 29}),                                   # 14 Scarglass dagger (Att 35)
+    (2.9, {S: -2, SL: 52, C: 45, DS: 2, DSL: 2, DC: 2, ST: 62, P: 2}),             # 15 Oathsworn battleaxe (Att 40)
+    (2.6, {S: 41, SL: 41, C: 41, DS: 5, DSL: 5, DC: 5, DM: 2, ST: 45}),            # 16 Frostfang spear (Att 40)
+    (3.6, {S: -4, SL: 74, C: 60, DSL: 2, DC: 2, ST: 76}),                          # 17 Gravewarden 2h sword (Att 45)
+    (1.0, {R: 60}),                                                                # 18 Hollowheart shortbow (Ranged 45)
+    (0.3, {M: 15, DM: 10, P: 2}),                                                  # 19 Wand of the Scar (Magic 50)
+    (3.0, {S: -4, SL: -4, C: 64, DS: 2, DSL: 2, DC: 2, ST: 68, P: 2}),             # 20 Starmetal warhammer (Att 55)
+    (3.0, {S: 66, SL: 90, M: -4, DSL: 4, DR: 4, ST: 88}),                          # 21 Riftglass halberd (Att 60, Str 40)
+    (2.2, {S: 12, SL: -1, C: 44, M: 18, DS: 2, DSL: 3, DC: 1, DM: 18, ST: 42, P: 2}),  # 22 Rimeheart staff (Magic 65)
+    (1.6, {S: 12, SL: 72, C: -2, M: 2, ST: 72}),                                   # 23 Nightglass scimitar (Att 70)
+    (2.2, {S: 46, SL: -2, C: 84, M: 6, DSL: 2, DC: 2, DM: 4, ST: 78, P: 6}),       # 24 Crownbreaker mace (Att 75)
+    (1.8, {S: 70, SL: 90, C: -2, M: 6, DS: 4, DSL: 4, DC: 4, DM: 6, DR: 4, ST: 92, P: 4}),  # 25 Starless longsword (Att 80)
+]
+for rank, (w, b) in enumerate(ladder):
+    uniques[8001 + rank] = (w, b)
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re
 txt = open(cfg + 'ItemDefinitions.json').read()
@@ -183,7 +217,8 @@ shops = [s for s in shops if s['id'] not in (350, 351)]
 shops.append({'buyModifier': 2, 'sellModifier': 2, 'name': "Netwright's Tackle", 'id': 350, 'items': [
     {'itemId': 303, 'itemAmount': 5}, {'itemId': 307, 'itemAmount': 5}, {'itemId': 309, 'itemAmount': 3},
     {'itemId': 313, 'itemAmount': 500}, {'itemId': 314, 'itemAmount': 1000}, {'itemId': 305, 'itemAmount': 2},
-    {'itemId': 333, 'itemAmount': 10}, {'itemId': 329, 'itemAmount': 10}, {'itemId': 351, 'itemAmount': 5}]})
+    {'itemId': 333, 'itemAmount': 10}, {'itemId': 329, 'itemAmount': 10}, {'itemId': 351, 'itemAmount': 5},
+    {'itemId': 8001, 'itemAmount': 5}]})
 shops.append({'buyModifier': 2, 'sellModifier': 2, 'name': "Tollan's Croft", 'id': 351, 'items': [
     {'itemId': 2309, 'itemAmount': 10}, {'itemId': 1965, 'itemAmount': 20}, {'itemId': 1927, 'itemAmount': 10},
     {'itemId': 1944, 'itemAmount': 20}, {'itemId': 1759, 'itemAmount': 20}, {'itemId': 1735, 'itemAmount': 3},
@@ -195,17 +230,18 @@ def shop(i, name, stock):
     shops.append({'buyModifier': 2, 'sellModifier': 2, 'name': name, 'id': i,
                   'items': [{'itemId': a, 'itemAmount': b} for a, b in stock]})
 shop(352, "Pell's Provisions", [(1931, 10), (1935, 10), (1925, 10), (590, 5), (954, 5), (946, 5), (1755, 5), (2347, 5),
-                                (1351, 5), (1265, 5), (233, 5), (36, 10), (1785, 3), (5341, 5)])
+                                (1351, 5), (1265, 5), (233, 5), (36, 10), (1785, 3), (5341, 5), (8002, 3), (8003, 3), (8005, 3)])
 shop(353, "Dorrin's Forge", [(2347, 10), (2349, 20), (2351, 20), (2353, 10), (2359, 5), (1117, 3), (1121, 3), (1073, 3),
-                             (1109, 2), (1123, 2), (1159, 2), (1197, 2), (1287, 3), (1301, 2), (453, 50)])
+                             (1109, 2), (1123, 2), (1159, 2), (1197, 2), (1287, 3), (1301, 2), (453, 50), (8004, 3), (8006, 3),
+                             (8007, 2)])
 shop(354, "Quarrywright's Picks", [(1265, 10), (1267, 8), (1269, 6), (1273, 4), (1271, 2), (1755, 5), (1823, 5)])
 shop(355, 'The Last Hearth', [(2003, 20), (2289, 10), (1993, 15), (1917, 20), (1891, 10), (2327, 15), (1985, 10),
                               (2011, 10), (379, 20), (373, 15), (1971, 30)])
 shop(356, "Nettle's Hold", [(954, 10), (301, 10), (311, 5), (1623, 5), (1621, 3), (1619, 2), (1617, 1),
-                            (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2)])
+                            (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2), (8008, 1)])
 # the Warden's armoury: Dorrin opens it once you've held the gate (the gauntlets only come off the Hollowed)
 shop(357, "The Warden's Armoury", [(7985, 3), (7986, 2), (7987, 2), (7988, 3), (7977, 1), (1163, 2), (1079, 1), (1201, 1),
-                                   (4131, 2), (2363, 4)])
+                                   (4131, 2), (2363, 4), (8011, 2), (8012, 1), (8013, 2)])
 save('shops.json', shops)
 
 # spawns: drop everything previously in Nythera's regions except Oren, then add camps + generated wildlife

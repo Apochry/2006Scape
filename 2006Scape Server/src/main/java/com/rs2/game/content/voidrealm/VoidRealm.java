@@ -657,7 +657,7 @@ public final class VoidRealm {
 			digGrave(p, graveAt(x, y));
 			return true;
 		}
-		return false;
+		return VoidArsenal.itemOnObject(p, objectId, x, y, itemId);
 	}
 
 	private static int graveAt(int x, int y) {
@@ -1358,6 +1358,9 @@ public final class VoidRealm {
 					}
 				}
 			}
+			break;
+		case "weapons": // ::vt weapons [from to] - the weapon ladder (ranks 1-25) into your inventory
+			VoidArsenal.spawnAll(p, a.length > 1 ? n[1] : 1, a.length > 2 ? n[2] : LADDER.length);
 			break;
 		case "list":
 			for (Npc npc : NpcHandler.npcs) {

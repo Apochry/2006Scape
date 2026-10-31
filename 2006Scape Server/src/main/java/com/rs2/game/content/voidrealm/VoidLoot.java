@@ -20,8 +20,11 @@ import com.rs2.util.Misc;
  *    5%      gear around the monster's level (including the Warden's armour, for the middle band)
  *   +1%      an independent bonus roll: gear that's unusually good for the monster's level
  * </pre>
+ * The weapon ladder (VoidArsenal) has a few rungs here: the Wolfbone shortbow and Barrowstone warhammer in the low
+ * band's gear, the Silkwood wand and Scarglass dagger in the middle band's, and the Gravewarden 2h sword and Riftglass
+ * halberd on the bonus roll.
  *
- * Tables come in three bands by combat level: under 30, 30-49, and 50 and over. Bosses and quest fights keep their
+ * <p>Tables come in three bands by combat level: under 30, 30-49, and 50 and over. Bosses and quest fights keep their
  * own hand-made tables (in npcdrops.json), as do harmless animals (under combat 15).
  */
 public final class VoidLoot {
@@ -50,15 +53,16 @@ public final class VoidLoot {
 			{ { 1619, 1, 1 }, { 1617, 1, 1 }, { 995, 1000, 2500 }, { STARMETAL, 1, 2 }, { 451, 1, 1 } } };
 	private static final int[][][] GEAR = {
 			{ { 1325, 1, 1 }, { 1157, 1, 1 }, { 1069, 1, 1 }, { 1193, 1, 1 }, { 1115, 1, 1 }, { 1295, 1, 1 }, { 1141, 1, 1 },
-					{ 843, 1, 1 } },
+					{ 843, 1, 1 }, { WOLFBONE_SHORTBOW, 1, 1 }, { BARROWSTONE_WARHAMMER, 1, 1 } },
 			{ { 1329, 1, 1 }, { 1121, 1, 1 }, { 1145, 1, 1 }, { 1183, 1, 1 }, { 1301, 1, 1 }, { 853, 1, 1 },
-					{ WARDEN_HELM, 1, 1 }, { WARDEN_BOOTS, 1, 1 }, { WARDEN_GAUNTLETS, 1, 1 } },
+					{ WARDEN_HELM, 1, 1 }, { WARDEN_BOOTS, 1, 1 }, { WARDEN_GAUNTLETS, 1, 1 }, { SILKWOOD_WAND, 1, 1 },
+					{ SCARGLASS_DAGGER, 1, 1 } },
 			{ { 1123, 1, 1 }, { 1073, 1, 1 }, { 1161, 1, 1 }, { 1199, 1, 1 }, { 1147, 1, 1 }, { 1213, 1, 1 }, { 857, 1, 1 },
 					{ WARDEN_BODY, 1, 1 }, { WARDEN_LEGS, 1, 1 } } };
 	private static final int[][][] BONUS = {
 			{ { 1329, 1, 1 }, { 1183, 1, 1 }, { 1159, 1, 1 } },
-			{ { 1333, 1, 1 }, { 1147, 1, 1 }, { 1113, 1, 1 }, { WARDEN_BODY, 1, 1 } },
-			{ { 1079, 1, 1 }, { 1163, 1, 1 }, { 1215, 1, 1 }, { 1149, 1, 1 } } };
+			{ { 1333, 1, 1 }, { 1147, 1, 1 }, { 1113, 1, 1 }, { WARDEN_BODY, 1, 1 }, { GRAVEWARDEN_2H, 1, 1 } },
+			{ { 1079, 1, 1 }, { 1163, 1, 1 }, { 1215, 1, 1 }, { 1149, 1, 1 }, { RIFTGLASS_HALBERD, 1, 1 } } };
 
 	/** Bosses and minibosses (hand-made tables), and the adds summoned in boss fights (bones only). */
 	private static final int[] CURATED = { BARROW_THANE, HOLLOW_MATRIARCH, RIMECLAW, BROODMOTHER, HOLLOW_HERALD,

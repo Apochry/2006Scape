@@ -17,7 +17,8 @@ public class MagicRequirements {
 			}
 			break;
 		case 555: // Water runes
-			if (wep == 1383 || wep == 1395 || wep == 1403 || wep == 6562 || wep == 6563) {
+			if (wep == 1383 || wep == 1395 || wep == 1403 || wep == 6562 || wep == 6563
+					|| wep == com.rs2.game.content.voidrealm.VoidConstants.RIMEHEART_STAFF) { // the Rimeheart is the water
 				return true;
 			}
 			break;
