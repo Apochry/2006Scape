@@ -173867,5 +173867,140 @@
         ]
       }
     ]
+  },
+  {
+    "id": 3854,
+    "items": [
+      {
+        "item_id": 526,
+        "chance": 0,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 995,
+        "chance": 2,
+        "amounts": [
+          10,
+          80
+        ]
+      },
+      {
+        "item_id": 431,
+        "chance": 20,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 1323,
+        "chance": 32,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 2651,
+        "chance": 128,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 1325,
+        "chance": 64,
+        "amounts": [
+          1,
+          1
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3855,
+    "items": [
+      {
+        "item_id": 526,
+        "chance": 0,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 401,
+        "chance": 4,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 359,
+        "chance": 8,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 995,
+        "chance": 3,
+        "amounts": [
+          5,
+          40
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3856,
+    "items": [
+      {
+        "item_id": 532,
+        "chance": 0,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 995,
+        "chance": 0,
+        "amounts": [
+          150,
+          400
+        ]
+      },
+      {
+        "item_id": 1325,
+        "chance": 6,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 2651,
+        "chance": 10,
+        "amounts": [
+          1,
+          1
+        ]
+      },
+      {
+        "item_id": 1329,
+        "chance": 20,
+        "amounts": [
+          1,
+          1
+        ]
+      }
+    ]
   }
 ]

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.rs2.game.content.skullbrine.SkullbrineConstants;
+import static com.rs2.game.content.skullbrine.SkullbrineConstants.*;
+
 /**
  * Generates "Skullbrine Isle" - a cursed pirate island - plus the pirate dungeon beneath it, and packs
  * both into the server cache (which the file server then hands to clients).
@@ -19,6 +22,7 @@ import java.util.Random;
  * Everything about the layout lives in this class, so tweak the constants/methods below and re-run.
  */
 public final class CursedIslandGenerator {
+
 
 	/* ---------- where things are (absolute world coordinates) ---------- */
 
@@ -42,23 +46,18 @@ public final class CursedIslandGenerator {
 			GRAVESTONE = 404, SMALL_GRAVESTONE = 400, GRAVE_MARKER = 401, LARGE_GRAVE = 406, SKELETON = 5358,
 			LONG_SKELETON = 5360, SKULL_PILE = 3969, ANIMAL_SKULL = 697, HULL = 2177, MAST = 5274,
 			BROKEN_BARREL = 672, ANCHOR = 9522, CRATE = 9533, CRATES = 9535, CANNON = 821, CANNONBALLS = 5967,
-			SHIP_WHEEL = 252, TORCH = 5494, BARREL = 9519, STACKED_BARRELS = 4641, CHEST = 375,
-			FLAGPOLE = 3680, CAVE_ENTRANCE = 3735, CAVE_EXIT = 3736, CAVE_TORCH = 724,
-			STALAGMITE = 541, STALAGMITE_2 = 542, DUNGEON_SKULLS = 668, PORTAL = 6282;
+			SHIP_WHEEL = 252, TORCH = 5494, BARREL = 9519, STACKED_BARRELS = 4641, CHEST = CAPTAINS_CHEST,
+			FLAGPOLE = 3680, CAVE_TORCH = 724,
+			STALAGMITE = 541, STALAGMITE_2 = 542, DUNGEON_SKULLS = 668, PORTAL = VOID_PORTAL;
 
 	public static final int TYPE_WALL = 0, TYPE_SCENERY = 10, TYPE_GROUND_DECOR = 22;
 
-	/* Key points that the server-side content also refers to (see com.rs2.world.island.SkullbrineIsle). */
-	public static final int DOCK_ARRIVAL_X = 2061, DOCK_ARRIVAL_Y = 2912;
-	public static final int CAVE_ENTRANCE_X = 2015, CAVE_ENTRANCE_Y = 2934;
-	public static final int DUNGEON_ARRIVAL_X = 2016, DUNGEON_ARRIVAL_Y = 9288;
-	public static final int DUNGEON_EXIT_X = 2015, DUNGEON_EXIT_Y = 9282;
-	public static final int PORTAL_X = 2015, PORTAL_Y = 9335;
-	public static final int CAPTAINS_CHEST_X = 2034, CAPTAINS_CHEST_Y = 9316;
+	/* Key points (cave, dungeon exit, portal, chest...) come from SkullbrineConstants, shared with the server. */
 
 	private final Map<Integer, MapRegion> regions = new HashMap<>();
 	private final Random random = new Random(0x5C011);
 	private CacheEditor cache;
+	private CacheEditor.Archive config;
 
 	public static void main(String[] args) throws Exception {
 		Path cacheDir = Paths.get(args.length > 0 ? args[0] : "data/cache");
@@ -67,6 +66,7 @@ public final class CursedIslandGenerator {
 			gen.cache = cache;
 			gen.buildSurface();
 			gen.buildDungeon();
+			gen.buildDefinitions();
 		}
 		gen.pack(cacheDir);
 	}
@@ -238,7 +238,8 @@ public final class CursedIslandGenerator {
 		object(CRATE, 2021, 2886, TYPE_SCENERY, 0);
 		object(ANCHOR, 2025, 2882, TYPE_SCENERY, 2);
 		object(CANNON, 2008, 2887, TYPE_SCENERY, 3);
-		object(SKELETON, 2012, 2886, TYPE_GROUND_DECOR, 1);
+		// Captain Blackbrine's remains, washed up beside his ship (searchable - holds his log)
+		object(CAPTAINS_SKELETON, CAPTAINS_SKELETON_X, CAPTAINS_SKELETON_Y, TYPE_SCENERY, 1);
 		object(LONG_SKELETON, 2019, 2888, TYPE_GROUND_DECOR, 2);
 	}
 
@@ -515,6 +516,83 @@ public final class CursedIslandGenerator {
 	}
 
 	/* ====================================================================== */
+	/*                        NPC + ITEM DEFINITIONS                          */
+	/* ====================================================================== */
+
+	/** Ghostly sea-green, used for the cursed crew. RS hue is 0..63 (0 = red, ~21 = green, ~42 = blue). */
+	static final int GHOST_HUE = 27, VOID_HUE = 50;
+
+	void buildDefinitions() throws java.io.IOException {
+		config = CacheEditor.Archive.decode(cache.read(0, ConfigDefinitions.CONFIG_ARCHIVE));
+		ConfigDefinitions.Table npcs = ConfigDefinitions.load(config, "npc", true);
+		ConfigDefinitions.Table items = ConfigDefinitions.load(config, "obj", false);
+
+		// Port Sarim's boatman, cloned from Captain Tobias
+		npc(npcs, 376, BOSUN_GRIMSBY).name("Bosun Grimsby").examine("A weathered sailor with a haunted look.")
+				.npcActions("Talk-to", null, null, null, null);
+		// the last living survivor of the Drowned Maiden, cloned from Pirate Jackie the Fruit
+		npc(npcs, 1055, MAD_PETE).name("Mad Pete").examine("The Drowned Maiden's cook. He hasn't slept in weeks.")
+				.npcActions("Talk-to", null, "Trade", null, null); // slot 2 = "second click" packet (slot 1 is attack)
+		// the cursed crew: pirates / zombies washed in a pale, drowned green
+		ghostly(npc(npcs, 182, CURSED_PIRATE), npcs, 182, GHOST_HUE, 2, 0.75, 22).name("Cursed pirate")
+				.examine("A dead man who doesn't know it yet.").shorts(95, 34);
+		ghostly(npc(npcs, 75, DROWNED_DECKHAND), npcs, 75, 33, 3, 0.7, 10).name("Drowned deckhand")
+				.examine("Seaweed hangs from what's left of him.").shorts(95, 24);
+		ghostly(npc(npcs, 184, CURSED_FIRST_MATE), npcs, 184, GHOST_HUE, 4, 0.6, 8).name("Cursed first mate")
+				.examine("'Smiling' Sam, Blackbrine's first mate. Something glints at his neck.").shorts(95, 62)
+				.shorts(97, 160).shorts(98, 160).set(12, new byte[] { 1 });
+		ghostly(npc(npcs, 376, CAPTAIN_BLACKBRINE), npcs, 376, GHOST_HUE, 1, 0.5, 60).name("Ghost of Captain Blackbrine")
+				.examine("The captain of the Drowned Maiden, bound to this place.").npcActions("Talk-to", null, null, null, null);
+
+		// quest items
+		item(items, 1493, BLACKBRINES_LOG).name("Blackbrine's log").examine("The water-stained log of the Drowned Maiden.")
+				.itemActions("Read", null, null, null, "Drop");
+		item(items, 432, CAPTAINS_KEY).name("Captain's key").examine("A heavy iron key, still warm from Sam's neck.");
+		ConfigDefinitions.Definition pearl = item(items, 587, VOID_PEARL).name("Void pearl")
+				.examine("It is darker than anything has a right to be. It hums.");
+		int[][] tint = ConfigDefinitions.tint(cache, new int[] { pearl.itemModel() }, VOID_HUE, 5, 0.6, 0);
+		pearl.recolor(tint[0], tint[1]);
+		items.put(VOID_PEARL, pearl);
+
+		live.forEach((table, defsById) -> defsById.forEach(table::put));
+		ConfigDefinitions.save(config, npcs, items);
+		System.out.println("Definitions: " + npcs.size() + " npcs, " + items.size() + " items");
+	}
+
+	/** Clones NPC {@code source} into id {@code id} (appending if it is the next free id). */
+	ConfigDefinitions.Definition npc(ConfigDefinitions.Table table, int source, int id) {
+		return putLive(table, id, table.decode(source));
+	}
+
+	ConfigDefinitions.Definition item(ConfigDefinitions.Table table, int source, int id) {
+		ConfigDefinitions.Definition d = table.decode(source);
+		d.remove(97).remove(98); // never inherit noted-item links
+		return putLive(table, id, d);
+	}
+
+	/** Recolours an NPC definition's models. */
+	ConfigDefinitions.Definition ghostly(ConfigDefinitions.Definition d, ConfigDefinitions.Table table, int source, int hue,
+			int saturation, double lightScale, int lightAdd) throws java.io.IOException {
+		int[][] tint = ConfigDefinitions.tint(cache, d.npcModels(), hue, saturation, lightScale, lightAdd);
+		return d.recolor(tint[0], tint[1]);
+	}
+
+	/**
+	 * Definitions are edited after being placed, so keep a list of them and (re)encode everything when saving.
+	 * Ids must be contiguous with the existing table (or replace an existing id).
+	 */
+	private final Map<ConfigDefinitions.Table, Map<Integer, ConfigDefinitions.Definition>> live = new HashMap<>();
+
+	ConfigDefinitions.Definition putLive(ConfigDefinitions.Table table, int id, ConfigDefinitions.Definition d) {
+		if (id > table.size()) {
+			throw new IllegalStateException("definition id " + id + " would leave a gap (table has " + table.size() + ")");
+		}
+		table.put(id, d);
+		live.computeIfAbsent(table, t -> new HashMap<>()).put(id, d);
+		return d;
+	}
+
+	/* ====================================================================== */
 	/*                                HELPERS                                 */
 	/* ====================================================================== */
 
@@ -625,6 +703,9 @@ public final class CursedIslandGenerator {
 			versionList.put("map_version", tables[0]);
 			versionList.put("map_crc", tables[1]);
 			cache.write(0, CacheEditor.VERSIONLIST_ARCHIVE, versionList.encode());
+			if (config != null) {
+				cache.write(0, ConfigDefinitions.CONFIG_ARCHIVE, config.encode());
+			}
 			System.out.println("Updated versionlist: " + index.size() + " regions, " + tables[0].length / 2 + " map files.");
 		}
 	}

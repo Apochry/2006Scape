@@ -11969,5 +11969,49 @@
         "itemAmount": 5
       }
     ]
+  },
+  {
+    "buyModifier": 2,
+    "sellModifier": 2,
+    "name": "Mad Pete's Salvage",
+    "id": 349,
+    "items": [
+      {
+        "itemId": 954,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 590,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 952,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 431,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 379,
+        "itemAmount": 10
+      },
+      {
+        "itemId": 373,
+        "itemAmount": 5
+      },
+      {
+        "itemId": 1323,
+        "itemAmount": 3
+      },
+      {
+        "itemId": 1325,
+        "itemAmount": 2
+      },
+      {
+        "itemId": 2651,
+        "itemAmount": 2
+      }
+    ]
   }
 ]

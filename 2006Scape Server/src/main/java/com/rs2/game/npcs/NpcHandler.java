@@ -1,5 +1,6 @@
 package com.rs2.game.npcs;
 
+import com.rs2.game.content.skullbrine.SkullbrineIsle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.rs2.Constants;
@@ -1056,6 +1057,7 @@ public class NpcHandler {
                 // These npcs shouldn't have drops
                 return;
             }
+            SkullbrineIsle.npcKilled(c, npcs[i].npcType, npcs[i].absX, npcs[i].absY, npcs[i].heightLevel);
             boolean isDropped = false;
             for (ItemDrop possible_drop : NPCDropsHandler.getNpcDrops(getNpcListName(npcs[i].npcType).toLowerCase().replace(" ", "_"), npcs[i].npcType)) {
                 if (Misc.random(possible_drop.getChance()) == 0 && !isDropped) {
