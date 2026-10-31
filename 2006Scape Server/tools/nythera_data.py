@@ -42,6 +42,20 @@ people = [
     npcdef(3876, 'The Barrow Thane', 'A king of the old barrows who would not stay buried.', 68, 110, 9, 1, 4000, 260, 261, 263, 70, 60, True, True),
     npcdef(3877, 'The Hollow Matriarch', 'The mother of husks. Her heart beats with nothing at all.', 92, 150, 12, 2, 4000, 75, 76, 78, 95, 80, True, True),
     npcdef(3878, 'Rimeclaw', 'The cold of the mountain, given claws.', 110, 180, 14, 2, 5000, 128, 129, 131, 115, 100, True, True),
+    # Ashes of the Crown
+    npcdef(3879, 'Archivist Maelis', 'Ink to the elbows. He knows more about Nythera than Nythera does.'),
+    npcdef(3880, 'Silkwood broodmother', 'Every spider in Silkwood came out of her. She would like you to go in.', 44, 70, 6, 2, 4000, 143, 144, 146, 45, 40, True, True),
+    npcdef(3881, 'Hollow Herald', 'It speaks with the Hollow King\'s voice, because it has none of its own.', 62, 160, 8, 2, 3000, 2655, 2653, 2654, 70, 60, True, True),
+    npcdef(3882, 'Hollow shade', 'A scrap of the dark between the stars, wearing a shape.', 26, 26, 3, 1, 4000, 422, 1834, 836, 30, 22, True, True),
+    # the saga: Hold the Gate, Heartforged, The Hollow King, and the Starless
+    npcdef(3883, 'Hollow ravager', 'Something big, emptied out, and pointed at the gate.', 48, 80, 6, 1, 4000, 299, 300, 302, 45, 40, True, True),
+    npcdef(3884, "Thane's oathsworn", 'It swore to guard the Thane\'s things. Death did not release it.', 40, 55, 5, 1, 4000, 260, 261, 263, 40, 35, True, True),
+    npcdef(3885, 'Rimebound sentinel', 'Ice that remembers being a soldier.', 58, 110, 7, 1, 4000, 422, 404, 2304, 60, 55, True, True),
+    npcdef(3886, 'Sir Vaelric', 'The last knight of King Aurel. Still keeping his oath.', 66, 170, 9, 1, 4000, 422, 404, 2304, 75, 65, True, True),
+    npcdef(3887, 'Hollow knight', 'An empty suit of armour that has forgotten it is empty.', 44, 40, 5, 1, 4000, 422, 404, 2304, 45, 40, True, True),
+    npcdef(3888, 'Aurel', 'The last King of Nythera. Free, at the very end.'),
+    npcdef(3889, 'The Starless', 'The dark between the stars, looking back at you.', 400, 900, 16, 3, 3000, 422, 404, 2304, 180, 150, True, True),
+    npcdef(3890, 'Starless spawn', 'A piece of the Starless that wandered off. It wants to go back.', 72, 60, 8, 1, 4000, 422, 404, 2304, 90, 70, True, True),
 ]
 ids = {p['id'] for p in people}
 
@@ -66,6 +80,7 @@ drops.append({'id': 3868, 'items': [
 ]})
 drops.append({'id': 3869, 'items': [
     {'item_id': 526, 'chance': 0, 'amounts': [1, 1]},
+    {'item_id': 7989, 'chance': 63, 'amounts': [1, 1]},      # Warden's gauntlets: pried off a watchman who didn't come home
     {'item_id': 995, 'chance': 2, 'amounts': [15, 70]},
     {'item_id': 207, 'chance': 6, 'amounts': [1, 1]},        # grimy ranarr
     {'item_id': 1623, 'chance': 20, 'amounts': [1, 1]},      # uncut sapphire
@@ -87,6 +102,29 @@ for i, items in boss_drops.items():
             [d for d in items if d[1] != 0 and d[0] not in (7968, 7969, 7970)]
     drops = [x for x in drops if x['id'] != i]
     drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
+# the quest's fights: no unique, but worth winning
+drops = [x for x in drops if x['id'] not in (3880, 3881, 3882)]
+drops.append({'id': 3880, 'items': [{'item_id': 526, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [300, 900]},
+    {'item_id': 1617, 'chance': 8, 'amounts': [1, 1]}, {'item_id': 2434, 'chance': 4, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 60, 'amounts': [1, 1]}]})
+drops.append({'id': 3881, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 0, 'amounts': [2500, 5000]},
+    {'item_id': 565, 'chance': 0, 'amounts': [40, 80]}, {'item_id': 1319, 'chance': 3, 'amounts': [1, 1]}, {'item_id': 1615, 'chance': 4, 'amounts': [1, 1]}]})
+drops.append({'id': 3882, 'items': [{'item_id': 592, 'chance': 0, 'amounts': [1, 1]}, {'item_id': 995, 'chance': 3, 'amounts': [20, 90]},
+    {'item_id': 562, 'chance': 5, 'amounts': [5, 15]}]})
+def droptable(i, items):
+    global drops
+    drops = [x for x in drops if x['id'] != i]
+    drops.append({'id': i, 'items': [{'item_id': it, 'chance': c, 'amounts': [lo, hi]} for it, c, lo, hi in items]})
+droptable(3883, [(532, 0, 1, 1), (995, 0, 150, 400), (440, 2, 2, 4), (1617, 40, 1, 1)])            # ravager: big bones, iron ore
+droptable(3884, [(526, 0, 1, 1), (995, 0, 100, 300), (1163, 30, 1, 1)])                           # oathsworn
+droptable(3885, [(526, 0, 1, 1), (995, 0, 400, 900), (7997, 11, 1, 1), (555, 1, 30, 80), (1079, 20, 1, 1)])          # sentinel: water runes, rune legs
+droptable(3886, [(532, 0, 1, 1), (995, 0, 1500, 3000), (1319, 5, 1, 1), (1201, 6, 1, 1), (565, 2, 20, 40)])  # Vaelric
+droptable(3887, [(526, 0, 1, 1), (995, 1, 40, 120)])
+# the Starless: always rich, and two uniques at a true 1/12 each (they roll first, after the always-drops)
+droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (7983, 11, 1, 1), (7984, 11, 1, 1),
+                 (7990, 35, 1, 1), (7991, 35, 1, 1), (7992, 35, 1, 1), (7993, 35, 1, 1), (7994, 35, 1, 1), (7995, 35, 1, 1),
+                 (1149, 7, 1, 1),
+                 (1215, 5, 1, 1), (1187, 40, 1, 1), (1615, 9, 1, 1), (2363, 2, 3, 6), (560, 1, 50, 150), (385, 1, 5, 10)])
+droptable(3890, [(592, 0, 1, 1), (7979, 3, 1, 1)])   # spawn: sometimes a shard of starmetal
 save('npcdrops.json', drops)
 
 # the bosses' uniques: equipment bonuses, in ItemDefinitions.json's own compact format
@@ -96,6 +134,53 @@ uniques = {
     7969: (1.8, {'attackStab': 44, 'attackSlash': 54, 'attackCrush': -2, 'defenceSlash': 3, 'defenceCrush': 2, 'strengthBonus': 56}),
     7970: (0.9, {'defenceStab': 6, 'defenceSlash': 6, 'defenceCrush': 6, 'defenceMagic': 3, 'defenceRange': 6, 'strengthBonus': 2,
                  'prayerBonus': 1}),
+    # Warden's kiteshield (Hold the Gate)
+    7977: (5.4, {'attackMagic': -6, 'attackRange': -2, 'defenceStab': 27, 'defenceSlash': 29, 'defenceCrush': 26, 'defenceMagic': 2,
+                 'defenceRange': 28, 'strengthBonus': 1, 'prayerBonus': 1}),
+    # the Emberbrand (Heartforged): a quest longsword a little behind Barrowsteel, and the only blade that cuts the King
+    7981: (1.6, {'attackStab': 40, 'attackSlash': 50, 'attackCrush': -2, 'attackMagic': 4, 'defenceSlash': 3, 'defenceCrush': 2,
+                 'defenceMagic': 3, 'strengthBonus': 52, 'prayerBonus': 2}),
+    # the Crown of Aurel (The Hollow King)
+    7982: (0.5, {'attackMagic': 6, 'defenceStab': 8, 'defenceSlash': 8, 'defenceCrush': 8, 'defenceMagic': 8, 'defenceRange': 8,
+                 'strengthBonus': 3, 'prayerBonus': 4}),
+    # the Gatehold Warden set (Def 30): between adamant and rune, and a little prayer
+    7985: (2.3, {'attackMagic': -4, 'attackRange': -1, 'defenceStab': 24, 'defenceSlash': 26, 'defenceCrush': 21, 'defenceMagic': -1,
+                 'defenceRange': 24, 'prayerBonus': 1}),
+    7986: (9.5, {'attackMagic': -24, 'attackRange': -8, 'defenceStab': 72, 'defenceSlash': 70, 'defenceCrush': 62, 'defenceMagic': -4,
+                 'defenceRange': 70, 'prayerBonus': 1}),
+    7987: (8.6, {'attackMagic': -18, 'attackRange': -6, 'defenceStab': 40, 'defenceSlash': 38, 'defenceCrush': 36, 'defenceMagic': -3,
+                 'defenceRange': 38, 'prayerBonus': 1}),
+    7988: (1.0, {'attackMagic': -2, 'defenceStab': 10, 'defenceSlash': 11, 'defenceCrush': 12, 'strengthBonus': 1}),
+    7989: (0.5, {'attackStab': 4, 'attackSlash': 4, 'attackCrush': 4, 'attackMagic': 2, 'attackRange': 4, 'defenceStab': 5,
+                 'defenceSlash': 5, 'defenceCrush': 5, 'defenceMagic': 3, 'defenceRange': 5, 'strengthBonus': 3}),
+    # Aurel's Royal Guard (Def 50): a step past rune, with prayer and a touch of strength
+    7990: (2.7, {'attackMagic': -2, 'attackRange': -1, 'defenceStab': 33, 'defenceSlash': 35, 'defenceCrush': 30, 'defenceRange': 33,
+                 'strengthBonus': 1, 'prayerBonus': 2}),
+    7991: (9.9, {'attackMagic': -26, 'attackRange': -8, 'defenceStab': 88, 'defenceSlash': 86, 'defenceCrush': 78, 'defenceMagic': -4,
+                 'defenceRange': 86, 'strengthBonus': 2, 'prayerBonus': 2}),
+    7992: (9.0, {'attackMagic': -19, 'attackRange': -6, 'defenceStab': 55, 'defenceSlash': 53, 'defenceCrush': 51, 'defenceMagic': -2,
+                 'defenceRange': 53, 'strengthBonus': 1, 'prayerBonus': 2}),
+    7993: (5.4, {'attackMagic': -7, 'attackRange': -2, 'defenceStab': 48, 'defenceSlash': 52, 'defenceCrush': 50, 'defenceMagic': 2,
+                 'defenceRange': 50, 'strengthBonus': 1, 'prayerBonus': 2}),
+    7994: (1.2, {'attackMagic': -2, 'defenceStab': 14, 'defenceSlash': 15, 'defenceCrush': 16, 'defenceMagic': 1, 'defenceRange': 1,
+                 'strengthBonus': 2, 'prayerBonus': 1}),
+    7995: (0.6, {'attackStab': 7, 'attackSlash': 7, 'attackCrush': 7, 'attackMagic': 3, 'attackRange': 7, 'defenceStab': 7,
+                 'defenceSlash': 7, 'defenceCrush': 7, 'defenceMagic': 4, 'defenceRange': 7, 'strengthBonus': 6, 'prayerBonus': 1}),
+    # the saga's weapons
+    7996: (3.0, {'attackStab': 62, 'attackSlash': 86, 'attackMagic': -4, 'defenceStab': -1, 'defenceSlash': 4, 'defenceRange': 4,
+                 'strengthBonus': 82}),                                              # Starfall halberd (Att 60, two-handed)
+    7997: (2.7, {'attackStab': -2, 'attackSlash': 60, 'attackCrush': 55, 'defenceSlash': 2, 'defenceCrush': 2, 'defenceMagic': 3,
+                 'strengthBonus': 74}),                                              # Rimecleaver battleaxe (Att 55)
+    7998: (1.8, {'attackStab': 38, 'attackSlash': -2, 'attackCrush': 58, 'attackMagic': 8, 'defenceSlash': 2, 'defenceCrush': 2,
+                 'defenceMagic': 4, 'strengthBonus': 52, 'prayerBonus': 7}),         # Hollow King's mace (Att 60)
+    7999: (1.0, {'attackRange': 72}),                                                # Duskyew shortbow (Ranged 50)
+    8000: (2.0, {'attackStab': 10, 'attackSlash': -1, 'attackCrush': 40, 'attackMagic': 16, 'defenceStab': 2, 'defenceSlash': 3,
+                 'defenceCrush': 1, 'defenceMagic': 16, 'strengthBonus': 45, 'prayerBonus': 2}),  # Staff of the caged star (Magic 60)
+    # the Starless's uniques
+    7983: (0.4, {'attackStab': 4, 'attackSlash': 4, 'attackCrush': 4, 'attackMagic': 4, 'attackRange': 4, 'defenceStab': 11,
+                 'defenceSlash': 11, 'defenceCrush': 11, 'defenceMagic': 11, 'defenceRange': 11, 'strengthBonus': 6, 'prayerBonus': 3}),
+    7984: (0.1, {'attackStab': 12, 'attackSlash': 12, 'attackCrush': 12, 'attackMagic': 12, 'attackRange': 12, 'defenceStab': 8,
+                 'defenceSlash': 8, 'defenceCrush': 8, 'defenceMagic': 8, 'defenceRange': 8, 'strengthBonus': 8, 'prayerBonus': 4}),
 }
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re
@@ -132,11 +217,14 @@ shop(355, 'The Last Hearth', [(2003, 20), (2289, 10), (1993, 15), (1917, 20), (1
                               (2011, 10), (379, 20), (373, 15), (1971, 30)])
 shop(356, "Nettle's Hold", [(954, 10), (301, 10), (311, 5), (1623, 5), (1621, 3), (1619, 2), (1617, 1),
                             (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2)])
+# the Warden's armoury: Dorrin opens it once you've held the gate (the gauntlets only come off the Hollowed)
+shop(357, "The Warden's Armoury", [(7985, 3), (7986, 2), (7987, 2), (7988, 3), (7977, 1), (1163, 2), (1079, 1), (1201, 1),
+                                   (4131, 2), (2363, 4)])
 save('shops.json', shops)
 
 # spawns: drop everything previously in Nythera's regions except Oren, then add camps + generated wildlife
 X0, Y0, N = 20 * 64, 39 * 64, 7 * 64
-DUNGEONS = (20, 22, 24)  # the Sunken Barrow, Hollowdeep, Frostfang (region y 151)
+DUNGEONS = (20, 22, 24, 26)  # the Sunken Barrow, Hollowdeep, Frostfang (region y 151)
 inside = lambda s: s['height'] == 0 and ((X0 <= s['x'] < X0 + N and Y0 <= s['y'] < Y0 + N)
                                          or (s['x'] >> 6 in DUNGEONS and s['y'] >> 6 == 151))
 sp = load('spawns.json')
@@ -154,7 +242,7 @@ spawn(3867, 1553, 2731, 1)
 # combat stats for the monsters the generator places (maxHit, attack/strength)
 STATS = {3868: (4, 28), 3869: (5, 40), 3860: (3, 15), 90: (3, 20), 91: (3, 20), 92: (4, 25), 93: (6, 40), 103: (3, 20),
          60: (4, 25), 96: (3, 20), 111: (7, 50), 125: (7, 35), 184: (5, 25), 1883: (4, 30), 9: (6, 20),
-         3876: (9, 70), 3877: (12, 95), 3878: (14, 115)}
+         3876: (9, 70), 3877: (12, 95), 3878: (14, 115), 3882: (5, 40)}
 count = 0
 for line in open(spawnfile):
     i, x, y, w = map(int, line.split())

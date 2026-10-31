@@ -3,6 +3,10 @@ package com.rs2.game.content.quests;
 import com.rs2.game.content.quests.impl.BlackKnightsFortress;
 import com.rs2.game.content.quests.impl.CooksAssistant;
 import com.rs2.game.content.quests.impl.BeyondTheVeil;
+import com.rs2.game.content.quests.impl.AshesOfTheCrown;
+import com.rs2.game.content.quests.impl.HoldTheGate;
+import com.rs2.game.content.quests.impl.Heartforged;
+import com.rs2.game.content.quests.impl.TheHollowKing;
 import com.rs2.game.content.quests.impl.CurseOfSkullbrine;
 import com.rs2.game.content.quests.impl.EchoesOfTheVoid;
 import com.rs2.game.content.quests.impl.DoricsQuest;
@@ -28,7 +32,8 @@ import com.rs2.game.players.Player;
 public class QuestAssistant {
 
 	public static final int MAXIMUM_QUESTPOINTS = 26 + CurseOfSkullbrine.QUEST_POINTS + EchoesOfTheVoid.QUEST_POINTS
-			+ BeyondTheVeil.QUEST_POINTS;
+			+ BeyondTheVeil.QUEST_POINTS + AshesOfTheCrown.QUEST_POINTS + HoldTheGate.QUEST_POINTS + Heartforged.QUEST_POINTS
+			+ TheHollowKing.QUEST_POINTS;
 
 	public static void sendStages(Player player) {
 		player.getPacketSender().sendString("QP: " + player.questPoints + " ", 3985);
@@ -140,6 +145,10 @@ public class QuestAssistant {
 		player.getPacketSender().sendString(CurseOfSkullbrine.questListName(player), Quests.CURSE_OF_SKULLBRINE.getStringId());
 		player.getPacketSender().sendString(EchoesOfTheVoid.questListName(player), Quests.ECHOES_OF_THE_VOID.getStringId());
 		player.getPacketSender().sendString(BeyondTheVeil.questListName(player), Quests.BEYOND_THE_VEIL.getStringId());
+		player.getPacketSender().sendString(AshesOfTheCrown.questListName(player), Quests.ASHES_OF_THE_CROWN.getStringId());
+		player.getPacketSender().sendString(HoldTheGate.questListName(player), Quests.HOLD_THE_GATE.getStringId());
+		player.getPacketSender().sendString(Heartforged.questListName(player), Quests.HEARTFORGED.getStringId());
+		player.getPacketSender().sendString(TheHollowKing.questListName(player), Quests.THE_HOLLOW_KING.getStringId());
 		if (player.lostCity == 0) {
 			player.getPacketSender().sendString("Lost City", 7367);
 		} else if (player.lostCity == 3) {
@@ -182,13 +191,13 @@ public class QuestAssistant {
 		BEYOND_THE_VEIL(61225, 15841, BeyondTheVeil.NAME, true), // uses the unused Devious Minds slot
 		DIGSITE(28186, 7354, "Digsite Quest", false), 
 		ELEMENTAL(29035, 7459, "Elemental Workshop", false), 
-		ENAKHRA(63021, 16149, "Enakhra's Lamet", false), 
-		FAIRY1(27075, 6987, "A Fairy Tale Pt. 1", false), 
+		ASHES_OF_THE_CROWN(63021, 16149, AshesOfTheCrown.NAME, true), // uses the unused Enakhra's Lament slot
+		THE_HOLLOW_KING(27075, 6987, TheHollowKing.NAME, true), // uses the unused A Fairy Tale Pt. 1 slot
 		FAMILYCREST(28189, 7357, "Family Crest", false), 
-		FEUD(50036, 12836, "The Feud", false), 
+		HOLD_THE_GATE(50036, 12836, HoldTheGate.NAME, true), // uses the unused The Feud slot
 		FIGHT_ARENA(28190, 7358, "Fight Arena", false), 
 		FISHING_CONTEST(28191, 7359, "Fishing Contest", false),
-		FORGETTABLE_TABLE(50089, 14169, "Forgettable Tale...", false), 
+		HEARTFORGED(50089, 14169, Heartforged.NAME, true), // uses the unused Forgettable Tale slot
 		FREMMY_TRIALS(39131, 10115, "The Fremennik Trials", false), 
 		GARDEN(57012, 14604, "Garden of Tranquillity", false), 
 		GERTRUDES_CAT(28192, 7360, "Gertrude's Cat", true),
@@ -348,6 +357,18 @@ public class QuestAssistant {
 			break;
 		case 61225:
 			BeyondTheVeil.showInformation(player);
+			break;
+		case 63021:
+			AshesOfTheCrown.showInformation(player);
+			break;
+		case 50036:
+			HoldTheGate.showInformation(player);
+			break;
+		case 50089:
+			Heartforged.showInformation(player);
+			break;
+		case 27075:
+			TheHollowKing.showInformation(player);
 			break;
 
 

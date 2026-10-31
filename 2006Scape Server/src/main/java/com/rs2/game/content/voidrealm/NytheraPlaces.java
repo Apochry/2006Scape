@@ -285,7 +285,10 @@ final class NytheraPlaces {
 			if (rx < 0) {
 				return false;
 			}
-			if (rx == BARROW_REGION_X) {
+			if (rx == VAULT_REGION_X) {
+				p.getPlayerAssistant().movePlayer(HATCH_X, HATCH_Y - 1, 0);
+				p.wardsLit = 0;
+			} else if (rx == BARROW_REGION_X) {
 				p.getPlayerAssistant().movePlayer(BARROW_DOOR_X, BARROW_DOOR_Y - 1, 0);
 			} else if (rx == HOLLOWDEEP_REGION_X) {
 				p.getPlayerAssistant().movePlayer(FISSURE_X, FISSURE_Y - 2, 0);

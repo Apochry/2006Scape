@@ -372,8 +372,9 @@ public class Npc {
         } else {
             str.writeByteS(0);
         }
-        str.writeByteS(HP);
-        str.writeByteC(MaxHP);
+        // the update carries hitpoints as single bytes: scale big bosses down so their health bar still reads true
+        str.writeByteS(MaxHP > 255 ? Math.max(HP > 0 ? 1 : 0, HP * 255 / MaxHP) : HP);
+        str.writeByteC(Math.min(MaxHP, 255));
     }
 
     public int hitDiff2 = 0;
@@ -389,8 +390,8 @@ public class Npc {
         } else {
             str.writeByteC(0);
         }
-        str.writeByteA(HP);
-        str.writeByte(MaxHP);
+        str.writeByteA(MaxHP > 255 ? Math.max(HP > 0 ? 1 : 0, HP * 255 / MaxHP) : HP);
+        str.writeByte(Math.min(MaxHP, 255));
     }
 
     public void handleHitMask(int damage) {
@@ -475,7 +476,10 @@ public class Npc {
                 || absX >= 2371 && absX <= 2422 && absY >= 5062 && absY <= 5117
                 || absX >= 2896 && absX <= 2927 && absY >= 3595 && absY <= 3630
                 || absX >= 2892 && absX <= 2932 && absY >= 4435 && absY <= 4464
-                || absX >= 2256 && absX <= 2287 && absY >= 4680 && absY <= 4711) {
+                || absX >= 2256 && absX <= 2287 && absY >= 4680 && absY <= 4711
+                || absX >= 1280 && absX <= 1727 && absY >= 9664 && absY <= 9727 // Nythera's dungeons
+                || absX >= 1536 && absX <= 1727 && absY >= 9472 && absY <= 9535 // the void platform, the Expanse
+                || absX >= 1488 && absX <= 1535 && absY >= 2696 && absY <= 2735) { // Gatehold
             return true;
         }
         return false;

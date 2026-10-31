@@ -321,6 +321,33 @@ public class PlayerSave {
 							case "nytheraBosses":
 								player.nytheraBosses = Integer.parseInt(token2);
 								break;
+							case "voidCrown":
+								player.voidCrown = Integer.parseInt(token2);
+								break;
+							case "crownFlags":
+								player.crownFlags = Integer.parseInt(token2);
+								break;
+							case "gateKills":
+								player.gateKills = Integer.parseInt(token2);
+								break;
+							case "gateFlags":
+								player.gateFlags = Integer.parseInt(token2);
+								break;
+							case "voidGate":
+								player.voidGate = Integer.parseInt(token2);
+								break;
+							case "voidForge":
+								player.voidForge = Integer.parseInt(token2);
+								break;
+							case "forgeFlags":
+								player.forgeFlags = Integer.parseInt(token2);
+								break;
+							case "voidKing":
+								player.voidKing = Integer.parseInt(token2);
+								break;
+							case "starlessKills":
+								player.starlessKills = Integer.parseInt(token2);
+								break;
 							case "knightS":
 								player.knightS = Integer.parseInt(token2);
 								break;
@@ -802,6 +829,24 @@ public class PlayerSave {
 			characterfile.write("hollowKills = " + player.hollowKills);
 			characterfile.newLine();
 			characterfile.write("nytheraBosses = " + player.nytheraBosses);
+			characterfile.newLine();
+			characterfile.write("voidCrown = " + player.voidCrown);
+			characterfile.newLine();
+			characterfile.write("crownFlags = " + player.crownFlags);
+			characterfile.newLine();
+			characterfile.write("gateKills = " + player.gateKills);
+			characterfile.newLine();
+			characterfile.write("gateFlags = " + player.gateFlags);
+			characterfile.newLine();
+			characterfile.write("voidGate = " + player.voidGate);
+			characterfile.newLine();
+			characterfile.write("voidForge = " + player.voidForge);
+			characterfile.newLine();
+			characterfile.write("forgeFlags = " + player.forgeFlags);
+			characterfile.newLine();
+			characterfile.write("voidKing = " + player.voidKing);
+			characterfile.newLine();
+			characterfile.write("starlessKills = " + player.starlessKills);
 			characterfile.newLine();
 			characterfile.write("knightS = " + player.knightS);
 			characterfile.newLine();

@@ -233,12 +233,18 @@ public final class CacheEditor implements Closeable {
 	 * Map files carry their 2-byte version as a trailer, which the client verifies against map_crc.
 	 */
 	public void writeMapFile(int file, byte[] uncompressed, int version, byte[][] versionTables) throws IOException {
+		writeVersionedFile(MAP_INDEX, file, uncompressed, version, versionTables);
+	}
+
+	/** As {@link #writeMapFile}, for any on-demand index (models are index 1, with model_version / model_crc). */
+	public void writeVersionedFile(int index, int file, byte[] uncompressed, int version, byte[][] versionTables)
+			throws IOException {
 		byte[] gz = CompressionUtil.gzip(uncompressed);
 		byte[] stored = new byte[gz.length + 2];
 		System.arraycopy(gz, 0, stored, 0, gz.length);
 		stored[gz.length] = (byte) (version >> 8);
 		stored[gz.length + 1] = (byte) version;
-		write(MAP_INDEX, file, stored);
+		write(index, file, stored);
 
 		CRC32 crc = new CRC32();
 		crc.update(gz);

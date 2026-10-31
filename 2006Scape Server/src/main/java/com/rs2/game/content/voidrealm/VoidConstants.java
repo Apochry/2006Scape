@@ -23,6 +23,11 @@ public final class VoidConstants {
 	public static final int YSOLDE = 3870, PELL = 3871, DORRIN = 3872, TESS = 3873, MORRA = 3874, NETTLE = 3875;
 	/* dungeon bosses */
 	public static final int BARROW_THANE = 3876, HOLLOW_MATRIARCH = 3877, RIMECLAW = 3878;
+	/* Ashes of the Crown */
+	public static final int MAELIS = 3879, BROODMOTHER = 3880, HOLLOW_HERALD = 3881, HOLLOW_SHADE = 3882;
+	/* Hold the Gate, Ashes of the Crown's coffer guard, Heartforged, The Hollow King, and the Starless */
+	public static final int HOLLOW_RAVAGER = 3883, THANE_OATHSWORN = 3884, RIMEBOUND_SENTINEL = 3885, SIR_VAELRIC = 3886,
+			HOLLOW_KNIGHT = 3887, AUREL_SPIRIT = 3888, THE_STARLESS = 3889, STARLESS_SPAWN = 3890;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;
@@ -34,6 +39,27 @@ public final class VoidConstants {
 	public static final int HOLLOWFANG = 7967;
 	/* boss drops */
 	public static final int HOLLOWHEART_AMULET = 7968, BARROWSTEEL_LONGSWORD = 7969, FROSTBOUND_BOOTS = 7970;
+	/* Ashes of the Crown */
+	public static final int THANE_PAGE = 7971, SILK_PAGE = 7972, NETTLE_PAGE = 7973, ROYAL_CHRONICLE = 7974, EMBER = 7975,
+			GATEHOLD_SIGNET = 7976;
+	/* Hold the Gate, Heartforged, The Hollow King, and the Starless's uniques */
+	public static final int WARDEN_KITESHIELD = 7977, GATE_SPIKES = 7978, STARMETAL = 7979, RIMEHEART = 7980, EMBERBRAND = 7981,
+			CROWN_OF_AUREL = 7982, STARLESS_CAPE = 7983, ECLIPSE_AMULET = 7984;
+	/* the Gatehold Warden set (Def 30): the kiteshield above, the rest from Dorrin's armoury and the Hollowed */
+	public static final int WARDEN_HELM = 7985, WARDEN_BODY = 7986, WARDEN_LEGS = 7987, WARDEN_BOOTS = 7988,
+			WARDEN_GAUNTLETS = 7989;
+	/* Aurel's Royal Guard (Def 50): drops in the Starless Expanse, or reforged from rune by Dorrin */
+	public static final int ROYAL_HELM = 7990, ROYAL_BODY = 7991, ROYAL_LEGS = 7992, ROYAL_KITESHIELD = 7993, ROYAL_BOOTS = 7994,
+			ROYAL_GAUNTLETS = 7995;
+	/* the saga's weapons */
+	public static final int STARFALL_HALBERD = 7996, RIMECLEAVER = 7997, KINGS_SCEPTRE = 7998, DUSKYEW_SHORTBOW = 7999,
+			CAGED_STAR_STAFF = 8000;
+	public static final int[] WARDEN_SET = { WARDEN_HELM, WARDEN_BODY, WARDEN_LEGS, WARDEN_BOOTS, WARDEN_GAUNTLETS };
+	public static final int[] ROYAL_SET = { ROYAL_HELM, ROYAL_BODY, ROYAL_LEGS, ROYAL_KITESHIELD, ROYAL_BOOTS, ROYAL_GAUNTLETS };
+
+	/* ---------------- graphics (new spotanims, appended after the cache's 666) ---------------- */
+	public static final int GFX_VOID_BOLT = 666, GFX_VOID_IMPACT = 667, GFX_HEARTFIRE = 668, GFX_STARFALL_MARK = 669,
+			GFX_FALLING_STAR = 670, GFX_ECLIPSE = 671, GFX_RIME_BURST = 672;
 
 	/* ---------------- objects (new definitions) ---------------- */
 	public static final int VOID_VEIN = 14986;
@@ -45,6 +71,40 @@ public final class VoidConstants {
 	public static final int RIFT = 14991;
 	/** Dungeon entrances on Nythera (each one's exit inside is the ordinary cave exit, 3736). */
 	public static final int BARROW_DOOR = 14992, HOLLOW_FISSURE = 14993, FROST_CAVE = 14994;
+	/** Scenery with hand-built models (tools/mapgen/ModelForge). */
+	public static final int WAYSTONE = 14995, VOID_LANTERN = 14996, HOLLOWED_TREE = 14997;
+	/* Ashes of the Crown */
+	public static final int THANE_COFFER = 14998, SILK_COCOON = 14999, VAULT_HATCH = 15000, SUN_WARD = 15001, STAR_WARD = 15002,
+			MOON_WARD = 15003, VAULT_SEAL = 15004, EMBER_PEDESTAL = 15005, MAELIS_BOOKS = 15006;
+	/** The wards once lit (shown to the player who lit them). */
+	public static final int SUN_WARD_LIT = 15007, STAR_WARD_LIT = 15008, MOON_WARD_LIT = 15009;
+	/* the later quests and the Starless (all with hand-built models) */
+	public static final int BROKEN_BARRICADE = 15010, SPIKED_BARRICADE = 15011, FALLEN_STAR = 15012, RIME_ALTAR = 15013,
+			STARLESS_GATE = 15014, STAR_PILLAR = 15015, STAR_PILLAR_LIT = 15016;
+
+	/* ---------------- Hold the Gate ---------------- */
+	/** The three broken barricades across the Scar road north-east of the Gate. */
+	public static final int[][] BARRICADE_SPOTS = { { 1520, 2711 }, { 1521, 2713 }, { 1522, 2715 } };
+	/** Where the raid comes from (up the Scar road), and where the defenders stand. */
+	public static final int RAID_FROM_X = 1528, RAID_FROM_Y = 2721, RAID_HOLD_X = 1518, RAID_HOLD_Y = 2712;
+
+	/* ---------------- Heartforged ---------------- */
+	/** The fallen star in Starfall Crater; the rime altar deep in the Frostfang Caves (local tiles of its region). */
+	public static final int STAR_X = 1580, STAR_Y = 2652, ALTAR_LX = 19, ALTAR_LY = 13;
+
+	/* ---------------- the Starless Expanse (the optional mega boss) ---------------- */
+	public static final int STARLESS_REGION_X = 26, STARLESS_REGION_Y = 148;
+	public static final int STARLESS_X = 1696, STARLESS_Y = 9506, STARLESS_ARRIVAL_X = 1696, STARLESS_ARRIVAL_Y = 9497;
+	/** The four star pillars round the Expanse, and the gate home. */
+	public static final int[][] STAR_PILLARS = { { 1689, 9499 }, { 1703, 9499 }, { 1703, 9513 }, { 1689, 9513 } };
+	public static final int EXPANSE_GATE_X = 1696, EXPANSE_GATE_Y = 9494;
+	/** The Starless Gate on the void platform (shown once the Hollow King has fallen). */
+	public static final int ARENA_GATE_X = 1568, ARENA_GATE_Y = 9511;
+
+	public static boolean inExpanse(int x, int y) {
+		return x >= STARLESS_REGION_X * 64 && x < STARLESS_REGION_X * 64 + 64 && y >= STARLESS_REGION_Y * 64
+				&& y < STARLESS_REGION_Y * 64 + 64;
+	}
 
 	/* ---------------- Skullbrine Isle ---------------- */
 
@@ -99,6 +159,7 @@ public final class VoidConstants {
 	public static final int GATE_X = 1510, GATE_Y = 2712;
 
 	/** Shops in data/cfg/shops.json. */
+	public static final int WARDEN_SHOP = 357;
 	public static final int BRAM_SHOP = 350, MARTA_SHOP = 351, PELL_SHOP = 352, DORRIN_SHOP = 353, TESS_SHOP = 354,
 			MORRA_SHOP = 355, NETTLE_SHOP = 356;
 
@@ -123,6 +184,17 @@ public final class VoidConstants {
 
 	/** Region x of each dungeon (all at region y 151), and where you arrive inside (local 32, 9). */
 	public static final int BARROW_REGION_X = 20, HOLLOWDEEP_REGION_X = 22, FROSTFANG_REGION_X = 24, NY_DUNGEON_REGION_Y = 151;
+	/** The Vault beneath the Gate (Ashes of the Crown), also at region y 151. */
+	public static final int VAULT_REGION_X = 26;
+	/** Vault layout, in local tiles of its region: the three wards, the seal across the passage, the Ember, the Herald. */
+	public static final int[][] WARD_SPOTS = { { 25, 26 }, { 32, 30 }, { 39, 26 } }; // sun, star, moon
+	public static final int SEAL_LX = 32, SEAL_LY = 37, EMBER_LX = 32, EMBER_LY = 54, HERALD_LX = 32, HERALD_LY = 49;
+	/** The hatch into the vault, among the Broken Gate's rubble; Archivist Maelis's camp in the standing stones. */
+	public static final int HATCH_X = 1512, HATCH_Y = 2714, MAELIS_X = 1502, MAELIS_Y = 2738;
+	/** Waystones (the network Ashes of the Crown opens): name and the tile beside each stone you arrive on. */
+	public static final String[] WAYSTONE_NAMES = { "Gatehold", "Starfall Crater", "The Last Hearth", "Smugglers' Cove",
+			"The Scar Watch" };
+	public static final int[][] WAYSTONE_SPOTS = { { 1504, 2712 }, { 1566, 2664 }, { 1490, 2803 }, { 1476, 2624 }, { 1569, 2737 } };
 
 	public static int dungeonBaseX(int regionX) {
 		return regionX * 64;
@@ -136,7 +208,7 @@ public final class VoidConstants {
 			return -1;
 		}
 		int rx = x >> 6;
-		return rx == BARROW_REGION_X || rx == HOLLOWDEEP_REGION_X || rx == FROSTFANG_REGION_X ? rx : -1;
+		return rx == BARROW_REGION_X || rx == HOLLOWDEEP_REGION_X || rx == FROSTFANG_REGION_X || rx == VAULT_REGION_X ? rx : -1;
 	}
 
 	public static boolean onNythera(int x, int y) {

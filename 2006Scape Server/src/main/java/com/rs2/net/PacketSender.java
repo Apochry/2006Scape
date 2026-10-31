@@ -837,7 +837,7 @@ public class PacketSender {
 	}
 
 	public PacketSender frame174(int sound, int vol, int delay) {
-		if (player.getOutStream() == null) return this;
+		if (player.getOutStream() == null || sound < 0) return this;
 		player.outStream.createFrame(174);
 		player.outStream.writeWord(sound);
 		player.outStream.writeWord(delay);
@@ -1166,7 +1166,7 @@ public class PacketSender {
 	 */
 
 	public PacketSender sendSound(int id, int volume, int delay) {
-		if (player != null && !player.soundOn) {
+		if (id < 0 || player != null && !player.soundOn) { // -1 means "no sound": the client would index sound 65535
 			return this;
 		}
 		frame174(id, volume, delay);

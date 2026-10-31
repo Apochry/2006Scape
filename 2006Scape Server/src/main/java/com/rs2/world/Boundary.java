@@ -245,7 +245,10 @@ public class Boundary {
 		new Boundary(2946, 2959, 3816, 3831), new Boundary(3008, 3199, 3856, 3903), new Boundary(3008, 3071, 3600, 3711),
 		new Boundary(3072, 3327, 3608, 3647), new Boundary(2624, 2690, 2550, 2619), new Boundary(2667, 2685, 3712, 3730),
 		new Boundary(2371, 2422, 5062, 5117), new Boundary(2896, 2927, 3595, 3630), new Boundary(2892, 2932, 4435, 4464),
-		new Boundary(3279, 3307, 3156, 3179)
+		new Boundary(3279, 3307, 3156, 3179),
+		new Boundary(1280, 1727, 9664, 9727), // Nythera's dungeons and the Vault beneath the Gate: bosses bring friends
+		new Boundary(1536, 1727, 9472, 9535), // the void platform and the Starless Expanse
+		new Boundary(1488, 1535, 2696, 2735) // Gatehold: the raid on the barricades, Vaelric's ambush
 	};
 	
 	//jungle

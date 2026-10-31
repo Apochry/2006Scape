@@ -11,7 +11,8 @@ public class MagicRequirements {
 		int wep = player.playerEquipment[player.playerWeapon];
 		switch (runeId) {
 		case 554: // Fire runes
-			if (wep == 1387 || wep == 1393 || wep == 1401 || wep == 3053 || wep == 3054) {
+			if (wep == 1387 || wep == 1393 || wep == 1401 || wep == 3053 || wep == 3054
+					|| wep == com.rs2.game.content.voidrealm.VoidConstants.CAGED_STAR_STAFF) { // the caged star burns for ever
 				return true;
 			}
 			break;

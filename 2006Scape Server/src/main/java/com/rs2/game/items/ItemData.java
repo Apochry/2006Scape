@@ -351,6 +351,13 @@ public class ItemData {
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOWHEART_AMULET] = ItemConstants.AMULET;
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.BARROWSTEEL_LONGSWORD] = ItemConstants.WEAPON;
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.FROSTBOUND_BOOTS] = ItemConstants.FEET;
+		// the saga's later rewards and the Starless's uniques
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.WARDEN_KITESHIELD] = ItemConstants.SHIELD;
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND] = ItemConstants.WEAPON;
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.CROWN_OF_AUREL] = ItemConstants.HAT;
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.STARLESS_CAPE] = ItemConstants.CAPE;
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.ECLIPSE_AMULET] = ItemConstants.AMULET;
+		com.rs2.game.content.voidrealm.VoidGear.slots(targetSlots);
 	}
 
 }

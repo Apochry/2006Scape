@@ -35,7 +35,10 @@ public class Specials {
 		DRAGON_HALBERD(StaticItemList.DRAGON_HALBERD, 1.25, .85, 3, 1203, -1, 282, true, 0),
 		GRANITE_MAUL(StaticItemList.GRANITE_MAUL, 1.10, .85, 5, 1667, -1, 337, false, 0),
 		MAGIC_SHORTBOW(StaticItemList.MAGIC_SHORTBOW, 1.05, .95, 5.5, 1074, -1, -1, true, 0),
-		MAGIC_LONGBOW(StaticItemList.MAGIC_LONGBOW, 1.20, 1.05, 5.5, 426, -1, -1, false, 0);
+		MAGIC_LONGBOW(StaticItemList.MAGIC_LONGBOW, 1.20, 1.05, 5.5, 426, -1, -1, false, 0),
+		// Heartfire: the Emberbrand's special - Aurel's heart flares along the blade (the arc sits at chest height, so gfx0)
+		EMBERBRAND(com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND, 1.20, 1.25, 5, 1058, -1,
+				com.rs2.game.content.voidrealm.VoidConstants.GFX_HEARTFIRE, false, 0);
 		
 		private int weapon, anim, gfx1, gfx2, specEffect;
 		private double specDamage, specAccuracy, specAmount;
@@ -150,7 +153,12 @@ public class Specials {
 						player.getCombatAssistant().fireProjectileNpc();
 					}
 				} else if (SA.getGfx1() == -1) {
-					player.gfx100(SA.getGfx2());
+					if (SA.getWeapon() == com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND) {
+						player.gfx0(SA.getGfx2());
+						player.getPacketSender().sendMessage("@red@Aurel's heart flares along the blade!");
+					} else {
+						player.gfx100(SA.getGfx2());
+					}
 					player.startAnimation(SA.getAnim());
 					player.specDamage = SA.getSpecDamage();
 					player.specAccuracy = SA.getSpecAccuracy();
@@ -245,7 +253,8 @@ public class Specials {
 			break;
 
 		case 29163:
-			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_SCIMITAR) {
+			if (player2.playerEquipment[player2.playerWeapon] == StaticItemList.DRAGON_SCIMITAR
+					|| player2.playerEquipment[player2.playerWeapon] == com.rs2.game.content.voidrealm.VoidConstants.EMBERBRAND) {
 				player2.specBarId = 7611;
 				player2.usingSpecial = !player2.usingSpecial;
 				player2.getItemAssistant().updateSpecialBar();
