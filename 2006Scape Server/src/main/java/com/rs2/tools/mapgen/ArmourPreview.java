@@ -44,7 +44,7 @@ public final class ArmourPreview {
 			into.faces.add(new int[] { fc[0] + base, fc[1] + base, fc[2] + base });
 			into.colors.add(colour >= 0 ? colour : k.colors.get(i));
 			into.renderTypes.add(0);
-			into.priorities.add(0);
+			into.priorities.add(colour >= 0 || k.priorities.size() <= i ? 0 : k.priorities.get(i)); // worn pieces keep theirs
 			into.alphas.add(0);
 			into.faceSkins.add(0);
 		}
@@ -56,13 +56,14 @@ public final class ArmourPreview {
 		boolean[] hide = new boolean[7];
 		if (worn[ArmourSets.HELM] != null) {
 			String n = st.names[ArmourSets.HELM].toLowerCase();
-			hide[0] = n.endsWith("full helm") || n.endsWith("coif");
-			hide[1] = n.endsWith("full helm");
+			// as ItemData's fullmask / fullhat name lists: a full helm hides head and jaw, a coif, hood or med helm the head
+			hide[1] = n.endsWith("full helm") || n.endsWith("mask");
+			hide[0] = hide[1] || n.endsWith("coif") || n.endsWith("hood") || n.endsWith("med helm");
 		}
 		if (worn[ArmourSets.BODY] != null) {
 			String n = st.names[ArmourSets.BODY].toLowerCase();
 			hide[2] = true;
-			hide[3] = n.endsWith("platebody") || n.endsWith("top");
+			hide[3] = n.endsWith("platebody") || n.endsWith("top") || n.endsWith("shirt") || n.endsWith("tunic"); // ItemData's fullbody
 		}
 		hide[5] = worn[ArmourSets.LEGS] != null;
 		hide[4] = worn[ArmourSets.GLOVES] != null;

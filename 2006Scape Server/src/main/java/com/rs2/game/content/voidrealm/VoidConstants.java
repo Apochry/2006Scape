@@ -98,7 +98,21 @@ public final class VoidConstants {
 	public static final int[] STARMETAL_ARMOUR = { 8084, 8085, 8086, 8087, 8088, 8089 };
 	public static final int[] VOIDSTEEL_ARMOUR = { 8090, 8091, 8092, 8093, 8094, 8095 };
 	public static final int[] HEARTFIRE_SET = { 8096, 8097, 8098, 8099, 8100, 8101 };
-	public static final int[][] ARMOUR_SETS = { OATHSWORN_SET, DUSKSTALKER_SET, SCARWEAVE_SET, STARMETAL_ARMOUR, VOIDSTEEL_ARMOUR, HEARTFIRE_SET };
+	/*
+	 * Eight low sets (LowArmour / VoidArmoury), levels 10-40: Gatehold recruit's chain (Defence 10), Woodsman's leathers
+	 * (Ranged 15), Croftwise robes (Magic 20), Rattlebone scrap (Defence 25), Blackbrine leathers (Ranged 30), Warden
+	 * initiate's plate (Defence 30), Barrowbronze (Defence 35), Veilsworn robes (Magic 40).
+	 */
+	public static final int[] RECRUIT_SET = { 8102, 8103, 8104, 8105, 8106, 8107 };
+	public static final int[] WOODSMAN_SET = { 8108, 8109, 8110, -1, 8111, 8112 };
+	public static final int[] CROFTWISE_SET = { 8113, 8114, 8115, -1, 8116, 8117 };
+	public static final int[] RATTLEBONE_SET = { 8118, 8119, 8120, 8121, 8122, 8123 };
+	public static final int[] BLACKBRINE_SET = { 8124, 8125, 8126, -1, 8127, 8128 };
+	public static final int[] INITIATE_SET = { 8129, 8130, 8131, 8132, 8133, 8134 };
+	public static final int[] BARROWBRONZE_SET = { 8135, 8136, 8137, 8138, 8139, 8140 };
+	public static final int[] VEILSWORN_SET = { 8141, 8142, 8143, -1, 8144, 8145 };
+	public static final int[][] ARMOUR_SETS = { OATHSWORN_SET, DUSKSTALKER_SET, SCARWEAVE_SET, STARMETAL_ARMOUR, VOIDSTEEL_ARMOUR, HEARTFIRE_SET,
+			RECRUIT_SET, WOODSMAN_SET, CROFTWISE_SET, RATTLEBONE_SET, BLACKBRINE_SET, INITIATE_SET, BARROWBRONZE_SET, VEILSWORN_SET };
 	public static final int[] LADDER = { GUTTING_DAGGER, FELLING_AXE, PILGRIM_STAFF, MILITIA_SPEAR, WOLFBONE_SHORTBOW,
 			WATCHMAN_SWORD, STEELCAP_MACE, SMUGGLER_SCIMITAR, BARROWSTONE_WARHAMMER, SILKWOOD_WAND, GATEHOLD_LONGSWORD,
 			WARDEN_HALBERD, WARDEN_LONGBOW, SCARGLASS_DAGGER, OATHSWORN_BATTLEAXE, FROSTFANG_SPEAR, GRAVEWARDEN_2H,
@@ -107,7 +121,7 @@ public final class VoidConstants {
 			WARDENSOATH_2H, HEART_OF_AUREL, SCARMAW_HALBERD, HOLLOW_CROWN_WARHAMMER, DAWNBRINGER_LONGBOW, UNMADE_WAND, FIRST_STAR_SPEAR,
 			CROWNFIRE_SCIMITAR, GATEBREAKER_BATTLEAXE, NIGHTFALL_SHORTBOW, RIFTCALLER_STAFF, SUNFALL_2H, BLACK_SUN_WARHAMMER,
 			CROWN_OF_STARS_STAFF, GODSFALL_2H };
-	// (the next new item is 8102)
+	// (the next new item is 8146)
 	public static final int[] WARDEN_SET = { WARDEN_HELM, WARDEN_BODY, WARDEN_LEGS, WARDEN_BOOTS, WARDEN_GAUNTLETS };
 	public static final int[] ROYAL_SET = { ROYAL_HELM, ROYAL_BODY, ROYAL_LEGS, ROYAL_KITESHIELD, ROYAL_BOOTS, ROYAL_GAUNTLETS };
 

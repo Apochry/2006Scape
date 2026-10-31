@@ -122,6 +122,16 @@ droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (8031, 
                  (1149, 7, 1, 1),
                  (1215, 5, 1, 1), (1187, 40, 1, 1), (1615, 9, 1, 1), (2363, 2, 3, 6), (560, 1, 50, 150), (385, 1, 5, 10)])
 droptable(3890, [(592, 0, 1, 1), (8031, 3, 1, 1), (7979, 3, 1, 1)])   # spawn: sometimes a Starless shard, or starmetal
+LOW = range(8102, 8146)  # the low armour sets
+def add_drops(i, items):
+    # the Cursed Island's crew keep their own tables: slot ours in right after the always-drops (first hit stops the roll)
+    for x in drops:
+        if x['id'] == i:
+            rest = [d for d in x['items'] if d['item_id'] not in LOW]
+            x['items'] = ([d for d in rest if d['chance'] == 0] + [{'item_id': it, 'chance': c, 'amounts': [1, 1]} for it, c in items]
+                          + [d for d in rest if d['chance'] != 0])
+add_drops(3854, [(8118, 39), (8122, 39), (8123, 39), (8121, 59)])  # cursed pirate: Rattlebone helm, boots, gloves, shield
+add_drops(3856, [(8119, 11), (8120, 11), (8125, 15)])              # cursed first mate: Rattlebone chainbody and legs, Blackbrine body
 save('npcdrops.json', drops)
 
 # the bosses' uniques: equipment bonuses, in ItemDefinitions.json's own compact format
@@ -316,6 +326,56 @@ armour = {
     8101: (0.5, plate(A(18, 18, 18, 6, 12), 0, {S: 12, SL: 12, C: 12, ST: 10, P: 2})),  # Heartfire gauntlets
 }
 uniques.update(armour)
+# the eight low sets (LowArmour), levels 10-40: between steel/black, mithril and adamant (rune is Oathsworn, at 40).
+# Chain is lighter than plate: less defence, a smaller magic penalty. Leather and hide follow leather -> studded ->
+# green d'hide; the robes follow wizard -> mystic.
+low_armour = {
+    8102: (1.8, plate(A(9, 10, 8, -1, 9), 3)),                                      # Recruit's med helm
+    8103: (5.0, plate(A(22, 31, 37, -3, 24), 9)),                                   # Recruit's chainbody
+    8104: (8.5, plate(A(20, 19, 18, -3, 19), 12)),                                  # Recruit's platelegs
+    8105: (3.6, plate(A(14, 15, 13, -1, 14), 4)),                                   # Recruit's sq shield
+    8106: (0.8, plate(A(3, 3, 4, 0, 0), 0)),                                        # Recruit's boots
+    8107: (0.2, {S: 1, SL: 1, C: 1, DS: 2, DSL: 2, DC: 2, DR: 1}),                   # Recruit's gloves
+    8108: (0.5, {R: 2, DS: 2, DSL: 3, DC: 4, DM: 2, DR: 3}),                         # Woodsman's hood
+    8109: (3.0, {M: -4, R: 6, DS: 12, DSL: 16, DC: 14, DM: 6, DR: 16}),              # Woodsman's jerkin
+    8110: (1.5, {M: -3, R: 4, DS: 4, DSL: 6, DC: 5, DM: 3, DR: 6}),                  # Woodsman's chaps
+    8111: (0.4, {R: 1, DS: 1, DSL: 1, DC: 2, DR: 1}),                                # Woodsman's boots
+    8112: (0.2, {M: -4, R: 4, DS: 2, DSL: 2, DC: 2, DM: 1, DR: 1}),                  # Woodsman's vambraces
+    8113: (0.4, {M: 3, DM: 3}),                                                     # Croftwise hat
+    8114: (1.8, {M: 10, DS: 1, DSL: 1, DC: 1, DM: 10}),                              # Croftwise robe top
+    8115: (1.4, {M: 7, DM: 7}),                                                     # Croftwise robe bottom
+    8116: (0.4, {M: 2, DM: 2}),                                                     # Croftwise boots
+    8117: (0.2, {M: 2, DM: 2}),                                                     # Croftwise gloves
+    8118: (2.0, plate(A(14, 15, 12, -1, 14), 3)),                                   # Rattlebone med helm
+    8119: (6.5, plate(A(30, 40, 46, -3, 32), 9, {ST: 1})),                          # Rattlebone chainbody
+    8120: (9.0, plate(A(28, 26, 25, -3, 26), 15)),                                  # Rattlebone platelegs
+    8121: (4.0, plate(A(21, 22, 19, -1, 20), 4)),                                   # Rattlebone sq shield
+    8122: (1.0, plate(A(5, 6, 7, 0, 0), 0)),                                        # Rattlebone boots
+    8123: (0.3, {S: 2, SL: 2, C: 2, DS: 4, DSL: 4, DC: 4, DM: 1, DR: 2, ST: 1}),    # Rattlebone gloves
+    8124: (0.9, {R: 3, DS: 4, DSL: 6, DC: 7, DM: 4, DR: 5}),                         # Blackbrine coif
+    8125: (5.0, {M: -12, R: 13, DS: 24, DSL: 30, DC: 34, DM: 18, DR: 30}),           # Blackbrine body
+    8126: (4.0, {M: -7, R: 7, DS: 12, DSL: 14, DC: 16, DM: 9, DR: 14}),              # Blackbrine chaps
+    8127: (0.5, {R: 2, DS: 2, DSL: 2, DC: 3, DM: 1, DR: 2}),                         # Blackbrine boots
+    8128: (0.3, {M: -8, R: 6, DS: 2, DSL: 2, DC: 3, DM: 1, DR: 2}),                  # Blackbrine vambraces
+    8129: (2.7, plate(A(20, 22, 17, -1, 20), 6)),                                   # Initiate's full helm
+    8130: (9.5, plate(A(66, 64, 56, -6, 64), 30, {P: 1})),                          # Initiate's platebody
+    8131: (9.0, plate(A(34, 32, 30, -4, 32), 21)),                                  # Initiate's platelegs
+    8132: (5.4, plate(A(30, 32, 28, -1, 30), 8)),                                   # Initiate's kiteshield
+    8133: (1.0, plate(A(8, 9, 10, 0, 0), 3)),                                       # Initiate's boots
+    8134: (0.5, plate(A(6, 6, 6, 1, 3), 0, {S: 3, SL: 3, C: 3, ST: 1})),             # Initiate's gauntlets
+    8135: (2.0, plate(A(24, 26, 21, -1, 24), 3, {P: 1})),                           # Barrowbronze med helm
+    8136: (6.5, plate(A(42, 56, 62, -3, 46), 9, {P: 2})),                           # Barrowbronze chainbody
+    8137: (9.0, plate(A(40, 38, 36, -3, 38), 15, {P: 1})),                          # Barrowbronze platelegs
+    8138: (4.0, plate(A(34, 36, 32, -1, 34), 4, {P: 1})),                           # Barrowbronze sq shield
+    8139: (1.0, plate(A(10, 11, 12, 0, 0), 0)),                                     # Barrowbronze boots
+    8140: (0.3, plate(A(8, 8, 8, 2, 4), 0, {S: 4, SL: 4, C: 4, ST: 2})),             # Barrowbronze gloves
+    8141: (0.4, {M: 5, DM: 5, DS: 1, DSL: 1, DC: 1}),                                # Veilsworn hat
+    8142: (1.8, {M: 20, DS: 2, DSL: 2, DC: 2, DM: 20}),                              # Veilsworn robe top
+    8143: (1.4, {M: 15, DS: 2, DSL: 2, DC: 2, DM: 15}),                              # Veilsworn robe bottom
+    8144: (0.4, {M: 4, DM: 4}),                                                     # Veilsworn boots
+    8145: (0.2, {M: 4, DM: 4}),                                                     # Veilsworn gloves
+}
+uniques.update(low_armour)
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re
 txt = open(cfg + 'ItemDefinitions.json').read()
@@ -337,26 +397,36 @@ shops.append({'buyModifier': 2, 'sellModifier': 2, 'name': "Tollan's Croft", 'id
     {'itemId': 2309, 'itemAmount': 10}, {'itemId': 1965, 'itemAmount': 20}, {'itemId': 1927, 'itemAmount': 10},
     {'itemId': 1944, 'itemAmount': 20}, {'itemId': 1759, 'itemAmount': 20}, {'itemId': 1735, 'itemAmount': 3},
     {'itemId': 1925, 'itemAmount': 10}, {'itemId': 1931, 'itemAmount': 10}, {'itemId': 1942, 'itemAmount': 20},
-    {'itemId': 952, 'itemAmount': 3}]})
+    {'itemId': 952, 'itemAmount': 3},
+    {'itemId': 8113, 'itemAmount': 2}, {'itemId': 8114, 'itemAmount': 1}, {'itemId': 8115, 'itemAmount': 1},  # Croftwise
+    {'itemId': 8116, 'itemAmount': 2}, {'itemId': 8117, 'itemAmount': 2}]})
 def shop(i, name, stock):
     global shops
     shops = [s for s in shops if s['id'] != i]
     shops.append({'buyModifier': 2, 'sellModifier': 2, 'name': name, 'id': i,
                   'items': [{'itemId': a, 'itemAmount': b} for a, b in stock]})
 shop(352, "Pell's Provisions", [(1931, 10), (1935, 10), (1925, 10), (590, 5), (954, 5), (946, 5), (1755, 5), (2347, 5),
-                                (1351, 5), (1265, 5), (233, 5), (36, 10), (1785, 3), (5341, 5), (8002, 3), (8003, 3), (8005, 3)])
+                                (1351, 5), (1265, 5), (233, 5), (36, 10), (1785, 3), (5341, 5), (8002, 3), (8003, 3), (8005, 3),
+                                (8108, 2), (8109, 1), (8110, 1), (8111, 2), (8112, 2)])  # ... and the Woodsman's kit
 shop(353, "Dorrin's Forge", [(2347, 10), (2349, 20), (2351, 20), (2353, 10), (2359, 5), (1117, 3), (1121, 3), (1073, 3),
                              (1109, 2), (1123, 2), (1159, 2), (1197, 2), (1287, 3), (1301, 2), (453, 50), (8004, 3), (8006, 3),
-                             (8007, 2)])
+                             (8007, 2), (8102, 2), (8103, 1), (8104, 1), (8105, 2), (8106, 2), (8107, 2)])  # ... recruit's kit
 shop(354, "Quarrywright's Picks", [(1265, 10), (1267, 8), (1269, 6), (1273, 4), (1271, 2), (1755, 5), (1823, 5)])
 shop(355, 'The Last Hearth', [(2003, 20), (2289, 10), (1993, 15), (1917, 20), (1891, 10), (2327, 15), (1985, 10),
                               (2011, 10), (379, 20), (373, 15), (1971, 30)])
 shop(356, "Nettle's Hold", [(954, 10), (301, 10), (311, 5), (1623, 5), (1621, 3), (1619, 2), (1617, 1),
                             (1201, 1), (1347, 1), (562, 100), (561, 50), (2489, 2), (1033, 2), (8008, 1),
-                            (8074, 2), (8075, 1), (8076, 1), (8077, 2), (8078, 2)])  # ... and the Duskstalker hide
+                            (8074, 2), (8075, 1), (8076, 1), (8077, 2), (8078, 2),  # ... and the Duskstalker hide
+                            (8124, 2), (8126, 1), (8127, 2), (8128, 2)])  # and Blackbrine's (the body comes off the first mate)
 # the Warden's armoury: Dorrin opens it once you've held the gate (the gauntlets only come off the Hollowed)
 shop(357, "The Warden's Armoury", [(7985, 3), (7986, 2), (7987, 2), (7988, 3), (7977, 1), (1163, 2), (1079, 1), (1201, 1),
-                                   (4131, 2), (2363, 4), (8011, 2), (8012, 1), (8013, 2)])
+                                   (4131, 2), (2363, 4), (8011, 2), (8012, 1), (8013, 2),
+                                   (8129, 2), (8130, 1), (8131, 1), (8132, 2), (8133, 2), (8134, 2)])  # ... the initiate's plate
+# Mad Pete's stock is the Cursed Island's (not made here): add the Rattlebone odds and ends to it
+for x in shops:
+    if x['id'] == 349:
+        x['items'] = [it for it in x['items'] if it['itemId'] not in LOW] + [{'itemId': a, 'itemAmount': b} for a, b in
+                                                                            ((8118, 2), (8121, 1), (8122, 2), (8123, 2))]
 save('shops.json', shops)
 
 # spawns: drop everything previously in Nythera's regions except Oren, then add camps + generated wildlife

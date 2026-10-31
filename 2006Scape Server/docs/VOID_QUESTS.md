@@ -608,10 +608,12 @@ weapon in two metals. Previews: `ModelPreview data/cache outDir S1` (or `S2`) wr
 
 ## Armour sets
 
-Six matched sets climb with the weapons. Each is tied to a place or a chapter of the story. Plate has a full helm,
+Fourteen matched sets climb with the weapons: six for the saga (Defence 40 and up) and eight humbler ones for the
+early game (levels 10-40, below). Each is tied to a place or a chapter of the story. Plate has a full helm,
 platebody, platelegs, kiteshield, boots and gauntlets. Hide has a coif, body, chaps, boots and vambraces. Robes have a
 hat, robe top, robe bottom, boots and gloves. Hide and robes have no shield. Every piece is cut from the stock piece
-of the same kind (rune plate, green d'hide, mystic) on both the male and female bodies, so it sits and animates like
+of the same kind (rune plate, green d'hide, mystic; for the low sets also the med helm, chainbody and sq shield, and
+the leather cowl, body and chaps) on both the male and female bodies, so it sits and animates like
 the stock item. Each set then adds its own decoration (horns, fur, crystal, pauldrons, emblems) on top. On the female
 tops the bare-midriff band of the stock meshes is filled in. Whether a body hides the arms, or a helm the face, comes
 from the name, as for stock items. Defence bonuses below are stab / slash / crush / magic / ranged.
@@ -627,12 +629,31 @@ from the name, as for stock items. Defence bonuses below are stab / slash / crus
 
 Plate weighs on the caster's hand (a magic penalty, and a third of it to ranged); hide and robes do not.
 
+### The low sets (levels 10-40)
+
+Four melee, two ranged, two magic, between the stock bronze-to-adamant tiers. They are plainer than the saga's sets:
+cloth, leather, chain and a single emblem rather than wings and fire. Chain is lighter than plate, with less defence
+and a smaller magic penalty. Chain sets have a med helm, chainbody, platelegs, sq shield, boots and gloves; the
+Warden initiate's is full plate. The models are in `tools/mapgen/LowArmour.java`.
+
+| # | Set (ids) | Wear | Look and story | Pieces: key bonuses | Source |
+|---|---|---|---|---|---|
+| 7 | **Gatehold recruit** (8102-8107) | Defence 10 | The Wardens' issue for new hands on the wall: iron mail, a night-blue tabard with the gate's star, a blue sq shield. Iron-to-steel | med helm 9/10/8; chainbody 22/31/37; legs 20/19/18; shield 14/15/13; boots 3/3/4; gloves +1 attack, 2/2/2 | **Dorrin's Forge** (353) sells it all. Or use an **iron** med helm, chainbody, platelegs or sq shield on **Gatehold's anvil** with a hammer and an iron bar (Smithing 10). Helm, boots and gloves in the under-30 gear roll, the chainbody its bonus roll |
+| 8 | **Woodsman** (8108-8112) | Ranged 15 | A forester's greens: a feathered hood, a jerkin with a quiver strap, patched chaps. Leather to studded | hood +2 ranged; jerkin +6 ranged, 12/16/14/6/16; chaps +4 ranged; boots +1; vambraces +4 ranged | **Pell's Provisions** (352). Hood, boots and vambraces in the under-30 gear roll, the jerkin its bonus roll |
+| 9 | **Croftwise** (8113-8117) | Magic 20 | A hedge-witch's homespun: a straw-coloured pointed hat, a green shawl with a herb pouch, a green-hemmed robe. Just past wizard robes | hat +3 magic; top +10; bottom +7; boots +2; gloves +2 | **Marta Tollan** (Tollan's Croft, shop 351) |
+| 10 | **Rattlebone** (8118-8123) | Defence 25 | Cursed Island pirate salvage: rusty mail with a ribcage and a red rag, horned helm, a crossbones shield. Steel-to-mithril | med helm 14/15/12; chainbody 30/40/46 +1 str; legs 28/26/25; shield 21/22/19; boots 5/6/7; gloves +2 attack, +1 str | **Mad Pete's Salvage** (349) sells the helm, shield, boots and gloves; **cursed pirates** drop helm, boots and gloves (1/40 each) and the shield (1/60); the **cursed first mate** drops the chainbody and legs (1/12 each) |
+| 11 | **Blackbrine** (8124-8128) | Ranged 30 (body and chaps also Defence 20) | Captain Blackbrine's crew's hide: a red bandana coif, a black hide coat with a red sash and brass buckles. Studded to green d'hide | coif +3 ranged; body +13 ranged, 24/30/34/18/30; chaps +7 ranged; boots +2; vambraces +6 ranged | **Sly Nettle** (356) sells coif, chaps, boots and vambraces; the body only drops, from the **cursed first mate** (1/16) |
+| 12 | **Warden initiate** (8129-8134) | Defence 30 | The Wardens' first plate: pale steel with a night-blue tabard and star, a blue-and-star kiteshield. Mithril-to-adamant | full helm 20/22/17; body 66/64/56 +1 prayer; legs 34/32/30; kite 30/32/28; boots 8/9/10; gauntlets +3 attack, +1 str | **The Warden's Armoury** (357, after Hold the Gate). Helm, kite, boots and gauntlets in the 30-49 gear roll; body and legs its bonus roll |
+| 13 | **Barrowbronze** (8135-8140) | Defence 35 | Verdigrised bronze from the Sunken Barrow's dead: scale mail, a crested helm, a sun-disc shield. Adamant-like, +prayer | med helm 24/26/21 +1 prayer; chainbody 42/56/62 +2 prayer; legs 40/38/36 +1 prayer; shield 34/36/32; boots 10/11/12; gloves +4 attack, +2 str | Only in the **Sunken Barrow**: half its monsters' gear rolls (helm, shield, boots, gloves) and half their bonus rolls (chainbody, legs) |
+| 14 | **Veilsworn** (8141-8145) | Magic 40, Defence 10 | The Hollowdeep cult's ash-and-violet robes: a violet-tipped hat, the white eye on the chest, a frayed hem. Wizard to mystic | hat +5 magic; top +20; bottom +15; boots +4; gloves +4 | Only in **Hollowdeep**: half its monsters' gear rolls (hat, boots, gloves) and half their bonus rolls (top, bottom) |
+
 The models live in `tools/mapgen/ArmourSets.java`, one `Style` per set: palette, motif, ids, names and examines.
 `ArmourPreview data/cache outDir set [slot...|full]` writes one card per piece (the inventory icon, then the piece
 worn on the male and female bodies, front and back), `A1-01-oathsworn-helm.png` and so on, and `A1-full-...png` for
 the whole set. If a piece's decorations would spill out of its 32x32 sprite, the inventory camera is pulled back
 (`ArmourSets.fitCamera`). The generator does the same, so the game shows what the preview shows. Wield levels,
-slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour n` puts set n into your inventory.
+slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour n` puts set n (1-14) into your
+inventory.
 
 ## Where things live
 
@@ -651,7 +672,7 @@ slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
 | The weapon ladder (items 8001-8030, and the god tier 8053-8067), the Starless shard (8031), the starmetal and voidsteel sets (8032-8052): rules, recipes, effects, `::vt weapons`/`sets`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`, `WeaponSets.java`, `GodWeapons.java`; `tools/mapgen/ModelPreview.java` |
-| The armour sets (items 8068-8101): slots, wield levels, recipes, `::vt armour`; models; offline previews | `game/content/voidrealm/VoidArmoury.java`; `tools/mapgen/ArmourSets.java`; `tools/mapgen/ArmourPreview.java` |
+| The armour sets (items 8068-8145): slots, wield levels, recipes, `::vt armour`; models; offline previews | `game/content/voidrealm/VoidArmoury.java`; `tools/mapgen/ArmourSets.java` (the saga's six) and `tools/mapgen/LowArmour.java` (the eight low sets); `tools/mapgen/ArmourPreview.java`; drops in `VoidLoot.java` and `tools/nythera_data.py` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
 Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
@@ -675,7 +696,7 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
 | `::vt weapons [from to]` | put the weapon ladder (ranks 1-45, or from-to; `31 45` is the god tier) into your inventory |
 | `::vt sets 1` / `::vt sets 2` | put the starmetal (1) or voidsteel (2) set into your inventory, with 10 starmetal or 10 Starless shards |
-| `::vt armour n` | put armour set n into your inventory (1 Oathsworn, 2 Duskstalker, 3 Scarweave, 4 starmetal, 5 voidsteel, 6 Heartfire) |
+| `::vt armour n` | put armour set n into your inventory (1 Oathsworn, 2 Duskstalker, 3 Scarweave, 4 starmetal, 5 voidsteel, 6 Heartfire, 7 Gatehold recruit, 8 Woodsman, 9 Croftwise, 10 Rattlebone, 11 Blackbrine, 12 Warden initiate, 13 Barrowbronze, 14 Veilsworn) |
 
 ## Ideas for what comes next
 

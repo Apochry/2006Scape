@@ -69,10 +69,15 @@ public final class ModelPreview {
 		for (int i = 0; i < ord.length; i++) {
 			ord[i] = i;
 		}
-		Arrays.sort(ord, (a, b) -> {
-			int[] fa = m.faces.get(a), fb = m.faces.get(b);
-			return Double.compare(P[fb[0]][2] + P[fb[1]][2] + P[fb[2]][2], P[fa[0]][2] + P[fa[1]][2] + P[fa[2]][2]);
-		});
+		// painter's order by depth, with a face's draw priority pulling it forward a little: the client draws a model's
+		// higher-priority faces (attached plates and emblems) over its long base faces, whose centroids can sort nearer
+		double[] key = new double[ord.length];
+		for (int i = 0; i < ord.length; i++) {
+			int[] f = m.faces.get(i);
+			int prio = m.priorities.size() > i ? m.priorities.get(i) : 0;
+			key[i] = P[f[0]][2] + P[f[1]][2] + P[f[2]][2] - prio * 4.5;
+		}
+		Arrays.sort(ord, (a, b) -> Double.compare(key[b], key[a]));
 		double[] L = { -0.5, -0.7, -0.5 };
 		double ll = Math.sqrt(1.24);
 		for (int i = 0; i < 3; i++) {

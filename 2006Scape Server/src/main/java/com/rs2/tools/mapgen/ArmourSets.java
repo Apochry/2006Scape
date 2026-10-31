@@ -27,11 +27,16 @@ final class ArmourSets {
 	static final int HELM = 0, BODY = 1, LEGS = 2, SHIELD = 3, BOOTS = 4, GLOVES = 5;
 
 	enum Kind {
-		PLATE, HIDE, ROBE
+		PLATE, HIDE, ROBE, CHAIN, LEATHER
 	}
 
 	enum Motif {
-		OATH, DUSK, SCAR, STAR, VOID, HEART
+		OATH, DUSK, SCAR, STAR, VOID, HEART, //
+		RECRUIT, WOODSMAN, CROFT, RATTLE, BRINE, INITIATE, BARROW, VEIL; // the low sets (LowArmour)
+
+		boolean low() {
+			return ordinal() >= RECRUIT.ordinal();
+		}
 	}
 
 	/** Per kind and slot: male worn, male second (sleeves / torso), female worn, female second, base item, base inventory model. */
@@ -41,7 +46,13 @@ final class ArmourSets {
 			{ { 220, -1, 396, -1, 1169, 2541 }, { 314, -1, 477, -1, 1135, 2745 }, { 258, -1, 423, -1, 1099, 2507 }, null,
 					{ 4954, -1, 5031, -1, 4131, 5037 }, { 178, -1, 355, -1, 1059, -1 } },
 			{ { 5027, -1, 5033, -1, 4089, 5040 }, { 4952, 5028, 5029, 5035, 4091, 5043 }, { 4844, -1, 5034, -1, 4093, 5042 }, null,
-					{ 4955, -1, 5032, -1, 4097, 5038 }, { 4953, -1, 5030, -1, 1059, -1 } } };
+					{ 4955, -1, 5032, -1, 4097, 5038 }, { 4953, -1, 5030, -1, 1059, -1 } },
+			// chain: med helm, chainbody, platelegs, sq shield, leather boots, gloves
+			{ { 219, -1, 395, -1, 1147, 2833 }, { 301, -1, 464, -1, 1113, 2558 }, { 268, -1, 432, -1, 1079, 2582 }, { 541, -1, 541, -1, 1185, 2720 },
+					{ 185, -1, 361, -1, 1061, 2837 }, { 176, -1, 355, -1, 1059, -1 } },
+			// leather: cowl, leather body, leather chaps, leather boots, leather vambraces
+			{ { 220, -1, 396, -1, 1167, 2541 }, { 311, -1, 475, -1, 1129, 2540 }, { 262, -1, 425, -1, 1095, 2555 }, null,
+					{ 185, -1, 361, -1, 1061, 2837 }, { 177, -1, 354, -1, 1059, -1 } } };
 
 	/** One set: its look, its pieces (ids in slot order, -1 for none), level and names. */
 	static final class Style {
@@ -82,7 +93,7 @@ final class ArmourSets {
 	static final int GHOST = hsl(23, 4, 92), GHOST_CORE = hsl(23, 2, 118), STAR_WHITE = hsl(42, 0, 122), EMBER = hsl(4, 6, 74),
 			EMBER_HOT = hsl(6, 5, 100);
 
-	static final Style[] SETS = {
+	static final Style[] HIGH = {
 			new Style("Oathsworn", "oathsworn", Kind.PLATE, Motif.OATH, 40, hsl(6, 4, 42), hsl(6, 4, 27), hsl(7, 3, 58), hsl(8, 5, 60), hsl(7, 5, 40),
 					GHOST, GHOST_CORE, hsl(6, 2, 18), hsl(6, 2, 12), VoidConstants.OATHSWORN_SET,
 					new String[] { "Oathsworn full helm", "Oathsworn platebody", "Oathsworn platelegs", "Oathsworn kiteshield", "Oathsworn boots",
@@ -127,12 +138,21 @@ final class ArmourSets {
 							"Aurel's own plate, re-lit. The sun on the chest is his heart, and it's burning.", "Gold-white tassets over plate that never cools.",
 							"The sun of the old kingdom, risen again.", "Every step leaves the ground a little warmer.", "Ember-cuffed gauntlets. A king's hands." }), };
 
+	/** All fourteen sets: the six of the saga, then the eight low ones. ArmourPreview's set numbers index this. */
+	static final Style[] SETS = concat(HIGH, LowArmour.LOW);
+
+	static Style[] concat(Style[] a, Style[] b) {
+		Style[] out = java.util.Arrays.copyOf(a, a.length + b.length);
+		System.arraycopy(b, 0, out, a.length, b.length);
+		return out;
+	}
+
 	static int NIGHTCOL() {
 		return hsl(42, 4, 30);
 	}
 
 	static {
-		String[] hide = SETS[1].names;
+		String[] hide = HIGH[1].names;
 		hide[BODY] = "Duskstalker body";
 		hide[LEGS] = "Duskstalker chaps";
 	}
@@ -205,10 +225,51 @@ final class ArmourSets {
 			case 926:
 				return st.trimDark;
 			case 43059:
-				return slot == HELM ? st.main : st.trimDark; // the coif's hood (its 4550 is the face, and stays skin)
+				return slot != HELM ? st.trimDark : st.motif == Motif.BRINE ? st.accent : st.main; // the coif's hood (Blackbrine: a red bandana); its 4550 is the face, and stays skin
 			case 57:
 			case 61:
 				return slot == BOOTS ? st.main : st.trim;
+			}
+			return c;
+		case CHAIN:
+			switch (slot) {
+			case HELM:
+				return c == 61 ? st.main : c == 926 ? st.trim : c;
+			case BODY:
+				return c == 33 ? st.dark : c == 41 ? st.main : c == 49 ? st.light : c;
+			case SHIELD:
+				return c == 57 ? LowArmour.shieldFace(st) : c == 7054 ? LowArmour.shieldRim(st) : c;
+			case LEGS:
+				return plateLegs(st, c);
+			case BOOTS:
+				return c == 4626 ? st.leather : c;
+			default:
+				return c == 4550 ? st.leather : c == 43072 || c == 22416 ? st.leatherDark : c;
+			}
+		case LEATHER:
+			switch (c) {
+			case 43059:
+			case 7469:
+			case 7566:
+				return st.main;
+			case 6439:
+			case 7446:
+				return slot == GLOVES ? st.main : st.dark;
+			case 5289:
+			case 25238:
+			case 8596:
+				return st.trimDark;
+			case 5012:
+				return st.leatherDark;
+			case 4626:
+				return st.leather;
+			case 57:
+			case 61:
+				return st.trim;
+			case 908:
+			case 926:
+			case 15242:
+				return st.trimDark;
 			}
 			return c;
 		default:
@@ -219,14 +280,34 @@ final class ArmourSets {
 			case 40384:
 				return st.light;
 			case 40918:
-				return st.trim;
+				return slot == HELM && st.motif == Motif.CROFT ? st.dark : st.trim; // the croft hat is homespun all over
 			case 39463:
 				return st.dark;
 			case 119:
-				return st.accent;
+				return st.motif == Motif.CROFT ? st.trim : st.accent; // the croft hems are moss green, not the flower yellow
 			}
 			return c;
 		}
+	}
+
+	/** The rune platelegs' colours, for chain sets that wear platelegs. */
+	static int plateLegs(Style st, int c) {
+		switch (c) {
+		case 61:
+			return st.main;
+		case 41:
+			return st.dark;
+		case 57:
+			return st.light;
+		case 24:
+		case 8741:
+		case 7054:
+			return st.trim;
+		case 12:
+		case 926:
+			return st.trimDark;
+		}
+		return c;
 	}
 
 	ModelData dyed(Style st, int slot, int model) throws IOException {
@@ -248,6 +329,9 @@ final class ArmourSets {
 	ModelData[] worn(Style st, int slot, boolean female) throws IOException {
 		int[] b = base(st, slot);
 		ModelData m = dyed(st, slot, b[female ? 2 : 0]);
+		if (st.kind == Kind.CHAIN && slot == SHIELD) {
+			flattenFace(m, LowArmour.shieldFace(st));
+		}
 		int secondId = b[female ? 3 : 1];
 		ModelData second = secondId < 0 ? null : dyed(st, slot, secondId);
 		if (female && slot == BODY) { // the female tops leave a band of bare midriff; close it
@@ -312,6 +396,63 @@ final class ArmourSets {
 		return cam;
 	}
 
+	/**
+	 * The square shield's face has a ridge across it, which an emblem laid on top would sink into: its outer face (the
+	 * faces of the face colour that look out along +x) is pressed flat onto its outermost plane, a plain board.
+	 */
+	static void flattenFace(ModelData m, int col) {
+		java.util.Set<Integer> outer = new java.util.HashSet<>();
+		int maxX = Integer.MIN_VALUE;
+		for (int i = 0; i < m.faces.size(); i++) {
+			if (m.colors.get(i) != col) {
+				continue;
+			}
+			int[] f = m.faces.get(i);
+			double[] a = d(m.vertices.get(f[0]));
+			double[] n = ModelData.cross(sub(d(m.vertices.get(f[1])), a), sub(d(m.vertices.get(f[2])), a));
+			if (n[0] > len(n) * 0.6) { // faces outward (+x); the inner side of the board faces -x
+				for (int v : f) {
+					outer.add(v);
+					maxX = Math.max(maxX, m.vertices.get(v)[0]);
+				}
+			}
+		}
+		for (int v : outer) {
+			m.vertices.get(v)[0] = maxX;
+		}
+		// the board is a few long triangles; split them so an emblem on top isn't painted over by a far-reaching centroid
+		for (int pass = 0; pass < 2; pass++) {
+			int n = m.faces.size();
+			for (int i = 0; i < n; i++) {
+				int[] f = m.faces.get(i);
+				if (m.colors.get(i) != col || !outer.contains(f[0]) || !outer.contains(f[1]) || !outer.contains(f[2])) {
+					continue;
+				}
+				int ab = mid(m, f[0], f[1]), bc = mid(m, f[1], f[2]), ca = mid(m, f[2], f[0]);
+				outer.add(ab);
+				outer.add(bc);
+				outer.add(ca);
+				m.faces.set(i, new int[] { f[0], ab, ca });
+				for (int[] t : new int[][] { { ab, f[1], bc }, { ca, bc, f[2] }, { ab, bc, ca } }) {
+					m.faces.add(t);
+					m.colors.add(m.colors.get(i));
+					m.renderTypes.add(m.renderTypes.get(i));
+					m.priorities.add(m.priorities.get(i));
+					m.alphas.add(m.alphas.get(i));
+					m.faceSkins.add(m.faceSkins.get(i));
+				}
+			}
+		}
+	}
+
+	/** A new vertex halfway along an edge, with the first end's skin. */
+	static int mid(ModelData m, int a, int b) {
+		int[] p = m.vertices.get(a), q = m.vertices.get(b);
+		m.vertices.add(new int[] { (p[0] + q[0]) / 2, (p[1] + q[1]) / 2, (p[2] + q[2]) / 2 });
+		m.vertexSkins.add(m.vertexSkins.get(a));
+		return m.vertices.size() - 1;
+	}
+
 	/** Skin-coloured faces on the trunk below the chest take the top's own colour. */
 	static void coverMidriff(ModelData m, Style st) {
 		if (m == null) {
@@ -327,7 +468,7 @@ final class ArmourSets {
 				y += m.vertices.get(v)[1] / 3.0;
 			}
 			if (Math.abs(x) < 18 && y > -140) {
-				m.colors.set(i, st.kind == Kind.HIDE ? st.dark : st.main);
+				m.colors.set(i, st.kind == Kind.HIDE || st.kind == Kind.LEATHER ? st.dark : st.main);
 			}
 		}
 	}
@@ -336,7 +477,7 @@ final class ArmourSets {
 	ModelData inventory(Style st, int slot) throws IOException {
 		ModelData[] w = worn(st, slot, false);
 		int[] b = base(st, slot);
-		if (slot == SHIELD) {
+		if (slot == SHIELD && st.kind == Kind.PLATE) {
 			double tau = Math.PI * 2;
 			return af.shieldInventory(w[0], -1104 * tau / 2048, 344 * tau / 2048);
 		}
@@ -350,12 +491,22 @@ final class ArmourSets {
 			return g;
 		}
 		ModelData all = w[1] == null ? w[0] : mergeAll(w[0], w[1]);
-		return af.inventory(all, b[1] < 0 ? new int[] { b[0] } : new int[] { b[0], b[1] }, b[5]);
+		ModelData inv = af.inventory(all, b[1] < 0 ? new int[] { b[0] } : new int[] { b[0], b[1] }, b[5]);
+		if (st.kind == Kind.CHAIN && slot == BODY) { // the chainbody is the same both ways round, and the fit lays it chest-down
+			int[] bb = inv.bounds();
+			double cy = (bb[1] + bb[4]) / 2.0, cz = (bb[2] + bb[5]) / 2.0;
+			inv.transform(v -> new double[] { v[0], 2 * cy - v[1], 2 * cz - v[2] }); // a half-turn about x
+		}
+		return inv;
 	}
 
 	/* ------------------------------------------------------------- the helm */
 
 	void helm(Style st, ModelData m) {
+		if (st.motif.low()) {
+			attach(m, LowArmour.helm(st, m), Mode.RIGID, 7, st.name + " helm");
+			return;
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top, front = bb[2], back = bb[5];
 		ModelData add = new ModelData();
@@ -431,6 +582,10 @@ final class ArmourSets {
 	/* ------------------------------------------------------------- the body */
 
 	void body(Style st, ModelData m) {
+		if (st.motif.low()) {
+			attach(m, LowArmour.body(st, m), Mode.RIGID_PER_PART, 10, st.name + " body");
+			return;
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top;
 		ModelData add = new ModelData();
@@ -516,6 +671,13 @@ final class ArmourSets {
 	/* ------------------------------------------------------------- the legs */
 
 	void legs(Style st, ModelData m) {
+		if (st.motif.low()) {
+			ModelData[] parts = LowArmour.legs(st, m); // right knee, left knee, the front
+			attach(m, parts[0], Mode.RIGID, 2, st.name + " right knee");
+			attach(m, parts[1], Mode.RIGID, 2, st.name + " left knee");
+			attach(m, parts[2], Mode.PER_VERTEX, 2, st.name + " legs front");
+			return;
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top;
 		double kneeY = top + h * 0.55, kneeX = hw * 0.53;
@@ -574,6 +736,19 @@ final class ArmourSets {
 	/* ------------------------------------------------------------- the shield */
 
 	void shield(Style st, ModelData m) throws IOException {
+		if (st.motif.low()) {
+			Frame f;
+			if (st.kind == Kind.PLATE) {
+				Frame k = shieldFrame(af.read(486), 61);
+				f = new Frame(k.o, k.v, k.u, k.n);
+			} else { // the square shield: y straight down its face, x across
+				Frame k = shieldFrame(af.read(541), 57);
+				double[] down = norm(sub(new double[] { 0, 1, 0 }, scale(k.n, k.n[1])));
+				f = new Frame(k.o, norm(ModelData.cross(k.n, down)), down, k.n);
+			}
+			attach(m, LowArmour.shield(st, m, f), Mode.RIGID, 11, st.name + " shield");
+			return;
+		}
 		Frame k = shieldFrame(af.read(486), 61);
 		Frame f = new Frame(k.o, k.v, k.u, k.n); // x across the kite, y down its length (towards the point)
 		ModelData add = new ModelData();
@@ -603,6 +778,10 @@ final class ArmourSets {
 	/* ------------------------------------------------------------- boots, gloves */
 
 	void boots(Style st, ModelData m) {
+		if (st.motif.low()) {
+			attach(m, LowArmour.boots(st, m), Mode.RIGID_PER_PART, 0, st.name + " boots");
+			return;
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], front = bb[2], top = bb[1];
 		ModelData add = new ModelData();
@@ -631,6 +810,10 @@ final class ArmourSets {
 	}
 
 	void gloves(Style st, ModelData m) {
+		if (st.motif.low()) {
+			attach(m, LowArmour.gloves(st, m), Mode.RIGID_PER_PART, 10, st.name + " gloves");
+			return;
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1];
 		ModelData add = new ModelData();
@@ -655,6 +838,13 @@ final class ArmourSets {
 			}
 		}
 		af.attach(m, add, Mode.RIGID_PER_PART, 10, null, st.name + " gloves");
+	}
+
+	/** Attaches a decoration (if there is one) to a worn mesh. */
+	void attach(ModelData m, ModelData add, Mode mode, int reach, String what) {
+		if (add != null && add.vertices.size() > 0) {
+			af.attach(m, add, mode, reach, null, what);
+		}
 	}
 
 	/* ------------------------------------------------------------- emblems */
