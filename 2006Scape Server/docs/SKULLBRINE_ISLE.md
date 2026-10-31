@@ -105,6 +105,10 @@ Handy tools in the same package:
 - `MapRender x0 y0 width height out.png [scale] [labels]` draws a top-down map of any part of
   the world, with a coordinate grid. With `labels`, objects are tagged with their ids.
 - `DefDump loc|npc|obj` lists every object, NPC or item definition (id, name, size, models).
+- `WorldLint x0 y0 x1 y1 [-from x,y] [-png out.png]` checks an area for slap-dash world-building: dead-end and
+  pinched paths, ruler-straight roads and shores, stray walls and doors, unbacked cave mouths, scenery in roads or
+  water, props on slopes, overlaps, and places you can't reach. See the world-building skill
+  (`.claude/skills/world-building/SKILL.md`).
 - Running the generator with `-Dgallery=id1,id2,...` lines up candidate objects near the camp,
   so you can compare them in game.
 - `stamp(...)` in the generator copies scenery from an existing region. That's how the Port
