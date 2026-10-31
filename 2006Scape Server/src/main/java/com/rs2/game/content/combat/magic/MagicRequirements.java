@@ -9,6 +9,9 @@ public class MagicRequirements {
 
 	public static boolean wearingStaff(Player player, int runeId) {
 		int wep = player.playerEquipment[player.playerWeapon];
+		if (com.rs2.game.content.voidrealm.VoidArsenal.freeRune(wep, runeId)) { // the god tier's staves and wand
+			return true;
+		}
 		switch (runeId) {
 		case 554: // Fire runes
 			if (wep == 1387 || wep == 1393 || wep == 1401 || wep == 3053 || wep == 3054

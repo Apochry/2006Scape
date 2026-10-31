@@ -308,6 +308,7 @@ final class VoidRealmGenerator {
 				ConfigDefinitions.VOID, 3);
 		weaponItems(items, WeaponSets.STARMETAL_SET);
 		weaponItems(items, WeaponSets.VOIDSTEEL_SET);
+		weaponItems(items, GodWeapons.GOD); // ladder ranks 31-45, 8053-8067
 	}
 
 	void weaponItems(ConfigDefinitions.Table items, LadderWeapons.Rung[] rungs) throws java.io.IOException {

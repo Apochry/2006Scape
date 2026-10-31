@@ -111,6 +111,8 @@ droptable(3889, [(592, 0, 1, 1), (995, 0, 8000, 20000), (7979, 0, 2, 4), (8031, 
                  (8023, 23, 1, 1), (8024, 31, 1, 1), (8025, 63, 1, 1),  # the ladder's top rungs
                  (8026, 79, 1, 1), (8027, 95, 1, 1), (8028, 111, 1, 1), (8029, 127, 1, 1),
                  (8042, 39, 1, 1), (8034, 29, 1, 1),  # a voidsteel dagger, a starmetal longsword
+                 # the god tier's drops, very rare: Wardensoath, Scarmaw, Dawnbringer, Crownfire, Nightfall, Sunfall
+                 (8053, 149, 1, 1), (8055, 179, 1, 1), (8057, 199, 1, 1), (8060, 219, 1, 1), (8062, 249, 1, 1), (8064, 279, 1, 1),
                  (7990, 35, 1, 1), (7991, 35, 1, 1), (7992, 35, 1, 1), (7993, 35, 1, 1), (7994, 35, 1, 1), (7995, 35, 1, 1),
                  (1149, 7, 1, 1),
                  (1215, 5, 1, 1), (1187, 40, 1, 1), (1615, 9, 1, 1), (2363, 2, 3, 6), (560, 1, 50, 150), (385, 1, 5, 10)])
@@ -241,6 +243,27 @@ for i, wb in enumerate(starmetal):
     uniques[8032 + i] = wb
 for i, wb in enumerate(voidsteel):
     uniques[8042 + i] = wb
+# the god tier (GodWeapons, ladder ranks 31-45): a clear step past everything else, kept where the max-hit formulas
+# stay sane (strength bonus tops out at 155, ranged at 112, magic at 40)
+god = [
+    (3.4, {S: -4, SL: 130, C: 112, DS: 6, DSL: 8, DC: 6, DM: 4, DR: 6, ST: 132, P: 4}),       # 31 Wardensoath 2h sword
+    (1.8, {S: 82, SL: 104, C: -2, M: 4, DS: 4, DSL: 4, DC: 4, DM: 6, ST: 108, P: 4}),         # 32 Heart of Aurel longsword
+    (3.0, {S: 96, SL: 124, M: -4, DSL: 4, DR: 5, ST: 120, P: 2}),                            # 33 Scarmaw halberd
+    (3.0, {S: -4, SL: -4, C: 112, DS: 3, DSL: 3, DC: 3, ST: 116, P: 4}),                     # 34 Hollow Crown warhammer
+    (1.4, {R: 104, DM: 6, DR: 6}),                                                           # 35 Dawnbringer longbow
+    (0.3, {M: 32, DM: 18, P: 4}),                                                            # 36 Wand of the Unmade
+    (2.6, {S: 100, SL: 100, C: 100, DS: 8, DSL: 8, DC: 8, DM: 4, ST: 110, P: 3}),            # 37 Spear of the First Star
+    (1.6, {S: 14, SL: 112, C: -2, M: 2, ST: 112, P: 3}),                                     # 38 Crownfire scimitar
+    (3.2, {S: -2, SL: 122, C: 112, DSL: 3, DC: 3, ST: 136, P: 3}),                           # 39 Gatebreaker battleaxe
+    (1.0, {R: 112, DM: 4, DR: 4}),                                                           # 40 Nightfall shortbow
+    (2.2, {S: 16, SL: -1, C: 56, M: 34, DS: 3, DSL: 4, DC: 2, DM: 30, ST: 52, P: 4}),        # 41 Riftcaller staff
+    (3.6, {S: -4, SL: 140, C: 122, DS: 4, DSL: 6, DC: 4, DM: 6, ST: 144, P: 6}),             # 42 Sunfall 2h sword
+    (3.0, {S: -4, SL: -4, C: 128, DS: 4, DSL: 4, DC: 4, DM: 4, ST: 134, P: 6}),              # 43 Black Sun warhammer
+    (2.2, {S: 18, SL: -1, C: 60, M: 40, DS: 4, DSL: 5, DC: 3, DM: 36, ST: 56, P: 6}),        # 44 Crown of Stars staff
+    (3.6, {S: 20, SL: 150, C: 132, DS: 10, DSL: 10, DC: 10, DM: 10, DR: 10, ST: 155, P: 8}),  # 45 Godsfall 2h sword
+]
+for i, wb in enumerate(god):
+    uniques[8053 + i] = wb
 # text-level edit: keep the rest of the file byte-for-byte; our entries go (once) at the end, as 7966/7967 do
 import re
 txt = open(cfg + 'ItemDefinitions.json').read()

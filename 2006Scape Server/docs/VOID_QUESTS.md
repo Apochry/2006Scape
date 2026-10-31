@@ -441,6 +441,7 @@ edges and cores glow. From 23 up most have special attacks that throw the saga's
 the Starless ate. Models are in
 `tools/mapgen/LadderWeapons.java`. Rules (levels, tabs, recipes, `::vt weapons`) are in
 `game/content/voidrealm/VoidArsenal.java`, and bonuses are in `tools/nythera_data.py`. Item ids run from 8001 to 8030 in rank order.
+The god tier, ranks 31-45 (items 8053-8067), has its own section below.
 
 | # | Weapon | Type | Wield | Key bonuses | Where from |
 |---|---|---|---|---|---|
@@ -508,7 +509,54 @@ and stock bolts aren't wired up.
 with the client's item-sprite camera for the icon. It draws the base item's own icon beside it to check the fit, and the
 wielded model on the default body with the hand ringed at (-30, -97, 0). It also writes a contact sheet. From
 `2006Scape Server`:
-`java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.ModelPreview data/cache outDir [S1|S2] [rank...]`.
+`java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.ModelPreview data/cache outDir [S1|S2|G] [rank...]`.
+
+### The god tier (31-45)
+
+Fifteen weapons above everything else. Each belongs to one of the world's powers: the stars and the First Star, the
+Starless, the void and the Scar, Aurel's heart-fire, the Hollow King, the Wardens' founders and the old kingdom's
+crown. They need 85-99 and are a clear step past Last Light and the voidsteel set. The numbers stay where the
+engine's max-hit formulas stay sane: strength bonus tops out at 155, ranged at 112 and magic at 40. The silhouettes
+are the biggest yet: oversized blades, parts that float free of the weapon (separate pieces in the same model), crowns
+of spikes, glowing cores and layered bands, all on dark bodies so the bright accents read. Models are in
+`tools/mapgen/GodWeapons.java`.
+
+| # | Weapon | Type | Wield | Key bonuses | Special / effect | Where from |
+|---|---|---|---|---|---|---|
+| 31 | Wardensoath 2h sword | 2h sword | Attack 85, Str 80 | +130 slash, +112 crush, +132 str | **Oath of the Wall** (50%): 135% dmg, 135% acc, a falling star on the target; heals you by the damage dealt | the Starless, about 1/150 |
+| 32 | Heart of Aurel longsword | longsword | Attack 86 | +104 slash, +82 stab, +108 str | **Kindling** (50%): 140% dmg, 125% acc, heart-fire on both; **on hit** (1 in 5): heart-fire mends you by a quarter of the hit | **recipe**: Emberbrand + voidsteel longsword + 6 shards (Smithing 80) |
+| 33 | Scarmaw halberd | halberd | Attack 87, Str 80 | +124 slash, +96 stab, +120 str | **Devour** (50%): 135% dmg, 125% acc, void impact; heals you by the damage dealt | the Starless, about 1/180 |
+| 34 | Hollow Crown warhammer | warhammer | Attack 88, Str 85 | +112 crush, +116 str, +4 prayer | **Kneel** (50%): 145% dmg, 120% acc, void impact | **recipe**: Hollow King's mace + voidsteel warhammer + 6 shards (Smithing 82) |
+| 35 | Dawnbringer longbow | longbow (rune arrows) | Ranged 88 | +104 ranged | **First Light** (50%): the magic longbow's special path | the Starless, about 1/200 |
+| 36 | Wand of the Unmade | wand | Magic 88 | +32 magic, +18 magic def | **never needs chaos or death runes** | **recipe**: Wand of the Scar + voidsteel dagger + 6 shards (Crafting 85) |
+| 37 | Spear of the First Star | spear | Attack 90 | +100 all, +110 str | **Starfall** (50%): 140% dmg, 130% acc, a falling star | **recipe**: Sunspear + voidsteel spear + 8 shards (Smithing 85) |
+| 38 | Crownfire scimitar | scimitar | Attack 90 | +112 slash, +112 str | **Coronation** (50%): 130% dmg, 145% acc, heart-fire; **on hit** (1 in 5): restores prayer | the Starless, about 1/220 |
+| 39 | Gatebreaker battleaxe | battleaxe | Attack 91, Str 85 | +122 slash, +112 crush, +136 str | **Breach** (50%): the rampage, Strength +20% and Attack +10% | **recipe**: Kingsbane battleaxe + voidsteel battleaxe + 8 shards (Smithing 88) |
+| 40 | Nightfall shortbow | shortbow (rune arrows) | Ranged 92 | +112 ranged | **Nightfall** (55%): the magic shortbow's special path | the Starless, about 1/250 |
+| 41 | Riftcaller staff | staff | Magic 93, Attack 50 | +34 magic, +30 magic def, +56 crush | **never needs earth or water runes** | **recipe**: Riftglass halberd + Rimeheart staff + 8 shards (Crafting 90, 50 Starless kills) |
+| 42 | Sunfall 2h sword | 2h sword | Attack 94, Str 90 | +140 slash, +122 crush, +144 str | **Sunfall** (60%): 155% dmg, 120% acc, a falling star on the target, heart-fire on you | the Starless, about 1/280 |
+| 43 | Black Sun warhammer | warhammer | Attack 95, Str 92 | +128 crush, +134 str, +6 prayer | **Black Sun** (60%): 150% dmg, 120% acc, the eclipse; heals you by the damage dealt; **on hit** (1 in 6): the dark feeds you a third of the hit | **recipe**: Crownbreaker mace + voidsteel mace + 10 shards (Smithing 90, 50 kills) |
+| 44 | Crown of Stars staff | staff | Magic 96, Attack 60 | +40 magic, +36 magic def, +60 crush | **never needs any elemental rune** | **reward**: use the Staff of the first star on the Starless Gate with every quest in the saga finished, 50 Starless kills and 10 shards |
+| 45 | Godsfall 2h sword | 2h sword | Attack 99, Str 99 | +150 slash, +132 crush, +155 str, +10 all defence, +8 prayer | **Godsfall** (70%): 160% dmg, 130% acc, the eclipse on the target, heart-fire on you; heals you by the damage dealt; **on hit** (1 in 5): eclipse, a quarter of the hit as hitpoints and some prayer | **the final recipe**: Last Light + Wardensoath + Sunfall + 25 shards (Smithing 90, 100 Starless kills) |
+
+**Getting them.** Everything here is endgame:
+- **Drops.** Six come from the Starless's table (`npcdrops.json`, 3889), after its own uniques and the ladder's top
+  rungs. Rolls stop at the first hit, so each "about 1/N" is a little rarer than 1/N in practice.
+- **Recipes.** Seven are recipes at the Starless Gate, after The Hollow King. Each combines a voidsteel weapon (or
+  another rare drop) with the ladder weapon it grows out of and Starless shards (`VoidArsenal.GOD_RECIPES`). Use the
+  first item named on the gate.
+- **The Crown of Stars staff** is the reward for finishing everything: Echoes of the Void, Beyond the Veil, Ashes of the
+  Crown, Hold the Gate, Heartforged and The Hollow King, plus 50 Starless kills.
+- **Godsfall** ends the chain. It eats Last Light (itself a recipe) and two god-tier greatswords.
+
+**How the effects work.**
+- **Specials** use the existing system: `Specials.specialAttack` entries, the stock buttons and bars, and the saga's
+  spotanims 667-671. No new spotanims, so the spotanim count is unchanged.
+- **The heal-on-hit effect** is the special system's own effect 4. The saga's specials now carry their effect into
+  combat; stock specials are untouched.
+- **Warhammers and halberds** sit on the mace and spear tabs, because those tabs have spec buttons.
+- **On-hit effects** are melee against monsters only (`VoidArsenal.onMeleeHit`, called from `applyNpcMeleeDamage`).
+- **Free runes** are `VoidArsenal.FREE_RUNES`, asked by `MagicRequirements.wearingStaff`.
 
 ## Starmetal and voidsteel: two new tiers
 
@@ -574,7 +622,7 @@ weapon in two metals. Previews: `ModelPreview data/cache outDir S1` (or `S2`) wr
 | Hand-built scenery (tents, hearths, seats, banners, standing stones, the Broken Gate, the black flag) | `tools/mapgen/WorldProps.java` |
 | NPC / item / object definitions, island scenery, the void arena, Nythera | `tools/mapgen/VoidRealmGenerator.java` |
 | Item stats | `data/cfg/ItemDefinitions.json` (7966-7970); slots in `ItemData`, level in `ItemAssistant.getRequirements` |
-| The weapon ladder (items 8001-8030), the Starless shard (8031), the starmetal and voidsteel sets (8032-8052): rules, recipes, `::vt weapons`/`sets`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`, `WeaponSets.java`; `tools/mapgen/ModelPreview.java` |
+| The weapon ladder (items 8001-8030, and the god tier 8053-8067), the Starless shard (8031), the starmetal and voidsteel sets (8032-8052): rules, recipes, effects, `::vt weapons`/`sets`; models; offline previews | `game/content/voidrealm/VoidArsenal.java`; `tools/mapgen/LadderWeapons.java`, `WeaponSets.java`, `GodWeapons.java`; `tools/mapgen/ModelPreview.java` |
 | NPC stats and spawns | `data/cfg/npcDefinitions.json`, `npc.json`, `spawns.json` |
 
 Dialogue ids 9600-9999 belong to the series (9800+ are `NytheraPlaces`, 9900+ are `CrownQuest`). `VoidRealm.wrap` reflows every NPC and player line
@@ -596,7 +644,7 @@ Kaqemeex) that only have the talking animations, so their other emotes fall back
 | `::vt list` | list NPCs spawned for you |
 | `::vt loot rolls npcId` | tally Nythera's loot tiers over `rolls` rolls, and drop ten real rolls at your feet |
 | `::vt head npcId anim` | show an NPC's chathead playing a chat animation |
-| `::vt weapons [from to]` | put the weapon ladder (ranks 1-30, or from-to) into your inventory |
+| `::vt weapons [from to]` | put the weapon ladder (ranks 1-45, or from-to; `31 45` is the god tier) into your inventory |
 | `::vt sets 1` / `::vt sets 2` | put the starmetal (1) or voidsteel (2) set into your inventory, with 10 starmetal or 10 Starless shards |
 
 ## Ideas for what comes next

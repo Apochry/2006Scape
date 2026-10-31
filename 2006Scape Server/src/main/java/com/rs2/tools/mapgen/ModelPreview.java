@@ -32,7 +32,8 @@ import com.rs2.game.content.voidrealm.VoidArsenal;
  * and {@code sheet.png}, a contact sheet of all of them.
  *
  * <p>Usage (from '2006Scape Server', reads the cache only): {@code ModelPreview data/cache outDir [S1|S2] [rank...]}. With
- * S1 or S2 it draws the starmetal or voidsteel set instead, as {@code S1-NN-name.png} and {@code S1-sheet.png}; rank 0
+ * S1 or S2 it draws the starmetal or voidsteel set instead, as {@code S1-NN-name.png} and {@code S1-sheet.png}; with G,
+ * the god tier, as {@code 31-name.png} to {@code 45-name.png} and {@code G-sheet.png} (ranks 1-15 select them); rank 0
  * asks for the sheet alongside the listed cards.
  */
 public final class ModelPreview {
@@ -321,7 +322,7 @@ public final class ModelPreview {
 		File out = new File(args[1]);
 		out.mkdirs();
 		java.util.Set<Integer> only = new java.util.HashSet<>();
-		String set = args.length > 2 && args[2].startsWith("S") ? args[2] : null;
+		String set = args.length > 2 && args[2].matches("S1|S2|G") ? args[2] : null;
 		for (int i = set == null ? 2 : 3; i < args.length; i++) {
 			only.add(Integer.parseInt(args[i]));
 		}
@@ -331,9 +332,13 @@ public final class ModelPreview {
 			CacheEditor.Archive cfg = CacheEditor.Archive.decode(c.read(0, ConfigDefinitions.CONFIG_ARCHIVE));
 			ConfigDefinitions.Table obj = ConfigDefinitions.load(cfg, "obj", false);
 			ModelData body = body(f);
-			LadderWeapons.Rung[] all = set == null ? LadderWeapons.LADDER : set.equals("S1") ? WeaponSets.STARMETAL_SET : WeaponSets.VOIDSTEEL_SET;
-			String prefix = set == null ? "" : set + "-";
-			String title = set == null ? "The weapon ladder" : set.equals("S1") ? "The starmetal set (Attack 50)" : "The voidsteel set (Attack 70)";
+			boolean god = "G".equals(set);
+			LadderWeapons.Rung[] all = set == null ? LadderWeapons.LADDER
+					: god ? GodWeapons.GOD : set.equals("S1") ? WeaponSets.STARMETAL_SET : WeaponSets.VOIDSTEEL_SET;
+			String prefix = set == null || god ? "" : set + "-";
+			int first = god ? LadderWeapons.LADDER.length : 0; // the god tier carries on the ladder's numbering (31-45)
+			String title = set == null ? "The weapon ladder"
+					: god ? "The god tier (ladder 31-45)" : set.equals("S1") ? "The starmetal set (Attack 50)" : "The voidsteel set (Attack 70)";
 			int cols = 5, cw = 360, ch = 300, rows = (all.length + cols - 1) / cols;
 			BufferedImage sheet = new BufferedImage(cols * cw, 50 + rows * ch, BufferedImage.TYPE_INT_RGB);
 			Graphics2D sg = sheet.createGraphics();
@@ -352,7 +357,7 @@ public final class ModelPreview {
 				}
 				System.out.printf("%02d %-28s wield %3d tris, inv %3d tris, %d colours, grip s=%.0f of %.0f%n", rank, r.name, wld.faces.size(),
 						inv.faces.size(), new java.util.TreeSet<>(wld.colors).size(), r.weapon.pose.gripS(), r.weapon.pose.length);
-				String tag = prefix + String.format("%02d", rank);
+				String tag = prefix + String.format("%02d", rank + first);
 				if (only.isEmpty() || only.contains(rank)) {
 					String slug = r.name.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
 					ImageIO.write(card(r, tag, body, cam, stats.get(r.id), f.read(r.weapon.pose.baseInv)), "png", new File(out, tag + "-" + slug + ".png"));
@@ -368,7 +373,7 @@ public final class ModelPreview {
 			}
 			sg.dispose();
 			if (only.isEmpty() || only.contains(0)) {
-				ImageIO.write(sheet, "png", new File(out, prefix + "sheet.png"));
+				ImageIO.write(sheet, "png", new File(out, (god ? "G-" : prefix) + "sheet.png"));
 			}
 		}
 	}

@@ -1147,6 +1147,8 @@ public class ItemAssistant {
 			case 861:
 			case 11235:
 			case com.rs2.game.content.voidrealm.VoidConstants.EVENTIDE_LONGBOW: // Starshot
+			case com.rs2.game.content.voidrealm.VoidConstants.DAWNBRINGER_LONGBOW: // god tier
+			case com.rs2.game.content.voidrealm.VoidConstants.NIGHTFALL_SHORTBOW: // god tier
 				player.getPacketSender().sendHideInterfaceLayer(7549, false);
 				specialAmount(weapon, player.specAmount, 7561);
 				break;
@@ -1156,6 +1158,11 @@ public class ItemAssistant {
 			case com.rs2.game.content.voidrealm.VoidConstants.NIGHTGLASS_SCIMITAR: // Rend
 			case com.rs2.game.content.voidrealm.VoidConstants.STARLESS_LONGSWORD: // Eclipse
 			case com.rs2.game.content.voidrealm.VoidConstants.LAST_LIGHT_2H: // Last Light
+			case com.rs2.game.content.voidrealm.VoidConstants.WARDENSOATH_2H: // god tier
+			case com.rs2.game.content.voidrealm.VoidConstants.HEART_OF_AUREL: // god tier
+			case com.rs2.game.content.voidrealm.VoidConstants.CROWNFIRE_SCIMITAR: // god tier
+			case com.rs2.game.content.voidrealm.VoidConstants.SUNFALL_2H: // god tier
+			case com.rs2.game.content.voidrealm.VoidConstants.GODSFALL_2H: // god tier
 				player.getPacketSender().sendHideInterfaceLayer(7599, false);
 				specialAmount(weapon, player.specAmount, 7611);
 				break;
@@ -1167,6 +1174,7 @@ public class ItemAssistant {
 
 			case 1377: // d battleaxe
 			case com.rs2.game.content.voidrealm.VoidConstants.KINGSBANE_BATTLEAXE: // Regicide
+			case com.rs2.game.content.voidrealm.VoidConstants.GATEBREAKER_BATTLEAXE: // Breach
 				player.getPacketSender().sendHideInterfaceLayer(7499, false);
 				specialAmount(weapon, player.specAmount, 7511);
 				break;
@@ -1178,6 +1186,8 @@ public class ItemAssistant {
 
 			case 1249: // dspear
 			case com.rs2.game.content.voidrealm.VoidConstants.SUNSPEAR: // Sunburst
+			case com.rs2.game.content.voidrealm.VoidConstants.SCARMAW_HALBERD: // god tier (spear tab)
+			case com.rs2.game.content.voidrealm.VoidConstants.FIRST_STAR_SPEAR: // god tier (spear tab)
 				player.getPacketSender().sendHideInterfaceLayer(7674, false);
 				specialAmount(weapon, player.specAmount, 7686);
 				break;
@@ -1199,6 +1209,8 @@ public class ItemAssistant {
 
 			case 1434: // dragon mace
 			case com.rs2.game.content.voidrealm.VoidConstants.CROWNBREAKER_MACE: // Shatter
+			case com.rs2.game.content.voidrealm.VoidConstants.HOLLOW_CROWN_WARHAMMER: // god tier (mace tab)
+			case com.rs2.game.content.voidrealm.VoidConstants.BLACK_SUN_WARHAMMER: // god tier (mace tab)
 				player.getPacketSender().sendHideInterfaceLayer(7624, false);
 				specialAmount(weapon, player.specAmount, 7636);
 				break;
