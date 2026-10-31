@@ -48,11 +48,11 @@ public final class ArmourForge {
 
 	/** Gatehold Warden: blackened starmetal, ember-gold trim, a void-violet tabard and an ember stone over the heart. */
 	static final Palette WARDEN = new Palette("Gatehold Warden", hsl(38, 1, 40), hsl(38, 1, 26), hsl(38, 1, 54),
-			hsl(7, 5, 46), hsl(7, 5, 32), hsl(50, 4, 26), hsl(50, 4, 18), hsl(50, 6, 66), hsl(6, 2, 18), hsl(50, 4, 30), 0);
+			hsl(7, 5, 46), hsl(7, 5, 32), ConfigDefinitions.voidRamp(26, 4), ConfigDefinitions.voidRamp(18, 4), ConfigDefinitions.voidRamp(66, 6), hsl(6, 2, 18), ConfigDefinitions.voidRamp(30, 4), 0);
 
 	/** Aurel's Royal Guard: polished pale starmetal, bright gold, royal violet; the visor glows ember. */
 	static final Palette ROYAL = new Palette("Aurel's Royal Guard", hsl(38, 1, 70), hsl(38, 1, 52), hsl(38, 1, 84),
-			hsl(8, 6, 58), hsl(7, 6, 42), hsl(50, 5, 34), hsl(50, 5, 24), hsl(8, 7, 80), hsl(6, 3, 24), hsl(50, 6, 40),
+			hsl(8, 6, 58), hsl(7, 6, 42), ConfigDefinitions.voidRamp(34, 5), ConfigDefinitions.voidRamp(24, 5), hsl(8, 7, 80), hsl(6, 3, 24), ConfigDefinitions.voidRamp(40, 6),
 			hsl(8, 7, 70));
 
 	/* ------------------------------------------------------------------ base ids (from the item definitions) */

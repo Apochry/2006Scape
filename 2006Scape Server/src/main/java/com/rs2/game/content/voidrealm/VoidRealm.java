@@ -1315,6 +1315,31 @@ public final class VoidRealm {
 			p.getPacketSender().sendMessage("gate " + p.voidGate + " forge " + p.voidForge + " king " + p.voidKing + " gflags "
 					+ p.gateFlags + " fflags " + p.forgeFlags + " kills " + p.gateKills + " starless " + p.starlessKills);
 			break;
+		case "head": // ::vt head npcId anim - show an NPC's chathead with a given chat animation
+			p.getPacketSender().sendDialogueAnimation(4883, n[2]);
+			p.getPacketSender().sendString(NpcHandler.getNpcListName(n[1]) + " (" + n[2] + ")", 4884);
+			p.getPacketSender().sendString("Testing chathead animation " + n[2] + ".", 4885);
+			p.getPacketSender().sendNPCDialogueHead(n[1], 4883);
+			p.getPacketSender().sendChatInterface(4882);
+			break;
+		case "loot": { // ::vt loot rolls npcId - tally Nythera's loot tiers over many rolls, and drop ten for real
+			int[] tally = new int[VoidLoot.TIER_NAMES.length];
+			int bonus = 0;
+			for (int k = 0; k < n[1]; k++) {
+				tally[VoidLoot.tier()]++;
+				bonus += VoidLoot.bonus() ? 1 : 0;
+			}
+			StringBuilder sb = new StringBuilder();
+			for (int k = 0; k < tally.length; k++) {
+				sb.append(VoidLoot.TIER_NAMES[k]).append(' ').append(tally[k] * 1000 / Math.max(1, n[1]) / 10.0).append("% ");
+			}
+			p.getPacketSender().sendMessage(sb.toString());
+			p.getPacketSender().sendMessage("bonus gear " + (bonus * 1000 / Math.max(1, n[1]) / 10.0) + "% of " + n[1] + " rolls");
+			for (int k = 0; k < 10; k++) {
+				VoidLoot.roll(p, n[2], p.absX, p.absY);
+			}
+			break;
+		}
 		case "hp": // ::vt hp n - set the hp of everything you spawned (testing the fights)
 			for (Npc npc : NpcHandler.npcs) {
 				if (npc != null && npc.spawnedBy == p.getId() && !npc.isDead && (a.length < 3 || npc.npcType == n[2])) {

@@ -44,7 +44,7 @@ Aimed at new players: there are no requirements, and nothing on the island attac
 
 | Monster | Level | Where |
 |---|---:|---|
-| Drowned deckhand | 5 | the cove's beaches |
+| Drowned deckhand (a drowned pirate in sea-teal) | 5 | the cove's beaches |
 | Cursed pirate | 12 | around the town, graveyard and swamp; in the dungeon |
 | Cursed first mate ('Smiling' Sam) | 20 | the dungeon's west grotto (quest boss) |
 

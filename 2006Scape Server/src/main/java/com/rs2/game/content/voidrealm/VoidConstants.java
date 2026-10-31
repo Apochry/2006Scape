@@ -81,6 +81,7 @@ public final class VoidConstants {
 	/* the later quests and the Starless (all with hand-built models) */
 	public static final int BROKEN_BARRICADE = 15010, SPIKED_BARRICADE = 15011, FALLEN_STAR = 15012, RIME_ALTAR = 15013,
 			STARLESS_GATE = 15014, STAR_PILLAR = 15015, STAR_PILLAR_LIT = 15016;
+	// (15017 is Skullbrine's dormant portal, SkullbrineConstants.VOID_PORTAL: the next new object is 15018)
 
 	/* ---------------- Hold the Gate ---------------- */
 	/** The three broken barricades across the Scar road north-east of the Gate. */

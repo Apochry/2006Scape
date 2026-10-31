@@ -1,6 +1,7 @@
 package com.rs2.game.npcs;
 
 import com.rs2.game.content.skullbrine.SkullbrineIsle;
+import com.rs2.game.content.voidrealm.VoidLoot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.rs2.Constants;
@@ -1059,7 +1060,12 @@ public class NpcHandler {
             }
             SkullbrineIsle.npcKilled(c, npcs[i].npcType, npcs[i].absX, npcs[i].absY, npcs[i].heightLevel);
             boolean isDropped = false;
+            // Nythera's monsters keep only their always-drops (bones and the like) and roll VoidLoot's tiers instead
+            boolean voidLoot = VoidLoot.applies(npcs[i].npcType, npcs[i].absX, npcs[i].absY);
             for (ItemDrop possible_drop : NPCDropsHandler.getNpcDrops(getNpcListName(npcs[i].npcType).toLowerCase().replace(" ", "_"), npcs[i].npcType)) {
+                if (voidLoot && possible_drop.getChance() != 0) {
+                    continue;
+                }
                 if (Misc.random(possible_drop.getChance()) == 0 && !isDropped) {
                     int amt = possible_drop.getAmount();
                     GameEngine.itemHandler.createGroundItem(c, possible_drop.getItemID(), npcs[i].absX, npcs[i].absY, amt, c.playerId);
@@ -1067,6 +1073,9 @@ public class NpcHandler {
                     if (possible_drop.getChance() > 1)
                         isDropped = true;
                 }
+            }
+            if (voidLoot) {
+                VoidLoot.roll(c, npcs[i].npcType, npcs[i].absX, npcs[i].absY);
             }
             switch (npcs[i].npcType) {
                 case PHEASANT:
