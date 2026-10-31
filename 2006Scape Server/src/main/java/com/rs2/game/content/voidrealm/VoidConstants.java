@@ -45,6 +45,8 @@ public final class VoidConstants {
 	public static final int RIFT = 14991;
 	/** Dungeon entrances on Nythera (each one's exit inside is the ordinary cave exit, 3736). */
 	public static final int BARROW_DOOR = 14992, HOLLOW_FISSURE = 14993, FROST_CAVE = 14994;
+	/** Scenery with hand-built models (tools/mapgen/ModelForge). */
+	public static final int WAYSTONE = 14995, VOID_LANTERN = 14996, HOLLOWED_TREE = 14997;
 
 	/* ---------------- Skullbrine Isle ---------------- */
 

@@ -120,7 +120,11 @@ final class VoidRealmGenerator {
 		tintItem(heart, 50, 6, 0.9, 10);
 		ConfigDefinitions.Definition barrow = g.item(items, 1303, BARROWSTEEL_LONGSWORD).name("Barrowsteel longsword")
 				.examine("The Barrow Thane's blade. Grave-cold, and very, very sharp.").cost(70000);
-		tintItem(barrow, GHOST_HUE, 2, 0.75, 4);
+		// the Barrowsteel longsword has its own models, built in ModelForge (not a recoloured rune longsword)
+		forge = new ModelForge(g.cache);
+		int swordInv = forge.pack(forge.swordInventory()), swordHeld = forge.pack(forge.swordWielded());
+		barrow.remove(40).remove(41).shorts(1, swordInv).set(23, new byte[] { (byte) (swordHeld >> 8), (byte) swordHeld, 0 })
+				.set(25, new byte[] { (byte) (swordHeld >> 8), (byte) swordHeld, 0 });
 		ConfigDefinitions.Definition boots = g.item(items, 1061, FROSTBOUND_BOOTS).name("Frostbound boots")
 				.examine("Rimeclaw's hide, still frosted. Your feet will never be warm again. Worth it.").cost(50000);
 		tintItem(boots, 36, 3, 1.3, 20);
@@ -204,6 +208,23 @@ final class VoidRealmGenerator {
 		ConfigDefinitions.Definition frost = g.loc(locs, cave, FROST_CAVE).name("Frostfang cave")
 				.examine("Cold breath rolls out of it. Something in there is breathing it.").set(30, ConfigDefinitions.string("Enter"));
 		g.tintLoc(frost, 36, 2, 1.4, 30, c -> true);
+		// scenery with hand-built models
+		forgedLoc(locs, WAYSTONE, forge.pack(forge.waystone()), "Waystone",
+				"An old road marker. The rune on it still glows, though nobody remembers what it says.");
+		forgedLoc(locs, VOID_LANTERN, forge.pack(forge.voidLantern()), "Void lantern",
+				"Gatehold lights its streets with the Scar's own crystal. Nobody finds this as funny as Pell does.");
+		forgedLoc(locs, HOLLOWED_TREE, forge.pack(forge.hollowedTree()), "Hollowed tree",
+				"The Scar emptied it. Something violet is growing in the space it left.")
+				.scale(192, 192, 192); // 1.5x: built at person scale, it should tower over you
+		forge.finish();
+	}
+
+	ModelForge forge;
+
+	/** An object that uses one of ModelForge's models (cloned from a plain 1x1 standing stone for its solidity). */
+	ConfigDefinitions.Definition forgedLoc(ConfigDefinitions.Table locs, int id, int model, String name, String examine) {
+		return g.loc(locs, STANDING_STONE, id).name(name).examine(examine).remove(1).remove(40).remove(41)
+				.set(5, new byte[] { 1, (byte) (model >> 8), (byte) model }).footprint(1, 1);
 	}
 
 	/* ====================================================================== */
@@ -880,7 +901,10 @@ final class VoidRealmGenerator {
 		g.object(FLAGPOLE, cx + 2, cy + 2, TYPE_SCENERY, 0);
 		g.object(CRATES, cx - 3, cy + 2, TYPE_SCENERY, 0);
 		g.object(BARREL, cx - 1, cy + 3, TYPE_SCENERY, 0);
-		g.object(BEDROLL, cx + 1, cy - 3, TYPE_SCENERY, 0);
+		g.object(BEDROLL, cx + 1, cy - 3, TYPE_SCENERY, 0);		// the Scar reaching for the trees at its edge
+		placeNear(HOLLOWED_TREE, cx + 6, cy - 5, 0);
+		placeNear(HOLLOWED_TREE, cx + 8, cy + 4, 0);
+		placeNear(HOLLOWED_TREE, cx + 5, cy + 8, 0);
 	}
 
 	/* ====================================================================== */
@@ -935,9 +959,31 @@ final class VoidRealmGenerator {
 		g.object(CART, cx + 6, cy + 3, TYPE_SCENERY, 1);
 		g.object(STACKED_BARRELS, cx - 3, cy + 9, TYPE_SCENERY, 0);
 		g.object(SACKS, cx + 5, cy + 9, TYPE_SCENERY, 0);
+		// hand-built scenery: lanterns along the square, a waystone, and a tree the Scar has reached
+		placeNear(VOID_LANTERN, cx - 6, cy + 1, 1);
+		placeNear(VOID_LANTERN, cx + 5, cy + 5, 1);
+		placeNear(VOID_LANTERN, cx - 1, cy - 4, 1);
+		placeNear(WAYSTONE, cx + 7, cy - 1, 0);
+		placeNear(HOLLOWED_TREE, cx + 9, cy + 9, 0);
 		person(YSOLDE, GATE_X - 1, GATE_Y - 1, 4);
 		person(GUARD, cx + 1, cy - 2, 1);
 		person(GUARD, cx - 4, cy + 4, 1);
+	}
+
+	/** Places an object on the nearest free, dry, unblocked tile to (x, y). */
+	void placeNear(int id, int x, int y, int rot) {
+		for (int r = 0; r < 6; r++) {
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dy = -r; dy <= r; dy++) {
+					int px = x + dx, py = y + dy;
+					if ((Math.abs(dx) == r || Math.abs(dy) == r) && free(px, py, 1) && !blocked(px, py) && !water(px, py)) {
+						g.object(id, px, py, TYPE_SCENERY, rot);
+						return;
+					}
+				}
+			}
+		}
+		System.out.println("warning: nowhere to put object " + id + " near " + x + "," + y);
 	}
 
 	/** Tess's quarry: a pit cut into the foothills, rich in iron, coal, silver, gold and mithril. */
