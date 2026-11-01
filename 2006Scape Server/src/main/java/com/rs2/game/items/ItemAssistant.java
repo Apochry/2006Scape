@@ -2546,7 +2546,8 @@ public class ItemAssistant {
 		for (int i = 0; i < player.playerItems.length; i ++) {
 			int _id = player.playerItems[i];
 			int _amt = player.playerItemsN[i];
-			if (_id <= 0 || (_id == itemID && ItemDefinition.lookup(_id).isStackable() && _amt + amount <= Integer.MAX_VALUE)) {
+			// playerItems holds id + 1, so a stack of itemID shows up as itemID + 1
+			if (_id <= 0 || (_id - 1 == itemID && ItemDefinition.lookup(itemID).isStackable() && (long) _amt + amount <= Integer.MAX_VALUE)) {
 				freeS++;
 			}
 		}
