@@ -101,7 +101,7 @@ public class PlayerAssistant {
 		if (player.playerLevel[Constants.HERBLORE] < 3) {
 
 			player.playerLevel[Constants.HERBLORE] = 3;
-			player.playerXP[Constants.HERBLORE] = 175;
+			player.playerXP[Constants.HERBLORE] = getXPForLevel(3);
 			player.getPlayerAssistant().refreshSkill(Constants.HERBLORE);
 		}
 	        if (player.lastLoginDate <= 0) {
@@ -1995,12 +1995,20 @@ public class PlayerAssistant {
 
 	/* Updated methods for getXPForLevel/getLevelForXP */
 	private static final int[] xp_per_level = new int[100];
-	
+
+	/**
+	 * How many levels it takes for the XP each level needs to double. The stock curve doubles every 7 levels (99 at
+	 * 13,034,431 XP); this server's is gentler, doubling every 7.61, which puts 99 at 6,484,453 - half the stock grind -
+	 * while the early levels stay close to stock (10 at 1,104 instead of 1,154). The client's skill tab has its own copy
+	 * of the curve (Game's anIntArray1019, XP_CURVE_DOUBLING there): keep the two the same.
+	 */
+	public static final double XP_CURVE_DOUBLING = 7.61;
+
 	static {
 		int points = 0, output = 0;
 		for (int lvl = 1; lvl <= 99; lvl++) {
 			xp_per_level[lvl] = output;
-			points += Math.floor(lvl + 300 * Math.pow(2, lvl / 7.0));
+			points += Math.floor(lvl + 300 * Math.pow(2, lvl / XP_CURVE_DOUBLING));
 			output = (int) Math.floor(points / 4);
 		}
 	}

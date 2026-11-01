@@ -1971,7 +1971,7 @@ public abstract class Player {
 
 		for (int i = 0; i < playerXP.length; i++) {
 			if (i == 3) {
-				playerXP[i] = 1300;
+				playerXP[i] = PlayerAssistant.getXPForLevel(10); // hitpoints starts at 10, wherever the curve puts it
 			} else {
 				playerXP[i] = 0;
 			}
