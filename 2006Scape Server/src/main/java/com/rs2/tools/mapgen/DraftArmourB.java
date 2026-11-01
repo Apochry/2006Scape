@@ -22,7 +22,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <li>Wildgrove (Magic 40): Druids of the deep woods: leaf-green robes, bark belt, an antler crown on the hat, small golden flowers, ivy trailing down the sleeves.</li>
  * <li>Gravescale (Defence 45): Scale mail from the Gravecoil, the barrow serpent (see Gravecoil.java for its real palette and match it): overlapping serpent scales, a fanged snake-head visor, a coiled serpent on the shield, venom-yellow eyes.</li>
  * <li>Gatehold sentinel (Defence 50): The guard on Gatehold's wall: bright steel plate, a Gatehold-blue tabard with the gate-tower crest in gold, a tall plume, a tower-shaped kiteshield boss.</li>
- * <li>Broodkeeper (Magic 50): The Hollow Matriarch's broodkeepers in Hollowdeep: dark chitin plates over robes, sickly glowing egg-sacs, spider legs arching over the hat, many small eyes.</li>
+ * <li>Broodkeeper (Magic 50): the keepers of the Silkwood broodmother's brood: dark chitin plates over robes, sickly glowing egg-sacs, spider legs arching over the hat, many small eyes.</li>
  * <li>Rimeclaw hunter (Ranged 60): Hunters who took Rimeclaw (the Frostfang boss) and wear its hide: ice-blue hide, a claw necklace, big hooked claws at the shoulders and on the vambraces, a beast-head coif with frost.</li>
  * </ol>
  */
@@ -67,7 +67,7 @@ final class DraftArmourB {
 					hsl(14, 3, 112), CHITIN, CHITIN_DARK, NO_SHIELD,
 					new String[] { "Broodkeeper hat", "Broodkeeper robe top", "Broodkeeper robe bottom", null, "Broodkeeper boots", "Broodkeeper gloves" },
 					new String[] { "A spider climbs the hat, legs round the brim, every eye open. It isn't dead. It's on duty.",
-							"Chitin plates over the robe, and the brood's eggs carried on the back. Hollowdeep's keepers never set them down.",
+							"Chitin plates over the robe, and the brood's eggs carried on the back. The broodmother's keepers never set them down.",
 							"Egg-sacs hang at the belt, glowing faintly. Best not to be standing near when they hatch.", null,
 							"Chitin-spurred boots for walking where the brood nests.", "Chitin cuffs and hooked spurs. The keepers handle the eggs gently, and everything else less so." }),
 			new Style("Rimeclaw hunter", "rimeclaw", Kind.HIDE, Motif.RIMECLAW, 60, hsl(36, 3, 74), hsl(36, 3, 54), hsl(36, 2, 94), hsl(38, 3, 36), hsl(38, 3, 24),
