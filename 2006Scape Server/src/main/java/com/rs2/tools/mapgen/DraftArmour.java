@@ -39,7 +39,9 @@ final class DraftArmour {
 
 	/** What wearing it takes, from its kind and level (draft pieces have no ids to look a rule up by). */
 	static String requirement(Style st) {
-		String skill = st.kind == ArmourSets.Kind.ROBE ? "Magic" : st.kind == ArmourSets.Kind.HIDE || st.kind == ArmourSets.Kind.LEATHER ? "Ranged" : "Defence";
+		ArmourSets.Kind k = st.kind;
+		String skill = k == ArmourSets.Kind.ROBE || k == ArmourSets.Kind.MANTLE ? "Magic"
+				: k == ArmourSets.Kind.HIDE || k == ArmourSets.Kind.LEATHER || k == ArmourSets.Kind.WRAP ? "Ranged" : "Defence";
 		return skill + " " + st.level;
 	}
 

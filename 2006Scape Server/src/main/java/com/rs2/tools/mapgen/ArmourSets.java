@@ -27,7 +27,14 @@ final class ArmourSets {
 	static final int HELM = 0, BODY = 1, LEGS = 2, SHIELD = 3, BOOTS = 4, GLOVES = 5;
 
 	enum Kind {
-		PLATE, HIDE, ROBE, CHAIN, LEATHER
+		PLATE, HIDE, ROBE, CHAIN, LEATHER, //
+		/** Generated bases (NewBases): their own meshes, built on a stock donor's rig (the matching BASE row). */
+		COAT, MANTLE, WRAP;
+
+		/** A base built from scratch (NewBases) rather than a recoloured stock mesh. */
+		boolean generated() {
+			return ordinal() >= COAT.ordinal();
+		}
 	}
 
 	enum Motif {
@@ -65,6 +72,14 @@ final class ArmourSets {
 			{ { 219, -1, 395, -1, 1147, 2833 }, { 301, -1, 464, -1, 1113, 2558 }, { 268, -1, 432, -1, 1079, 2582 }, { 541, -1, 541, -1, 1185, 2720 },
 					{ 185, -1, 361, -1, 1061, 2837 }, { 176, -1, 355, -1, 1059, -1 } },
 			// leather: cowl, leather body, leather chaps, leather boots, leather vambraces
+			{ { 220, -1, 396, -1, 1167, 2541 }, { 311, -1, 475, -1, 1129, 2540 }, { 262, -1, 425, -1, 1095, 2555 }, null,
+					{ 185, -1, 361, -1, 1061, 2837 }, { 177, -1, 354, -1, 1059, -1 } },
+			// the generated bases' donors (rig labels, item camera, inventory fit): coat on the rune plate, mantle on the
+			// mystic robe, wrap on the leather. NewBases replaces what's drawn.
+			{ { 218, -1, 394, -1, 1163, 2813 }, { 306, 164, 468, 344, 1127, 2605 }, { 268, -1, 432, -1, 1079, 2582 }, { 486, -1, 486, -1, 1201, 2339 },
+					{ 4954, -1, 5031, -1, 4131, 5037 }, { 176, -1, 355, -1, 1059, -1 } },
+			{ { 5027, -1, 5033, -1, 4089, 5040 }, { 4952, 5028, 5029, 5035, 4091, 5043 }, { 4844, -1, 5034, -1, 4093, 5042 }, null,
+					{ 4955, -1, 5032, -1, 4097, 5038 }, { 4953, -1, 5030, -1, 1059, -1 } },
 			{ { 220, -1, 396, -1, 1167, 2541 }, { 311, -1, 475, -1, 1129, 2540 }, { 262, -1, 425, -1, 1095, 2555 }, null,
 					{ 185, -1, 361, -1, 1061, 2837 }, { 177, -1, 354, -1, 1059, -1 } } };
 
@@ -350,7 +365,11 @@ final class ArmourSets {
 		}
 		int secondId = b[female ? 3 : 1];
 		ModelData second = secondId < 0 ? null : dyed(st, slot, secondId);
-		if (female && slot == BODY) { // the female tops leave a band of bare midriff; close it
+		if (st.kind.generated()) { // a new base: its own meshes, built on the donor's rig
+			ModelData[] g = NewBases.worn(af, st, slot, female, m, second);
+			m = g[0];
+			second = g[1];
+		} else if (female && slot == BODY) { // the female tops leave a band of bare midriff; close it
 			coverMidriff(m, st);
 			coverMidriff(second, st);
 		}
@@ -493,7 +512,7 @@ final class ArmourSets {
 	ModelData inventory(Style st, int slot) throws IOException {
 		ModelData[] w = worn(st, slot, false);
 		int[] b = base(st, slot);
-		if (slot == SHIELD && st.kind == Kind.PLATE) {
+		if (slot == SHIELD && (st.kind == Kind.PLATE || st.kind == Kind.COAT)) {
 			double tau = Math.PI * 2;
 			return af.shieldInventory(w[0], -1104 * tau / 2048, 344 * tau / 2048);
 		}
