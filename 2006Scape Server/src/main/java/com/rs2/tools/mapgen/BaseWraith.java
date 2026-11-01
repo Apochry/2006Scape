@@ -64,15 +64,15 @@ final class BaseWraith {
 		Body b = BaseMantle.body(af, female);
 		switch (slot) {
 		case ArmourSets.HELM:
-			return new ModelData[] { anchors(cowl(st, b), b.head), null };
+			return new ModelData[] { separate(anchors(cowl(st, b), b.head)), null };
 		case ArmourSets.BODY:
-			return new ModelData[] { anchors(shroud(st, b), b.torso, b.arms), null };
+			return new ModelData[] { separate(anchors(shroud(st, b), b.torso, b.arms)), null };
 		case ArmourSets.LEGS:
-			return new ModelData[] { anchors(robe(st, b), b.legs), null };
+			return new ModelData[] { separate(anchors(robe(st, b), b.legs)), null };
 		case ArmourSets.BOOTS:
-			return new ModelData[] { footWraps(st, b), null };
+			return new ModelData[] { separate(footWraps(st, b)), null };
 		case ArmourSets.GLOVES:
-			return new ModelData[] { handWraps(st, b), null };
+			return new ModelData[] { separate(handWraps(st, b)), null };
 		default:
 			return new ModelData[] { donor, donorSecond };
 		}
@@ -135,6 +135,33 @@ final class BaseWraith {
 		}
 		m.skin = skin;
 		m.shading = shading;
+		return m;
+	}
+
+	/**
+	 * Moves apart vertices of different labels that sit at the same integer position (the client merges a player's
+	 * vertices by position, the first label winning, which would tear one part along with the other): each later one is
+	 * nudged a unit at a time until it is alone. Returns m.
+	 */
+	static ModelData separate(ModelData m) {
+		Map<String, Integer> at = new java.util.HashMap<>();
+		int[][] steps = { { 0, 0, 1 }, { 0, 0, -1 }, { 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 } };
+		for (int i = 0; i < m.vertices.size(); i++) {
+			int[] v = m.vertices.get(i);
+			int l = m.vertexSkins.get(i);
+			Integer prev = at.get(v[0] + "," + v[1] + "," + v[2]);
+			for (int k = 0; prev != null && prev != l && k < steps.length; k++) {
+				int[] q = { v[0] + steps[k][0], v[1] + steps[k][1], v[2] + steps[k][2] };
+				Integer there = at.get(q[0] + "," + q[1] + "," + q[2]);
+				if (there == null || there == l) {
+					v[0] = q[0];
+					v[1] = q[1];
+					v[2] = q[2];
+					prev = there;
+				}
+			}
+			at.putIfAbsent(v[0] + "," + v[1] + "," + v[2], l);
+		}
 		return m;
 	}
 

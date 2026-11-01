@@ -22,7 +22,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <li>Herald's (Defence 65): The Hollow Herald's coat of plates (Kind.COAT): dark iron with ghostly pale trim, a violet tabard over a knee-length lamellar skirt, banners hanging from the belt, a herald's horn on the right pauldron, an iron crown of spikes round a kettle helm. (Herald's is a possessive: pieces read 'Herald's kettle helm'.)</li>
  * <li>Emberforged (Defence 70): Dorrin's forge masterwork on the coat base (Kind.COAT): blackened steel with glowing ember seams and rivets, bronze edging, an anvil-and-flame crest on the breast, a chimney on the kettle helm venting embers.</li>
  * <li>Starless shroud (Magic 70): Robes cut from the Starless's own shadow, on its own wraith base (BaseWraith): a tall pointed cowl over a black void with two violet eye-points and a crescent of stars behind the head, a narrow shroud with sleeves running out past the hands into ragged points and a ring of stars floating behind the shoulders, a robe frayed into long points trailing on the floor, dark wraps for hands and feet. Near-black with scattered star points, a violet seam of void-light down the front, an open eye on the breast.</li>
- * <li>Riftwalker (Ranged 75): Rangers who walk through the rifts: dark grey-violet hide split by glowing violet rift-cracks, riftglass shards, a hood with a glowing seam over the eyes, black straps.</li>
+ * <li>Riftwalker (Ranged 75): Rangers who walk through the rifts, on their own shattered base (BaseShatter): armour broken into angular shards that hover off the body with violet light in the gaps, worn lopsided: the right side in floating shards (a great shard for a pauldron, more down the arm and the right leg, a shard gauntlet), the left bound in black straps under a torn cape from the left shoulder; a faceless hood with one glowing seam down the face and riftglass splinters floating round the crown; shard-plated boots. Dark grey-violet with glowing violet.</li>
  * <li>Dawnguard (Defence 80): The guard sworn to the first dawn after the Starless: pale gold-white plate, rose-dawn trim, a rising-sun crest with rays on the helm and breast, wings at the helm's sides. Must read clearly below Heartfire (90) but above Voidsteel (75).</li>
  * </ol>
  */
@@ -73,12 +73,12 @@ final class DraftArmourC {
 							"Wraps of shadow round the hands. Your fingers look a very long way off in them." }),
 			new Style("Riftwalker", "riftwalker", Kind.WRAP, Motif.RIFTWALKER, 75, hsl(48, 1, 34), hsl(48, 1, 22), hsl(48, 1, 48), hsl(0, 0, 16),
 					hsl(0, 0, 10), RIFT, RIFT_CORE, hsl(48, 2, 26), hsl(48, 2, 16), NO_SHIELD,
-					new String[] { "Riftwalker coif", "Riftwalker body", "Riftwalker chaps", null, "Riftwalker boots", "Riftwalker vambraces" },
-					new String[] { "The rift runs right over the brow. Riftwalkers say it lets them see the other side, and won't say of what.",
-							"Hide split by a rift that never closed, and a quiver of riftglass arrows. Mind the edges.",
-							"A riftglass shard grew out of the knee. Riftwalkers take that as a compliment.", null,
-							"Dark boots with a shard at the ankle. They've stepped somewhere else and back, more than once.",
-							"Black-strapped bracers with rift-light at the wrist and a shard for a fin." }),
+					new String[] { "Riftwalker mask", "Riftwalker top", "Riftwalker chaps", null, "Riftwalker boots", "Riftwalker gauntlets" },
+					new String[] { "A hood with no face, only a seam of rift-light where one should be. Riftwalkers say it lets them see the other side, and won't say of what.",
+							"Armour that came apart in a rift and never quite came back together. The shards keep to their places, give or take a finger's breadth of light.",
+							"Shards hover over one leg and straps hold the other together. Riftwalkers take whatever comes back through with them.", null,
+							"Shard-plated boots. They've stepped somewhere else and back, more than once, and kept a little of the somewhere else.",
+							"A shard gauntlet for the bow hand and a strap wrap for the other. The shards don't touch the glove. They never have." }),
 			new Style("Dawnguard", "dawnguard", Kind.COAT, Motif.DAWNGUARD, 80, hsl(2, 1, 104), hsl(2, 1, 84), hsl(2, 0, 118), ROSE, ROSE_DARK, SUN,
 					SUN_CORE, hsl(1, 3, 40), hsl(1, 3, 28), HAS_ALL,
 					new String[] { "Dawnguard full helm", "Dawnguard platebody", "Dawnguard platelegs", "Dawnguard kiteshield", "Dawnguard boots",
@@ -131,20 +131,8 @@ final class DraftArmourC {
 			break;
 		case SHROUD: // the cowl, its void, its eyes and the crescent of stars are all the base's (BaseWraith)
 			break;
-		case RIFTWALKER: { // a rift splitting the hood over the eyes and back over the crown, riftglass shards growing from it
-			double y0 = top + h * 0.09; // on the hood's edge, just over the eyes
-			crack(add, m, F, new double[][] { { -hw * 0.6, y0 + 0.6 }, { -hw * 0.25, y0 - 0.8 }, { hw * 0.05, y0 + 0.8 }, { hw * 0.35, y0 - 0.6 },
-					{ hw * 0.6, y0 + 0.6 } }, 0.8, st.accent, st.trim);
-			Frame T = new Frame(new double[] { 0, top, 0 }, X, Z, new double[] { 0, -1, 0 });
-			crack(add, m, T, new double[][] { { 0.5, front + 6 }, { -1.5, cz - 2 }, { 1.2, cz + 3 }, { -0.5, back - 4 } }, 0.8, st.accent, st.trim);
-			for (int k = 0; k < 3; k++) {
-				double z = cz - 1 + k * 3.5, x = (k - 1) * 2.5;
-				double[] p = surface(m, new double[] { x, top - 50, z }, new double[] { 0, 1, 0 });
-				double[] b = p == null ? new double[] { x, top + 1, z } : pt(p, 0, 1, 0);
-				shard(add, b, new double[] { x * 0.4, -1, 0.5 + k * 0.3 }, 6 + (k == 1 ? 4 : 0), 1.6, k == 1 ? st.core : st.accent, RIFTGLASS);
-			}
+		case RIFTWALKER: // the hood's seam and its floating splinters are the base's (BaseShatter)
 			break;
-		}
 		case DAWNGUARD: { // a rising sun standing on the crown, rays fanned behind it; white wings at the temples; a sun on the brow
 			double sy = top + 3.5, sz = cz + 1;
 			Frame S = new Frame(new double[] { 0, sy, sz }, X, Y, new double[] { 0, 0, -1 });
@@ -195,32 +183,8 @@ final class DraftArmourC {
 			}
 			break;
 		}
-		case RIFTWALKER: { // a rift torn across the chest and the back, a black strap and a quiver of riftglass arrows, shards at the shoulders
-			crack(add, m, F, new double[][] { { -hw * 0.6, top + 4 }, { -hw * 0.25, top + h * 0.3 }, { -hw * 0.38, top + h * 0.45 }, { hw * 0.1, top + h * 0.62 },
-					{ hw * 0.02, top + h * 0.75 }, { hw * 0.5, bottom - 3 } }, 1.0, st.accent, st.trim);
-			crack(add, m, F, new double[][] { { -hw * 0.38, top + h * 0.45 }, { -hw * 0.62, top + h * 0.62 }, { -hw * 0.55, top + h * 0.78 } }, 0.7, st.accent,
-					st.trim);
-			crack(add, m, B, new double[][] { { hw * 0.5, top + 5 }, { hw * 0.15, top + h * 0.35 }, { hw * 0.3, top + h * 0.55 }, { -hw * 0.2, bottom - 3 } },
-					0.9, st.accent, st.trim);
-			decal(add, m, F, new double[][] { { hw * 0.45, top + 1 }, { hw * 0.78, top + 1 }, { -hw * 0.6, bottom - 1 }, { -hw * 0.93, bottom - 1 } }, 0.6, 1.4,
-					st.trim, st.trimDark);
-			decal(add, m, F, diamond(hw * 0.12, top + h * 0.38, 1.6, 1.6), 0.4, 2.2, st.core, st.accent);
-			double[] q0 = { hw * 0.55, top - 3, back + 2.5 }, q1 = { -hw * 0.3, bottom - 6, back + 2.5 };
-			add.tube(q0, q1, 3.0, 2.6, 6, 0, st.leather, st.leatherDark);
-			add.tube(pt(q0, 0, 0.5, 0), pt(q0, 0.3, 2.5, 0), 3.4, 3.4, 6, 0, st.trim, st.trim);
-			for (int k = -1; k <= 1; k++) {
-				double[] a0 = pt(q0, k * 1.4, 0, k * 0.8), a1 = pt(q0, 4 + k * 1.2, -7 - (k == 0 ? 2 : 0), k * 1.2);
-				add.tube(a0, a1, 0.6, 0.6, 3, 0, st.leatherDark, st.leatherDark);
-				add.tube(a1, pt(a1, 1.8, -3.5, 0), 1.2, 0, 4, 0, k == 0 ? st.core : st.accent, st.accent);
-			}
-			for (int side = -1; side <= 1; side += 2) {
-				for (int k = 0; k < 2; k++) {
-					double[] b = { side * hw * (0.62 + k * 0.2), top + 1.5, cz + (k == 0 ? -1.5 : 2) };
-					shard(add, b, new double[] { side * 0.45, -1, k * 0.3 }, 6 - k * 1.5, 1.5, k == 0 ? st.accent : RIFTGLASS, RIFTGLASS);
-				}
-			}
+		case RIFTWALKER: // the shards, straps and torn cape are the base's (BaseShatter)
 			break;
-		}
 		case DAWNGUARD: { // rose-gold pauldrons, the sun rising on the breast, white wings folded down the back
 			for (int side = -1; side <= 1; side += 2) {
 				double[] c = { side * sx, sy, -1 };
@@ -262,12 +226,8 @@ final class DraftArmourC {
 				LowArmour.kneePlate(one, m, x, kneeY, st.trim, st.trimDark);
 				decal(one, m, F, starPts(x, kneeY, 2.6, 1.0, 4), 0.3, 2.9, st.accent, st.trim);
 				break;
-			case RIFTWALKER: {
-				double[] hit = surface(m, new double[] { x, kneeY, -100 }, new double[] { 0, 0, 1 });
-				double[] p = hit == null ? new double[] { x, kneeY, -12 } : hit;
-				shard(one, pt(p, 0, 1, 1), new double[] { side * 0.3, -0.6, -1 }, 6, 1.6, st.accent, RIFTGLASS);
+			case RIFTWALKER: // its knee shards are the base's
 				break;
-			}
 			default:
 				break;
 			}
@@ -290,9 +250,7 @@ final class DraftArmourC {
 			}
 			break;
 		}
-		case RIFTWALKER: // the rift down the right thigh
-			crack(fr, m, F, new double[][] { { -kneeX * 0.7, top + h * 0.1 }, { -kneeX * 1.25, top + h * 0.25 }, { -kneeX * 0.9, top + h * 0.38 },
-					{ -kneeX * 1.2, top + h * 0.47 } }, 0.8, st.accent, st.trim);
+		case RIFTWALKER: // the shards and straps are the base's
 			break;
 		case DAWNGUARD: { // rose tassets over the hips, a sun at the belt
 			for (int side = -1; side <= 1; side += 2) {
@@ -346,9 +304,7 @@ final class DraftArmourC {
 				break;
 			case SHROUD: // barely-there wraps: nothing on them
 				break;
-			case RIFTWALKER:
-				LowArmour.cuff(add, m, side, top, top + 3.5, 0.7, st.trim, st.trimDark);
-				shard(add, new double[] { side * (hw - 1), top + 6, 2 }, new double[] { side * 0.5, -0.8, 0.5 }, 5, 1.3, st.accent, RIFTGLASS);
+			case RIFTWALKER: // shard-plated in the base
 				break;
 			case DAWNGUARD:
 				LowArmour.toeCap(add, x, front, st.trim);
@@ -377,10 +333,7 @@ final class DraftArmourC {
 				break;
 			case SHROUD: // barely-there wraps: nothing on them
 				break;
-			case RIFTWALKER:
-				add.tube(new double[] { x, top + 1, 0.5 }, new double[] { x, top + 6, 0.5 }, 5.6, 5.8, 6, 0.26, st.trim, st.trimDark);
-				add.tube(new double[] { x, top + 3, 0.5 }, new double[] { x, top + 4, 0.5 }, 6.0, 6.0, 6, 0.26, st.accent, st.accent);
-				shard(add, new double[] { x + side * 5, top + 3, 0.5 }, new double[] { side, -0.6, 0 }, 5, 1.2, st.accent, RIFTGLASS);
+			case RIFTWALKER: // the shard gauntlet and the strap wrap are the base's
 				break;
 			case DAWNGUARD:
 				LowArmour.gauntlet(add, x, top, 7.6, st.main, st.dark, st.trim);
@@ -703,22 +656,6 @@ final class DraftArmourC {
 			p[1] *= s;
 		}
 		slab(add, f, outline, t, FEATHER, FEATHER, st.trim);
-	}
-
-	/** A riftglass shard: a short prism from {@code base} along {@code dir}, closing to a point. */
-	static void shard(ModelData add, double[] base, double[] dir, double len, double r, int col, int col2) {
-		double[] d = norm(dir);
-		double[] mid = ArmourForge.add(base, scale(d, len * 0.35)), tip = ArmourForge.add(base, scale(d, len));
-		add.tube(base, mid, r * 0.8, r, 4, 0.4, col2, col2);
-		add.tube(mid, tip, r, 0, 4, 0.4, col, col);
-	}
-
-	/** A jagged crack through the points, glowing, with a darker lip. */
-	static void crack(ModelData add, ModelData m, Frame f, double[][] pts, double w, int glow, int lip) {
-		for (int i = 0; i + 1 < pts.length; i++) {
-			double ww = w * (1 - 0.3 * i / pts.length);
-			decal(add, m, f, LowArmour.bar(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], ww), 0.3, 1.5, glow, lip);
-		}
 	}
 
 	/** An open eye: a white almond, a violet iris, a black pupil. */
