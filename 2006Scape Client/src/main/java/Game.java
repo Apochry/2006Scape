@@ -1154,6 +1154,15 @@ public class Game extends RSApplet {
 										}
 									} else {
 										if (class9_1.isInventoryInterface) {
+											// "Drop all" (custom): just under Drop, for anything whose fifth option is Drop
+											if (itemDef.actions == null || itemDef.actions[4] == null || itemDef.actions[4].equalsIgnoreCase("Drop")) {
+												menuActionName[menuActionRow] = "Drop all @lre@" + itemDef.name;
+												menuActionID[menuActionRow] = 848;
+												menuActionCmd1[menuActionRow] = itemDef.id;
+												menuActionCmd2[menuActionRow] = k2;
+												menuActionCmd3[menuActionRow] = class9_1.id;
+												menuActionRow++;
+											}
 											for (int l3 = 4; l3 >= 3; l3--) {
 												if (itemDef.actions != null && itemDef.actions[l3] != null) {
 													menuActionName[menuActionRow] = itemDef.actions[l3] + " @lre@" + itemDef.name;
@@ -3883,6 +3892,10 @@ public class Game extends RSApplet {
 			if (RSInterface.interfaceCache[k].parentID == backDialogID) {
 				atInventoryInterfaceType = 3;
 			}
+		}
+		if (l == 848) { // "Drop all": one packet, the server drops every slot holding this item
+			stream.createFrame(89);
+			stream.writeWord(i1);
 		}
 		if (l == 847) {
 			stream.createFrame(87);

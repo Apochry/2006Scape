@@ -24,6 +24,14 @@ public class DropItem implements PacketType {
 		packet.readUnsignedByte();
 		packet.readUnsignedByte();
 		int slot = packet.readUnsignedWordA();
+		drop(player, itemId, slot);
+	}
+
+	/** Drops the item in this inventory slot, with every rule a single drop has (the drop-all packet uses it too). */
+	public static void drop(Player player, int itemId, int slot) {
+		if (slot < 0 || slot >= player.playerItems.length) {
+			return;
+		}
 		if (!player.getItemAssistant().playerHasItem(itemId) || !RareProtection.removeItemOtherActions(player, itemId) || System.currentTimeMillis() - player.alchDelay < 1800 || player.stopPlayerPacket || System.currentTimeMillis() - player.buryDelay < 1800 || !CastleWars.deleteCastleWarsItems(player, itemId)) {
 			return;
 		}

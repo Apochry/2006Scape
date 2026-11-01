@@ -23,6 +23,7 @@ import com.rs2.net.packets.impl.ClickingButtons;
 import com.rs2.net.packets.impl.ClickingInGame;
 import com.rs2.net.packets.impl.ClickingStuff;
 import com.rs2.net.packets.impl.Commands;
+import com.rs2.net.packets.impl.DropAllItem;
 import com.rs2.net.packets.impl.DropItem;
 import com.rs2.net.packets.impl.FollowPlayer;
 import com.rs2.net.packets.impl.IdleLogout;
@@ -96,6 +97,7 @@ public class PacketHandler {
 		packetId[4] = new Chat();
 		packetId[236] = new PickupItem();
 		packetId[87] = new DropItem();
+		packetId[89] = new DropAllItem(); // "Drop all" (a custom opcode: the client's inventory menu)
 		packetId[185] = new ClickingButtons();
 		packetId[130] = new ClickingStuff();
 		packetId[103] = new Commands();
