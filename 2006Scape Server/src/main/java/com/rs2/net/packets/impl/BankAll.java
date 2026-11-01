@@ -2,7 +2,9 @@ package com.rs2.net.packets.impl;
 
 import org.apollo.cache.def.ItemDefinition;
 
+import com.rs2.Constants;
 import com.rs2.game.content.random.PartyRoom;
+import com.rs2.game.content.skills.crafting.JewelryMaking;
 import com.rs2.game.items.GameItem;
 import com.rs2.game.items.ItemData;
 import com.rs2.game.players.Player;
@@ -155,6 +157,22 @@ public class BankAll implements PacketType {
 			} else {
 				player.getDueling().fromDuel(removeId, removeSlot, 28);
 			}
+			break;
+
+		// "Make All" on the gold jewellery mould interface (the client adds the option)
+		case 4233:
+		case 4239:
+		case 4245:
+			JewelryMaking.mouldItem(player, removeId, Constants.INVENTORY_SIZE);
+			break;
+
+		// "Make All" on the smithing interface; smithing stops when the bars run out
+		case 1119:
+		case 1120:
+		case 1121:
+		case 1122:
+		case 1123:
+			player.getSmithing().readInput(player, player.playerLevel[Constants.SMITHING], removeId, Constants.INVENTORY_SIZE);
 			break;
 
 		}
