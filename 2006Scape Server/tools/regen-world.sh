@@ -18,3 +18,4 @@ java -Dworldgate="${WORLDGATE:-enforce}" $GENOPTS -cp target/server-1.0-jar-with
 # Creatures defined but not placed anywhere yet (model, frames, sequences and npc definition at fixed ids clear of
 # everything above): written into the cache the world was just built into. Placing one is a generator change.
 java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.Shardback data/cache 2>&1 | grep -v JAVA_TOOL
+java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.Gravecoil data/cache 2>&1 | grep -v JAVA_TOOL

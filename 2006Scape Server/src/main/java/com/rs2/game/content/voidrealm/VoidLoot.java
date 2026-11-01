@@ -118,8 +118,8 @@ public final class VoidLoot {
 	/** Tier weights out of 100 - just bones, ordinary, useful, valuable, gear - by kind of monster. */
 	static final int[] BEAST = { 60, 25, 10, 3, 2 }, PEOPLE = { 25, 35, 25, 7, 8 }, SPIRIT = { 35, 15, 40, 7, 3 },
 			ANY = { 40, 30, 20, 5, 5 };
-	/** The stock beasts that live on Nythera (giant spider, white wolf, grizzly) and its own (the Hollowed wolf). */
-	static final int[] BEASTS = { 60, 96, 105, HOLLOWED_WOLF };
+	/** The stock beasts that live on Nythera (giant spider, white wolf, grizzly) and its own (the Hollowed wolf, the Gravecoil). */
+	static final int[] BEASTS = { 60, 96, 105, HOLLOWED_WOLF, GRAVECOIL };
 	/** Ghosts, shades and wraiths: what they leave is mostly runes and herbs. */
 	static final int[] SPIRITS = { 103, HOLLOW_SHADE, HOLLOW_WRAITH };
 	/** The ones with a profile of their own: npc id, then its five weights. */

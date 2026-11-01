@@ -16918,5 +16918,11 @@
     "name": "Shardback",
     "combat": 47,
     "id": 4000
+  },
+  {
+    "hitpoints": 60,
+    "name": "Gravecoil",
+    "combat": 52,
+    "id": 4001
   }
 ]

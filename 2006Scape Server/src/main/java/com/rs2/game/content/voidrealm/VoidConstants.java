@@ -32,6 +32,8 @@ public final class VoidConstants {
 	public static final int SILKWOOD_STALKER = 3891, SCAR_REAVER = 3892, MOONMOURNER = 3893, RIMEBOUND_WARRIOR = 3894, COVE_NIGHTRUNNER = 3895;
 	/* the Shardback, a crater beast with its own model and animations (tools/mapgen/Shardback): defined, not yet placed */
 	public static final int SHARDBACK = 4000;
+	/* the Gravecoil, a barrow serpent with its own model and animations (tools/mapgen/Gravecoil): defined, not yet placed */
+	public static final int GRAVECOIL = 4001;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;

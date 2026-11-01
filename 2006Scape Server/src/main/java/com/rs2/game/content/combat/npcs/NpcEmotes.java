@@ -111,7 +111,8 @@ public enum NpcEmotes {
 		MOONMOURNER(new int[] {VoidConstants.MOONMOURNER}, 1162, 424, 836),
 		RIMEBOUND_WARRIOR(new int[] {VoidConstants.RIMEBOUND_WARRIOR}, 401, 1156, 836),
 		COVE_NIGHTRUNNER(new int[] {VoidConstants.COVE_NIGHTRUNNER}, 426, 424, 836),
-		SHARDBACK(new int[] {VoidConstants.SHARDBACK}, 4102, 4104, 4103); // its own frames (tools/mapgen/Shardback): bite, flinch, collapse
+		SHARDBACK(new int[] {VoidConstants.SHARDBACK}, 4102, 4104, 4103), // its own frames (tools/mapgen/Shardback): bite, flinch, collapse
+		GRAVECOIL(new int[] {VoidConstants.GRAVECOIL}, 4112, 4114, 4113); // its own frames (tools/mapgen/Gravecoil): strike, recoil, topple
 		
 		int[] npcId;
 		int attackAnim, blockAnim, deadAnim;

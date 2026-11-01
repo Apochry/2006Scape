@@ -69,6 +69,12 @@ shardback = npcdef(4000, 'Shardback', 'Its back bristles with the glass the star
                    47, 48, 6, 2, 2400, 4102, 4104, 4103, 45, 50, True, True)
 shardback.update({'respawn': 30, 'defenceRange': 75, 'defenceMage': 10})
 people.append(shardback)
+# the Gravecoil (tools/mapgen/Gravecoil): a 2x2 barrow serpent, easy to shoot between its bronze rings, hard to spell (the
+# grave-wards cut in them); replaces the stock row "Combat stone" that sat at id 4001. Defined only: it has no spawns yet
+gravecoil = npcdef(4001, 'Gravecoil', 'Sealed in with a king to guard his gold. Nobody ever told it to stop.',
+                   52, 60, 7, 2, 2400, 4112, 4114, 4113, 48, 46, True, True)
+gravecoil.update({'respawn': 30, 'defenceRange': 12, 'defenceMage': 80})
+people.append(gravecoil)
 ids = {p['id'] for p in people}
 
 # npcDefinitions.json: drop placeholder "Suspect" rows for our ids, replace any earlier version of ours
@@ -96,6 +102,9 @@ BONES = {'item_id': 526, 'chance': 0, 'amounts': [1, 1]}
 # the Shardback: big bones always (it was a bear), then Nythera's tiers like any monster there
 drops = [x for x in drops if x['id'] != 4000]
 drops.append({'id': 4000, 'items': [{'item_id': 532, 'chance': 0, 'amounts': [1, 1]}]})
+# the Gravecoil: big bones (it is a very big snake), then the tiers
+drops = [x for x in drops if x['id'] != 4001]
+drops.append({'id': 4001, 'items': [{'item_id': 532, 'chance': 0, 'amounts': [1, 1]}]})
 for i in (3891, 3892, 3893, 3894, 3895):
     have = [x for x in drops if x['id'] == i]
     if not have:
