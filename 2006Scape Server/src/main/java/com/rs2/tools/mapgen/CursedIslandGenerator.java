@@ -21,6 +21,7 @@ import static com.rs2.game.content.skullbrine.SkullbrineConstants.*;
  *   java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.CursedIslandGenerator [cacheDir]
  *
  * Safe to re-run: regions that already exist in map_index reuse their file ids and are overwritten.
+ * Add -Dmaps-only to rewrite just the map regions of a cache whose definitions are already built.
  * Everything about the layout lives in this class, so tweak the constants/methods below and re-run.
  */
 public final class CursedIslandGenerator {
@@ -97,7 +98,9 @@ public final class CursedIslandGenerator {
 			gen.voidRealm.arena();
 			gen.voidRealm.nythera();
 			gen.bedFlatProps();
-			gen.buildDefinitions();
+			if (System.getProperty("maps-only") == null) { // re-running the definitions appends every forged model again
+				gen.buildDefinitions();
+			}
 			if (System.getProperty("preview") != null) {
 				javax.imageio.ImageIO.write(new MapRender(cache).render(id -> gen.regions.get(id), BASE_X, BASE_Y,
 						64 * SURFACE_REGIONS, 64 * SURFACE_REGIONS, 6, false), "png", new java.io.File(System.getProperty("preview")));
@@ -1068,6 +1071,9 @@ public final class CursedIslandGenerator {
 						dst.height[z][lx][ly] = src.height[z][x][y];
 						dst.underlay[z][lx][ly] = src.underlay[z][x][y];
 						dst.settings[z][lx][ly] = src.settings[z][x][y];
+					} else {
+						// the client hides roofs while the player stands on a plane-0 tile flagged as under one
+						dst.settings[0][lx][ly] |= src.settings[0][x][y] & MapRegion.ROOF_HIDE;
 					}
 					dst.overlay[z][lx][ly] = src.overlay[z][x][y];
 					dst.overlayShape[z][lx][ly] = src.overlayShape[z][x][y];
