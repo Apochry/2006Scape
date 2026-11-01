@@ -1999,17 +1999,17 @@ public class PlayerAssistant {
 	/**
 	 * The XP curve. Stock RuneScape makes each level cost about 10.4% more than the one before, compounding: the last
 	 * few levels dwarf everything else (99 at 13,034,431, and half of that only reached at 92). This server's curve is
-	 * softer and closer to linear, without being linear, and keeps the low levels about as quick as stock:
+	 * softer and closer to linear, without being linear, and every level up to 50 is reached at or below stock XP:
 	 *
 	 * <pre>
-	 *   cost(L) = 59 * 1.045^(L-1) * ((L + 17) / 18)^2.5      (the XP from level L to L+1)
+	 *   cost(L) = 59 * 1.0575^(L-1) * ((L + 40.5) / 41.5)^3      (the XP from level L to L+1)
 	 * </pre>
 	 *
-	 * which puts 10 at 1,114, 30 at 19,595, 50 at 145,131, 70 at 775,542, 92 at 3,985,965 and 99 at 6,505,886.
-	 * The last level costs 32x the 50th (stock: 116x). The client's skill tab computes the same table (Game's
-	 * anIntArray1019, with these same constants): keep them identical.
+	 * which puts 10 at 914, 30 at 12,747, 40 at 36,225, 50 at 95,819, 70 at 583,207, 92 at 3,683,193 and
+	 * 99 at 6,470,044. The last level costs 52x the 50th (stock: 116x). The client's skill tab computes the same table
+	 * (Game's anIntArray1019, with these same constants): keep them identical.
 	 */
-	public static final double XP_FIRST = 59, XP_GROWTH = 1.045, XP_OFFSET = 17, XP_POWER = 2.5;
+	public static final double XP_FIRST = 59, XP_GROWTH = 1.0575, XP_OFFSET = 40.5, XP_POWER = 3;
 
 	static double xpCost(int lvl) {
 		return XP_FIRST * Math.pow(XP_GROWTH, lvl - 1) * Math.pow((lvl + XP_OFFSET) / (1 + XP_OFFSET), XP_POWER);

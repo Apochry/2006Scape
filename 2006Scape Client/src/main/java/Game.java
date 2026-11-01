@@ -12937,9 +12937,9 @@ public class Game extends RSApplet {
 
 	/**
 	 * The XP curve, the same as the server's (PlayerAssistant.XP_FIRST and the rest: keep them identical): each level
-	 * costs 59 * 1.045^(L-1) * ((L + 17) / 18)^2.5 XP, a softer, more linear climb than stock (99 at 6,505,886).
+	 * costs 59 * 1.0575^(L-1) * ((L + 40.5) / 41.5)^3 XP, a softer, more linear climb than stock (99 at 6,470,044).
 	 */
-	static final double XP_FIRST = 59, XP_GROWTH = 1.045, XP_OFFSET = 17, XP_POWER = 2.5;
+	static final double XP_FIRST = 59, XP_GROWTH = 1.0575, XP_OFFSET = 40.5, XP_POWER = 3;
 
 	static {
 		anIntArray1019 = new int[99];
