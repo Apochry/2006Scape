@@ -43,7 +43,8 @@ final class ArmourSets {
 		QUARRY, SILK, STONE, RIDGE, RAVAGER, MOON, RIME, NIGHT, SEER, KNIGHT, // the middle sets (MidArmour)
 		// the draft sets (DraftArmour, A25-A39): built and previewed, but not in SETS, so not in the game
 		ASHEN, THORN, SALTGILT, TIDE, SHARDHIDE, WILDGROVE, GRAVESCALE, SENTINEL, BROOD, RIMECLAW, HERALD, EMBERFORGED, SHROUD,
-		RIFTWALKER, DAWNGUARD;
+		RIFTWALKER, DAWNGUARD, //
+		KINGSGUARD, MARROW; // the arsenal sets (DraftArmourD, A40-A41): an armour set and a whole arsenal of weapons each
 
 		/** Built by LowArmour (which hands the middle sets on to MidArmour). */
 		boolean low() {

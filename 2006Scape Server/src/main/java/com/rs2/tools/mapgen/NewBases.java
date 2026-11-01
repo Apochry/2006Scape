@@ -13,7 +13,7 @@ import com.rs2.tools.mapgen.ArmourSets.Style;
  * camera and the inventory fit. What's drawn is the base's own mesh, in the set's colours. The set's motif
  * decorations then go on top as usual.
  *
- * <p>The draft sets (A25-A39) each have a base of their own, picked by the set's slug before the kind: the kind then
+ * <p>The draft sets (A25-A41) each have a base of their own, picked by the set's slug before the kind: the kind then
  * only says which donor rig it is built on and which skill it needs (COAT: melee, on the rune plate; MANTLE: magic, on
  * the mystic robe; WRAP: ranged, on the leather).
  */
@@ -58,6 +58,10 @@ final class NewBases {
 			return BaseShatter.worn(af, st, slot, female, donor, donorSecond);
 		case "dawnguard":
 			return BaseSeraph.worn(af, st, slot, female, donor, donorSecond);
+		case "kingsguard":
+			return BaseKingsguard.worn(af, st, slot, female, donor, donorSecond);
+		case "marrowbound":
+			return BaseMarrow.worn(af, st, slot, female, donor, donorSecond);
 		default:
 			break;
 		}
@@ -109,6 +113,10 @@ final class NewBases {
 			return BaseShatter.inventory(af, st, slot, worn);
 		case "dawnguard":
 			return BaseSeraph.inventory(af, st, slot, worn);
+		case "kingsguard":
+			return BaseKingsguard.inventory(af, st, slot, worn);
+		case "marrowbound":
+			return BaseMarrow.inventory(af, st, slot, worn);
 		default:
 			return null;
 		}
