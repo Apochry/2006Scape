@@ -43,7 +43,7 @@ final class DraftArmourA {
 			FUR = hsl(5, 2, 20), FUR_DARK = hsl(5, 2, 13), BEAR_EAR = hsl(5, 2, 32);
 
 	static final Style[] SETS = {
-			new Style("Ashen pilgrim", "ashenpilgrim", Kind.ROBE, Motif.ASHEN, 15, hsl(6, 1, 62), hsl(6, 1, 44), hsl(6, 1, 80), hsl(5, 2, 40), hsl(5, 2, 28),
+			new Style("Ashen pilgrim", "ashenpilgrim", Kind.MANTLE, Motif.ASHEN, 15, hsl(6, 1, 62), hsl(6, 1, 44), hsl(6, 1, 80), hsl(5, 2, 40), hsl(5, 2, 28),
 					BEAD, EMBER_GLOW, hsl(6, 2, 30), hsl(6, 2, 20), NO_SHIELD,
 					new String[] { "Ashen pilgrim hat", "Ashen pilgrim robe top", "Ashen pilgrim robe bottom", null, "Ashen pilgrim boots", "Ashen pilgrim gloves" },
 					new String[] { "A wide road-hat with a shrine token in the band. It has kept the rain off every road on Nythera.",
@@ -57,7 +57,7 @@ final class DraftArmourA {
 							"A moss-green vest, the hedge that keeps the spiders in wound along its bandolier. The berries are for the birds. Mostly.",
 							"Green panels over bound leggings, and bramble at the knee. Whatever crawls out of Silkwood has to get past these first.", null,
 							"Bark greaves, and thorns at the ankle. Spiders won't climb what bites back.", "Thorn-wound bracers with a leaf tucked in. Put them on carefully." }),
-			new Style("Saltgilt", "saltgilt", Kind.CHAIN, Motif.SALTGILT, 30, hsl(30, 1, 60), hsl(30, 1, 40), hsl(30, 1, 80), GOLD, GOLD_DARK, BARNACLE,
+			new Style("Saltgilt", "saltgilt", Kind.COAT, Motif.SALTGILT, 30, hsl(30, 1, 60), hsl(30, 1, 40), hsl(30, 1, 80), GOLD, GOLD_DARK, BARNACLE,
 					hsl(9, 2, 120), hsl(36, 2, 24), hsl(36, 2, 16), HAS_ALL,
 					new String[] { "Saltgilt med helm", "Saltgilt chainbody", "Saltgilt platelegs", "Saltgilt sq shield", "Saltgilt boots", "Saltgilt gloves" },
 					new String[] { "An officer's tricorn on a mail cap. The barnacles have served aboard the Drowned Maiden longer than anyone.",
@@ -65,7 +65,7 @@ final class DraftArmourA {
 							"A gold stripe down each leg, for rank. The Maiden kept her officers in style, if not in air.",
 							"The Maiden's anchor in gilt. It held her fast to the cove floor for a hundred years.",
 							"Gold-buckled sea boots. They still pour out a little seawater every morning.", "Gilt-cuffed gloves, for saluting a captain who isn't there." }),
-			new Style("Tidecaller", "tidecaller", Kind.ROBE, Motif.TIDE, 35, hsl(38, 4, 46), hsl(38, 4, 30), hsl(38, 3, 64), hsl(31, 4, 46), hsl(31, 4, 32),
+			new Style("Tidecaller", "tidecaller", Kind.MANTLE, Motif.TIDE, 35, hsl(38, 4, 46), hsl(38, 4, 30), hsl(38, 3, 64), hsl(31, 4, 46), hsl(31, 4, 32),
 					PEARL, hsl(36, 0, 124), hsl(36, 2, 26), hsl(36, 2, 18), NO_SHIELD,
 					new String[] { "Tidecaller hat", "Tidecaller robe top", "Tidecaller robe bottom", null, "Tidecaller boots", "Tidecaller gloves" },
 					new String[] { "A scallop shell, a string of pearls and a sprig of coral. The tide comes when it's called; the hat helps.",

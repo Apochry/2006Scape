@@ -511,6 +511,12 @@ final class ArmourSets {
 	/** The inventory model, from the male worn model(s), in the base item's own inventory frame. */
 	ModelData inventory(Style st, int slot) throws IOException {
 		ModelData[] w = worn(st, slot, false);
+		if (st.kind.generated()) {
+			ModelData own = NewBases.inventory(af, st, slot, w);
+			if (own != null) {
+				return own;
+			}
+		}
 		int[] b = base(st, slot);
 		if (slot == SHIELD && (st.kind == Kind.PLATE || st.kind == Kind.COAT)) {
 			double tau = Math.PI * 2;
