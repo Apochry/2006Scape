@@ -186,6 +186,8 @@ final class BaseWraith {
 
 	/** A star point seen from any side: an octahedron at c with half-extents r (x, y, z), its upper faces in col, lower in col2. */
 	static void sparkle(Mesh me, double[] c, double[] r, int label, int col, int col2) {
+		int shading = me.m.shading;
+		me.m.shading = 1; // flat: its faces share vertices back to back, which smooth shading would darken
 		int[] p = new int[6];
 		for (int k = 0; k < 6; k++) {
 			double[] d = new double[3];
@@ -196,6 +198,7 @@ final class BaseWraith {
 		for (int[] t : f) {
 			me.tri(p[t[0]], p[t[1]], p[t[2]], t[0] == 2 || t[1] == 2 ? col : col2, c);
 		}
+		me.m.shading = shading;
 	}
 
 	/**
@@ -203,6 +206,8 @@ final class BaseWraith {
 	 * middle, the face towards n in {@code front}, the other in {@code back}, thickness 2t, the rim in {@code side}.
 	 */
 	static void plate(Mesh me, double[] o, double[] u, double[] v, double[] n, double[][] outline, double t, int label, int front, int back, int side) {
+		int shading = me.m.shading;
+		me.m.shading = 1; // flat: its faces share vertices back to back, which smooth shading would darken
 		int k = outline.length;
 		int[] a = new int[k], b = new int[k];
 		double cu = 0, cv = 0;
@@ -225,6 +230,7 @@ final class BaseWraith {
 				me.quad(a[i], a[j], b[j], b[i], side, c);
 			}
 		}
+		me.m.shading = shading;
 	}
 
 	/** A four-pointed star outline (frame units): outer radius r, inner ri, points up, down and to the sides. */
@@ -239,9 +245,12 @@ final class BaseWraith {
 
 	/** A double-sided triangle a, b, tip: one face in col, the other in back. */
 	static void flap(Mesh me, int a, int b, int tip, int col, int back, double[] inside) {
+		int shading = me.m.shading;
+		me.m.shading = 1; // flat: its faces share vertices back to back, which smooth shading would darken
 		me.tri(a, b, tip, col, inside);
 		double[] g = scale(add(add(me.p(a), me.p(b)), me.p(tip)), 1 / 3.0);
 		me.tri(a, b, tip, back, sub(scale(g, 2), inside));
+		me.m.shading = shading;
 	}
 
 	/* ====================================================================== */

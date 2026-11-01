@@ -23,7 +23,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <li>Emberforged (Defence 70): Dorrin's forge masterwork on the coat base (Kind.COAT): blackened steel with glowing ember seams and rivets, bronze edging, an anvil-and-flame crest on the breast, a chimney on the kettle helm venting embers.</li>
  * <li>Starless shroud (Magic 70): Robes cut from the Starless's own shadow, on its own wraith base (BaseWraith): a tall pointed cowl over a black void with two violet eye-points and a crescent of stars behind the head, a narrow shroud with sleeves running out past the hands into ragged points and a ring of stars floating behind the shoulders, a robe frayed into long points trailing on the floor, dark wraps for hands and feet. Near-black with scattered star points, a violet seam of void-light down the front, an open eye on the breast.</li>
  * <li>Riftwalker (Ranged 75): Rangers who walk through the rifts, on their own shattered base (BaseShatter): armour broken into angular shards that hover off the body with violet light in the gaps, worn lopsided: the right side in floating shards (a great shard for a pauldron, more down the arm and the right leg, a shard gauntlet), the left bound in black straps under a torn cape from the left shoulder; a faceless hood with one glowing seam down the face and riftglass splinters floating round the crown; shard-plated boots. Dark grey-violet with glowing violet.</li>
- * <li>Dawnguard (Defence 80): The guard sworn to the first dawn after the Starless: pale gold-white plate, rose-dawn trim, a rising-sun crest with rays on the helm and breast, wings at the helm's sides. Must read clearly below Heartfire (90) but above Voidsteel (75).</li>
+ * <li>Dawnguard (Defence 80): The guard sworn to the first dawn after the Starless, on its own winged base (BaseSeraph): a pair of great folded wings of layered metal feather-plates on the back, rising above the shoulders and tapering past the hips; a sleek winged helm with a sun-disc and its rays behind the head; fluted plate with a rising-sun crest on the breast, pointed pauldrons, hourglass faulds, fluted greaves, pointed sabatons, fluted gauntlets, a round sun-disc shield with rays standing out past the rim. Pale gold-white plate, rose-dawn trim. Above Voidsteel (75) for the wings and the sun, below Heartfire (90) for the gold.</li>
  * </ol>
  */
 final class DraftArmourC {
@@ -79,15 +79,16 @@ final class DraftArmourC {
 							"Shards hover over one leg and straps hold the other together. Riftwalkers take whatever comes back through with them.", null,
 							"Shard-plated boots. They've stepped somewhere else and back, more than once, and kept a little of the somewhere else.",
 							"A shard gauntlet for the bow hand and a strap wrap for the other. The shards don't touch the glove. They never have." }),
-			new Style("Dawnguard", "dawnguard", Kind.COAT, Motif.DAWNGUARD, 80, hsl(2, 1, 104), hsl(2, 1, 84), hsl(2, 0, 118), ROSE, ROSE_DARK, SUN,
+			new Style("Dawnguard", "dawnguard", Kind.COAT, Motif.DAWNGUARD, 80, hsl(7, 1, 104), hsl(5, 1, 84), hsl(8, 1, 119), ROSE, ROSE_DARK, SUN,
 					SUN_CORE, hsl(1, 3, 40), hsl(1, 3, 28), HAS_ALL,
-					new String[] { "Dawnguard full helm", "Dawnguard platebody", "Dawnguard platelegs", "Dawnguard kiteshield", "Dawnguard boots",
+					new String[] { "Dawnguard full helm", "Dawnguard platebody", "Dawnguard platelegs", "Dawnguard sunshield", "Dawnguard sabatons",
 							"Dawnguard gauntlets" },
-					new String[] { "Winged, and crowned with the first dawn after the Starless. The Dawnguard swore to see the next one too.",
-							"The first sunrise after the Starless, beaten into the breastplate. The wings on the back are for getting there first.",
-							"Rose-gold tassets. The Dawnguard stand their watch in the hour when the sky goes pink.",
-							"The sun, half-risen over the horizon. The Dawnguard never paint it any higher; it isn't over yet.",
-							"Little wings at the heels. They're mostly for show. Mostly.", "Pale gauntlets with a gold ray at the cuff, for saluting the morning." }), };
+					new String[] { "Winged at the temples, with the first dawn after the Starless standing behind it. The Dawnguard swore to see the next one too.",
+							"The first sunrise beaten into the breastplate, and a pair of wings in plate on the back. The wings are for getting there first.",
+							"Rose-edged faulds over fluted plate. The Dawnguard stand their watch in the hour when the sky goes pink.",
+							"A round shield made a sun, its rays standing out past the rim. Held up to the east, it's hard to tell which is which.",
+							"Pointed sabatons. The Dawnguard march towards the sunrise, and the toes are pointed that way to save time.",
+							"Fluted gauntlets, rose at the cuff, for saluting the morning." }), };
 
 	/** Each set's weapon, in set order (id 0: not in the game). */
 	static final Rung[] WEAPONS = {
@@ -133,23 +134,8 @@ final class DraftArmourC {
 			break;
 		case RIFTWALKER: // the hood's seam and its floating splinters are the base's (BaseShatter)
 			break;
-		case DAWNGUARD: { // a rising sun standing on the crown, rays fanned behind it; white wings at the temples; a sun on the brow
-			double sy = top + 3.5, sz = cz + 1;
-			Frame S = new Frame(new double[] { 0, sy, sz }, X, Y, new double[] { 0, 0, -1 });
-			slab(add, S, semicircle(0, 0, 6.4, 7), 1.0, st.accent, st.trim, st.trimDark);
-			slab(add, S, semicircle(0, -0.2, 3.4, 5), 1.6, st.core, st.accent, st.accent);
-			for (int k = 0; k < 5; k++) {
-				double a = Math.PI + Math.PI * (k + 0.5) / 5, ca = Math.cos(a), sa = Math.sin(a);
-				double len = k % 2 == 0 ? 16 : 12;
-				blade(add, new double[] { ca * 5.6, sy + sa * 5.6, sz }, new double[] { ca * len, sy + sa * len, sz }, new double[] { -sa, ca, 0 }, 2.0, 0.7,
-						k % 2 == 0 ? st.accent : st.trim);
-			}
-			for (int side = -1; side <= 1; side += 2) { // a white wing at each temple, swept back
-				double[] u = norm(new double[] { side * 0.3, 0, 1 });
-				wing(add, new double[] { side * hw * 0.97, top + h * 0.45, cz - 2 }, u, Y, new double[] { side, 0, 0 }, 1.55, 0.7, st);
-			}
+		case DAWNGUARD: // the wings, the crest and the sun-disc are the base's (BaseSeraph)
 			break;
-		}
 		default:
 			break;
 		}
@@ -185,17 +171,10 @@ final class DraftArmourC {
 		}
 		case RIFTWALKER: // the shards, straps and torn cape are the base's (BaseShatter)
 			break;
-		case DAWNGUARD: { // rose-gold pauldrons, the sun rising on the breast, white wings folded down the back
-			for (int side = -1; side <= 1; side += 2) {
-				double[] c = { side * sx, sy, -1 };
-				double[] axis = norm(new double[] { side * 0.6, -0.8, 0 });
-				dome(add, c, axis, Z, hw * 0.55, hw * 0.43, hw * 0.36, 6, st.dark, st.main);
-				ring(add, c, axis, Z, hw * 0.6, hw * 0.48, -1.4, 2.4, 6, st.trim);
-				// a white wing on each shoulder blade, raised up and out and angled away from the back
-				double[] root = pt(project(m, B, side * hw * 0.1, top + h * 0.34), 0, 0, 1.5);
-				wing(add, root, norm(new double[] { side, 0, 0.5 }), Y, Z, 1.8, 0.8, st);
-			}
-			risingSun(add, m, F, 0, cy + 3, h * 0.22, st);
+		case DAWNGUARD: { // the first sunrise after the Starless, beaten into the breastplate (the wings and pauldrons are the base's)
+			double[] t = BaseWraith.mark(m, "torso"); // neck, waist
+			double th = t[1] - t[0];
+			risingSun(add, m, F, 0, t[0] + th * 0.42, th * 0.2, st);
 			break;
 		}
 		default:
@@ -222,9 +201,7 @@ final class DraftArmourC {
 			case EMBERFORGED:
 				coatKnee(one, m, side, st);
 				break;
-			case DAWNGUARD:
-				LowArmour.kneePlate(one, m, x, kneeY, st.trim, st.trimDark);
-				decal(one, m, F, starPts(x, kneeY, 2.6, 1.0, 4), 0.3, 2.9, st.accent, st.trim);
+			case DAWNGUARD: // its knee cops are the base's
 				break;
 			case RIFTWALKER: // its knee shards are the base's
 				break;
@@ -252,16 +229,8 @@ final class DraftArmourC {
 		}
 		case RIFTWALKER: // the shards and straps are the base's
 			break;
-		case DAWNGUARD: { // rose tassets over the hips, a sun at the belt
-			for (int side = -1; side <= 1; side += 2) {
-				double x = side * hw * 0.45;
-				decal(fr, m, F, new double[][] { { x - 5.5, top + 3 }, { x + 5.5, top + 3 }, { x + 5, top + h * 0.26 }, { x, top + h * 0.31 }, { x - 5, top + h * 0.26 } },
-						1.0, 2.0, st.trim, st.trimDark);
-			}
-			decal(fr, m, F, semicircle(0, top + 6, 3.4, 5), 0.5, 2.4, st.accent, st.trim);
-			decal(fr, m, F, rect(-4.6, top + 6, 4.6, top + 7.4), 0.5, 2.6, st.trim, st.trimDark);
+		case DAWNGUARD: // the hourglass faulds are the base's
 			break;
-		}
 		default:
 			break;
 		}
@@ -280,8 +249,7 @@ final class DraftArmourC {
 		case EMBERFORGED: // the anvil under the boss, the flame rising off it, ember rivets round the field
 			coatShield(add, m, st);
 			break;
-		case DAWNGUARD: // the first dawn: the sun rising over the horizon
-			risingSun(add, m, f, 2, 6, 15, st);
+		case DAWNGUARD: // the sun-disc and its rays are the base's
 			break;
 		default:
 			break;
@@ -306,12 +274,7 @@ final class DraftArmourC {
 				break;
 			case RIFTWALKER: // shard-plated in the base
 				break;
-			case DAWNGUARD:
-				LowArmour.toeCap(add, x, front, st.trim);
-				for (int k = 0; k < 2; k++) {
-					double[] r = { side * (hw - 2), top + 5 + k * 2.5, back - 4 };
-					blade(add, r, pt(r, side * (3 + k), -7 + k * 3, 7 - k), new double[] { side * 0.4, 0, 1 }, 2.0 - k * 0.3, 0.6, k == 0 ? FEATHER : FEATHER_DARK);
-				}
+			case DAWNGUARD: // the pointed sabatons are the base's
 				break;
 			default:
 				break;
@@ -335,9 +298,7 @@ final class DraftArmourC {
 				break;
 			case RIFTWALKER: // the shard gauntlet and the strap wrap are the base's
 				break;
-			case DAWNGUARD:
-				LowArmour.gauntlet(add, x, top, 7.6, st.main, st.dark, st.trim);
-				blade(add, new double[] { x + side * 6, top + 4, 1 }, new double[] { x + side * 11, top - 3, 1 }, Z, 1.8, 0.7, st.accent);
+			case DAWNGUARD: // the fluted gauntlets are the base's
 				break;
 			default:
 				break;
@@ -613,49 +574,6 @@ final class DraftArmourC {
 			p[k] = new double[] { x + Math.cos(a) * r, y + Math.sin(a) * r };
 		}
 		return p;
-	}
-
-	/** A free-standing plate: the outline (frame coordinates, star-shaped about its middle) extruded {@code t} either side of the frame's plane. */
-	static void slab(ModelData add, Frame f, double[][] outline, double t, int front, int back, int side) {
-		int n = outline.length;
-		int[] a = new int[n], b = new int[n];
-		double cu = 0, cv = 0;
-		for (double[] q : outline) {
-			cu += q[0] / n;
-			cv += q[1] / n;
-		}
-		for (int i = 0; i < n; i++) {
-			double[] p = f.at(outline[i][0], outline[i][1]);
-			double[] p0 = ArmourForge.add(p, scale(f.n, t)), p1 = ArmourForge.add(p, scale(f.n, -t));
-			a[i] = add.vertex(p0[0], p0[1], p0[2]);
-			b[i] = add.vertex(p1[0], p1[1], p1[2]);
-		}
-		double[] c = f.at(cu, cv), ca = ArmourForge.add(c, scale(f.n, t)), cb = ArmourForge.add(c, scale(f.n, -t));
-		int ia = add.vertex(ca[0], ca[1], ca[2]), ib = add.vertex(cb[0], cb[1], cb[2]);
-		for (int i = 0; i < n; i++) {
-			int j = (i + 1) % n;
-			add.triOut(a[i], a[j], ia, front, ArmourForge.add(c, scale(f.n, -20)));
-			add.triOut(b[i], b[j], ib, back, ArmourForge.add(c, scale(f.n, 20)));
-			add.quadOut(a[i], a[j], b[j], b[i], side, c);
-		}
-	}
-
-	/**
-	 * A Dawnguard wing: a flat slab from its root at {@code o}, the leading edge rising along {@code u} (outward) and up to the tip, the feathers
-	 * scalloped back down its trailing edge; {@code v} is down. White on the outer face, rose at the edges.
-	 */
-	static void wing(ModelData add, double[] o, double[] u, double[] v, double[] out, double s, double t, Style st) {
-		double[] n = norm(ModelData.cross(u, v));
-		if (ArmourForge.dot(n, out) < 0) {
-			n = scale(n, -1);
-		}
-		Frame f = new Frame(o, u, v, n);
-		double[][] outline = { { 0, -2 }, { 5, -8 }, { 15, -12.5 }, { 13, -7.5 }, { 15, -4.5 }, { 11, -1 }, { 9, 3 }, { 3, 3 } };
-		for (double[] p : outline) {
-			p[0] *= s;
-			p[1] *= s;
-		}
-		slab(add, f, outline, t, FEATHER, FEATHER, st.trim);
 	}
 
 	/** An open eye: a white almond, a violet iris, a black pupil. */

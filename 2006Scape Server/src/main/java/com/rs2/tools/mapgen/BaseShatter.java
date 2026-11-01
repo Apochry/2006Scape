@@ -99,6 +99,8 @@ final class BaseShatter {
 	 */
 	static void shard(Mesh me, double[] o, double[] u, double[] v, double[] n, int shape, boolean flip, double w, double h, double t, double crown, int label,
 			int col, int col2, int edge) {
+		int shading = me.m.shading;
+		me.m.shading = 1; // flat: its faces share vertices back to back, which smooth shading would darken
 		n = norm(n);
 		u = norm(sub(u, scale(n, dot(u, n))));
 		v = norm(sub(sub(v, scale(n, dot(v, n))), scale(u, dot(v, u))));
@@ -130,10 +132,13 @@ final class BaseShatter {
 		for (int i = 0; i < k; i++) {
 			me.tri(gl[i], gl[(i + 1) % k], gm, GLOW, behind);
 		}
+		me.m.shading = shading;
 	}
 
 	/** A riftglass splinter: a four-sided double point from a to b, widest {@code r} a third of the way. */
 	static void splinter(Mesh me, double[] a, double[] b, double r, int label, int col, int col2) {
+		int shading = me.m.shading;
+		me.m.shading = 1; // flat: its faces share vertices back to back, which smooth shading would darken
 		double[] d = norm(sub(b, a));
 		double[] e1 = norm(ModelData.cross(d, Math.abs(d[1]) > 0.9 ? new double[] { 1, 0, 0 } : new double[] { 0, 1, 0 })), e2 = ModelData.cross(d, e1);
 		double[] m = lerp(a, b, 0.35);
@@ -148,6 +153,7 @@ final class BaseShatter {
 			me.tri(ring[i], ring[j], tb, i % 2 == 0 ? col : col2, m);
 			me.tri(ring[i], ring[j], ta, col2, m);
 		}
+		me.m.shading = shading;
 	}
 
 	/** A shard on a limb: over the point at angle phi (0 front, pi/2 the +x side) round the axis c (direction a), radius rad, floating {@code lift} off it. */
