@@ -12935,21 +12935,23 @@ public class Game extends RSApplet {
 	public int anInt1273;
 	public int anInt1034;
 
-	/** Levels for the XP each level needs to double: the server's PlayerAssistant.XP_CURVE_DOUBLING (stock 7). */
-	static final double XP_CURVE_DOUBLING = 7.61D;
+	/**
+	 * The XP curve, the same as the server's (PlayerAssistant.XP_FIRST and the rest: keep them identical): each level
+	 * costs 83 * 1.03^(L-1) * ((L + 5.8) / 6.8)^2 XP, a softer, more linear climb than stock (99 at 6,508,757).
+	 */
+	static final double XP_FIRST = 83, XP_GROWTH = 1.03, XP_OFFSET = 5.8, XP_POWER = 2;
 
 	static {
 		anIntArray1019 = new int[99];
-		int i = 0;
+		double total = 0;
 		for (int j = 0; j < 99; j++) {
 			int l = j + 1;
-			int i1 = (int) ((double) l + 300D * Math.pow(2D, (double) l / XP_CURVE_DOUBLING));
-			i += i1;
-			anIntArray1019[j] = i / 4;
+			total += XP_FIRST * Math.pow(XP_GROWTH, l - 1) * Math.pow((l + XP_OFFSET) / (1 + XP_OFFSET), XP_POWER);
+			anIntArray1019[j] = (int) total;
 		}
 
 		anIntArray1232 = new int[32];
-		i = 2;
+		int i = 2;
 		for (int k = 0; k < 32; k++) {
 			anIntArray1232[k] = i - 1;
 			i += i;
