@@ -22,7 +22,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <li>Wildgrove (Magic 40): Druids of the deep woods, on the mantle base (BaseMantle): a leaf-wreathed hood with antlers grown through it, a leaf collar on the mantle, ivy and small golden flowers climbing the tunic, a bark sash, leaves trailing down the cape.</li>
  * <li>Gravescale (Defence 45): The Gravecoil, the barrow serpent, worn whole, on its own base (BaseSerpent), in the Gravecoil's colours: its head for a helm (jaws gaping round the face, hood spread, venom-yellow eyes), its body coiled round a scale shirt with the tail hanging behind, banded segmented greaves, scaled boots, gauntlets with fang claws, and a serpent coiled into a round shield with its head raised. The base carries the look; there are no decorations.</li>
  * <li>Gatehold sentinel (Defence 50): The guard on Gatehold's wall, built like the gate-tower he guards, on its own base (BaseBastion): blocky bright steel and Gatehold blue, a battlemented great helm with a portcullis visor and a tall blue plume, a squared breastplate with tower pauldrons and a blue tabard bearing the gold gate-tower, portcullis tassets, blocky sabatons, square-cuffed gauntlets, and a pavise shaped like the gate. The base carries the look; there are no decorations.</li>
- * <li>Broodkeeper (Magic 50): the keepers of the Silkwood broodmother's brood, on the mantle base (BaseMantle): many small eyes glowing in the hood's shadow and a spider on its crown, chitin lames down the tunic, a carapace on the mantle with a broodmother's legs over the shoulders, sickly glowing egg-sacs.</li>
+ * <li>Broodkeeper (Magic 50): the keepers of the Silkwood broodmother's brood, half become spiders, on their own base (BaseCarapace): a chitin mask-hood with eight glowing eyes over a face of shadow and mandible hooks at the chin, a robe-tunic with chitin lames under a glossy carapace with eight long jointed spider legs arching over the shoulders, a swollen egg-sac abdomen at the small of the back, a skirt of torn silk and web, pointed chitin boots and long clawed chitin fingers. The base carries the look; there are no decorations.</li>
  * <li>Rimeclaw hunter (Ranged 60): Hunters who took Rimeclaw (the Frostfang boss) and wear its hide: ice-blue hide, a claw necklace, big hooked claws at the shoulders and on the vambraces, a beast-head coif with frost.</li>
  * </ol>
  */
@@ -68,12 +68,12 @@ final class DraftArmourB {
 							"Square steel sabatons, worn flat on the wall walk.", "Square-cuffed gauntlets rimmed in gold. They've held the gate shut more than once." }),
 			new Style("Broodkeeper", "broodkeeper", Kind.MANTLE, Motif.BROOD, 50, hsl(51, 2, 42), hsl(51, 2, 28), hsl(51, 1, 56), CHITIN, CHITIN_DARK, hsl(14, 5, 80),
 					hsl(14, 3, 112), CHITIN, CHITIN_DARK, NO_SHIELD,
-					new String[] { "Broodkeeper hood", "Broodkeeper mantle top", "Broodkeeper leggings", null, "Broodkeeper shoes", "Broodkeeper handwraps" },
-					new String[] { "A spider crouches on the cowl, legs round it. In the shadow underneath, every eye is open. It isn't dead. It's on duty.",
-							"A mantle under a chitin carapace, the brood's eggs slung beneath it. The broodmother's keepers never set them down.",
-							"Egg-sacs hang at the belt, glowing faintly. Best not to be standing near when they hatch.", null,
-							"Chitin-spurred wrapped shoes for walking where the brood nests.",
-							"Chitin cuffs and hooked spurs on the wraps. The keepers handle the eggs gently, and everything else less so." }),
+					new String[] { "Broodkeeper mask", "Broodkeeper carapace top", "Broodkeeper web skirt", null, "Broodkeeper chitin boots", "Broodkeeper claws" },
+					new String[] { "A chitin mask with nothing to see behind it but shadow, and eight eyes above. They're all open. They're all yours now.",
+							"A robe under a spider's carapace, eight legs over the shoulders and the brood's egg-sac on the back. The broodmother's keepers never set it down.",
+							"A skirt of torn silk, web strung between the strands. Something in the Silkwood finishes it for you overnight.", null,
+							"Chitin boots that end in a point, like a leg tip. They make no sound on silk.",
+							"Chitin cuffs and long jointed claws. The keepers handle the eggs gently, and everything else less so." }),
 			new Style("Rimeclaw hunter", "rimeclaw", Kind.WRAP, Motif.RIMECLAW, 60, hsl(36, 3, 74), hsl(36, 3, 54), hsl(36, 2, 94), hsl(38, 3, 36), hsl(38, 3, 24),
 					CLAW, hsl(36, 2, 120), hsl(36, 2, 34), hsl(36, 2, 22), NO_SHIELD,
 					new String[] { "Rimeclaw hunter coif", "Rimeclaw hunter body", "Rimeclaw hunter chaps", null, "Rimeclaw hunter boots", "Rimeclaw hunter vambraces" },
@@ -145,33 +145,8 @@ final class DraftArmourB {
 			break;
 		case SENTINEL: // BaseBastion carries the whole look
 			break;
-		case BROOD: { // the brood's eyes in the hood's shadow, and a spider crouched on the crown, its legs gripping round the cowl
-			double oy = top + h * 0.45;
-			double[][] eyes = { { -2.4, -1.8, 1.4 }, { 2.4, -1.8, 1.4 }, { -4.6, -3.8, 0.9 }, { 4.6, -3.8, 0.9 }, { -1.3, 1.8, 0.9 }, { 1.3, 1.8, 0.9 }, { -4.4, 1.0, 0.7 },
-					{ 4.4, 1.0, 0.7 } };
-			for (double[] e : eyes) {
-				double[] p = project(m, F, e[0], oy + e[1]);
-				add.tube(plus(p, new double[] { 0, 0, 0.3 }), plus(p, new double[] { 0, 0, -1.4 }), e[2], 0, 4, Math.PI / 4, st.accent, st.core);
-			}
-			double[] hp = crown(m, front + (back - front) * 0.3, top), ap = crown(m, cz + dz * 0.3, top);
-			pod(add, plus(hp, new double[] { 0, -2.0, -3.5 }), plus(hp, new double[] { 0, -2.4, 3.5 }), 3.2, CHITIN_LIGHT, CHITIN);
-			pod(add, plus(ap, new double[] { 0, -3.5, -5 }), plus(ap, new double[] { 0, -2.5, 8 }), 5.6, CHITIN, CHITIN_LIGHT);
-			add.tube(plus(ap, new double[] { 0, -8.4, 0 }), plus(ap, new double[] { 0, -9.6, 3 }), 1.4, 1.0, 4, Math.PI / 4, st.accent, st.accent);
-			for (int k = -1; k <= 1; k += 2) { // two eyes on the spider's own head
-				add.tube(plus(hp, new double[] { k * 1.2, -3.6, -3.4 }), plus(hp, new double[] { k * 1.4, -3.8, -5.0 }), 0.8, 0, 4, Math.PI / 4, st.accent, st.core);
-			}
-			for (int side = -1; side <= 1; side += 2) {
-				for (int k = 0; k < 3; k++) {
-					double[] root = plus(hp, new double[] { side * 2.4, -2.2, -1.5 + k * 2.0 });
-					double[] foot = side(m, side, top + h * (0.34 + 0.05 * Math.abs(k - 1)), front + (back - front) * (0.2 + k * 0.27), hw);
-					foot = plus(foot, new double[] { side * 0.6, 0, 0 });
-					double[] knee = plus(lerp(root, foot, 0.45), new double[] { side * 5.5, -7, 0 });
-					blade(add, root, knee, Y, 1.7, 1.2, CHITIN);
-					blade(add, knee, foot, Y, 1.4, 1.0, k % 2 == 0 ? CHITIN_LIGHT : CHITIN_DARK);
-				}
-			}
+		case BROOD: // BaseCarapace carries the whole look
 			break;
-		}
 		case RIMECLAW: { // Rimeclaw's own head worn as a hood: the snout over the brow, fangs, ears laid back, frost on the crown
 			double[] brow = project(m, F, 0, top + h * 0.12);
 			double[] tip = plus(brow, new double[] { 0, 0.5, -12 }), wide = lerp(brow, tip, 0.3);
@@ -242,33 +217,8 @@ final class DraftArmourB {
 			break;
 		case SENTINEL: // BaseBastion carries the whole look
 			break;
-		case BROOD: { // chitin lames down the tunic, a carapace on the pelerine with a broodmother's legs hooked over the shoulders, the brood's sign on the cape, egg-sacs carried on the back
-			Mantle mm = new Mantle(m);
-			for (int k = 0; k < 3; k++) {
-				double y = lerp(mm.neck + 6, mm.waist - 6, k / 3.0), hh = (mm.waist - mm.neck - 12) / 3.0, w = 3.6 + k * 1.6;
-				decal(add, m, F, new double[][] { { -w, y }, { w, y }, { w * 0.92, y + hh * 0.75 }, { 0, y + hh * 1.05 }, { -w * 0.92, y + hh * 0.75 } }, 0.6, 2.4 - k * 0.3,
-						k % 2 == 0 ? CHITIN_LIGHT : CHITIN, CHITIN_DARK);
-			}
-			double cw = mm.shoulderX * 0.62;
-			decal(add, m, B, new double[][] { { 0, mm.neck - 1 }, { cw, mm.neck + 4 }, { cw * 0.92, mm.pelerineHem - 3 }, { 0, mm.pelerineHem + 2 }, { -cw * 0.92, mm.pelerineHem - 3 },
-					{ -cw, mm.neck + 4 } }, 0.6, 2.0, CHITIN, CHITIN_DARK);
-			for (int side = -1; side <= 1; side += 2) { // a broodmother's legs, hooked over the shoulders from the carapace behind
-				double[] root = plus(project(m, B, side * cw * 0.6, mm.neck + 5), new double[] { 0, 0, 1.6 });
-				double[] foot = plus(project(m, F, side * mm.shoulderX * 0.62, lerp(mm.neck, mm.pelerineHem, 0.7)), new double[] { 0, 0, -1.0 });
-				double[] knee = { side * mm.shoulderX * 0.62, mm.neck - 9, 0 };
-				blade(add, root, knee, X, 2.0, 1.4, CHITIN);
-				blade(add, knee, foot, X, 1.6, 1.2, CHITIN_LIGHT);
-				add.tube(plus(knee, new double[] { 0, 1.5, 0 }), plus(knee, new double[] { 0, -1.5, 0 }), 1.7, 1.7, 4, Math.PI / 4, CHITIN_DARK, CHITIN_DARK);
-			}
-			double hy = mm.capeHip, hs = 8.5;
-			decal(add, m, B, new double[][] { { -hs * 0.65, hy - hs }, { hs * 0.65, hy - hs }, { 0, hy } }, 0.3, 1.6, st.accent, st.accent);
-			decal(add, m, B, new double[][] { { 0, hy }, { hs * 0.65, hy + hs }, { -hs * 0.65, hy + hs } }, 0.3, 1.6, st.accent, st.accent);
-			for (int k = -1; k <= 1; k++) { // the eggs, slung under the carapace
-				double[] p = project(m, B, k * 4.2, mm.pelerineHem + 1 - Math.abs(k) * 1.5);
-				egg(add, plus(p, new double[] { 0, 0, 1.2 + (k == 0 ? 0.6 : 0) }), 2.4 - Math.abs(k) * 0.3, 7.0 - Math.abs(k), st.accent, st.core);
-			}
+		case BROOD: // BaseCarapace carries the whole look
 			break;
-		}
 		case RIMECLAW: { // a necklace of claws, Rimeclaw's great hooked claws over the shoulders, three rake-scars across the back
 			double ny = top + h * 0.14;
 			for (int k = -3; k <= 3; k++) {
@@ -361,32 +311,8 @@ final class DraftArmourB {
 			break;
 		case SENTINEL: // BaseBastion carries the whole look
 			break;
-		case BROOD: { // chitin plates on the front flaps, a cluster of egg-sacs at the belt, chitin tatters at the flaps' hems
-			double waist = BaseMantle.cen(m, BaseMantle.WAIST)[1];
-			for (int s = 0; s < 2; s++) {
-				double[] knee = BaseMantle.cen(m, BaseMantle.KNEE[s]);
-				double x = BaseMantle.cen(m, BaseMantle.THIGH[s])[0], hem = knee[1] - 7, len = hem - waist - 12;
-				for (int k = 0; k < 2; k++) {
-					double y = waist + 8 + k * len / 2, w = 4.6 - k * 0.6, hh = len / 2 - 1;
-					decal(fr, m, F, new double[][] { { x - w, y }, { x + w, y }, { x + w * 0.9, y + hh * 0.8 }, { x, y + hh * 1.05 }, { x - w * 0.9, y + hh * 0.8 } }, 0.6,
-							2.2 - k * 0.3, k % 2 == 0 ? CHITIN_LIGHT : CHITIN, CHITIN_DARK);
-				}
-				for (Frame f : new Frame[] { F }) {
-					for (int k = -1; k <= 1; k++) {
-						double[] p = project(m, f, x + k * 4.0, hem - 1.5);
-						blade(fr, p, plus(plus(p, scale(f.n, 1.0)), new double[] { k * 0.8, 6 + (k == 0 ? 1.5 : 0), 0 }), X, 1.8, 0.9, k == 0 ? CHITIN : CHITIN_LIGHT);
-					}
-				}
-			}
-			for (int k = 0; k < 3; k++) { // egg-sacs hung at the belt, on the left hip
-				double a = -Math.PI * 0.2 + (k - 1) * 0.26;
-				double[] hip = skin(m, a, waist + 6 + (k == 1 ? 2.5 : 0), cz, 2.0 + (k == 1 ? 0.6 : 0));
-				if (hip != null) {
-					egg(fr, plus(hip, new double[] { 0, -2.5, 0 }), 2.6 - (k == 1 ? 0 : 0.4), 7.5 - (k == 1 ? 0 : 1), st.accent, st.core);
-				}
-			}
+		case BROOD: // BaseCarapace carries the whole look
 			break;
-		}
 		case RIMECLAW: // a belt with a claw for a buckle
 			for (Frame f : new Frame[] { F, B }) {
 				decal(fr, m, f, rect(-hw * 1.02, top + 1, hw * 1.02, top + 5), 0.7, 1.6, st.trim, st.trimDark);
@@ -440,15 +366,8 @@ final class DraftArmourB {
 				break;
 			case SENTINEL: // BaseBastion carries the whole look
 				break;
-			case BROOD: { // a chitin cuff, two hooked chitin spurs over the toes
-				int s = side < 0 ? 0 : 1;
-				double[] c = BaseMantle.cen(m, BaseMantle.ANKLE[s]), t = BaseMantle.cen(m, BaseMantle.TOES[s]);
-				add.tube(new double[] { c[0], top - 0.5, c[2] + 0.5 }, new double[] { c[0], top + 3.5, c[2] + 0.5 }, 6.9, 6.7, 6, 0.26, CHITIN, CHITIN_DARK);
-				for (int k = -1; k <= 1; k += 2) {
-					add.tube(new double[] { t[0] + k * 2.0, t[1] - 5, t[2] + 5 }, new double[] { t[0] + k * 2.8, t[1] - 7.5, t[2] - 8 }, 1.4, 0, 4, 0.78, CHITIN_LIGHT, CHITIN_LIGHT);
-				}
+			case BROOD: // BaseCarapace carries the whole look
 				break;
-			}
 			case RIMECLAW: // a frosted fur cuff, two claws over the toes
 				LowArmour.cuff(add, m, side, top, top + 4.5, 1.3, st.light, st.core);
 				for (int k = -1; k <= 1; k += 2) {
@@ -484,16 +403,8 @@ final class DraftArmourB {
 				break;
 			case SENTINEL: // BaseBastion carries the whole look
 				break;
-			case BROOD: { // a chitin cuff, a glowing egg on the back of the hand, hooked spurs on the cuff
-				int s = side < 0 ? 0 : 1;
-				double[] c = cuffTop(m, side, top), hd = BaseMantle.cen(m, BaseMantle.HAND[s]);
-				add.tube(new double[] { c[0], top - 0.5, c[2] }, new double[] { c[0], top + 4, c[2] }, 7.4, 7.0, 6, 0.26, CHITIN, CHITIN_DARK);
-				pod(add, new double[] { hd[0] + side * 3.6, hd[1] - 9.5, hd[2] + 1 }, new double[] { hd[0] + side * 3.6, hd[1] - 3.5, hd[2] + 1 }, 2.0, st.accent, st.core);
-				for (int k = -1; k <= 1; k += 2) {
-					add.tube(new double[] { c[0] + side * 6, top + 3, c[2] + k * 3 }, new double[] { c[0] + side * 9, top + 9, c[2] + k * 3.5 }, 1.2, 0, 4, 0.78, CHITIN_LIGHT, CHITIN_LIGHT);
-				}
+			case BROOD: // BaseCarapace carries the whole look
 				break;
-			}
 			case RIMECLAW: // a strap, and great hooked claws up the outside of each vambrace
 				add.tube(new double[] { x, top + 3, 0.5 }, new double[] { x, top + 5.5, 0.5 }, 5.4, 5.4, 6, 0.26, st.trim, st.trimDark);
 				for (int k = -1; k <= 1; k++) {
