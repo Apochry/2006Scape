@@ -18,7 +18,12 @@ public final class Main {
 				switch(args[i]) {
 					case "-dev"	:
 					case "-local":
+						// still check the cache against the local server, so a regenerated world (new maps, models,
+						// definitions) is fetched instead of an old copy in ~/.2006Scape_file_system being used as is
+						ClientSettings.SERVER_IP = "localhost";
+						break;
 					case "-offline":
+						// no file server to check against: use the cache already on disk
 						ClientSettings.SERVER_IP = "localhost";
 						ClientSettings.CHECK_CRC = false;
 						break;
