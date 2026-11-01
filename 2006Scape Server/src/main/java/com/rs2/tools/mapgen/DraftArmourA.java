@@ -23,7 +23,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <li>Thornwarden (Ranged 20): Silkwood's edge-keepers, who tend the bramble hedges that keep the spiders in: moss-green skirmisher's wraps (the WRAP base: a headband, a vest and bandolier, a kilt over bound leggings, greaves, long bracers) wound with thorny bramble, red berries, leaves over the shoulder guard, a thorn crown on the headband.</li>
  * <li>Saltgilt (Defence 30): The Drowned Maiden's officers (Skullbrine): sea-weathered mail trimmed in tarnished doubloon-gold, barnacles crusted on the shoulders and helm, a tricorn-ish brim or an anchor on the shield, the Maiden's gilt figurehead.</li>
  * <li>Tidecaller (Magic 35): Sea-mages of Smugglers' Cove who call the tide for the night crews, dressed as jellyfish (its own base, BaseJellyfish): a pale bell worn high over the head with a frilled margin and a scallop shell; a sea-blue robe under a second bell at the shoulders, trailing tendrils to the calves; finned sleeves; a skirt with a scalloped hem and a fringe of tendrils; shell-toed slippers; webbed fin gloves; coral and pearls. The base carries all of it: no decorations are added.</li>
- * <li>Shardhide (Ranged 40): Made from the Shardback, the crater-rim bear whose back bristles with the fallen star's glass: brown bear-hide wraps (the WRAP base), dark fur ruffs, pale glass shards jutting from the shoulders and spine, a bear's skull worn over the headband.</li>
+ * <li>Shardhide (Ranged 40): Made from the Shardback, the crater-rim bear whose back bristles with the fallen star's glass, and worn whole (its own base, BasePelt): the bear's head as a hood, its snout over the brow and its teeth framing the face; a hunched pelt mantle with the forelegs over the shoulders and the paws on the chest, the hide to the knees behind, star-glass jutting along the shoulders and spine; fur-wrapped leggings, paw boots and paw gloves with claws. The base carries all of it: no decorations are added.</li>
  * </ol>
  */
 final class DraftArmourA {
@@ -72,13 +72,13 @@ final class DraftArmourA {
 							"A sea-blue robe under a second bell, its tendrils trailing behind. The Cove's night crews don't sail without one aboard.",
 							"Frilled like a jelly's bell, and fringed to the ankle. Waves break round the hem whether there's water or not.", null,
 							"Shell-toed slippers with a pearl on each. Always a little damp.", "Webbed and finned. Swimming is easier; writing letters is not." }),
-			new Style("Shardhide", "shardhide", Kind.WRAP, Motif.SHARDHIDE, 40, hsl(5, 2, 40), hsl(5, 2, 28), hsl(5, 2, 52), FUR, FUR_DARK, GLASS, GLASS_LIGHT,
-					hsl(6, 2, 26), hsl(6, 2, 17), NO_SHIELD,
-					new String[] { "Shardhide headdress", "Shardhide harness", "Shardhide kilt", null, "Shardhide greaves", "Shardhide bracers" },
-					new String[] { "A Shardback's skull, star-glass and all. It was a good deal angrier wearing it than you are.",
-							"A Shardback-hide harness, the star's glass still jutting from the shoulder. Don't lean back on anything you like.",
-							"Strips of bear hide with its claws at the hip. Gatehold's miners won't stand downwind of you.", null,
-							"Fur-topped hide greaves over the Shardback's own paws, more or less. The claws still dig in.", "Long hide bracers, fur at the elbow and a sliver of star-glass at each wrist. It hums near starmetal." }),
+			new Style("Shardhide", "shardhide", Kind.WRAP, Motif.SHARDHIDE, 40, Shardback.HIDE, Shardback.HIDE_DARK, Shardback.BELLY, FUR, FUR_DARK, GLASS,
+					GLASS_LIGHT, hsl(6, 2, 26), hsl(6, 2, 17), NO_SHIELD,
+					new String[] { "Shardhide bearhead", "Shardhide pelt", "Shardhide leggings", null, "Shardhide paw boots", "Shardhide paws" },
+					new String[] { "The Shardback's own head, teeth and all. Its glass still hums when there's starmetal about.",
+							"A whole Shardback, glass and all, its forepaws over your shoulders. It was a good deal angrier wearing it than you are.",
+							"Hide leggings wound with Shardback fur. Gatehold's miners won't stand downwind of you.", null,
+							"The Shardback's hind paws, more or less. The claws still dig in.", "Its forepaws, claws and a sliver of star-glass. Mind how you scratch." }),
 	};
 
 	/** Each set's weapon, in set order (id 0: not in the game). */
@@ -163,29 +163,6 @@ final class DraftArmourA {
 				if (q != null) {
 					barnacle(add, q, new double[] { Math.cos(a), -0.4, Math.sin(a) }, k % 2 == 0 ? 1.9 : 1.4);
 				}
-			}
-			break;
-		}
-		case SHARDHIDE: { // a bear's skull worn over the headband: snout and fangs over the brow, round ears, star-glass up the crown
-			double by = top + 0.5; // the band's top edge; the skull sits on the crown above it, the hair showing behind
-			double[] s = slab(m, top - 1, top + 3.5);
-			double fz = s[1] - s[3], cx = s[0];
-			// the skull's crown, its snout reaching out over the brow, dark eye-holes either side of it
-			dome(add, new double[] { cx, by + 0.5, s[1] + 0.5 }, UP, Z, s[3] * 1.04, s[2] * 1.1, 10.5, 6, BONE_DARK, BONE_PALE);
-			add.tube(new double[] { cx, by - 2.5, fz + 5 }, new double[] { cx, by + 0.5, fz - 6 }, 3.8, 2.7, 4, Math.PI / 4, BONE_PALE, BONE_DARK);
-			add.tube(new double[] { cx, by + 0.5, fz - 6 }, new double[] { cx, by + 1, fz - 8 }, 2.7, 1.5, 4, Math.PI / 4, BONE_DARK, FUR_DARK);
-			for (int side = -1; side <= 1; side += 2) {
-				add.tube(new double[] { cx + side * 3.6, by - 3.5, fz + 2.5 }, new double[] { cx + side * 3.8, by - 3.5, fz - 0.6 }, 1.5, 1.1, 4, Math.PI / 4,
-						FUR_DARK, FUR_DARK);
-				add.tube(new double[] { cx + side * 2.0, by + 1, fz - 4.5 }, new double[] { cx + side * 2.2, by + 6.5, fz - 4 }, 1.1, 0, 4, 0.78, BONE_PALE,
-						BONE_PALE);
-				// round fur ears, standing off the crown at either side
-				double[] e = { cx + side * s[2] * 0.9, by - 5, s[1] + 1.5 };
-				add.tube(e, add(e, new double[] { side * 3.5, -5, 0.5 }), 3.0, 2.2, 5, 0, BEAR_EAR, BONE_DARK);
-			}
-			for (int k = 0; k < 3; k++) { // star-glass fanned up the crown, the middle shard tallest
-				double[] r = { cx + (k - 1) * 2.5, by - 8.5, s[1] + 2 };
-				add.tube(r, add(r, new double[] { (k - 1) * 4, -(k == 1 ? 13 : 9), 3 }), 2.6, 0, 4, 0.4, k == 1 ? st.core : st.accent, st.accent);
 			}
 			break;
 		}
@@ -279,33 +256,6 @@ final class DraftArmourA {
 			anchor(add, m, B, 0, cy + 1, h * 0.62, st.trim, st.trimDark);
 			break;
 		}
-		case SHARDHIDE: { // a dark fur ruff, star-glass jutting from the shoulder guard and the bare shoulder, and down the spine
-			double[] t = BaseWrap.trunk(m);
-			double thw = t[0], ttop = t[1], th = t[2] - t[1], tcz = (t[3] + t[4]) / 2, tsx = thw * 0.7, tsy = ttop + th * 0.12;
-			for (int k = 0; k < 14; k++) {
-				double a = Math.PI * 2 * k / 14;
-				double x = Math.cos(a) * thw * 0.6, z = tcz + Math.sin(a) * (t[4] - t[3]) / 2 * 0.78;
-				blade(add, new double[] { x, ttop + 1, z }, new double[] { x * 1.35, ttop + th * 0.2, tcz + (z - tcz) * 1.25 },
-						new double[] { -Math.sin(a), 0, Math.cos(a) }, 3.0, 1.1, k % 2 == 0 ? st.trim : st.trimDark);
-			}
-			double[] g = BaseWrap.guardCap(m);
-			for (int k = 0; k < 3; k++) { // from the guard's cap (they ride the arm with it)
-				double[] r = { g[0] + k * 1.2, g[1] + 1.5, g[2] - 3 + k * 3.5 };
-				add.tube(r, add(r, new double[] { 4 + k * 2, -(13 - k * 2.5), 3 + k * 1.5 }), 2.8 - k * 0.3, 0, 4, 0.4 + k, k == 1 ? st.core : st.accent, st.accent);
-			}
-			for (int k = 0; k < 2; k++) { // and two from the hide strap over the bare right shoulder
-				double[] r = { -tsx * (0.72 + k * 0.12), tsy, tcz - 1 + k * 3.5 };
-				add.tube(r, add(r, new double[] { -(3 + k * 2), -(11 - k * 2.5), 3 + k * 1.5 }), 2.4 - k * 0.3, 0, 4, 0.4 + k, k == 0 ? st.core : st.accent,
-						st.accent);
-			}
-			for (int k = 0; k < 4; k++) {
-				double y = ttop + th * (0.25 + k * 0.17);
-				double[] p = project(m, B, 0, y);
-				add.tube(add(p, new double[] { 0, 0, -1 }), add(p, new double[] { (k % 2 == 0 ? 1.5 : -1.5), -4, 9.5 - k * 1.2 }), 2.6 - k * 0.2, 0, 4, 0.4 + k,
-						k % 2 == 0 ? st.accent : st.core, st.accent);
-			}
-			break;
-		}
 		default:
 			break;
 		}
@@ -345,19 +295,6 @@ final class DraftArmourA {
 					barnacle(one, add(p, new double[] { -2.4, -2, 0 }), new double[] { 0, 0, -1 }, 1.2);
 				}
 				break;
-			case SHARDHIDE: { // a ruff of fur bound round the leg above the knee, a shard at the outside of it
-				double y = top + h * 0.64 - 8;
-				double[] s = legRing(m, side, y, 2.2);
-				for (int k = 0; k < 6; k++) {
-					double a = Math.PI * 2 * k / 6 + 0.2, ca = Math.cos(a), sa = Math.sin(a);
-					double[] r = { s[0] + ca * s[2], y - 1.5, s[1] + sa * s[3] };
-					blade(one, r, add(r, new double[] { ca * 2, 6 + (k % 2) * 1.5, sa * 2 }), new double[] { -sa, 0, ca }, 2.6, 0.9, k % 2 == 0 ? st.trim : st.trimDark);
-				}
-				double[] r = { s[0] + side * s[2], y, s[1] };
-				one.tube(add(r, new double[] { -side * 1.5, 1, 0 }), add(r, new double[] { side * 5, -8, -1.5 }), 2.2, 0, 4, 0.4, st.accent, st.accent);
-				one.tube(add(r, new double[] { -side * 1.5, 3, 2 }), add(r, new double[] { side * 4, -3, 3.5 }), 1.6, 0, 4, 0.9, st.core, st.core);
-				break;
-			}
 			default:
 				break;
 			}
@@ -401,15 +338,6 @@ final class DraftArmourA {
 				decal(fr, m, sf, rect(-1.2, top + 6, 1.2, kneeY - 8), 0.5, 1.6, st.trim, st.trimDark);
 			}
 			break;
-		case SHARDHIDE: { // a bear-claw trophy hung from the belt at the left hip (the pouch is at the right)
-			double cx = hw * 0.48;
-			for (int k = -1; k <= 1; k++) {
-				double[] p = project(m, F, cx + k * 2.2, top + 9 + Math.abs(k));
-				fr.tube(add(p, new double[] { 0, -2, -1 }), add(p, new double[] { k * 0.5, 4, -2.5 }), 1.1, 0, 4, 0.78, BONE_PALE, BONE_PALE);
-			}
-			decal(fr, m, F, rect(cx - 3.8, top + 4.5, cx + 3.8, top + 8), 0.5, 2.0, st.leather, st.leatherDark);
-			break;
-		}
 		default:
 			break;
 		}
@@ -467,16 +395,6 @@ final class DraftArmourA {
 				double bz = q == null ? front + 4.5 : q[2];
 				add.tube(new double[] { x, top + 9, bz + 1 }, new double[] { x, top + 9, bz - 1.5 }, 1.8, 1.8, 4, 0.78, st.trim, st.trimDark);
 				break;
-			case SHARDHIDE: { // fur round the greaves' tops, claws over the bare toes
-				LowArmour.cuff(add, m, side, top, top + 4.5, 1.2, st.trim, st.trimDark);
-				double ground = bb[4];
-				double fx = limbSlab(m, side, ground - 7, ground - 2)[0];
-				for (int k = -1; k <= 1; k++) {
-					add.tube(new double[] { fx + k * 2.2, ground - 8, front + 5 }, new double[] { fx + k * 2.6, ground - 4.5, front - 2 }, 1.1, 0, 4, 0.78, BONE_PALE,
-							BONE_PALE);
-				}
-				break;
-			}
 			default:
 				break;
 			}
@@ -513,16 +431,6 @@ final class DraftArmourA {
 			case SALTGILT:
 				LowArmour.gauntlet(add, x, top, 6.6, st.leather, st.leatherDark, st.trim);
 				break;
-			case SHARDHIDE: { // fur round the bracers' tops, a shard on the back of each wrist
-				double[] s = limbSlab(m, side, top + 2, top + 6);
-				double r = Math.max(s[2], s[3]) + 0.8;
-				add.tube(new double[] { s[0], top + 1.5, s[1] }, new double[] { s[0], top + 5.5, s[1] }, r, r - 0.6, 6, 0.26, st.trim, st.trimDark);
-				double wy = bb[4] - 13;
-				double[] w = limbSlab(m, side, wy - 1.5, wy + 1.5);
-				add.tube(new double[] { w[0] + side * (w[2] - 0.5), wy, w[1] }, new double[] { w[0] + side * (w[2] + 4), wy - 6, w[1] + 1 }, 1.5, 0, 4, 0.4,
-						st.accent, st.accent);
-				break;
-			}
 			default:
 				break;
 			}
