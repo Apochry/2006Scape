@@ -22,7 +22,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <li>Ashen pilgrim (Magic 15): The wandering pilgrims who walk Nythera's roads to the old shrines: ash-grey robes smudged with shrine ash, a string of red prayer beads, a little brass censer with an ember in it, a wide travelling hat.</li>
  * <li>Thornwarden (Ranged 20): Silkwood's edge-keepers, who tend the bramble hedges that keep the spiders in: moss-green skirmisher's wraps (the WRAP base: a headband, a vest and bandolier, a kilt over bound leggings, greaves, long bracers) wound with thorny bramble, red berries, leaves over the shoulder guard, a thorn crown on the headband.</li>
  * <li>Saltgilt (Defence 30): The Drowned Maiden's officers (Skullbrine): sea-weathered mail trimmed in tarnished doubloon-gold, barnacles crusted on the shoulders and helm, a tricorn-ish brim or an anchor on the shield, the Maiden's gilt figurehead.</li>
- * <li>Tidecaller (Magic 35): Sea-mages of Smugglers' Cove who call the tide for the night crews: deep sea-blue robes, coral branches, a scallop-shell hat ornament, pearls, a wave pattern at the hem.</li>
+ * <li>Tidecaller (Magic 35): Sea-mages of Smugglers' Cove who call the tide for the night crews, dressed as jellyfish (its own base, BaseJellyfish): a pale bell worn high over the head with a frilled margin and a scallop shell; a sea-blue robe under a second bell at the shoulders, trailing tendrils to the calves; finned sleeves; a skirt with a scalloped hem and a fringe of tendrils; shell-toed slippers; webbed fin gloves; coral and pearls. The base carries all of it: no decorations are added.</li>
  * <li>Shardhide (Ranged 40): Made from the Shardback, the crater-rim bear whose back bristles with the fallen star's glass: brown bear-hide wraps (the WRAP base), dark fur ruffs, pale glass shards jutting from the shoulders and spine, a bear's skull worn over the headband.</li>
  * </ol>
  */
@@ -65,13 +65,13 @@ final class DraftArmourA {
 							"A gold stripe down each leg, for rank. The Maiden kept her officers in style, if not in air.",
 							"The Maiden's anchor in gilt. It held her fast to the cove floor for a hundred years.",
 							"Gold-buckled sea boots. They still pour out a little seawater every morning.", "Gilt-cuffed gloves, for saluting a captain who isn't there." }),
-			new Style("Tidecaller", "tidecaller", Kind.MANTLE, Motif.TIDE, 35, hsl(38, 4, 46), hsl(38, 4, 30), hsl(38, 3, 64), hsl(31, 4, 46), hsl(31, 4, 32),
-					PEARL, hsl(36, 0, 124), hsl(36, 2, 26), hsl(36, 2, 18), NO_SHIELD,
-					new String[] { "Tidecaller hat", "Tidecaller robe top", "Tidecaller robe bottom", null, "Tidecaller boots", "Tidecaller gloves" },
-					new String[] { "A scallop shell, a string of pearls and a sprig of coral. The tide comes when it's called; the hat helps.",
-							"Sea-blue robes with coral growing at the shoulder. The Cove's night crews don't sail without one aboard.",
-							"Waves break round the hem whether there's water or not.", null, "Pearl-buttoned boots, always a little damp.",
-							"Coral at the wrist. The tide likes a little jewellery." }),
+			new Style("Tidecaller", "tidecaller", Kind.MANTLE, Motif.TIDE, 35, hsl(37, 5, 40), hsl(37, 5, 26), hsl(35, 3, 86), hsl(34, 2, 106), hsl(36, 3, 64),
+					PEARL, CORAL, hsl(36, 2, 26), hsl(36, 2, 18), NO_SHIELD,
+					new String[] { "Tidecaller bell", "Tidecaller robe top", "Tidecaller robe bottom", null, "Tidecaller slippers", "Tidecaller fin gloves" },
+					new String[] { "A jellyfish bell to wear, scallop, pearl and all. The tide comes when it's called; the bell helps.",
+							"A sea-blue robe under a second bell, its tendrils trailing behind. The Cove's night crews don't sail without one aboard.",
+							"Frilled like a jelly's bell, and fringed to the ankle. Waves break round the hem whether there's water or not.", null,
+							"Shell-toed slippers with a pearl on each. Always a little damp.", "Webbed and finned. Swimming is easier; writing letters is not." }),
 			new Style("Shardhide", "shardhide", Kind.WRAP, Motif.SHARDHIDE, 40, hsl(5, 2, 40), hsl(5, 2, 28), hsl(5, 2, 52), FUR, FUR_DARK, GLASS, GLASS_LIGHT,
 					hsl(6, 2, 26), hsl(6, 2, 17), NO_SHIELD,
 					new String[] { "Shardhide headdress", "Shardhide harness", "Shardhide kilt", null, "Shardhide greaves", "Shardhide bracers" },
@@ -164,19 +164,6 @@ final class DraftArmourA {
 					barnacle(add, q, new double[] { Math.cos(a), -0.4, Math.sin(a) }, k % 2 == 0 ? 1.9 : 1.4);
 				}
 			}
-			break;
-		}
-		case TIDE: { // a string of pearls round the hat, a scallop shell at the front, coral branching up the side
-			double by = bottom - h * 0.3;
-			double[] s = slab(m, by - 2, by + 2);
-			ring(add, new double[] { s[0], by, s[1] }, UP, X, s[2] * 1.0, s[3] * 1.0, 0, 2.0, 10, st.trimDark);
-			for (int k = 0; k < 9; k++) {
-				double a = Math.PI * 2 * k / 9 + Math.PI / 2;
-				ball(add, new double[] { s[0] + Math.cos(a) * s[2] * 1.06, by - 1, s[1] + Math.sin(a) * s[3] * 1.06 }, 1.2, 3, PEARL);
-			}
-			Frame hf = new Frame(new double[] { s[0], 0, s[1] - s[3] - 1 }, X, Y, new double[] { 0, 0, -1 });
-			shell(add, m, hf, 0, by - 9, 8, SHELL, SHELL_DARK);
-			coral(add, new double[] { s[0] + s[2] * 0.85, by - 1, s[1] + s[3] * 0.2 }, norm(new double[] { 0.45, -1, 0.15 }), 6, 1.4, 2, CORAL, CORAL_DARK);
 			break;
 		}
 		case SHARDHIDE: { // a bear's skull worn over the headband: snout and fangs over the brow, round ears, star-glass up the crown
@@ -290,21 +277,6 @@ final class DraftArmourA {
 				}
 			}
 			anchor(add, m, B, 0, cy + 1, h * 0.62, st.trim, st.trimDark);
-			break;
-		}
-		case TIDE: { // a string of pearls and a scallop on the breast, coral grown over the left shoulder, waves breaking round the back
-			double ny = top + h * 0.22;
-			for (int k = 0; k <= 8; k++) {
-				double a = Math.PI * k / 8;
-				decal(add, m, F, diamond(-Math.cos(a) * hw * 0.4, ny + Math.sin(a) * h * 0.18, 1.2, 1.2), 0.4, 2.4, PEARL, st.trimDark);
-			}
-			shell(add, m, F, 0, ny + h * 0.31, h * 0.2, SHELL, SHELL_DARK);
-			double[] p = { sx * 1.0, sy - 1, cz };
-			coral(add, p, norm(new double[] { 0.35, -1, -0.2 }), 7, 1.8, 2, CORAL, CORAL_DARK);
-			coral(add, add(p, new double[] { -2, 0, 3 }), norm(new double[] { 0.1, -1, 0.45 }), 5, 1.4, 1, CORAL_DARK, CORAL);
-			for (int k = 0; k < 4; k++) {
-				waveCrest(add, m, B, -hw * 0.95 + k * hw * 0.48, bottom - h * 0.1, hw * 0.48, h * 0.17, PEARL, st.trim);
-			}
 			break;
 		}
 		case SHARDHIDE: { // a dark fur ruff, star-glass jutting from the shoulder guard and the bare shoulder, and down the spine
@@ -429,19 +401,6 @@ final class DraftArmourA {
 				decal(fr, m, sf, rect(-1.2, top + 6, 1.2, kneeY - 8), 0.5, 1.6, st.trim, st.trimDark);
 			}
 			break;
-		case TIDE: { // waves breaking round the hem, pearls at the belt
-			double[] hem = LowArmour.hem(m, bottom);
-			for (Frame f : new Frame[] { F, B }) {
-				for (int k = 0; k < 5; k++) {
-					double w = hem[2] * 0.36;
-					waveCrest(fr, m, f, -hem[2] * 0.9 + k * w, bottom - h * 0.1, w, h * 0.1, PEARL, st.trimDark);
-				}
-			}
-			for (int k = -2; k <= 2; k++) {
-				decal(fr, m, F, diamond(k * hw * 0.14, top + 4 + Math.abs(k) * -0.6, 1.2, 1.2), 0.4, 2.6, PEARL, st.trimDark);
-			}
-			break;
-		}
 		case SHARDHIDE: { // a bear-claw trophy hung from the belt at the left hip (the pouch is at the right)
 			double cx = hw * 0.48;
 			for (int k = -1; k <= 1; k++) {
@@ -508,11 +467,6 @@ final class DraftArmourA {
 				double bz = q == null ? front + 4.5 : q[2];
 				add.tube(new double[] { x, top + 9, bz + 1 }, new double[] { x, top + 9, bz - 1.5 }, 1.8, 1.8, 4, 0.78, st.trim, st.trimDark);
 				break;
-			case TIDE: // a sea-green cuff with a pearl
-				LowArmour.cuff(add, m, side, top, top + 2.5, 0.6, st.trim, st.trimDark);
-				double[] s = limbSlab(m, side, top, top + 3);
-				ball(add, new double[] { s[0], top + 1.5, s[1] - s[3] - 1.2 }, 1.7, PEARL);
-				break;
 			case SHARDHIDE: { // fur round the greaves' tops, claws over the bare toes
 				LowArmour.cuff(add, m, side, top, top + 4.5, 1.2, st.trim, st.trimDark);
 				double ground = bb[4];
@@ -558,10 +512,6 @@ final class DraftArmourA {
 			}
 			case SALTGILT:
 				LowArmour.gauntlet(add, x, top, 6.6, st.leather, st.leatherDark, st.trim);
-				break;
-			case TIDE: // a coral bracelet with a pearl
-				add.tube(new double[] { x, top + 7, 1 }, new double[] { x, top + 9.5, 1 }, 6.2, 6.2, 6, 0.26, CORAL, CORAL_DARK);
-				ball(add, new double[] { x, top + 8.2, -5.8 }, 1.3, PEARL);
 				break;
 			case SHARDHIDE: { // fur round the bracers' tops, a shard on the back of each wrist
 				double[] s = limbSlab(m, side, top + 2, top + 6);
