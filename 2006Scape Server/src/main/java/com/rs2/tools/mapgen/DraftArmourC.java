@@ -19,7 +19,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * ids, and nothing packs them into the cache). See DraftArmour.
  *
  * <ol start="35">
- * <li>Herald's (Defence 65): The Hollow Herald's coat of plates (Kind.COAT): dark iron with ghostly pale trim, a violet tabard over a knee-length lamellar skirt, banners hanging from the belt, a herald's horn on the right pauldron, an iron crown of spikes round a kettle helm. (Herald's is a possessive: pieces read 'Herald's kettle helm'.)</li>
+ * <li>Herald's (Defence 65): The Hollow Herald, who announces the Hollow King's coming, on a base of their own (BaseBannerman): dark iron with ghostly pale trim and the King's violet. Two tall banners with the pale sigil (the King's hollow crown) stand on a back-frame over the shoulders like a sashimono; a crested great helm with an iron crown of spikes and a herald's horn for a crest; a long split violet tabard to the shins over a breastplate, the sigil on it; layered pauldrons; a horn at the hip; pointed sabatons; a heater shield with a banner hung from its top. The base carries it all, so it has no decorations. (Herald's is a possessive: pieces read 'Herald's full helm'.)</li>
  * <li>Emberforged (Defence 70): Dorrin's forge masterwork on the coat base (Kind.COAT): blackened steel with glowing ember seams and rivets, bronze edging, an anvil-and-flame crest on the breast, a chimney on the kettle helm venting embers.</li>
  * <li>Starless shroud (Magic 70): Robes cut from the Starless's own shadow: near-black with scattered star points, a starry hood/hat with a crescent of stars, violet void glow at the core, an open eye on the breast.</li>
  * <li>Riftwalker (Ranged 75): Rangers who walk through the rifts: dark grey-violet hide split by glowing violet rift-cracks, riftglass shards, a hood with a glowing seam over the eyes, black straps.</li>
@@ -44,14 +44,14 @@ final class DraftArmourC {
 	static final Style[] SETS = {
 			new Style("Herald's", "herald", Kind.COAT, Motif.HERALD, 65, hsl(0, 0, 30), hsl(0, 0, 18), hsl(0, 0, 46), GHOST, BANNER_DARK, BANNER,
 					GHOST_GLOW, hsl(48, 2, 20), hsl(48, 2, 13), HAS_ALL,
-					new String[] { "Herald's kettle helm", "Herald's war tunic", "Herald's legguards", "Herald's roundshield", "Herald's riding boots",
+					new String[] { "Herald's full helm", "Herald's platebody", "Herald's platelegs", "Herald's banner shield", "Herald's sabatons",
 							"Herald's gauntlets" },
-					new String[] { "A kettle helm under an iron crown of spikes. Whoever wears it is announcing a king, whether they like it or not.",
-							"A coat of iron plates under a violet tabard, the Hollow King's crown on the breast and a horn on the shoulder to herald him. Nobody has told it to stop.",
-							"Iron-plated legguards with the herald's violet down each side. Heralds walk ahead of their king; these are still walking.",
-							"A violet roundshield with the Hollow King's crown over the boss. The sockets are empty, bar one, and that one is looking at you.",
-							"Tall riding boots with pale spurs. They've ridden ahead of a king who never arrived.",
-							"Long-cuffed gauntlets banded in violet, for holding up proclamations nobody reads any more." }),
+					new String[] { "A great helm under an iron crown, a herald's horn for a crest. Whoever wears it is announcing a king, whether they like it or not.",
+							"Iron under the Hollow King's violet, his crown on the breast and two banners standing over the shoulders. Nobody has told it to stop.",
+							"Dark iron plate. Heralds walk ahead of their king; these are still walking.",
+							"A heater shield with the King's banner hung from its top. The sockets in the crown are empty, bar one, and that one is looking at you.",
+							"Pointed sabatons, for walking ahead of a king who never arrived.",
+							"Dark gauntlets, for holding up proclamations nobody reads any more." }),
 			new Style("Emberforged", "emberforged", Kind.COAT, Motif.EMBERFORGED, 70, hsl(4, 1, 26), hsl(4, 1, 16), hsl(4, 1, 40), BRONZE_EDGE,
 					hsl(6, 4, 36), EMBER, EMBER_HOT, hsl(5, 3, 22), hsl(5, 3, 14), HAS_ALL,
 					new String[] { "Emberforged kettle helm", "Emberforged war tunic", "Emberforged legguards", "Emberforged roundshield", "Emberforged riding boots",
@@ -125,7 +125,8 @@ final class DraftArmourC {
 		ModelData add = new ModelData();
 		Frame F = ArmourSets.FRONT;
 		switch (st.motif) {
-		case HERALD: // an iron crown of thin spikes round the kettle helm's cap, ghost-light at its brow, violet ribbons from the brim
+		case HERALD: // the great helm, its crown and horn crest are the base's own (BaseBannerman)
+			break;
 		case EMBERFORGED: // a forge chimney on the crown venting flame, a glowing seam round the cap, ember rivets on the hat band
 			coatHelm(add, m, st);
 			break;
@@ -189,7 +190,8 @@ final class DraftArmourC {
 		ModelData add = new ModelData();
 		Frame F = ArmourSets.FRONT, B = ArmourSets.BACK;
 		switch (st.motif) {
-		case HERALD: // the violet tabard over the coat, the hollow crown on it, banners hanging from the belt, the horn on the right pauldron
+		case HERALD: // the tabard, sigils, pauldrons, horn and banners are the base's own (BaseBannerman)
+			break;
 		case EMBERFORGED: // Dorrin's anvil on the breast, the forge glowing in the belly lames and the pauldrons, ember rivets down the skirt
 			coatBody(add, m, st);
 			break;
@@ -274,7 +276,6 @@ final class DraftArmourC {
 			double x = side * kneeX;
 			ModelData one = knees[i];
 			switch (st.motif) {
-			case HERALD:
 			case EMBERFORGED:
 				coatKnee(one, m, side, st);
 				break;
@@ -293,7 +294,6 @@ final class DraftArmourC {
 			}
 		}
 		switch (st.motif) {
-		case HERALD: // the herald's livery: a violet stripe down the outside of each leg
 		case EMBERFORGED: // the forge-light in the joins of the cuisses
 			coatLegs(fr, m, st);
 			break;
@@ -341,7 +341,6 @@ final class DraftArmourC {
 		Frame f = new Frame(k.o, norm(ModelData.cross(k.n, down)), down, k.n);
 		ModelData add = new ModelData();
 		switch (st.motif) {
-		case HERALD: // the hollow crown over the boss of a violet roundshield
 		case EMBERFORGED: // the anvil under the boss, the flame rising off it, ember rivets round the field
 			coatShield(add, m, st);
 			break;
@@ -363,7 +362,6 @@ final class DraftArmourC {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * hw * 0.56;
 			switch (st.motif) {
-			case HERALD:
 			case EMBERFORGED:
 				coatBoot(add, m, side, st);
 				break;
@@ -396,7 +394,6 @@ final class DraftArmourC {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * (hw - 6.5);
 			switch (st.motif) {
-			case HERALD:
 			case EMBERFORGED:
 				coatGauntlet(add, m, side, st);
 				break;
