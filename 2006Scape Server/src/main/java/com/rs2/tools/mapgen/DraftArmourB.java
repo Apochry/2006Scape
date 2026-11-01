@@ -19,7 +19,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * ids, and nothing packs them into the cache). See DraftArmour.
  *
  * <ol start="30">
- * <li>Wildgrove (Magic 40): Druids of the deep woods, on the mantle base (BaseMantle): a leaf-wreathed hood with antlers grown through it, a leaf collar on the mantle, ivy and small golden flowers climbing the tunic, a bark sash, leaves trailing down the cape.</li>
+ * <li>Wildgrove (Magic 40): Druids of the deep woods, half grown into trees (their own base, BaseTreant): a bark cowl with a tall, lopsided crown of many-pronged branches and leaf clusters; a tunic of overlapping bark plates, mossy and ivy-grown, with gnarled burls on the shoulders sprouting twigs; a robe that splits below the knee into roots spreading to the ground; root-toed boots; twig-fingered bark gauntlets; small golden flowers. The base carries all of it: no decorations are added.</li>
  * <li>Gravescale (Defence 45): Scale mail from the Gravecoil, the barrow serpent (see Gravecoil.java for its real palette and match it): overlapping serpent scales, a fanged snake-head visor, a coiled serpent on the shield, venom-yellow eyes.</li>
  * <li>Gatehold sentinel (Defence 50): The guard on Gatehold's wall: bright steel plate, a Gatehold-blue tabard with the gate-tower crest in gold, a tall plume, a tower-shaped kiteshield boss.</li>
  * <li>Broodkeeper (Magic 50): the keepers of the Silkwood broodmother's brood, on the mantle base (BaseMantle): many small eyes glowing in the hood's shadow and a spider on its crown, chitin lames down the tunic, a carapace on the mantle with a broodmother's legs over the shoulders, sickly glowing egg-sacs.</li>
@@ -40,13 +40,13 @@ final class DraftArmourB {
 			CLAW = hsl(8, 1, 104), CLAW_DARK = hsl(8, 1, 80);
 
 	static final Style[] SETS = {
-			new Style("Wildgrove", "wildgrove", Kind.MANTLE, Motif.WILDGROVE, 40, hsl(19, 3, 34), hsl(19, 3, 22), hsl(18, 3, 48), hsl(6, 3, 36), hsl(6, 3, 24),
-					hsl(10, 6, 90), hsl(11, 4, 116), hsl(6, 3, 28), hsl(6, 3, 18), NO_SHIELD,
-					new String[] { "Wildgrove hood", "Wildgrove mantle top", "Wildgrove leggings", null, "Wildgrove shoes", "Wildgrove handwraps" },
-					new String[] { "A cowl wreathed in leaves, with antlers grown up through it. The stag was asked first, apparently.",
-							"A leaf-collared mantle over a druid's tunic, ivy climbing the front. It's still growing, slowly, towards the light.",
-							"Cross-bound leggings under leaf-hemmed flaps. Hob's woodcutters stop where the Wildgrove starts.", null,
-							"Bark-bound wrapped shoes. They leave no tracks, and now and then a flower.", "Leaf-cuffed handwraps, for turning soil and the occasional spell." }),
+			new Style("Wildgrove", "wildgrove", Kind.MANTLE, Motif.WILDGROVE, 40, hsl(17, 4, 34), hsl(18, 4, 22), hsl(16, 5, 46), hsl(7, 2, 47), hsl(7, 2, 33),
+					hsl(10, 6, 90), hsl(11, 4, 116), hsl(8, 2, 54), hsl(6, 3, 18), NO_SHIELD,
+					new String[] { "Wildgrove crown", "Wildgrove bark tunic", "Wildgrove root robe", null, "Wildgrove root boots", "Wildgrove twig gauntlets" },
+					new String[] { "A bark cowl with a crown of branches grown out of it. The druid didn't put it on so much as let it grow.",
+							"Bark plates over bark plates, moss in the cracks and ivy climbing. It creaks when you breathe.",
+							"A robe that gives up being a robe about the knee and becomes roots. Hob's woodcutters stop where the Wildgrove starts.", null,
+							"Roots for toes. Standing still is no trouble at all; walking takes a little persuading.", "Bark gauntlets with twigs for fingers. They grip a staff like a branch grips the sky." }),
 			new Style("Gravescale", "gravescale", Kind.COAT, Motif.GRAVESCALE, 45, hsl(14, 2, 38), hsl(15, 2, 26), hsl(14, 2, 50), hsl(9, 2, 86), hsl(9, 2, 64),
 					hsl(27, 6, 104), hsl(27, 4, 122), hsl(15, 2, 22), hsl(15, 2, 15), HAS_ALL,
 					new String[] { "Gravescale med helm", "Gravescale chainbody", "Gravescale platelegs", "Gravescale sq shield", "Gravescale boots", "Gravescale gloves" },
@@ -113,31 +113,6 @@ final class DraftArmourB {
 		ModelData add = new ModelData();
 		Frame F = ArmourSets.FRONT;
 		switch (st.motif) {
-		case WILDGROVE: { // a leafy cowl: a wreath of leaves round the face, antlers grown through the hood, golden flowers at the brow
-			double oy = top + h * 0.45, ow = hw * 0.66, oh = h * 0.3;
-			for (int side = -1; side <= 1; side += 2) {
-				double[] r = side(m, side, top + h * 0.2, cz - dz * 0.1, hw);
-				double[] a = plus(r, new double[] { side * 5, -9, 1 }), b = plus(a, new double[] { side * 5, -9, 2 });
-				blade(add, plus(r, new double[] { -side * 1.5, 0, 0 }), a, Z, 2.0, 1.5, ANTLER);
-				blade(add, a, b, Z, 1.6, 1.2, ANTLER_DARK);
-				double[] t = lerp(r, a, 0.75);
-				blade(add, t, plus(t, new double[] { side * 1, -8, -3 }), Z, 1.2, 0.9, ANTLER);
-				double[] t2 = lerp(a, b, 0.6);
-				blade(add, t2, plus(t2, new double[] { side * 5, -3, 1 }), Z, 1.0, 0.8, ANTLER);
-			}
-			for (int k = 0; k < 10; k++) { // the wreath, round the lip
-				double a = Math.PI * 2 * k / 10 + 0.3;
-				double ca = Math.cos(a), sa = Math.sin(a);
-				double[] p = project(m, F, ca * ow, oy + sa * oh);
-				blade(add, plus(p, new double[] { 0, 0, -0.4 }), plus(p, new double[] { ca * 5.5, sa * 5.5, -1.8 }), new double[] { -sa, ca, 0 }, 2.1, 0.5,
-						k % 2 == 0 ? st.light : LEAF);
-			}
-			for (int k = -1; k <= 1; k++) {
-				double[] p = project(m, F, k * 4.2, oy - oh - 1.5 + Math.abs(k) * 1.8);
-				flower(add, plus(p, new double[] { 0, 0, -0.8 }), new double[] { 0, -0.3, -1 }, 2.3, st.accent, st.core);
-			}
-			break;
-		}
 		case GRAVESCALE: { // the serpent's head: a broad snout jutting from the brow, ghost-lit eyes on it, fangs, bone horns swept back
 			double[] brow = project(m, F, 0, top + h * 0.24);
 			double[] tip = plus(brow, new double[] { 0, 4, -11 }), wide = lerp(brow, tip, 0.3);
@@ -230,37 +205,6 @@ final class DraftArmourB {
 		ModelData add = new ModelData();
 		Frame F = ArmourSets.FRONT, B = ArmourSets.BACK;
 		switch (st.motif) {
-		case WILDGROVE: { // on the mantle: a collar of leaves, ivy climbing the tunic with golden flowers, an antler toggle on the bark sash, leaves down the cape
-			Mantle mm = new Mantle(m);
-			for (Frame f : new Frame[] { F, B }) {
-				for (int k = -2; k <= 2; k++) {
-					double[] r = plus(project(m, f, k * 4.0, mm.neck - 1 + Math.abs(k) * 1.0), scale(f.n, 0.6));
-					double[] t = plus(project(m, f, k * 7.5, mm.neck + 9 - Math.abs(k) * 0.5), scale(f.n, 2.0));
-					blade(add, r, t, X, 3.8, 0.7, (k + 2) % 2 == 0 ? st.light : LEAF);
-				}
-			}
-			double[][] vine = { { -2.5, mm.waist - 1 }, { 2.8, lerp(mm.waist, mm.neck, 0.22) }, { -2.2, lerp(mm.waist, mm.neck, 0.45) }, { 2.0, lerp(mm.waist, mm.neck, 0.66) },
-					{ -0.5, lerp(mm.waist, mm.neck, 0.84) } };
-			for (int i = 0; i + 1 < vine.length; i++) {
-				decal(add, m, F, LowArmour.bar(vine[i][0], vine[i][1], vine[i + 1][0], vine[i + 1][1], 0.8), 0.4, 1.8, st.dark, st.dark);
-				double[] p = project(m, F, vine[i + 1][0], vine[i + 1][1]);
-				int side = vine[i + 1][0] > 0 ? 1 : -1;
-				blade(add, plus(p, new double[] { 0, 0, -1.2 }), plus(p, new double[] { side * 4.5, -2, -2.2 }), Y, 2.0, 0.5, LEAF);
-			}
-			for (int i : new int[] { 2 }) {
-				double[] p = project(m, F, vine[i][0], vine[i][1]);
-				flower(add, plus(p, new double[] { 0, 0, -1.0 }), new double[] { 0, 0, -1 }, 2.2, st.accent, st.core);
-			}
-			decal(add, m, F, diamond(4.5, mm.waist - 2.5, 1.6, 3.4), 0.4, 3.2, ANTLER, ANTLER_DARK);
-			// ivy leaves trailing down the cape, each its own sprig so it rides its own row of the cape
-			double[][] sprigs = { { -6, mm.capeHip - 2 }, { 5, lerp(mm.capeHip, mm.hem, 0.4) }, { -6, lerp(mm.capeHip, mm.hem, 0.7) }, { 4, mm.hem - 7 } };
-			for (int i = 0; i < sprigs.length; i++) {
-				double[] p = plus(project(m, B, sprigs[i][0], sprigs[i][1]), new double[] { 0, 0, 0.6 });
-				int side = i % 2 == 0 ? 1 : -1;
-				blade(add, p, plus(p, new double[] { side * 4.5, 2.5, 1.2 }), Y, 2.2, 0.5, i % 2 == 0 ? LEAF : st.light);
-			}
-			break;
-		}
 		case GRAVESCALE: { // bone belly-scutes down the front, the kings' bronze round the waist, a ridge of bone down the spine
 			for (int k = 0; k < 5; k++) {
 				double y = top + h * 0.2 + k * h * 0.12, w = hw * (0.42 - k * 0.03);
@@ -392,31 +336,6 @@ final class DraftArmourB {
 			}
 		}
 		switch (st.motif) {
-		case WILDGROVE: { // ivy trailing down the right front flap, and a hem of leaves on every flap
-			double waist = BaseMantle.cen(m, BaseMantle.WAIST)[1];
-			for (int s = 0; s < 2; s++) {
-				double[] knee = BaseMantle.cen(m, BaseMantle.KNEE[s]);
-				double x = BaseMantle.cen(m, BaseMantle.THIGH[s])[0], hem = knee[1] - 7;
-				if (s == 0) {
-					double[][] vine = { { x + 2, waist + 6 }, { x - 2, lerp(waist + 6, hem - 3, 0.33) }, { x + 2.2, lerp(waist + 6, hem - 3, 0.66) }, { x - 1, hem - 3 } };
-					for (int i = 0; i + 1 < vine.length; i++) {
-						decal(fr, m, F, LowArmour.bar(vine[i][0], vine[i][1], vine[i + 1][0], vine[i + 1][1], 0.8), 0.4, 1.8, st.dark, st.dark);
-						double[] p = project(m, F, vine[i + 1][0], vine[i + 1][1]);
-						int side = i % 2 == 0 ? 1 : -1;
-						blade(fr, plus(p, new double[] { 0, 0, -1.2 }), plus(p, new double[] { side * 4.5, -2, -2.2 }), Y, 2.0, 0.5, LEAF);
-					}
-					double[] p = project(m, F, vine[1][0], vine[1][1]);
-					flower(fr, plus(p, new double[] { 0, 0, -1.0 }), new double[] { 0, 0, -1 }, 2.2, st.accent, st.core);
-				}
-				for (Frame f : new Frame[] { F }) {
-					for (int k = -1; k <= 1; k++) {
-						double[] p = project(m, f, x + k * 4.2, hem - 1.5);
-						blade(fr, p, plus(plus(p, scale(f.n, 1.2)), new double[] { k * 1.2, 6.5 + (k == 0 ? 1.5 : 0), 0 }), X, 2.2, 0.5, (k + 1) % 2 == 0 ? st.light : LEAF);
-					}
-				}
-			}
-			break;
-		}
 		case GRAVESCALE: { // belly-scutes down the front, the kings' bronze rings round the thighs
 			for (int k = 0; k < 3; k++) {
 				double y = top + 2 + k * h * 0.09, w = hw * (0.22 - k * 0.03);
@@ -526,15 +445,6 @@ final class DraftArmourB {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * hw * 0.56;
 			switch (st.motif) {
-			case WILDGROVE: { // a bark cuff round the top of the shoe, two leaves tucked in it
-				double[] c = BaseMantle.cen(m, BaseMantle.ANKLE[side < 0 ? 0 : 1]);
-				add.tube(new double[] { c[0], top - 0.5, c[2] + 0.5 }, new double[] { c[0], top + 3, c[2] + 0.5 }, 7.0, 6.8, 6, 0.26, st.trim, st.trimDark);
-				for (int k = -1; k <= 1; k += 2) {
-					double[] p = { c[0] + k * 2.5, top + 1, c[2] - 6 };
-					blade(add, p, plus(p, new double[] { k * 2, -6, -2 }), X, 1.8, 0.4, k < 0 ? st.light : st.main);
-				}
-				break;
-			}
 			case GRAVESCALE: // the kings' bronze at the ankle, a bone toe-cap
 				LowArmour.toeCap(add, x, front, st.trim);
 				LowArmour.cuff(add, m, side, top, top + 3.5, 0.7, BRONZE, BRONZE_DARK);
@@ -572,17 +482,6 @@ final class DraftArmourB {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * (hw - 6.5);
 			switch (st.motif) {
-			case WILDGROVE: { // a bark cuff with a ring of leaves, at the top of the wraps
-				double[] c = cuffTop(m, side, top);
-				add.tube(new double[] { c[0], top - 0.5, c[2] }, new double[] { c[0], top + 2.5, c[2] }, 7.4, 7.4, 6, 0.26, st.trim, st.trimDark);
-				for (int k = 0; k < 4; k++) {
-					double a = Math.PI * 2 * k / 4 + 0.4;
-					double[] p = { c[0] + Math.cos(a) * 7, top + 1, c[2] + Math.sin(a) * 7 };
-					blade(add, p, plus(p, new double[] { Math.cos(a) * 1.5, 6, Math.sin(a) * 1.5 }), new double[] { -Math.sin(a), 0, Math.cos(a) }, 1.8, 0.4,
-							k % 2 == 0 ? st.light : st.main);
-				}
-				break;
-			}
 			case GRAVESCALE: // a king's bronze arm-ring over a scaled cuff
 				LowArmour.gauntlet(add, x, top, 6.8, st.main, st.dark, BRONZE);
 				add.tube(new double[] { x, top + 2, 1 }, new double[] { x, top + 4, 1 }, 6.4, 6.4, 6, 0.26, VERDIGRIS, VERDIGRIS);
