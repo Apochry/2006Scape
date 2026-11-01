@@ -34,31 +34,59 @@ final class DraftArmourB {
 	/** Draft pieces have no item ids: 0 marks a piece the set has, -1 one it doesn't. */
 	static final int[] HAS_ALL = { 0, 0, 0, 0, 0, 0 }, NO_SHIELD = { 0, 0, 0, -1, 0, 0 };
 
+	/* Colours the sets share with their sources: antler, the Gravecoil's verdigris and bone, chitin's sheen, Rimeclaw's claws. */
+	static final int ANTLER = hsl(7, 1, 94), ANTLER_DARK = hsl(7, 1, 72), LEAF = hsl(16, 4, 50), BRONZE = hsl(7, 4, 46), BRONZE_DARK = hsl(7, 4, 32),
+			VERDIGRIS = hsl(25, 2, 46), BELLY = hsl(9, 2, 72), CHITIN = hsl(48, 1, 17), CHITIN_LIGHT = hsl(48, 1, 32), CHITIN_DARK = hsl(48, 1, 9),
+			CLAW = hsl(8, 1, 104), CLAW_DARK = hsl(8, 1, 80);
+
 	static final Style[] SETS = {
-			new Style("Wildgrove", "wildgrove", Kind.ROBE, Motif.WILDGROVE, 40, hsl(18, 4, 44), hsl(18, 4, 30), hsl(18, 3, 60), hsl(8, 1, 96), hsl(8, 1, 74), hsl(10, 6, 90), hsl(11, 4, 116), hsl(6, 3, 28), hsl(6, 3, 18), NO_SHIELD,
+			new Style("Wildgrove", "wildgrove", Kind.ROBE, Motif.WILDGROVE, 40, hsl(19, 3, 34), hsl(19, 3, 22), hsl(18, 3, 48), hsl(6, 3, 36), hsl(6, 3, 24),
+					hsl(10, 6, 90), hsl(11, 4, 116), hsl(6, 3, 28), hsl(6, 3, 18), NO_SHIELD,
 					new String[] { "Wildgrove hat", "Wildgrove robe top", "Wildgrove robe bottom", null, "Wildgrove boots", "Wildgrove gloves" },
-					new String[] { "TODO", "TODO", "TODO", null, "TODO", "TODO" }),
-			new Style("Gravescale", "gravescale", Kind.CHAIN, Motif.GRAVESCALE, 45, hsl(14, 3, 40), hsl(14, 3, 26), hsl(14, 2, 58), hsl(8, 1, 92), hsl(8, 1, 70), hsl(12, 6, 80), hsl(12, 4, 110), hsl(6, 2, 24), hsl(6, 2, 16), HAS_ALL,
+					new String[] { "An antler crown on a bark band. The stag was asked first, apparently.",
+							"A collar of leaves and ivy climbing the front. It's still growing, slowly, towards the light.",
+							"Robes that trail ivy and drop the odd leaf. Hob's woodcutters stop where the Wildgrove starts.", null,
+							"Bark-bound boots. They leave no tracks, and now and then a flower.", "Leaf-cuffed gloves, for turning soil and the occasional spell." }),
+			new Style("Gravescale", "gravescale", Kind.CHAIN, Motif.GRAVESCALE, 45, hsl(14, 2, 38), hsl(15, 2, 26), hsl(14, 2, 50), hsl(9, 2, 86), hsl(9, 2, 64),
+					hsl(27, 6, 104), hsl(27, 4, 122), hsl(15, 2, 22), hsl(15, 2, 15), HAS_ALL,
 					new String[] { "Gravescale med helm", "Gravescale chainbody", "Gravescale platelegs", "Gravescale sq shield", "Gravescale boots", "Gravescale gloves" },
-					new String[] { "TODO", "TODO", "TODO", "TODO", "TODO", "TODO" }),
-			new Style("Gatehold sentinel", "sentinel", Kind.PLATE, Motif.SENTINEL, 50, hsl(36, 1, 64), hsl(36, 1, 44), hsl(36, 1, 84), hsl(40, 5, 40), hsl(40, 5, 28), hsl(8, 6, 84), hsl(9, 2, 120), hsl(40, 3, 24), hsl(40, 3, 16), HAS_ALL,
+					new String[] { "A Gravecoil's head, ghost-light still in its eyes. It was sealed in to guard a king; now it guards you.",
+							"Gravecoil scales over mail, bone belly-scutes down the front and a barrow-king's bronze at the waist.",
+							"Scaled legs with the kings' bronze rings grown into them. The serpent couldn't get them off either.",
+							"A Gravecoil, coiled. It looks asleep. They always look asleep.", "Bronze-ringed boots. The Sunken Barrow's water never quite drains out of them.",
+							"A king's bronze arm-ring, still on the scaled cuff the serpent grew round it." }),
+			new Style("Gatehold sentinel", "sentinel", Kind.PLATE, Motif.SENTINEL, 50, hsl(38, 1, 76), hsl(38, 1, 56), hsl(38, 0, 98), hsl(40, 5, 40), hsl(40, 5, 28),
+					hsl(8, 5, 72), hsl(9, 2, 118), hsl(40, 3, 24), hsl(40, 3, 16), HAS_ALL,
 					new String[] { "Gatehold sentinel full helm", "Gatehold sentinel platebody", "Gatehold sentinel platelegs", "Gatehold sentinel kiteshield", "Gatehold sentinel boots", "Gatehold sentinel gauntlets" },
-					new String[] { "TODO", "TODO", "TODO", "TODO", "TODO", "TODO" }),
-			new Style("Broodkeeper", "broodkeeper", Kind.ROBE, Motif.BROOD, 50, hsl(50, 2, 30), hsl(50, 2, 19), hsl(50, 2, 44), hsl(46, 3, 50), hsl(46, 3, 34), hsl(14, 5, 80), hsl(14, 3, 110), hsl(50, 1, 22), hsl(50, 1, 14), NO_SHIELD,
+					new String[] { "A plume you can see from the far end of Gatehold's wall. That's the point of it.",
+							"Bright steel under Gatehold blue, the gate-tower on the breast in gold. Polished every night, for whoever is left to see.",
+							"Plate for the wall walk: up the steps, along the wall, down the steps, for ever.",
+							"The gate-tower in gold. Anything that gets past it still has the real one to get past.", "Steel-capped boots, worn thin on the wall walk.",
+							"Gauntlets banded in Gatehold blue. They've held the gate shut more than once." }),
+			new Style("Broodkeeper", "broodkeeper", Kind.ROBE, Motif.BROOD, 50, hsl(51, 2, 42), hsl(51, 2, 28), hsl(51, 1, 56), CHITIN, CHITIN_DARK, hsl(14, 5, 80),
+					hsl(14, 3, 112), CHITIN, CHITIN_DARK, NO_SHIELD,
 					new String[] { "Broodkeeper hat", "Broodkeeper robe top", "Broodkeeper robe bottom", null, "Broodkeeper boots", "Broodkeeper gloves" },
-					new String[] { "TODO", "TODO", "TODO", null, "TODO", "TODO" }),
-			new Style("Rimeclaw hunter", "rimeclaw", Kind.HIDE, Motif.RIMECLAW, 60, hsl(36, 2, 80), hsl(36, 2, 60), hsl(36, 1, 100), hsl(38, 2, 40), hsl(38, 2, 28), hsl(8, 1, 104), hsl(36, 3, 118), hsl(36, 2, 36), hsl(36, 2, 24), NO_SHIELD,
+					new String[] { "A spider climbs the hat, legs round the brim, every eye open. It isn't dead. It's on duty.",
+							"Chitin plates over the robe, and the brood's eggs carried on the back. Hollowdeep's keepers never set them down.",
+							"Egg-sacs hang at the belt, glowing faintly. Best not to be standing near when they hatch.", null,
+							"Chitin-spurred boots for walking where the brood nests.", "Chitin cuffs and hooked spurs. The keepers handle the eggs gently, and everything else less so." }),
+			new Style("Rimeclaw hunter", "rimeclaw", Kind.HIDE, Motif.RIMECLAW, 60, hsl(36, 3, 74), hsl(36, 3, 54), hsl(36, 2, 94), hsl(38, 3, 36), hsl(38, 3, 24),
+					CLAW, hsl(36, 2, 120), hsl(36, 2, 34), hsl(36, 2, 22), NO_SHIELD,
 					new String[] { "Rimeclaw hunter coif", "Rimeclaw hunter body", "Rimeclaw hunter chaps", null, "Rimeclaw hunter boots", "Rimeclaw hunter vambraces" },
-					new String[] { "TODO", "TODO", "TODO", null, "TODO", "TODO" }),
+					new String[] { "Rimeclaw's own head, worn as a hood. The frost on it has never melted, and nor has its expression.",
+							"Rimeclaw's hide and a necklace of its claws. The rake-marks on the back were made before you won.",
+							"Ice-blue chaps with a claw strapped over each knee, still sharp, still cold.", null,
+							"Fur-cuffed boots with Rimeclaw's claws over the toes. The Frostfang ice gives them a wide berth.",
+							"Vambraces hooked with Rimeclaw's claws. It tried them out on the hunters first." }),
 	};
 
 	/** Each set's weapon, in set order (id 0: not in the game). */
 	static final Rung[] WEAPONS = {
-			new Rung(0, "Antler staff", "staff", 4000, "TODO", LadderWeapons::pilgrimStaff, STAFF),
-			new Rung(0, "Coilfang spear", "spear", 9000, "TODO", LadderWeapons::militiaSpear, SPEAR),
-			new Rung(0, "Sentinel halberd", "halberd", 15000, "TODO", LadderWeapons::wardenHalberd, HALBERD),
-			new Rung(0, "Brood wand", "wand", 14000, "TODO", LadderWeapons::silkwoodWand, WAND),
-			new Rung(0, "Rimeclaw shortbow", "shortbow", 30000, "TODO", () -> LadderWeapons.wolfboneBow(1.0), SHORTBOW),
+			new Rung(0, "Antler staff", "staff", 4000, "An antler crown on a living branch, a golden flower held in it. The Wildgrove grows its staves; nobody cuts them.", DraftArmourB::antlerStaff, STAFF),
+			new Rung(0, "Coilfang spear", "spear", 9000, "A Gravecoil's fang on bog oak, the rest of the Gravecoil wound round the haft. It's dead. Almost certainly.", DraftArmourB::coilfangSpear, SPEAR),
+			new Rung(0, "Sentinel halberd", "halberd", 15000, "Bright steel on Gatehold blue, with the gate-tower for a socket. The sentinels say it's for keeping things out, and it is.", DraftArmourB::sentinelHalberd, HALBERD),
+			new Rung(0, "Brood wand", "wand", 14000, "A broodmother's leg, its claws closed round three glowing eggs. Something in them is waiting to be useful.", DraftArmourB::broodWand, WAND),
+			new Rung(0, "Rimeclaw shortbow", "shortbow", 30000, "Rimeclaw's hide over horn, its claws for nocks. Every draw creaks like the ice in Frostfang.", () -> rimeclawBow(1.0), () -> rimeclawBow(2.4), SHORTBOW),
 	};
 
 	/** Whether this file builds the set. */
@@ -66,37 +94,737 @@ final class DraftArmourB {
 		return st.motif == Motif.WILDGROVE || st.motif == Motif.GRAVESCALE || st.motif == Motif.SENTINEL || st.motif == Motif.BROOD || st.motif == Motif.RIMECLAW;
 	}
 
+	/** The Gravescale shield is dark hide rimmed in the kings' bronze. */
 	static int shieldFace(Style st) {
-		return st.main;
+		return st.motif == Motif.GRAVESCALE ? st.dark : st.main;
 	}
 
 	static int shieldRim(Style st) {
-		return st.dark;
+		return st.motif == Motif.GRAVESCALE ? BRONZE : st.dark;
 	}
+
+	/* ------------------------------------------------------------- the helm */
 
 	/** What's added to the helm (the base mesh, recoloured, is already there). */
 	static ModelData helm(Style st, ModelData m) {
-		return new ModelData();
+		int[] bb = m.bounds();
+		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top, front = bb[2], back = bb[5], cz = (front + back) / 2, dz = (back - front) / 2;
+		ModelData add = new ModelData();
+		Frame F = ArmourSets.FRONT;
+		switch (st.motif) {
+		case WILDGROVE: { // a bark band with leaves tucked in it, an antler crown, three golden flowers at the brow
+			double by = bottom - h * 0.3;
+			ring(add, new double[] { 0, by, cz }, new double[] { 0, -1, 0 }, X, hw * 0.99, dz * 0.99, -0.2, 2.2, 10, st.leather);
+			for (int side = -1; side <= 1; side += 2) {
+				double[] r = { side * hw * 0.8, by - 1, cz + 1 }, a = { side * (hw + 5), by - 9, cz + 2 }, b = { side * (hw + 9), by - 19, cz + 3 };
+				blade(add, r, a, Z, 2.0, 1.5, ANTLER);
+				blade(add, a, b, Z, 1.6, 1.2, ANTLER_DARK);
+				double[] t = lerp(r, a, 0.75);
+				blade(add, t, plus(t, new double[] { side * 1, -8, -3 }), Z, 1.2, 0.9, ANTLER);
+				double[] t2 = lerp(a, b, 0.6);
+				blade(add, t2, plus(t2, new double[] { side * 5, -3, 1 }), Z, 1.0, 0.8, ANTLER);
+				for (int k = 0; k < 2; k++) { // leaves tucked in the band at the temples
+					double[] q = { side * hw * (0.9 - k * 0.3), by - 1, cz - dz * (0.3 + k * 0.5) };
+					blade(add, q, plus(q, new double[] { side * (2 + k), -6 + k, -2 - k }), Z, 2.0, 0.5, k == 0 ? st.light : st.main);
+				}
+			}
+			for (int k = -1; k <= 1; k++) {
+				double a = -Math.PI / 2 + k * 0.42;
+				double[] p = { Math.cos(a) * hw * 1.0, by - 1.2 + Math.abs(k) * 0.3, cz + Math.sin(a) * dz * 1.0 };
+				flower(add, p, new double[] { Math.cos(a), 0, Math.sin(a) }, 2.3, st.accent, st.core);
+			}
+			break;
+		}
+		case GRAVESCALE: { // the serpent's head: a broad snout jutting from the brow, ghost-lit eyes on it, fangs, bone horns swept back
+			double[] brow = project(m, F, 0, top + h * 0.24);
+			double[] tip = plus(brow, new double[] { 0, 4, -11 }), wide = lerp(brow, tip, 0.3);
+			blade(add, plus(brow, new double[] { 0, 0, 1 }), tip, X, hw * 0.75, 2.6, st.main);
+			blade(add, plus(brow, new double[] { 0, -1.5, 1 }), plus(tip, new double[] { 0, -1.8, 1 }), X, hw * 0.22, 3.4, st.dark);
+			for (int side = -1; side <= 1; side += 2) {
+				double[] e = plus(wide, new double[] { side * hw * 0.42, -1.6, 0 });
+				add.tube(e, plus(e, new double[] { side * 1.2, -1.8, -0.6 }), 1.6, 0.5, 4, Math.PI / 4, st.accent, st.core);
+				double[] fang = plus(lerp(brow, tip, 0.62), new double[] { side * hw * 0.26, 1.2, 0 });
+				blade(add, fang, plus(fang, new double[] { -side * 0.4, 7, 0.8 }), X, 1.2, 0.7, st.trim);
+				double[] r = { side * hw * 0.62, top + h * 0.26, cz - 2 }, a = { side * (hw + 2.5), top - 2, cz + dz * 0.9 }, b = { side * (hw + 3.5), top - 3, back + 11 };
+				blade(add, r, a, Z, 2.8, 1.7, st.trim);
+				blade(add, a, b, Z, 1.8, 1.1, st.trimDark);
+			}
+			for (int k = 0; k < 3; k++) { // bone knuckles down the back of the skull
+				double z = cz + dz * (0.15 + k * 0.4), y = top + 1.5 + k * h * 0.16;
+				add.tube(new double[] { 0, y + 2, z - 2 }, new double[] { 0, y - 4.5 + k, z + 3.5 }, 2.6 - k * 0.3, 0, 3, Math.PI / 2, st.trim, st.trimDark);
+			}
+			break;
+		}
+		case SENTINEL: { // a tall plume in a gold socket, the gate-tower on the brow
+			double[] s = { 0, top + 2, cz + 2 };
+			add.tube(plus(s, new double[] { 0, 3, 0 }), plus(s, new double[] { 0, -4, 0 }), 3.6, 2.6, 6, 0, st.accent, st.accent);
+			for (int k = 0; k < 5; k++) {
+				double zt = -6 + k * 3.5, tall = 24 - Math.abs(k - 1.5) * 2.6;
+				blade(add, plus(s, new double[] { 0, -2, k - 2 }), plus(s, new double[] { 0, -tall, zt + 5 }), Z, 3.2, 1.2, k % 2 == 0 ? st.trim : st.core);
+			}
+			tower(add, m, F, 0, top + h * 0.3, 8, st.accent, hsl(8, 5, 46), st.trimDark, 1.0);
+			break;
+		}
+		case BROOD: { // a spider climbing the hat, its legs gripping round it, a cluster of small glowing eyes looking out
+			double by = bottom - h * 0.3;
+			ring(add, new double[] { 0, by, cz }, new double[] { 0, -1, 0 }, X, hw * 0.99, dz * 0.99, -0.2, 2.0, 10, st.trim);
+			double[] head = plus(project(m, F, 0, by - 5), new double[] { 0, 0, -2.6 }), abd = plus(project(m, F, 0, by - 17), new double[] { 0, 0, -4 });
+			pod(add, plus(head, new double[] { 0, 3.5, 0.5 }), plus(head, new double[] { 0, -3.5, 0.5 }), 3.4, CHITIN_LIGHT, CHITIN);
+			pod(add, plus(abd, new double[] { 0, 7, 1.5 }), plus(abd, new double[] { 0, -7, -0.5 }), 5.6, CHITIN, CHITIN_LIGHT);
+			add.tube(plus(abd, new double[] { 0, -1.5, -4.6 }), plus(abd, new double[] { 0, 1.5, -4.6 }), 1.3, 1.3, 4, Math.PI / 4, st.accent, st.accent);
+			for (int side = -1; side <= 1; side += 2) {
+				for (int k = 0; k < 4; k++) {
+					double a = -Math.PI / 2 + side * (0.75 + k * 0.52);
+					double[] root = plus(head, new double[] { side * 2.4, -2.0 + k * 1.3, 1.2 });
+					double[] out = { Math.cos(a), 0, Math.sin(a) };
+					double[] foot = { out[0] * (hw + 1.2), by - 0.6, cz + out[2] * (dz + 1.2) }; // gripping the band
+					double[] knee = { out[0] * (hw + 6.5 - k * 0.6), by - 10 + k * 1.8, cz + out[2] * (dz + 5) };
+					blade(add, root, knee, Y, 1.7, 1.2, CHITIN);
+					blade(add, knee, foot, Y, 1.4, 1.0, k % 2 == 0 ? CHITIN_LIGHT : CHITIN_DARK);
+				}
+			}
+			double[][] eyes = { { -1.1, 1.2, 1.1 }, { 1.1, 1.2, 1.1 }, { -2.3, 0, 0.7 }, { 2.3, 0, 0.7 }, { -0.9, -0.8, 0.6 }, { 0.9, -0.8, 0.6 } };
+			for (double[] e : eyes) {
+				double[] p = plus(head, new double[] { e[0], e[1], -2.4 });
+				add.tube(p, plus(p, new double[] { 0, 0, -1.6 }), e[2], 0, 4, Math.PI / 4, st.accent, st.core);
+			}
+			break;
+		}
+		case RIMECLAW: { // Rimeclaw's own head worn as a hood: the snout over the brow, fangs, ears laid back, frost on the crown
+			double[] brow = project(m, F, 0, top + h * 0.12);
+			double[] tip = plus(brow, new double[] { 0, 0.5, -12 }), wide = lerp(brow, tip, 0.3);
+			blade(add, plus(brow, new double[] { 0, 0, 1 }), tip, X, hw * 0.62, 3.0, st.main);
+			blade(add, plus(brow, new double[] { 0, -1.8, 1 }), plus(tip, new double[] { 0, -1.4, 1.5 }), X, hw * 0.2, 3.8, st.light);
+			add.tube(plus(tip, new double[] { 0, -0.5, 2.2 }), plus(tip, new double[] { 0, 0.5, -0.8 }), 1.8, 0.8, 4, Math.PI / 4, hsl(38, 4, 18), hsl(38, 4, 18));
+			for (int side = -1; side <= 1; side += 2) {
+				double[] fang = plus(lerp(brow, tip, 0.35), new double[] { side * hw * 0.45, 1.5, 0 });
+				blade(add, fang, plus(fang, new double[] { side * 0.3, 9, 0.8 }), X, 1.4, 0.9, st.accent);
+				double[] e = plus(wide, new double[] { side * hw * 0.42, -1.2, 0.5 });
+				add.tube(e, plus(e, new double[] { side * 1.0, -1.2, -0.8 }), 1.3, 0.4, 4, Math.PI / 4, st.core, st.core);
+				double[] ear = { side * hw * 0.6, top + h * 0.12, cz - 2 };
+				blade(add, ear, plus(ear, new double[] { side * 3.5, -7, 8 }), Z, 3.0, 1.1, st.main);
+			}
+			for (int k = 0; k < 3; k++) { // rime on the crown
+				double z = cz + dz * (k * 0.35 - 0.1), x = (k - 1) * 2.0;
+				add.tube(new double[] { x, top + 2 + k * 0.8, z }, new double[] { x * 1.8, top - 5 + k, z + 2 }, 1.6, 0, 4, 0.3, st.core, st.core);
+			}
+			break;
+		}
+		default:
+			break;
+		}
+		return add;
 	}
 
+	/* ------------------------------------------------------------- the body */
+
 	static ModelData body(Style st, ModelData m) {
-		return new ModelData();
+		int[] bb = m.bounds();
+		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top, front = bb[2], back = bb[5], cz = (front + back) / 2;
+		double cy = top + h * 0.42, sx = hw * 0.7, sy = top + h * 0.12;
+		ModelData add = new ModelData();
+		Frame F = ArmourSets.FRONT, B = ArmourSets.BACK;
+		switch (st.motif) {
+		case WILDGROVE: { // a collar of leaves, ivy and golden flowers climbing the front, a bark belt
+			double tw = halfWidth(m, bottom - 3, 4);
+			for (Frame f : new Frame[] { F, B }) {
+				for (int k = -3; k <= 3; k++) {
+					double[] r = plus(project(m, f, k * 3.0, top + 4 + Math.abs(k) * 0.9), scale(f.n, 0.6));
+					double[] t = plus(project(m, f, k * 6.0, top + h * 0.22 + (3 - Math.abs(k)) * 0.6), scale(f.n, 1.5));
+					blade(add, r, t, X, 3.6, 0.7, (k + 3) % 2 == 0 ? st.light : LEAF);
+				}
+				LowArmour.strips(add, m, f, -tw * 1.04, bottom - h * 0.13, tw * 1.04, bottom - 0.5, 4, 1, 2.2, st.leather, st.leatherDark);
+			}
+			double[][] vine = { { tw * 0.3, bottom - h * 0.14 }, { tw * 0.6, top + h * 0.7 }, { tw * 0.32, top + h * 0.55 }, { tw * 0.58, top + h * 0.4 } };
+			for (int i = 0; i + 1 < vine.length; i++) {
+				decal(add, m, F, LowArmour.bar(vine[i][0], vine[i][1], vine[i + 1][0], vine[i + 1][1], 0.9), 0.4, 1.8, st.dark, st.dark);
+				double[] p = project(m, F, vine[i + 1][0], vine[i + 1][1]);
+				int side = i % 2 == 0 ? 1 : -1;
+				blade(add, plus(p, new double[] { 0, 0, -1.4 }), plus(p, new double[] { side * 5, -2, -2.2 }), Y, 2.2, 0.5, LEAF);
+			}
+			for (int i : new int[] { 1, 3 }) {
+				double[] p = project(m, F, vine[i][0], vine[i][1]);
+				flower(add, plus(p, new double[] { 0, 0, -1.0 }), new double[] { 0, 0, -1 }, 2.4, st.accent, st.core);
+			}
+			decal(add, m, F, diamond(-tw * 0.35, bottom - h * 0.065, 2.2, 2.6), 0.4, 3.0, ANTLER, ANTLER_DARK);
+			break;
+		}
+		case GRAVESCALE: { // bone belly-scutes down the front, the kings' bronze round the waist, a ridge of bone down the spine
+			for (int k = 0; k < 5; k++) {
+				double y = top + h * 0.2 + k * h * 0.12, w = hw * (0.42 - k * 0.03);
+				decal(add, m, F, new double[][] { { -w, y }, { w, y }, { w * 0.85, y + h * 0.1 }, { -w * 0.85, y + h * 0.1 } }, 0.6, 2.0, k % 2 == 0 ? st.trim : BELLY,
+						st.trimDark);
+			}
+			for (Frame f : new Frame[] { F, B }) {
+				LowArmour.strips(add, m, f, -hw * 1.05, bottom - h * 0.16, hw * 1.05, bottom - h * 0.06, 4, 1, 2.4, BRONZE, VERDIGRIS);
+			}
+			for (int k = 0; k < 4; k++) {
+				double y = top + h * 0.14 + k * h * 0.17;
+				double[] p = project(m, B, 0, y);
+				add.tube(plus(p, new double[] { 0, 2.5, -1.5 }), plus(p, new double[] { 0, -3, 7 - k * 0.8 }), 3.0 - k * 0.3, 0, 3, Math.PI / 2, st.trim, st.trimDark);
+			}
+			break;
+		}
+		case SENTINEL: { // pauldrons edged in Gatehold blue, the blue tabard front and back, the gate-tower in gold
+			for (int side = -1; side <= 1; side += 2) {
+				double[] c = { side * sx, sy, -1 };
+				double[] axis = norm(new double[] { side * 0.6, -0.8, 0 });
+				dome(add, c, axis, Z, hw * 0.55, hw * 0.44, hw * 0.34, 6, st.dark, st.main);
+				ring(add, c, axis, Z, hw * 0.6, hw * 0.49, -1.4, 2.2, 6, st.trim);
+				double[] tip = plus(c, scale(axis, hw * 0.34));
+				add.tube(tip, plus(tip, scale(axis, 2.5)), 1.8, 0.6, 4, Math.PI / 4, st.accent, st.accent);
+			}
+			for (Frame f : new Frame[] { F, B }) {
+				decal(add, m, f, rect(-hw * 0.38, top + h * 0.16, hw * 0.38, bottom - 1), 0.6, 1.5, st.trim, st.trimDark);
+				for (int side = -1; side <= 1; side += 2) {
+					decal(add, m, f, rect(side * hw * 0.38 - 0.9, top + h * 0.16, side * hw * 0.38 + 0.9, bottom - 1), 0.5, 1.9, st.accent, hsl(8, 5, 46));
+				}
+			}
+			tower(add, m, F, 0, cy + 1, h * 0.36, st.accent, hsl(8, 5, 46), st.trimDark, 1.0);
+			break;
+		}
+		case BROOD: { // chitin lames across the breast, a carapace on the back with the brood's sign, egg-sacs carried under it
+			double tw = halfWidth(m, top + h * 0.5, 3);
+			for (int k = 0; k < 3; k++) {
+				double y = top + h * (0.2 + k * 0.19), w = tw * (0.78 - k * 0.08), hh = h * 0.15;
+				decal(add, m, F, new double[][] { { -w, y }, { w, y }, { w * 0.92, y + hh * 0.8 }, { 0, y + hh * 1.15 }, { -w * 0.92, y + hh * 0.8 } }, 0.6, 2.8 - k * 0.35,
+						k % 2 == 0 ? CHITIN_LIGHT : CHITIN, CHITIN_DARK);
+			}
+			for (int side = -1; side <= 1; side += 2) { // a broodmother's legs, hooked over the shoulders from the carapace behind
+				double[] root = plus(project(m, B, side * tw * 0.45, top + h * 0.22), new double[] { 0, 0, 1.2 });
+				double[] foot = plus(project(m, F, side * tw * 0.86, top + h * 0.4), new double[] { 0, 0, -1.4 });
+				double[] knee = { side * tw * 0.7, top - 9, cz };
+				blade(add, root, knee, X, 2.0, 1.4, CHITIN);
+				blade(add, knee, foot, X, 1.6, 1.2, CHITIN_LIGHT);
+				add.tube(plus(knee, new double[] { 0, 1.5, 0 }), plus(knee, new double[] { 0, -1.5, 0 }), 1.7, 1.7, 4, Math.PI / 4, CHITIN_DARK, CHITIN_DARK);
+			}
+			decal(add, m, B, new double[][] { { 0, top + h * 0.1 }, { tw * 0.8, top + h * 0.26 }, { tw * 0.75, top + h * 0.68 }, { 0, bottom - h * 0.12 }, { -tw * 0.75, top + h * 0.68 },
+					{ -tw * 0.8, top + h * 0.26 } }, 0.6, 1.8, CHITIN, CHITIN_DARK);
+			double hy = top + h * 0.42, hs = h * 0.15;
+			decal(add, m, B, new double[][] { { -hs * 0.65, hy - hs }, { hs * 0.65, hy - hs }, { 0, hy } }, 0.3, 2.5, st.accent, st.accent);
+			decal(add, m, B, new double[][] { { 0, hy }, { hs * 0.65, hy + hs }, { -hs * 0.65, hy + hs } }, 0.3, 2.5, st.accent, st.accent);
+			for (int k = -1; k <= 1; k++) {
+				double[] p = project(m, B, k * 3.6, bottom - h * 0.14 + Math.abs(k) * -1.5);
+				egg(add, plus(p, new double[] { 0, 0, 1.6 + (k == 0 ? 0.6 : 0) }), 2.4 - Math.abs(k) * 0.3, 7.0 - Math.abs(k), st.accent, st.core);
+			}
+			break;
+		}
+		case RIMECLAW: { // a necklace of claws, Rimeclaw's great hooked claws over the shoulders, three rake-scars across the back
+			double ny = top + h * 0.14;
+			for (int k = -3; k <= 3; k++) {
+				double x = k * hw * 0.11, y = ny + (9 - k * k) * -0.35 + 3;
+				double[] p = project(m, F, x, y);
+				add.tube(plus(p, new double[] { 0, -0.5, -0.8 }), plus(p, new double[] { k * 0.3, 5.0 - Math.abs(k) * 0.4, -3.0 }), 1.3, 0, 4, Math.PI / 4,
+						k % 2 == 0 ? st.accent : CLAW_DARK, st.accent);
+			}
+			decal(add, m, F, new double[][] { { -hw * 0.38, ny - 2.5 }, { -hw * 0.2, ny + 1.2 }, { 0, ny + 2.3 }, { hw * 0.2, ny + 1.2 }, { hw * 0.38, ny - 2.5 }, { hw * 0.36, ny - 1.2 },
+					{ hw * 0.2, ny + 2.4 }, { 0, ny + 3.5 }, { -hw * 0.2, ny + 2.4 }, { -hw * 0.36, ny - 1.2 } }, 0.3, 1.3, st.trimDark, st.trimDark);
+			for (int side = -1; side <= 1; side += 2) {
+				for (int k = -1; k <= 1; k++) {
+					double[] r = { side * sx * (0.92 + 0.06 * Math.abs(k)), sy + 1, cz + k * 4.5 };
+					double[] mid = plus(r, new double[] { side * 5, -9.5 + Math.abs(k) * 2, k * 1.8 });
+					double[] tip = plus(mid, new double[] { side * 6.5, 4.5, k * 1.0 });
+					blade(add, r, mid, Z, 2.8, 1.7, k == 0 ? st.accent : CLAW_DARK);
+					blade(add, mid, tip, Z, 1.8, 1.1, st.accent);
+				}
+			}
+			for (int k = -1; k <= 1; k++) {
+				double x0 = -hw * 0.5 + k * hw * 0.32, x1 = hw * 0.2 + k * hw * 0.32;
+				decal(add, m, B, LowArmour.bar(x0, top + h * 0.22, x1, top + h * 0.66, 0.9), 0.3, 1.6, st.trimDark, st.trimDark);
+			}
+			break;
+		}
+		default:
+			break;
+		}
+		return add;
 	}
+
+	/* ------------------------------------------------------------- the legs */
 
 	/** Right knee, left knee and the front (any may be empty). */
 	static ModelData[] legs(Style st, ModelData m) {
-		return new ModelData[] { new ModelData(), new ModelData(), new ModelData() };
+		int[] bb = m.bounds();
+		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top, front = bb[2], back = bb[5], cz = (front + back) / 2;
+		double kneeY = top + h * 0.55, kneeX = hw * 0.53;
+		ModelData[] knees = { new ModelData(), new ModelData() };
+		ModelData fr = new ModelData();
+		Frame F = ArmourSets.FRONT, B = ArmourSets.BACK;
+		for (int side = -1, i = 0; side <= 1; side += 2, i++) {
+			double x = side * kneeX;
+			ModelData one = knees[i];
+			switch (st.motif) {
+			case GRAVESCALE: // a bone scute over each knee
+				decal(one, m, F, new double[][] { { x - 5, kneeY - 6 }, { x + 5, kneeY - 6 }, { x + 4, kneeY + 5 }, { x, kneeY + 8 }, { x - 4, kneeY + 5 } }, 0.8, 2.4, st.trim,
+						st.trimDark);
+				break;
+			case SENTINEL: { // bright knee-plates, a gold boss on each
+				LowArmour.kneePlate(one, m, x, kneeY, st.light, st.dark);
+				double[] hit = surface(m, new double[] { x, kneeY, -100 }, new double[] { 0, 0, 1 });
+				double[] p = hit == null ? new double[] { x, kneeY, -12 } : hit;
+				one.tube(plus(p, new double[] { 0, 0, -1.5 }), plus(p, new double[] { 0, 0, -4.5 }), 2.2, 0.8, 6, 0, st.accent, st.accent);
+				break;
+			}
+			case RIMECLAW: { // Rimeclaw's paw over each knee
+				for (int k = -1; k <= 1; k++) { // three claws, fanned down over the knee like a paw
+					double[] p = project(m, F, x + k * 2.6, kneeY - 8 + Math.abs(k) * 1.5);
+					double[] r = plus(p, new double[] { 0, 0, -1.2 }), mid = plus(r, new double[] { k * 1.2, 5.5 - Math.abs(k), -4.5 });
+					blade(one, r, mid, X, 1.6, 1.1, k == 0 ? st.accent : CLAW_DARK);
+					blade(one, mid, plus(mid, new double[] { k * 0.4, 4.5 - Math.abs(k), 2.2 }), X, 1.1, 0.8, st.accent);
+				}
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		switch (st.motif) {
+		case WILDGROVE: { // ivy trailing down the skirt, a hem cut into leaves
+			double[][] vine = { { -hw * 0.25, top + 3 }, { -hw * 0.4, top + h * 0.2 }, { -hw * 0.22, top + h * 0.38 }, { -hw * 0.42, top + h * 0.56 }, { -hw * 0.26, top + h * 0.74 } };
+			for (int i = 0; i + 1 < vine.length; i++) {
+				decal(fr, m, F, LowArmour.bar(vine[i][0], vine[i][1], vine[i + 1][0], vine[i + 1][1], 0.9), 0.4, 1.8, st.dark, st.dark);
+				double[] p = project(m, F, vine[i + 1][0], vine[i + 1][1]);
+				int side = i % 2 == 0 ? 1 : -1;
+				blade(fr, plus(p, new double[] { 0, 0, -1.4 }), plus(p, new double[] { side * 5, -2, -2.2 }), Y, 2.2, 0.5, LEAF);
+			}
+			for (int i : new int[] { 1, 3 }) {
+				double[] p = project(m, F, vine[i][0], vine[i][1]);
+				flower(fr, plus(p, new double[] { 0, 0, -1.0 }), new double[] { 0, 0, -1 }, 2.4, st.accent, st.core);
+			}
+			double[] hem = LowArmour.hem(m, bottom);
+			for (int k = 0; k < 14; k++) {
+				double a = Math.PI * 2 * k / 14 + 0.1;
+				double x = hem[0] + Math.cos(a) * hem[2] * 0.95, z = hem[1] + Math.sin(a) * hem[3] * 0.95;
+				blade(fr, new double[] { x, bottom - 5, z }, new double[] { x * 1.06, bottom + 3 + (k % 2) * 1.5, hem[1] + (z - hem[1]) * 1.06 }, new double[] { -Math.sin(a), 0, Math.cos(a) }, 3.0,
+						0.6, k % 2 == 0 ? st.light : hsl(16, 4, 44));
+			}
+			break;
+		}
+		case GRAVESCALE: { // belly-scutes down the front, the kings' bronze rings round the thighs
+			for (int k = 0; k < 3; k++) {
+				double y = top + 2 + k * h * 0.09, w = hw * (0.22 - k * 0.03);
+				decal(fr, m, F, new double[][] { { -w, y }, { w, y }, { w * 0.8, y + h * 0.08 }, { -w * 0.8, y + h * 0.08 } }, 0.8, 2.0, k % 2 == 0 ? st.trim : BELLY, st.trimDark);
+			}
+			for (int side = -1; side <= 1; side += 2) {
+				for (Frame f : new Frame[] { F, B }) {
+					decal(fr, m, f, rect(side * kneeX - 6.5, top + h * 0.3, side * kneeX + 6.5, top + h * 0.36), 0.7, 2.0, BRONZE, VERDIGRIS);
+				}
+			}
+			break;
+		}
+		case SENTINEL: // the blue tasset, edged in gold, the tower small on it
+			decal(fr, m, F, rect(-hw * 0.3, top + 2, hw * 0.3, top + h * 0.3), 0.8, 1.7, st.trim, st.trimDark);
+			decal(fr, m, F, rect(-hw * 0.3, top + h * 0.3 - 1.4, hw * 0.3, top + h * 0.3), 0.6, 2.3, st.accent, hsl(8, 5, 46));
+			break;
+		case BROOD: { // chitin plates down the front, a cluster of egg-sacs hung at the belt, chitin tatters at the hem
+			for (int k = 0; k < 4; k++) {
+				double y = top + 2 + h * k * 0.17, w = hw * (0.3 - k * 0.02), hh = h * 0.14;
+				decal(fr, m, F, new double[][] { { -w, y }, { w, y }, { w * 0.92, y + hh * 0.8 }, { 0, y + hh * 1.1 }, { -w * 0.92, y + hh * 0.8 } }, 0.6, 2.6 - k * 0.25,
+						k % 2 == 0 ? CHITIN_LIGHT : CHITIN, CHITIN_DARK);
+			}
+			for (int k = 0; k < 3; k++) { // egg-sacs hung at the belt
+				double a = -Math.PI * 0.27 + (k - 1) * 0.22;
+				double[] hip = skin(m, a, top + 7 + (k == 1 ? 2.5 : 0), cz, 2.4 + (k == 1 ? 0.6 : 0));
+				if (hip != null) {
+					egg(fr, plus(hip, new double[] { 0, -2.5, 0 }), 2.6 - (k == 1 ? 0 : 0.4), 7.5 - (k == 1 ? 0 : 1), st.accent, st.core);
+				}
+			}
+			double[] hem = LowArmour.hem(m, bottom);
+			for (int k = 0; k < 12; k++) {
+				double a = Math.PI * 2 * k / 12 + 0.25;
+				double x = hem[0] + Math.cos(a) * hem[2] * 0.95, z = hem[1] + Math.sin(a) * hem[3] * 0.95;
+				blade(fr, new double[] { x, bottom - 6, z }, new double[] { x * 1.08, bottom + 2, hem[1] + (z - hem[1]) * 1.08 }, new double[] { -Math.sin(a), 0, Math.cos(a) }, 2.2, 0.9,
+						k % 2 == 0 ? CHITIN : CHITIN_LIGHT);
+			}
+			break;
+		}
+		case RIMECLAW: // a belt with a claw for a buckle
+			for (Frame f : new Frame[] { F, B }) {
+				decal(fr, m, f, rect(-hw * 1.02, top + 1, hw * 1.02, top + 5), 0.7, 1.6, st.trim, st.trimDark);
+			}
+			double[] p = project(m, F, -hw * 0.15, top + 3);
+			blade(fr, plus(p, new double[] { -2, -0.5, -1.5 }), plus(p, new double[] { 3, 1.5, -2.5 }), Y, 1.6, 0.9, st.accent);
+			break;
+		default:
+			break;
+		}
+		return new ModelData[] { knees[0], knees[1], fr };
 	}
+
+	/* ------------------------------------------------------------- the shield */
 
 	static ModelData shield(Style st, ModelData m, Frame f) {
-		return new ModelData();
+		double[] e = LowArmour.extent(m, f); // u0, u1, v0, v1
+		double w = (e[1] - e[0]) / 2, hgt = (e[3] - e[2]) / 2, cu = (e[0] + e[1]) / 2, cv = (e[2] + e[3]) / 2;
+		double s = Math.min(w, hgt);
+		ModelData add = new ModelData();
+		switch (st.motif) {
+		case GRAVESCALE: { // a Gravecoil, coiled, its head raised in the middle
+			int n = 13;
+			double turns = 1.3, r0 = s * 0.8, r1 = s * 0.24;
+			double[][] pt = new double[n + 1][];
+			for (int i = 0; i <= n; i++) {
+				double t = (double) i / n, a = -Math.PI * 0.5 + Math.PI * 2 * turns * t;
+				double r = r0 + (r1 - r0) * t;
+				pt[i] = new double[] { cu + Math.cos(a) * r, cv + Math.sin(a) * r };
+			}
+			for (int i = 0; i < n; i++) {
+				double t = (double) i / n, wd = s * (0.06 + 0.09 * t);
+				boolean ringed = i == 5 || i == 10;
+				decal(add, m, f, LowArmour.bar(pt[i][0], pt[i][1], pt[i + 1][0], pt[i + 1][1], wd), 0.5, ringed ? 2.6 : 2.0, ringed ? BRONZE : i % 2 == 0 ? st.trim : BELLY,
+						ringed ? VERDIGRIS : st.trimDark);
+			}
+			double[] hd = pt[n], dir = { pt[n][0] - pt[n - 1][0], pt[n][1] - pt[n - 1][1] };
+			double dl = Math.hypot(dir[0], dir[1]);
+			double ux = dir[0] / dl, uy = dir[1] / dl, vx = -uy, vy = ux, hs = s * 0.27;
+			decal(add, m, f, new double[][] { { hd[0] - vx * hs * 0.5, hd[1] - vy * hs * 0.5 }, { hd[0] + ux * hs * 0.6 - vx * hs * 0.75, hd[1] + uy * hs * 0.6 - vy * hs * 0.75 },
+					{ hd[0] + ux * hs * 1.6, hd[1] + uy * hs * 1.6 }, { hd[0] + ux * hs * 0.6 + vx * hs * 0.75, hd[1] + uy * hs * 0.6 + vy * hs * 0.75 },
+					{ hd[0] + vx * hs * 0.5, hd[1] + vy * hs * 0.5 } }, 0.5, 2.6, st.trim, st.trimDark);
+			for (int k = -1; k <= 1; k += 2) {
+				decal(add, m, f, diamond(hd[0] + ux * hs * 0.6 + vx * hs * 0.38 * k, hd[1] + uy * hs * 0.6 + vy * hs * 0.38 * k, hs * 0.16, hs * 0.16), 0.3, 3.1, st.accent, st.accent);
+			}
+			break;
+		}
+		case SENTINEL: { // the gate-tower raised as the boss over a field of Gatehold blue
+			decal(add, m, f, diamond(0, 2, 15, 26), 0.5, 1.6, st.trim, st.trimDark);
+			tower(add, m, f, 0, 1, 36, st.accent, hsl(8, 5, 46), st.trimDark, 1.7);
+			break;
+		}
+		default:
+			break;
+		}
+		return add;
 	}
 
+	/* ------------------------------------------------------------- boots, gloves */
+
 	static ModelData boots(Style st, ModelData m) {
-		return new ModelData();
+		int[] bb = m.bounds();
+		double hw = bb[3], front = bb[2], top = bb[1];
+		ModelData add = new ModelData();
+		for (int side = -1; side <= 1; side += 2) {
+			double x = side * hw * 0.56;
+			switch (st.motif) {
+			case WILDGROVE: // a bark cuff with two leaves
+				LowArmour.cuff(add, m, side, top, top + 3, 0.6, st.trim, st.trimDark);
+				for (int k = -1; k <= 1; k += 2) {
+					double[] p = { x + k * 2.5, top + 1, front + 6 };
+					blade(add, p, plus(p, new double[] { k * 2, -6, -2 }), X, 1.8, 0.4, k < 0 ? st.light : st.main);
+				}
+				break;
+			case GRAVESCALE: // the kings' bronze at the ankle, a bone toe-cap
+				LowArmour.toeCap(add, x, front, st.trim);
+				LowArmour.cuff(add, m, side, top, top + 3.5, 0.7, BRONZE, BRONZE_DARK);
+				break;
+			case SENTINEL:
+				LowArmour.toeCap(add, x, front, st.light);
+				LowArmour.cuff(add, m, side, top, top + 2.5, 0.6, st.accent, st.leather);
+				break;
+			case BROOD: // a chitin cuff, two hooked chitin spurs over the toes
+				LowArmour.cuff(add, m, side, top, top + 3, 0.6, CHITIN, CHITIN_DARK);
+				for (int k = -1; k <= 1; k += 2) {
+					add.tube(new double[] { x + k * 1.8, -4, front + 6 }, new double[] { x + k * 2.6, -1, front - 2.5 }, 1.3, 0, 4, 0.78, CHITIN_LIGHT, CHITIN_LIGHT);
+				}
+				break;
+			case RIMECLAW: // a frosted fur cuff, two claws over the toes
+				LowArmour.cuff(add, m, side, top, top + 4.5, 1.3, st.light, st.core);
+				for (int k = -1; k <= 1; k += 2) {
+					add.tube(new double[] { x + k * 1.8, -3, front + 5 }, new double[] { x + k * 2.2, -0.5, front - 3 }, 1.4, 0, 4, 0.78, st.accent, st.accent);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		return add;
 	}
 
 	static ModelData gloves(Style st, ModelData m) {
-		return new ModelData();
+		int[] bb = m.bounds();
+		double hw = bb[3], top = bb[1];
+		ModelData add = new ModelData();
+		for (int side = -1; side <= 1; side += 2) {
+			double x = side * (hw - 6.5);
+			switch (st.motif) {
+			case WILDGROVE: // a bark cuff with a ring of leaves
+				add.tube(new double[] { x, top + 7, 1 }, new double[] { x, top + 9.5, 1 }, 6.2, 6.2, 6, 0.26, st.trim, st.trimDark);
+				for (int k = 0; k < 4; k++) {
+					double a = Math.PI * 2 * k / 4 + 0.4;
+					double[] p = { x + Math.cos(a) * 6, top + 8, 1 + Math.sin(a) * 6 };
+					blade(add, p, plus(p, new double[] { Math.cos(a) * 1.5, -6, Math.sin(a) * 1.5 }), new double[] { -Math.sin(a), 0, Math.cos(a) }, 1.8, 0.4,
+							k % 2 == 0 ? st.light : st.main);
+				}
+				break;
+			case GRAVESCALE: // a king's bronze arm-ring over a scaled cuff
+				LowArmour.gauntlet(add, x, top, 6.8, st.main, st.dark, BRONZE);
+				add.tube(new double[] { x, top + 2, 1 }, new double[] { x, top + 4, 1 }, 6.4, 6.4, 6, 0.26, VERDIGRIS, VERDIGRIS);
+				break;
+			case SENTINEL:
+				LowArmour.gauntlet(add, x, top, 7.6, st.main, st.dark, st.accent);
+				add.tube(new double[] { x, top + 4, 1 }, new double[] { x, top + 6, 1 }, 7.0, 7.2, 6, 0.26, st.trim, st.trim);
+				break;
+			case BROOD: // a chitin cuff, a glowing egg on the back of the wrist
+				add.tube(new double[] { x, top + 6, 1 }, new double[] { x, top + 10, 1 }, 6.0, 6.4, 6, 0.26, CHITIN, CHITIN_DARK);
+				pod(add, new double[] { x + side * 5.8, top + 3.5, 3 }, new double[] { x + side * 5.8, top + 9.5, 3 }, 2.0, st.accent, st.core);
+				for (int k = -1; k <= 1; k += 2) {
+					add.tube(new double[] { x + side * 5, top + 7, 1 + k * 3 }, new double[] { x + side * 8, top + 1, 2 + k * 3 }, 1.2, 0, 4, 0.78, CHITIN_LIGHT, CHITIN_LIGHT);
+				}
+				break;
+			case RIMECLAW: // a strap, and great hooked claws up the outside of each vambrace
+				add.tube(new double[] { x, top + 3, 0.5 }, new double[] { x, top + 5.5, 0.5 }, 5.4, 5.4, 6, 0.26, st.trim, st.trimDark);
+				for (int k = -1; k <= 1; k++) {
+					double[] r = { x + side * 4.5, top + 9 + Math.abs(k) * 1.5, 1 + k * 3.2 };
+					double[] mid = plus(r, new double[] { side * 5, -8 + Math.abs(k) * 2, k * 0.8 });
+					blade(add, r, mid, Z, 2.2, 1.3, k == 0 ? st.accent : CLAW_DARK);
+					blade(add, mid, plus(mid, new double[] { side * 0.5, -5.5, k * 0.5 + 3 }), Z, 1.3, 0.8, st.accent);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		return add;
+	}
+
+	/* ------------------------------------------------------------- shapes */
+
+	static double[] plus(double[] a, double[] b) {
+		return new double[] { a[0] + b[0], a[1] + b[1], a[2] + b[2] };
+	}
+
+	static double[] lerp(double[] a, double[] b, double t) {
+		return new double[] { a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t };
+	}
+
+	/** The point on a mesh's outer surface at angle {@code a} round the vertical axis through z = cz, height y, pushed out by {@code out}. */
+	static double[] skin(ModelData m, double a, double y, double cz, double out) {
+		double ca = Math.cos(a), sa = Math.sin(a);
+		double[] hit = surface(m, new double[] { ca * 150, y, cz + sa * 150 }, new double[] { -ca, 0, -sa });
+		return hit == null ? null : plus(hit, new double[] { ca * out, 0, sa * out });
+	}
+
+	/** A small flower facing {@code n}: a flared cup of petals and a bright centre. */
+	static void flower(ModelData add, double[] p, double[] n, double r, int petal, int core) {
+		add.tube(p, plus(p, scale(n, 1.0)), r * 0.5, r, 5, 0, petal, petal);
+		add.tube(plus(p, scale(n, 1.0)), plus(p, scale(n, 1.8)), r * 0.4, 0, 4, 0, core, core);
+	}
+
+	/** An egg-sac hanging from its top at c: long {@code len}, widest {@code r} low down. */
+	static void egg(ModelData add, double[] c, double r, double len, int col, int col2) {
+		double[] mid = plus(c, new double[] { 0, len * 0.6, 0 }), bot = plus(c, new double[] { 0, len, 0 });
+		add.tube(c, mid, r * 0.35, r, 6, 0, col, col);
+		add.tube(mid, bot, r, 0, 6, 0, col2, col2);
+	}
+
+	/** Gatehold's gate-tower: a crenellated tower with a dark arched gate at its foot. */
+	static void tower(ModelData add, ModelData m, Frame f, double x, double y, double size, int col, int col2, int door, double lift) {
+		double s = size;
+		decal(add, m, f, rect(x - s * 0.3, y - s * 0.24, x + s * 0.3, y + s * 0.5), 0.5, 2.0 * lift, col, col2);
+		decal(add, m, f, rect(x - s * 0.4, y - s * 0.36, x + s * 0.4, y - s * 0.22), 0.5, 2.3 * lift, col, col2);
+		for (int k = -1; k <= 1; k++) {
+			double xi = x + k * s * 0.3;
+			decal(add, m, f, rect(xi - s * 0.08, y - s * 0.5, xi + s * 0.08, y - s * 0.35), 0.5, 2.3 * lift, col, col2);
+		}
+		decal(add, m, f, new double[][] { { x - s * 0.13, y + s * 0.5 }, { x - s * 0.13, y + s * 0.26 }, { x, y + s * 0.14 }, { x + s * 0.13, y + s * 0.26 }, { x + s * 0.13, y + s * 0.5 } },
+				0.3, 2.0 * lift + 0.6, door, door);
+		decal(add, m, f, rect(x - s * 0.04, y - s * 0.12, x + s * 0.04, y + s * 0.04), 0.3, 2.0 * lift + 0.5, door, door);
+	}
+
+	/** Half the width of a mesh at height y: the furthest vertex from the middle within {@code band} of it. */
+	static double halfWidth(ModelData m, double y, double band) {
+		double w = 0;
+		for (int[] v : m.vertices) {
+			if (Math.abs(v[1] - y) <= band) {
+				w = Math.max(w, Math.abs(v[0]));
+			}
+		}
+		return w;
+	}
+
+	/** A double cone from p0 to p1, widest ({@code r}) a little under halfway: a spider's body, a seed, a pod. */
+	static void pod(ModelData add, double[] p0, double[] p1, double r, int col, int col2) {
+		double[] mid = lerp(p0, p1, 0.45);
+		add.tube(p0, mid, 0, r, 6, 0, col, col);
+		add.tube(mid, p1, r, 0, 6, 0, col2, col2);
+	}
+
+	/* ====================================================================== */
+	/*                                WEAPONS                                 */
+	/* ====================================================================== */
+
+	/** The Wildgrove druids' staff: a gnarled branch wound with ivy, an antler crown at the top holding a golden flower. */
+	static ModelData antlerStaff() {
+		ModelData m = new ModelData();
+		int bark = hsl(6, 3, 34), barkDark = hsl(6, 3, 22), ivy = hsl(19, 3, 30), leaf = hsl(18, 3, 48), petal = hsl(10, 6, 90), heart = hsl(11, 4, 116);
+		tube(m, f(4, 0, 0), f(72, 1.4, 0.4), 3.4, 3.8, 5, 0, bark, bark);
+		tube(m, f(72, 1.4, 0.4), f(146, -1.2, -0.3), 3.8, 3.4, 5, 0.4, barkDark, barkDark);
+		tube(m, f(146, -1.2, -0.3), f(204, 0.4, 0), 3.4, 4.0, 5, 0.1, bark, bark);
+		tube(m, f(-2, 0, 0), f(4, 0, 0), 2.0, 3.6, 5, 0, barkDark, barkDark);
+		band(m, 110, 128, 4.2, hsl(6, 3, 18));
+		// ivy wound up the top of the staff, with leaves
+		int n = 12;
+		for (int i = 0; i < n; i++) {
+			double s0 = 140 + i * 5.5, s1 = s0 + 5.5, a0 = i * 1.1, a1 = (i + 1) * 1.1;
+			tube(m, f(s0, Math.cos(a0) * 4.0, Math.sin(a0) * 4.0), f(s1, Math.cos(a1) * 4.0, Math.sin(a1) * 4.0), 0.8, 0.8, 3, 0, ivy, ivy);
+			if (i % 3 == 1) {
+				tube(m, f(s1, Math.cos(a1) * 4.0, Math.sin(a1) * 4.0), f(s1 - 3, Math.cos(a1) * 9, Math.sin(a1) * 9), 1.8, 0, 3, a1, leaf, leaf);
+			}
+		}
+		// the antler crown: two beams spreading from a bark knot, each with two tines
+		collar(m, 198, 208, 4.0, 5.2, barkDark);
+		for (int side = -1; side <= 1; side += 2) {
+			double[][] beam = { { 204, side * 3 }, { 217, side * 12 }, { 235, side * 16 }, { 252, side * 11 } };
+			for (int i = 0; i + 1 < beam.length; i++) {
+				tube(m, f(beam[i][0], beam[i][1], 0), f(beam[i + 1][0], beam[i + 1][1], 0), 3.4 - i * 0.7, 2.8 - i * 0.7 - (i == 2 ? 1.4 : 0), 4, Math.PI / 4,
+						i % 2 == 0 ? ANTLER : ANTLER_DARK, ANTLER);
+			}
+			tube(m, f(215, side * 11, 0), f(224, side * 22, 0), 2.2, 0, 4, Math.PI / 4, ANTLER, ANTLER);
+			tube(m, f(232, side * 16, 0), f(243, side * 24, 0), 1.8, 0, 4, Math.PI / 4, ANTLER, ANTLER);
+		}
+		// a golden flower held in the crown
+		double cs = 224;
+		for (int k = 0; k < 5; k++) {
+			double a = Math.PI * 2 * k / 5 + Math.PI / 2;
+			tube(m, f(cs, 0, 0), f(cs + Math.sin(a) * 8.5, Math.cos(a) * 8.5, 0), 3.4, 0, 4, 0, petal, petal);
+		}
+		gem(m, cs, 0, 2.8, 3.4, heart, heart);
+		tube(m, f(208, 0, 0), f(cs, 0, 0), 1.0, 1.0, 3, 0, ivy, ivy);
+		return m;
+	}
+
+	/** The Gravescale spear: a Gravecoil coiled up a bog-oak haft, its fang for the blade, bronze rings and ghost-light. */
+	static ModelData coilfangSpear() {
+		ModelData m = new ModelData();
+		int oak = hsl(6, 3, 20), hide = hsl(14, 2, 40), hideLight = hsl(14, 2, 52), hideDark = hsl(15, 2, 26), belly = hsl(9, 2, 84), bronze = hsl(7, 4, 46), bronzeDark = hsl(7, 4, 32),
+				bone = hsl(9, 2, 92), boneEdge = hsl(9, 1, 116), eye = hsl(27, 6, 104);
+		haft(m, 6, 216, 2.9, 2.6, oak);
+		tube(m, f(0, 0, 0), f(6, 0, 0), 1.2, 3.1, 4, Math.PI / 4, bronzeDark, bronzeDark);
+		band(m, 108, 136, 3.4, LEATHER);
+		for (double s : new double[] { 104, 136 }) {
+			band(m, s, s + 3, 3.7, bronze);
+		}
+		// the serpent, coiled up the haft from the grip to the socket
+		int n = 16;
+		double s0 = 144, s1 = 206, turns = 1.75;
+		double[] prev = null;
+		for (int i = 0; i <= n; i++) {
+			double t = (double) i / n, a = t * Math.PI * 2 * turns, s = s0 + (s1 - s0) * t, r = 5.2;
+			double[] p = f(s, Math.cos(a) * r, Math.sin(a) * r);
+			if (prev != null) {
+				double rad = 1.3 + t * 1.6;
+				tube(m, prev, p, rad - 0.07, rad, 4, a, i % 3 == 0 ? belly : i % 2 == 0 ? hide : hideLight, hide);
+			}
+			prev = p;
+		}
+		// its head, resting on the socket, ghost-lit eyes
+		double a = Math.PI * 2 * turns;
+		tube(m, prev, f(214, Math.cos(a) * 4.4, Math.sin(a) * 4.4), 3.0, 3.4, 4, Math.PI / 4, hide, hide);
+		tube(m, f(214, Math.cos(a) * 4.4, Math.sin(a) * 4.4), f(223, Math.cos(a) * 4.0, Math.sin(a) * 4.0), 3.4, 1.0, 4, Math.PI / 4, hideDark, belly);
+		gem(m, 216, Math.cos(a) * 4.6, 1.3, 4.0, eye, eye);
+		// the bronze socket, ringed in verdigris
+		collar(m, 210, 222, 3.0, 4.0, bronzeDark);
+		collar(m, 218, 221, 4.2, 4.2, VERDIGRIS);
+		// the fang: long, curved, bone, a groove of ghost-light down it
+		double[][] fang = { { 221, -3.6 }, { 240, -4.4 }, { 258, -3.4 }, { 274, -0.6 }, { 286, 3.4 }, { 268, 4.0 }, { 248, 4.6 }, { 228, 4.2 }, { 221, 3.6 } };
+		plateSW(m, fang, new double[] { 2.2, 0, 0, 0, 0, 0, 0, 0, 2.2 }, new double[] { 240, 0.4 }, 2.0, bone, boneEdge, hsl(9, 2, 70));
+		tube(m, f(226, 0.4, 0), f(262, 0.8, 0), 0.9, 0.5, 3, 0, eye, eye);
+		return m;
+	}
+
+	/** The sentinel's halberd: a bright steel crescent and spike over a gold tower-socket, a Gatehold-blue tassel and haft. */
+	static ModelData sentinelHalberd() {
+		ModelData m = new ModelData();
+		int plume = hsl(40, 0, 112), blue = hsl(40, 5, 40), blueDark = hsl(40, 5, 26), gold = hsl(8, 5, 72), goldDark = hsl(8, 5, 46), steel = hsl(38, 1, 80), steelDark = hsl(38, 1, 58),
+				edge = hsl(38, 0, 116);
+		haft(m, 8, 204, 3.2, 2.9, blueDark);
+		tube(m, f(0, 0, 0), f(9, 0, 0), 1.6, 3.8, 4, Math.PI / 4, steelDark, steelDark);
+		band(m, 104, 134, 3.6, LEATHER);
+		for (double s : new double[] { 60, 102, 134 }) {
+			collar(m, s, s + 2, 3.6, 3.6, gold);
+		}
+		// the tower: a gold socket below the head, crenellated at the top, a blue window in it
+		collar(m, 146, 162, 3.4, 5.0, goldDark);
+		collar(m, 162, 166, 5.8, 5.8, gold);
+		for (int k = 0; k < 4; k++) {
+			double a = Math.PI * 2 * k / 4 + Math.PI / 4;
+			tube(m, f(166, Math.cos(a) * 4.6, Math.sin(a) * 4.6), f(170.5, Math.cos(a) * 4.6, Math.sin(a) * 4.6), 1.7, 1.7, 4, a + Math.PI / 4, gold, gold);
+		}
+		gem(m, 155, 0, 1.6, 4.6, blue, blue);
+		haft(m, 166, 214, 3.8, 3.4, steelDark);
+		// a tassel of Gatehold blue hanging from the tower
+		for (int k = 0; k < 4; k++) {
+			double a = Math.PI * 2 * k / 4;
+			tube(m, f(148, 0, 0), f(131 - (k % 2) * 3, Math.cos(a) * 4.4, Math.sin(a) * 4.4), 2.6, 0.5, 3, a, k % 2 == 0 ? plume : gold, plume);
+		}
+		// the crescent axe (+w), the back hook (-w), the spike
+		double[][] blade = { { 184, 3 }, { 212, 3 }, { 226, 16 }, { 232, 30 }, { 216, 34 }, { 196, 36 }, { 176, 33 }, { 170, 20 } };
+		plateSW(m, blade, new double[] { 2.2, 2.2, 0, 0, 0, 0, 0, 0 }, new double[] { 198, 18 }, 2.0, steel, edge, steelDark);
+		gem(m, 200, 16, 2.2, 2.6, gold, gold);
+		tube(m, f(198, -3, 0), f(196, -13, 0), 3.0, 2.0, 4, Math.PI / 4, steel, steelDark);
+		tube(m, f(196, -13, 0), f(206, -22, 0), 2.0, 0, 4, Math.PI / 4, steel, steelDark);
+		bladeStrip(m, new double[][] { { 212, 3.6, 2.8 }, { 222, 4.4, 2.4 } }, 252, steel, edge);
+		return m;
+	}
+
+	/** The broodkeepers' wand: a jointed chitin leg, its claws curled round three sickly glowing egg-sacs, small eyes up the shaft. */
+	static ModelData broodWand() {
+		ModelData m = new ModelData();
+		int glow = hsl(14, 5, 80), glowCore = hsl(14, 3, 112), wrap = hsl(52, 2, 30);
+		double[][] seg = { { 0, 0 }, { 26, 0.6 }, { 50, -0.5 }, { 72, 0.6 }, { 84, 0 } };
+		for (int i = 0; i + 1 < seg.length; i++) {
+			tube(m, f(seg[i][0], seg[i][1], 0), f(seg[i + 1][0], seg[i + 1][1], 0), 2.2 - i * 0.25, 1.9 - i * 0.25, 5, 0, i % 2 == 0 ? CHITIN : CHITIN_LIGHT, CHITIN);
+			band(m, seg[i + 1][0] - 1.2, seg[i + 1][0] + 1.2, 2.6 - i * 0.25, CHITIN_LIGHT);
+		}
+		tube(m, f(-6, 1.5, 0), f(0, 0, 0), 0, 2.2, 4, 0, CHITIN_DARK, CHITIN_DARK);
+		band(m, 12, 28, 2.6, wrap);
+		for (double[] e : new double[][] { { 40, 1.1 }, { 52, -1.0 }, { 64, 0.9 } }) {
+			gem(m, e[0], e[1], 0.9, 2.6, glow, glow);
+		}
+		// four hooked claws curled round the egg cluster
+		for (int k = 0; k < 4; k++) {
+			double a = Math.PI * 2 * k / 4 + Math.PI / 4;
+			double[] p0 = f(82, Math.cos(a) * 1.6, Math.sin(a) * 1.6), p1 = f(91, Math.cos(a) * 7.5, Math.sin(a) * 7.5), p2 = f(103, Math.cos(a) * 2.0, Math.sin(a) * 2.0);
+			tube(m, p0, p1, 1.3, 1.0, 3, a, CHITIN_LIGHT, CHITIN);
+			tube(m, p1, p2, 1.0, 0, 3, a, CHITIN, CHITIN);
+		}
+		for (int k = 0; k < 3; k++) {
+			double a = Math.PI * 2 * k / 3;
+			double[] c = f(92 + (k == 0 ? 2 : 0), Math.cos(a) * 2.0, Math.sin(a) * 2.0);
+			double[] lo = f(86 + (k == 0 ? 2 : 0), Math.cos(a) * 1.4, Math.sin(a) * 1.4), hi = f(98 + (k == 0 ? 2 : 0), Math.cos(a) * 1.6, Math.sin(a) * 1.6);
+			tube(m, lo, c, 1.0, 3.3, 6, 0, glow, glow);
+			tube(m, c, hi, 3.3, 0, 6, 0, glowCore, glow);
+		}
+		return m;
+	}
+
+	/** The Rimeclaw hunters' bow: limbs of frosted hide over horn, Rimeclaw's own hooked claws for nocks and spurs. */
+	static ModelData rimeclawBow(double bend) {
+		ModelData m = new ModelData();
+		int ice = hsl(36, 3, 74), iceDark = hsl(36, 3, 54), strap = hsl(38, 3, 30), frost = hsl(36, 2, 120);
+		bow(m, 127, bend, new double[] { 1.6, 2.2, 3.0, 3.5, 3.8, 3.5, 3.0, 2.2, 1.6 }, ice, iceDark, strap, CLAW, frost);
+		// the nocks: great hooked claws curling back over the tips
+		double tw = 4 * bend;
+		for (int end = 0; end < 2; end++) {
+			double s = end == 0 ? 3 : 124, d = end == 0 ? -1 : 1;
+			double[] p0 = f(s, tw, 0), p1 = f(s + d * 6, tw + 6, 0), p2 = f(s + d * 2, tw + 11, 0);
+			tube(m, p0, p1, 2.0, 1.4, 4, Math.PI / 4, CLAW_DARK, CLAW);
+			tube(m, p1, p2, 1.4, 0, 4, Math.PI / 4, CLAW, CLAW);
+		}
+		// hooked claw spurs off the back of each limb, frosted hide wraps beside them
+		for (double s : new double[] { 30, 97 }) {
+			double w = 8.6 * bend, d = s < 64 ? 1 : -1;
+			double[] p0 = f(s, w, 0), p1 = f(s + d * 4, w + 6, 0), p2 = f(s + d * 9, w + 7.5, 0);
+			tube(m, p0, p1, 1.9, 1.3, 4, Math.PI / 4, CLAW_DARK, CLAW);
+			tube(m, p1, p2, 1.3, 0, 4, Math.PI / 4, CLAW, CLAW);
+			tube(m, f(s - d * 6 - 1.6, w - 0.4, 0), f(s - d * 6 + 1.6, w - 0.4, 0), 3.9, 3.9, 4, Math.PI / 4, frost, frost);
+		}
+		// Rimeclaw's paw on the back of the grip: three hooked claws fanned out
+		double gw = 6 * bend + 1.2;
+		for (int k = -1; k <= 1; k++) {
+			double[] p0 = f(63.5 + k * 3.5, gw + 2.5, 0), p1 = f(63.5 + k * 6.5, gw + 9 - Math.abs(k) * 1.5, 0), p2 = f(63.5 + k * 6.5 - 3, gw + 13 - Math.abs(k) * 2, 0);
+			tube(m, p0, p1, 1.8, 1.2, 4, Math.PI / 4, k == 0 ? CLAW : CLAW_DARK, CLAW);
+			tube(m, p1, p2, 1.2, 0, 4, Math.PI / 4, CLAW, CLAW);
+		}
+		return m;
 	}
 }
