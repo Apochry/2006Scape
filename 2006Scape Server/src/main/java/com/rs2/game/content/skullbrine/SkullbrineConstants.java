@@ -24,6 +24,8 @@ public final class SkullbrineConstants {
 	public static final int BLACKBRINES_LOG = 7956;
 	public static final int CAPTAINS_KEY = 7957;
 	public static final int VOID_PEARL = 7958;
+	/** The Drowned Maiden's gold, gone green in the sea: the crew drop it, Mad Pete buys it (appended after the void items). */
+	public static final int TARNISHED_DOUBLOON = 8205;
 
 	/* ---------------- objects (placed by the generator) ---------------- */
 	public static final int CAVE_ENTRANCE = 3735;

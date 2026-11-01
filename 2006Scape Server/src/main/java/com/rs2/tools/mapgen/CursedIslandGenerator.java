@@ -1378,6 +1378,15 @@ public final class CursedIslandGenerator {
 				.examine("It's a bar of dragon metal.").cost(20000);
 		dragonRed(bar, new int[] { bar.itemModel() });
 		voidRealm.items(items);
+		// Skullbrine's money: the Drowned Maiden's doubloons. A coin with the coin stack's models taken off (one coin at
+		// any amount, like a token), gone a tarnished green-gold; Mad Pete buys them at 85% of the cost
+		ConfigDefinitions.Definition doubloon = item(items, 995, TARNISHED_DOUBLOON).name("Tarnished doubloon")
+				.examine("Blackbrine's gold, gone green in the sea. Mad Pete will want these.").cost(30);
+		for (int op = 100; op < 110; op++) {
+			doubloon.remove(op);
+		}
+		int[][] tarnish = ConfigDefinitions.tint(cache, new int[] { doubloon.itemModel() }, 9, 4, 0.83, 0);
+		doubloon.recolor(tarnish[0], tarnish[1]);
 
 		ConfigDefinitions.Table locs = ConfigDefinitions.load(config, "loc", false);
 		buildObjects(locs);

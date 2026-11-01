@@ -209,7 +209,9 @@ public final class SkullbrineIsle {
 			break;
 		case D_PETE + 7:
 			d.sendNpcChat(MAD_PETE, ChatEmotes.CALM_TALK1, "Watch yourself. And if you need supplies, I've been",
-					"salvaging what I can from the Maiden.");
+					"salvaging what I can from the Maiden. Any of the Cap'n's",
+					"doubloons you take off the lads, bring 'em here -",
+					"I'll pay good coin for every one.");
 			break;
 
 		/* ---------------- Mad Pete: hints per stage ---------------- */
@@ -219,7 +221,7 @@ public final class SkullbrineIsle {
 		case D_PETE_DONE:
 			d.sendNpcChat(MAD_PETE, ChatEmotes.HAPPY_JOYFUL, "The lads are finally resting easy, thanks to you. I'll",
 					"be leaving this rock on the next tide. Need anything",
-					"from the salvage pile before I go?");
+					"from the salvage pile? Still buying doubloons, mind.");
 			break;
 
 		/* ---------------- Ghost of Captain Blackbrine ---------------- */

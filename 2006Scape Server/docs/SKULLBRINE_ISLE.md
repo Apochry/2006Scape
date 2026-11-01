@@ -61,6 +61,14 @@ Aimed at new players: there are no requirements, and nothing on the island attac
 They drop food, bronze and iron weapons and coins. Mad Pete sells cheap food, a bronze or iron
 scimitar, a wooden shield and basic tools.
 
+**Making money: the Captain's doubloons.** Every member of the crew drops **Tarnished doubloons** (item 8205, stackable,
+value 30) with their bones: a deckhand 1-2, a cursed pirate 1-3, the first mate 4-8. Mad Pete buys them at
+25 coins each (shops pay 85% of value; his stock lists the doubloon at 0 so he'll take them, since he only buys what he
+stocks). The cursed pirates around the town and in the dungeon average about 50 coins a kill in doubloons, on top of
+their own coin drops, which is good money for a level-10 to level-20 character. The doubloon is the stock coin's model
+with its stack models removed and tinted a dull brass (`CursedIslandGenerator`, after the void items). The drops are
+in `tools/nythera_data.py` (`doubloons()`), and Pete's stock slot is there too.
+
 ## Where things live
 
 | What | Where |

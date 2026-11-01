@@ -1326,7 +1326,7 @@ public final class VoidRealm {
 			int[] tally = new int[VoidLoot.TIER_NAMES.length];
 			int bonus = 0, kit = 0;
 			for (int k = 0; k < n[1]; k++) {
-				tally[VoidLoot.tier()]++;
+				tally[VoidLoot.tier(n[2])]++;
 				bonus += VoidLoot.bonus() ? 1 : 0;
 				kit += VoidLoot.kitRoll() ? 1 : 0;
 			}
@@ -1338,6 +1338,9 @@ public final class VoidRealm {
 			p.getPacketSender().sendMessage("bonus gear " + (bonus * 1000 / Math.max(1, n[1]) / 10.0) + "% of " + n[1] + " rolls");
 			if (VoidLoot.kit(n[2]) != null) { // a kit-wearer: its 15% kit roll, and how many pieces it picks from
 				p.getPacketSender().sendMessage("kit piece " + (kit * 1000 / Math.max(1, n[1]) / 10.0) + "% (one of " + VoidLoot.kit(n[2]).length + ")");
+			}
+			if (VoidLoot.purse(n[2]) != null) { // one of the people: coins with the bones on every kill
+				p.getPacketSender().sendMessage("purse " + VoidLoot.purse(n[2])[0] + "-" + VoidLoot.purse(n[2])[1] + " coins, every kill");
 			}
 			for (int k = 0; k < 10; k++) {
 				VoidLoot.roll(p, n[2], p.absX, p.absY);

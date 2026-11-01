@@ -157,6 +157,15 @@ def add_drops(i, items):
                           + [d for d in rest if d['chance'] != 0])
 add_drops(3854, [(8118, 39), (8122, 39), (8123, 39), (8121, 59)])  # cursed pirate: Rattlebone helm, boots, gloves, shield
 add_drops(3856, [(8119, 11), (8120, 11), (8125, 15)])              # cursed first mate: Rattlebone chainbody and legs, Blackbrine body
+# the crew's doubloons (Skullbrine's money: Mad Pete buys them, 25 coins each): always, with the bones
+def doubloons(i, lo, hi):
+    for x in drops:
+        if x['id'] == i:
+            x['items'] = [d for d in x['items'] if d['item_id'] != 8205]
+            x['items'].insert(sum(1 for d in x['items'] if d['chance'] == 0), {'item_id': 8205, 'chance': 0, 'amounts': [lo, hi]})
+doubloons(3855, 1, 2)  # drowned deckhand
+doubloons(3854, 1, 3)  # cursed pirate
+doubloons(3856, 4, 8)  # cursed first mate
 save('npcdrops.json', drops)
 
 # the bosses' uniques: equipment bonuses, in ItemDefinitions.json's own compact format
@@ -522,6 +531,8 @@ for x in shops:
     if x['id'] == 349:
         x['items'] = [it for it in x['items'] if it['itemId'] not in LOW] + [{'itemId': a, 'itemAmount': b} for a, b in
                                                                             ((8118, 2), (8121, 1), (8122, 2), (8123, 2))]
+        # ... and the doubloons the crew drop: none in stock, but listed, so he buys them (he only buys what he stocks)
+        x['items'] = [it for it in x['items'] if it['itemId'] != 8205] + [{'itemId': 8205, 'itemAmount': 0}]
 save('shops.json', shops)
 
 # spawns: drop everything previously in Nythera's regions except Oren, then add camps + generated wildlife

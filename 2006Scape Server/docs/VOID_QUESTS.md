@@ -166,20 +166,36 @@ dialogue points newcomers towards the camps.
 ### Loot
 
 Every ordinary monster on Nythera and in its dungeons (combat 15+, the stock wildlife included, but only while it's
-on Nythera) drops by one rule, in `VoidLoot.java`. It always drops its own bones (or ashes, or a unicorn's horn),
-and then rolls once:
+on Nythera) drops by one rule, in `VoidLoot.java`. It always drops its own bones (or ashes, or a unicorn's horn).
+The people among them also always carry a purse (`COIN_DROPPERS`: the guards, skeletons, ice giants and warriors,
+pirates and bandits living there, hollow husks and knights, and the five kit-wearers): 5-30 coins under combat 30,
+12-70 at 30-49, 25-140 at 50 and over. Beasts and spirits carry none. Then it rolls once, with odds that depend on
+what kind of monster it is (`VoidLoot.profile`):
 
-| Roll | Drop | Under 30 | 30-49 | 50+ |
-|---:|---|---|---|---|
-| 40% | just the bones | | | |
-| 30% | something ordinary | coins, logs, iron arrows, raw trout, flax | coins, oak/willow logs, steel arrows, raw salmon, iron ore | coins, maple logs, mithril arrows, raw lobster, coal |
-| 20% | something useful | nature/chaos runes, low herbs, trout, attack/strength potions | nature/law/cosmic runes, harralander-irit, lobster, mithril ore, prayer/super attack | death/law/blood runes, ranarr-kwuarm, swordfish, adamantite, prayer/super strength |
-| 5% | something valuable | uncut sapphire/emerald, a purse, a gold bar | uncut emerald/ruby, a purse, **starmetal** | uncut ruby/diamond, a fat purse, starmetal, runite ore |
-| 5% | gear around its level | steel pieces, oak shortbow | mithril/adamant pieces, maple shortbow, **Warden's helm, boots, gauntlets** | adamant pieces, rune med helm/dagger, yew shortbow, **Warden's body, legs** |
-| +1% | a separate bonus roll: unusually good gear | mithril scimitar/full helm, adamant sq shield | rune scimitar/med helm/chainbody, Warden's platebody | rune legs/full helm, dragon dagger/med helm |
+| | just the bones | ordinary | useful | valuable | gear |
+|---|---:|---:|---:|---:|---:|
+| beasts (giant spider, white wolf, grizzly, Hollowed wolf) | 60% | 25% | 10% | 3% | 2% |
+| people (the purse carriers above) | 25% | 35% | 25% | 7% | 8% |
+| spirits (ghost, Hollow shade, Hollow wraith) | 35% | 15% | 40% | 7% | 3% |
+| skeletons (their old kit is often still good) | 35% | 25% | 15% | 5% | 20% |
+| Shardback (the star's glass in its back) | 40% | 20% | 15% | 20% | 5% |
+| Hollow ravager | 50% | 30% | 10% | 5% | 5% |
+| unicorn (its horn is the prize) | 75% | 15% | 7% | 2% | 1% |
+| anything else | 40% | 30% | 20% | 5% | 5% |
+
+What each tier holds, by the monster's level:
+
+| Tier | Under 30 | 30-49 | 50+ |
+|---|---|---|---|
+| something ordinary | coins, logs, iron arrows, raw trout, flax | coins, oak/willow logs, steel arrows, raw salmon, iron ore | coins, maple logs, mithril arrows, raw lobster, coal |
+| something useful | nature/chaos runes, low herbs, trout, attack/strength potions | nature/law/cosmic runes, harralander-irit, lobster, mithril ore, prayer/super attack | death/law/blood runes, ranarr-kwuarm, swordfish, adamantite, prayer/super strength |
+| something valuable | uncut sapphire/emerald, a purse, a gold bar | uncut emerald/ruby, a purse, **starmetal** | uncut ruby/diamond, a fat purse, starmetal, runite ore |
+| gear around its level | steel pieces, oak shortbow | mithril/adamant pieces, maple shortbow, **Warden's helm, boots, gauntlets** | adamant pieces, rune med helm/dagger, yew shortbow, **Warden's body, legs** |
+| +1% bonus roll (any monster) | unusually good gear | mithril scimitar/full helm, adamant sq shield | rune scimitar/med helm/chainbody, Warden's platebody | rune legs/full helm, dragon dagger/med helm |
 
 Bosses and minibosses keep their own tables, and the adds summoned in boss fights (Hollow knights, Starless spawn)
-drop only bones. `::vt loot rolls npcId` tallies the tiers over many rolls and drops ten for a look.
+drop only bones. `::vt loot rolls npcId` tallies that monster's tiers over many rolls, shows its purse, and drops ten
+for a look.
 
 **Regenerating:** the camps' scenery is built by `VoidRealmGenerator.camps()`. The places and
 dungeons are built by `places()` and `dungeons()`. Dungeon monsters go into the same spawn list.

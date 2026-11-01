@@ -13,12 +13,21 @@ import com.rs2.util.Misc;
  *
  * <pre>
  *   always   its bones (or ashes, or a unicorn's horn): whatever the monster's own table always drops
- *   40%      nothing else - just the bones
- *   30%      something ordinary   (coins, logs, arrows, raw fish, ore, flax...)
- *   20%      something useful     (runes, herbs, food, potions, better ore and bars)
- *    5%      something valuable   (uncut gems, starmetal, a fat purse)
- *    5%      gear around the monster's level (including the Warden's armour, for the middle band)
+ *   always   a few coins too, if it's one of the people (see PURSES): beasts and shades just leave their bones
+ *   then one tier, weighted by what kind of monster it is (see profile()):
+ *                       just bones  ordinary  useful  valuable  gear
+ *     beasts               60%        25%      10%       3%      2%
+ *     people               25%        35%      25%       7%      8%
+ *     spirits              35%        15%      40%       7%      3%
+ *     anything else        40%        30%      20%       5%      5%
+ *     (and a few with their own: the Shardback's glass-studded hide is often worth something, a skeleton's
+ *      old kit is often gear, a unicorn leaves little but its horn, a ravager little but its bones)
  *   +1%      an independent bonus roll: gear that's unusually good for the monster's level
+ *
+ *   ordinary   coins, logs, arrows, raw fish, ore, flax...
+ *   useful     runes, herbs, food, potions, better ore and bars
+ *   valuable   uncut gems, starmetal, a fat purse
+ *   gear       gear around the monster's level (including the Warden's armour, for the middle band)
  * </pre>
  * The weapon ladder (VoidArsenal) has a few rungs here: the Wolfbone shortbow and Barrowstone warhammer in the low
  * band's gear, the Silkwood wand and Scarglass dagger in the middle band's, and the Gravewarden 2h sword and Riftglass
@@ -97,6 +106,62 @@ public final class VoidLoot {
 	private static final int[] CURATED = { BARROW_THANE, HOLLOW_MATRIARCH, RIMECLAW, BROODMOTHER, HOLLOW_HERALD,
 			RIMEBOUND_SENTINEL, SIR_VAELRIC, THE_STARLESS, STARLESS_SPAWN, HOLLOW_KNIGHT, THANE_OATHSWORN };
 
+	/**
+	 * The monsters who carry a purse, as people do on the mainland: the stock guards, skeletons, ice giants and
+	 * warriors, pirates and bandits that live on Nythera, the hollow husks and knights, and the five kit-wearers. Their
+	 * coins drop with the bones on every kill, on top of the tier roll. The stock ids' own tables also serve the
+	 * mainland, which is why these live here rather than in npcdrops.json.
+	 */
+	static final int[] COIN_DROPPERS = { 9, 90, 91, 92, 93, 111, 125, 184, 1883, HOLLOW_HUSK, HOLLOW_KNIGHT,
+			SILKWOOD_STALKER, SCAR_REAVER, MOONMOURNER, RIMEBOUND_WARRIOR, COVE_NIGHTRUNNER };
+
+	/** Tier weights out of 100 - just bones, ordinary, useful, valuable, gear - by kind of monster. */
+	static final int[] BEAST = { 60, 25, 10, 3, 2 }, PEOPLE = { 25, 35, 25, 7, 8 }, SPIRIT = { 35, 15, 40, 7, 3 },
+			ANY = { 40, 30, 20, 5, 5 };
+	/** The stock beasts that live on Nythera (giant spider, white wolf, grizzly) and its own (the Hollowed wolf). */
+	static final int[] BEASTS = { 60, 96, 105, HOLLOWED_WOLF };
+	/** Ghosts, shades and wraiths: what they leave is mostly runes and herbs. */
+	static final int[] SPIRITS = { 103, HOLLOW_SHADE, HOLLOW_WRAITH };
+	/** The ones with a profile of their own: npc id, then its five weights. */
+	static final int[][] OWN = { { SHARDBACK, 40, 20, 15, 20, 5 }, // the star's glass in its back: often worth something
+			{ HOLLOW_RAVAGER, 50, 30, 10, 5, 5 }, // a brute: mostly bones
+			{ 89, 75, 15, 7, 2, 1 }, // a unicorn: its horn (its own always-drop), and seldom much else
+			{ 90, 35, 25, 15, 5, 20 }, { 91, 35, 25, 15, 5, 20 }, { 92, 35, 25, 15, 5, 20 }, { 93, 35, 25, 15, 5, 20 } }; // skeletons: old kit
+
+	/** This monster's tier weights. */
+	static int[] profile(int npcType) {
+		for (int[] o : OWN) {
+			if (o[0] == npcType) {
+				return java.util.Arrays.copyOfRange(o, 1, 6);
+			}
+		}
+		for (int b : BEASTS) {
+			if (b == npcType) {
+				return BEAST;
+			}
+		}
+		for (int sp : SPIRITS) {
+			if (sp == npcType) {
+				return SPIRIT;
+			}
+		}
+		return purse(npcType) != null ? PEOPLE : ANY;
+	}
+
+	/** The purse's min and max, by band (under 30, 30-49, 50 and over): a little under the misc tier's coins. */
+	static final int[][] PURSES = { { 5, 30 }, { 12, 70 }, { 25, 140 } };
+
+	/** A coin dropper's purse range, or null if this monster carries none. */
+	static int[] purse(int npcType) {
+		for (int c : COIN_DROPPERS) {
+			if (c == npcType) {
+				int level = NpcHandler.getNpcListCombat(npcType);
+				return PURSES[level < 30 ? 0 : level < 50 ? 1 : 2];
+			}
+		}
+		return null;
+	}
+
 	/** Whether this kill uses Nythera's loot (rather than the npc's own 1-in-N drops). */
 	public static boolean applies(int npcType, int x, int y) {
 		if (!onNythera(x, y) && nytheraDungeon(x, y) < 0) {
@@ -110,15 +175,19 @@ public final class VoidLoot {
 		return NpcHandler.getNpcListCombat(npcType) >= 15;
 	}
 
-	/** Rolls the tier (the monster's always-drops are dropped by the caller, from its own table), then any kit. */
+	/** Drops the purse, if any, then any kit, then rolls the tier (the monster's always-drops come from its own table, in the caller). */
 	public static void roll(Player p, int npcType, int x, int y) {
+		int[] purse = purse(npcType);
+		if (purse != null) {
+			GameEngine.itemHandler.createGroundItem(p, 995, x, y, purse[0] + Misc.random(purse[1] - purse[0]), p.playerId);
+		}
 		int[] kit = kit(npcType);
 		if (kit != null && kitRoll()) {
 			GameEngine.itemHandler.createGroundItem(p, kit[Misc.random(kit.length - 1)], x, y, 1, p.playerId);
 		}
 		int level = NpcHandler.getNpcListCombat(npcType);
 		int band = level < 30 ? 0 : level < 50 ? 1 : 2;
-		int t = tier(), dungeon = nytheraDungeon(x, y);
+		int t = tier(npcType), dungeon = nytheraDungeon(x, y);
 		int[][][] tier = TIERS[t];
 		if (tier != null) {
 			int[][] own = t == 4 ? (dungeon == BARROW_REGION_X ? BARROW_GEAR : dungeon == HOLLOWDEEP_REGION_X ? HOLLOWDEEP_GEAR : null) : null;
@@ -133,10 +202,16 @@ public final class VoidLoot {
 	private static final int[][][][] TIERS = { null, MISC, USEFUL, VALUABLE, GEAR };
 	static final String[] TIER_NAMES = { "just bones", "misc", "useful", "valuable", "gear" };
 
-	/** 0 = just bones (40%), 1 = misc (30%), 2 = useful (20%), 3 = valuable (5%), 4 = gear (5%). */
-	static int tier() {
+	/** 0 = just bones, 1 = misc, 2 = useful, 3 = valuable, 4 = gear, weighted by the monster's profile. */
+	static int tier(int npcType) {
+		int[] w = profile(npcType);
 		int r = Misc.random(99); // 0-99
-		return r < 40 ? 0 : r < 70 ? 1 : r < 90 ? 2 : r < 95 ? 3 : 4;
+		for (int t = 0; t < w.length; t++) {
+			if ((r -= w[t]) < 0) {
+				return t;
+			}
+		}
+		return 0;
 	}
 
 	/** The kit-wearers' chance, in percent, of one piece of their kit per kill. */

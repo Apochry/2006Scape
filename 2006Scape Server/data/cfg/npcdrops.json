@@ -169617,6 +169617,14 @@
         ]
       },
       {
+        "item_id": 8205,
+        "chance": 0,
+        "amounts": [
+          1,
+          3
+        ]
+      },
+      {
         "item_id": 8118,
         "chance": 39,
         "amounts": [
@@ -169718,6 +169726,14 @@
         ]
       },
       {
+        "item_id": 8205,
+        "chance": 0,
+        "amounts": [
+          1,
+          2
+        ]
+      },
+      {
         "item_id": 401,
         "chance": 4,
         "amounts": [
@@ -169776,6 +169792,14 @@
         "amounts": [
           2,
           2
+        ]
+      },
+      {
+        "item_id": 8205,
+        "chance": 0,
+        "amounts": [
+          4,
+          8
         ]
       },
       {

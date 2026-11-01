@@ -12031,6 +12031,10 @@
       {
         "itemId": 8123,
         "itemAmount": 2
+      },
+      {
+        "itemId": 8205,
+        "itemAmount": 0
       }
     ]
   },
