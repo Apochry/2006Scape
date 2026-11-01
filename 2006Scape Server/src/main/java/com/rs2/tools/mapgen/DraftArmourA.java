@@ -19,7 +19,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * ids, and nothing packs them into the cache). See DraftArmour.
  *
  * <ol start="25">
- * <li>Ashen pilgrim (Magic 15): The wandering pilgrims who walk Nythera's roads to the old shrines: ash-grey robes smudged with shrine ash, a string of red prayer beads, a little brass censer with an ember in it, a wide travelling hat.</li>
+ * <li>Ashen pilgrim (Magic 15): The wandering pilgrims who walk Nythera's roads to the old shrines, a walking haystack under a hat (its own base, BasePilgrim): a huge woven conical road-hat, a three-tier straw rain-cape over an ash-grey wrap jacket, a bedroll across the shoulders, red prayer beads, a rope belt with the little brass censer hung from it, loose trousers tied over leg-wraps, straw sandals and hand-wraps.</li>
  * <li>Thornwarden (Ranged 20): Silkwood's edge-keepers, who tend the bramble hedges that keep the spiders in: moss-green skirmisher's wraps (the WRAP base: a headband, a vest and bandolier, a kilt over bound leggings, greaves, long bracers) wound with thorny bramble, red berries, leaves over the shoulder guard, a thorn crown on the headband.</li>
  * <li>Saltgilt (Defence 30): The Drowned Maiden's officers (Skullbrine): sea-weathered mail trimmed in tarnished doubloon-gold, barnacles crusted on the shoulders and helm, a tricorn-ish brim or an anchor on the shield, the Maiden's gilt figurehead.</li>
  * <li>Tidecaller (Magic 35): Sea-mages of Smugglers' Cove who call the tide for the night crews: deep sea-blue robes, coral branches, a scallop-shell hat ornament, pearls, a wave pattern at the hem.</li>
@@ -45,11 +45,12 @@ final class DraftArmourA {
 	static final Style[] SETS = {
 			new Style("Ashen pilgrim", "ashenpilgrim", Kind.MANTLE, Motif.ASHEN, 15, hsl(6, 1, 62), hsl(6, 1, 44), hsl(6, 1, 80), hsl(5, 2, 40), hsl(5, 2, 28),
 					BEAD, EMBER_GLOW, hsl(6, 2, 30), hsl(6, 2, 20), NO_SHIELD,
-					new String[] { "Ashen pilgrim hat", "Ashen pilgrim robe top", "Ashen pilgrim robe bottom", null, "Ashen pilgrim boots", "Ashen pilgrim gloves" },
-					new String[] { "A wide road-hat with a shrine token in the band. It has kept the rain off every road on Nythera.",
-							"Ash-grey robes, red prayer beads and a censer whose ember came from the last shrine. It goes to the next one.",
-							"Ragged at the hem from shrine to shrine. The pilgrims say the dust is a sort of prayer.", null,
-							"Wrapped boots for long roads. The wrappings are older than the boots.", "A bead for every shrine. The string is getting long." }),
+					new String[] { "Ashen pilgrim hat", "Ashen pilgrim rain-cape top", "Ashen pilgrim trousers", null, "Ashen pilgrim sandals", "Ashen pilgrim hand-wraps" },
+					new String[] { "A woven road-hat as wide as a cart. It has kept the rain off every road on Nythera, and the sun off most.",
+							"A straw rain-cape over ash-grey robes, a bedroll, red prayer beads and a censer whose ember came from the last shrine. It goes to the next one.",
+							"Loose road-trousers tied at the shin over leg-wraps. The pilgrims say the dust is a sort of prayer.", null,
+							"Straw sandals, re-plaited at every shrine. The soles are thicker than the pilgrim's patience, just.",
+							"Cloth wound round the palms for a long day on the staff. The fingers are left free for counting beads." }),
 			new Style("Thornwarden", "thornwarden", Kind.WRAP, Motif.THORN, 20, hsl(16, 3, 40), hsl(16, 3, 28), hsl(16, 2, 56), hsl(6, 3, 30), hsl(6, 3, 20),
 					BERRY, BERRY_LIGHT, hsl(7, 3, 34), hsl(7, 3, 22), NO_SHIELD,
 					new String[] { "Thornwarden headband", "Thornwarden vest", "Thornwarden kilt", null, "Thornwarden greaves", "Thornwarden bracers" },
@@ -121,19 +122,7 @@ final class DraftArmourA {
 		double top = bb[1], bottom = bb[4], h = bottom - top;
 		ModelData add = new ModelData();
 		switch (st.motif) {
-		case ASHEN: { // a wide travelling brim, a dark band with a brass shrine-token, red beads hanging at the side
-			double by = bottom - h * 0.3 - 2.5;
-			double[] s = slab(m, by - 2, by + 2);
-			brim(add, s[0], by + 1, s[1], s[2] * 0.9, s[3] * 0.9, s[2] * 2.0, s[3] * 1.8, 3.5, 1.2, 10, st.trim, st.trimDark);
-			ring(add, new double[] { s[0], by + 0.5, s[1] }, UP, X, s[2] * 1.0, s[3] * 1.0, 0, 3.0, 10, st.trimDark);
-			double[] p = { s[0], by - 1.5, s[1] - s[3] - 0.8 };
-			add.tube(p, add(p, new double[] { 0, 0, -1.4 }), 2.2, 2.2, 6, 0, BRASS, BRASS_DARK);
-			ball(add, add(p, new double[] { 0, 0, -1.8 }), 0.9, st.core);
-			for (int k = 0; k < 4; k++) { // a short string of beads from the brim, at the left
-				ball(add, new double[] { s[0] + s[2] * 1.45, by + 4 + k * 2.6, s[1] - s[3] * 0.5 }, 1.2, 3, k == 3 ? BRASS : st.accent);
-			}
-			break;
-		}
+		// ASHEN: nothing here; BasePilgrim builds it all
 		case THORN: { // a crown of bramble wound round the headband: thorns standing up, berries and leaves at the side
 			double by = top + 2.2;
 			double[] s = slab(m, top - 1, top + 3.5); // the band (the wrap's helm is a headband: its top is the band's)
@@ -219,33 +208,7 @@ final class DraftArmourA {
 		ModelData add = new ModelData();
 		Frame F = ArmourSets.FRONT, B = ArmourSets.BACK;
 		switch (st.motif) {
-		case ASHEN: { // red prayer beads round the neck, a scrip-strap across, a brass censer with an ember hung from it at the hip
-			double ny = top + h * 0.22;
-			// the strap first, so the beads lie over it: over the left shoulder, down to the right hip, front and back
-			for (Frame f : new Frame[] { F, B }) {
-				decal(add, m, f, new double[][] { { hw * 0.5, top + h * 0.2 }, { hw * 0.78, top + h * 0.2 }, { -hw * 0.72, bottom - 3 }, { -hw * 1.0, bottom - 3 } }, 0.6,
-						1.6, st.leather, st.leatherDark);
-			}
-			for (int k = 0; k <= 8; k++) {
-				double a = Math.PI * k / 8;
-				double x = -Math.cos(a) * hw * 0.42, y = ny + Math.sin(a) * h * 0.34;
-				decal(add, m, F, diamond(x, y, 1.7, 1.7), 0.4, 2.8, k % 4 == 0 ? BRASS : st.accent, BEAD_DARK);
-			}
-			decal(add, m, F, polygon(0, ny + h * 0.42, 2.6, 2.6, 6), 0.4, 3.0, BRASS, BRASS_DARK);
-			decal(add, m, F, diamond(0, ny + h * 0.42, 1.2, 1.2), 0.3, 3.6, st.core, BRASS);
-			// the censer, on a short chain from the strap's end at the right hip: a brass pot, its lid, the ember in its slots
-			double lx = -halfWidth(m, bottom - 6, bottom) - 3.8, ly = bottom + 4, lz = cz - 2;
-			add.tube(new double[] { lx + 2, bottom - 4, lz }, new double[] { lx, ly - 5, lz }, 0.6, 0.6, 3, 0, BRASS_DARK, BRASS_DARK);
-			add.tube(new double[] { lx, ly - 5.5, lz }, new double[] { lx, ly - 3, lz }, 1.0, 4.2, 6, 0, BRASS_LIGHT, BRASS);
-			add.tube(new double[] { lx, ly - 3, lz }, new double[] { lx, ly + 2.5, lz }, 4.2, 4.0, 6, 0, BRASS, BRASS_DARK);
-			add.tube(new double[] { lx, ly + 2.5, lz }, new double[] { lx, ly + 4.5, lz }, 4.0, 0, 6, 0, BRASS_DARK, BRASS_DARK);
-			for (int k = 0; k < 3; k++) { // the ember, glowing through the slots
-				double a = Math.PI * 2 * k / 3 - Math.PI / 2;
-				add.tube(new double[] { lx + Math.cos(a) * 3.6, ly, lz + Math.sin(a) * 3.6 }, new double[] { lx + Math.cos(a) * 4.5, ly, lz + Math.sin(a) * 4.5 }, 1.4,
-						1.4, 4, 0, st.core, st.core);
-			}
-			break;
-		}
+		// ASHEN: nothing here; BasePilgrim builds it all
 		case THORN: { // bramble wound along the bandolier, thorns and berries on it; a spray of leaves over the shoulder guard
 			double[] sl = BaseWrap.strapLine(m), dir = norm(new double[] { sl[2] - sl[0], sl[3] - sl[1], 0 });
 			double[] across = { -dir[1], dir[0] };
@@ -391,24 +354,7 @@ final class DraftArmourA {
 			}
 		}
 		switch (st.motif) {
-		case ASHEN: { // a knotted cord at the waist, its ends hanging; a hem gone ragged on the road
-			double[] p = project(m, F, -hw * 0.12, top + 3);
-			fr.tube(add(p, new double[] { 1, 0, -0.5 }), add(p, new double[] { -1, 0, -2.5 }), 1.8, 1.8, 5, 0, st.light, st.dark);
-			for (int k = 0; k < 2; k++) {
-				double x0 = -hw * 0.12 + (k == 0 ? -1.5 : 1.5), y1 = top + h * (0.34 + k * 0.08);
-				double[] a = project(m, F, x0, top + 5), b = project(m, F, x0 + (k == 0 ? -2 : 1), y1);
-				fr.tube(add(a, new double[] { 0, 0, -1.2 }), add(b, new double[] { 0, 0, -1.2 }), 0.7, 0.7, 4, 0, st.light, st.light);
-				fr.tube(add(b, new double[] { 0, -1.2, -1.2 }), add(b, new double[] { 0, 1.2, -1.2 }), 1.3, 1.3, 5, 0, st.dark, st.dark);
-			}
-			double[] hem = LowArmour.hem(m, bottom);
-			for (int k = 0; k < 12; k++) {
-				double a = Math.PI * 2 * k / 12 + 0.2;
-				double x = hem[0] + Math.cos(a) * hem[2] * 0.95, z = hem[1] + Math.sin(a) * hem[3] * 0.95;
-				blade(fr, new double[] { x, bottom - 5, z }, new double[] { x * 1.05, bottom + 2 + (k % 3), z + Math.sin(a) * 1.5 },
-						new double[] { -Math.sin(a), 0, Math.cos(a) }, 2.8, 0.6, k % 2 == 0 ? st.dark : hsl(6, 1, 30));
-			}
-			break;
-		}
+		// ASHEN: nothing here; BasePilgrim builds it all
 		case THORN: // berries and a leaf at the belt
 			for (double[] b : new double[][] { { hw * 0.45, top + 5 }, { hw * 0.55, top + 7.5 }, { hw * 0.36, top + 8 } }) {
 				decal(fr, m, F, diamond(b[0], b[1], 1.5, 1.5), 0.4, 3.0, BERRY, hsl(0, 6, 28));
@@ -483,10 +429,7 @@ final class DraftArmourA {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * hw * 0.56;
 			switch (st.motif) {
-			case ASHEN: // road-worn wrappings
-				LowArmour.cuff(add, m, side, top, top + 2.5, 0.6, st.trim, st.trimDark);
-				LowArmour.cuff(add, m, side, top + 5, top + 7, 0.6, st.trimDark, st.trimDark);
-				break;
+			// ASHEN: nothing here; BasePilgrim builds it all
 			case THORN: { // bramble round the ankle, under the greave, thorns out; two more thorns up the greave's face
 				double ground = bb[4], y = ground - 17;
 				double[] s = limbSlab(m, side, y - 1.5, y + 1.5);
@@ -537,12 +480,7 @@ final class DraftArmourA {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * (hw - 6.5);
 			switch (st.motif) {
-			case ASHEN: // a bracelet of prayer beads round the wrist
-				for (int k = 0; k < 6; k++) {
-					double a = Math.PI * 2 * k / 6;
-					ball(add, new double[] { x + Math.cos(a) * 5.6, top + 8, 1 + Math.sin(a) * 5.6 }, 1.5, 3, k == 0 ? BRASS : st.accent);
-				}
-				break;
+			// ASHEN: nothing here; BasePilgrim builds it all
 			case THORN: { // a bramble band round the bracer under the elbow, thorns and a leaf tucked in
 				double y = top + 5;
 				double[] s = limbSlab(m, side, y - 1, y + 3.5);
