@@ -120,9 +120,10 @@ public class Constants {
     public final static int BUFFER_SIZE = 10000;
 
     /**
-     * The directory of the file system.
+     * The directory of the file system. -Dcache.dir points the server at a copy, so the cache in the
+     * repository isn't held open while it runs (git can't update open files on Windows).
      */
-    public static final String FILE_SYSTEM_DIR = "./data/cache/";
+    public static final String FILE_SYSTEM_DIR = System.getProperty("cache.dir", "./data/cache/");
 
     public final static String SERVER_LOG_DIR = "./data/logs/";
 
