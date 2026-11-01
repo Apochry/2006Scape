@@ -19,9 +19,9 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * ids, and nothing packs them into the cache). See DraftArmour.
  *
  * <ol start="25">
- * <li>Ashen pilgrim (Magic 15): The wandering pilgrims who walk Nythera's roads to the old shrines: ash-grey robes smudged with shrine ash, a string of red prayer beads, a little brass censer with an ember in it, a wide travelling hat.</li>
- * <li>Thornwarden (Ranged 20): Silkwood's edge-keepers, who tend the bramble hedges that keep the spiders in: moss-green skirmisher's wraps (the WRAP base: a headband, a vest and bandolier, a kilt over bound leggings, greaves, long bracers) wound with thorny bramble, red berries, leaves over the shoulder guard, a thorn crown on the headband.</li>
- * <li>Saltgilt (Defence 30): The Drowned Maiden's officers (Skullbrine): sea-weathered mail trimmed in tarnished doubloon-gold, barnacles crusted on the shoulders and helm, a tricorn-ish brim or an anchor on the shield, the Maiden's gilt figurehead.</li>
+ * <li>Ashen pilgrim (Magic 15): The wandering pilgrims who walk Nythera's roads to the old shrines, a walking haystack under a hat (its own base, BasePilgrim): a huge woven conical road-hat, a three-tier straw rain-cape over an ash-grey wrap jacket, a bedroll across the shoulders, red prayer beads, a rope belt with the little brass censer hung from it, loose trousers tied over leg-wraps, straw sandals and hand-wraps.</li>
+ * <li>Thornwarden (Ranged 20): Silkwood's edge-keepers, who tend the bramble hedges that keep the spiders in and vanish into them: a ghillie suit of leaf shingles sticking out at angles, a walking shrub with a face (its own base, BaseGhillie): a leaf hood flaring over a shadowed face, a hunched leaf shroud longer at the back over a bramble-wound jerkin, leaf-shingled chaps over bound leggings, wicker-bound boots, bark bracers with thorn spurs; red-berried bramble wound through it all.</li>
+ * <li>Saltgilt (Defence 30): The Drowned Maiden's officers (Skullbrine), drowned and come back up still in their brass diving suits (their own base, BaseDiver): a round brass diving helmet with a grilled porthole and a bolted collar, a bulky canvas suit with a gilt breastplate bolted on and a belt of lead weights, baggy canvas legs, massive lead boots, swollen rubber gloves, a round brass hatch for a shield; barnacles and doubloon-gold trim.</li>
  * <li>Tidecaller (Magic 35): Sea-mages of Smugglers' Cove who call the tide for the night crews, dressed as jellyfish (its own base, BaseJellyfish): a pale bell worn high over the head with a frilled margin and a scallop shell; a sea-blue robe under a second bell at the shoulders, trailing tendrils to the calves; finned sleeves; a skirt with a scalloped hem and a fringe of tendrils; shell-toed slippers; webbed fin gloves; coral and pearls. The base carries all of it: no decorations are added.</li>
  * <li>Shardhide (Ranged 40): Made from the Shardback, the crater-rim bear whose back bristles with the fallen star's glass, and worn whole (its own base, BasePelt): the bear's head as a hood, its snout over the brow and its teeth framing the face; a hunched pelt mantle with the forelegs over the shoulders and the paws on the chest, the hide to the knees behind, star-glass jutting along the shoulders and spine; fur-wrapped leggings, paw boots and paw gloves with claws. The base carries all of it: no decorations are added.</li>
  * </ol>
@@ -45,26 +45,29 @@ final class DraftArmourA {
 	static final Style[] SETS = {
 			new Style("Ashen pilgrim", "ashenpilgrim", Kind.MANTLE, Motif.ASHEN, 15, hsl(6, 1, 62), hsl(6, 1, 44), hsl(6, 1, 80), hsl(5, 2, 40), hsl(5, 2, 28),
 					BEAD, EMBER_GLOW, hsl(6, 2, 30), hsl(6, 2, 20), NO_SHIELD,
-					new String[] { "Ashen pilgrim hat", "Ashen pilgrim robe top", "Ashen pilgrim robe bottom", null, "Ashen pilgrim boots", "Ashen pilgrim gloves" },
-					new String[] { "A wide road-hat with a shrine token in the band. It has kept the rain off every road on Nythera.",
-							"Ash-grey robes, red prayer beads and a censer whose ember came from the last shrine. It goes to the next one.",
-							"Ragged at the hem from shrine to shrine. The pilgrims say the dust is a sort of prayer.", null,
-							"Wrapped boots for long roads. The wrappings are older than the boots.", "A bead for every shrine. The string is getting long." }),
+					new String[] { "Ashen pilgrim hat", "Ashen pilgrim rain-cape top", "Ashen pilgrim trousers", null, "Ashen pilgrim sandals", "Ashen pilgrim hand-wraps" },
+					new String[] { "A woven road-hat as wide as a cart. It has kept the rain off every road on Nythera, and the sun off most.",
+							"A straw rain-cape over ash-grey robes, a bedroll, red prayer beads and a censer whose ember came from the last shrine. It goes to the next one.",
+							"Loose road-trousers tied at the shin over leg-wraps. The pilgrims say the dust is a sort of prayer.", null,
+							"Straw sandals, re-plaited at every shrine. The soles are thicker than the pilgrim's patience, just.",
+							"Cloth wound round the palms for a long day on the staff. The fingers are left free for counting beads." }),
 			new Style("Thornwarden", "thornwarden", Kind.WRAP, Motif.THORN, 20, hsl(16, 3, 40), hsl(16, 3, 28), hsl(16, 2, 56), hsl(6, 3, 30), hsl(6, 3, 20),
 					BERRY, BERRY_LIGHT, hsl(7, 3, 34), hsl(7, 3, 22), NO_SHIELD,
-					new String[] { "Thornwarden headband", "Thornwarden vest", "Thornwarden kilt", null, "Thornwarden greaves", "Thornwarden bracers" },
-					new String[] { "A crown of bramble on a green headband. Silkwood's spiders give it a wide berth; so does everyone else.",
-							"A moss-green vest, the hedge that keeps the spiders in wound along its bandolier. The berries are for the birds. Mostly.",
-							"Green panels over bound leggings, and bramble at the knee. Whatever crawls out of Silkwood has to get past these first.", null,
-							"Bark greaves, and thorns at the ankle. Spiders won't climb what bites back.", "Thorn-wound bracers with a leaf tucked in. Put them on carefully." }),
-			new Style("Saltgilt", "saltgilt", Kind.COAT, Motif.SALTGILT, 30, hsl(30, 1, 60), hsl(30, 1, 40), hsl(30, 1, 80), GOLD, GOLD_DARK, BARNACLE,
+					new String[] { "Thornwarden hood", "Thornwarden shroud top", "Thornwarden chaps", null, "Thornwarden wicker boots", "Thornwarden bracers" },
+					new String[] { "A hood shingled in hedge leaves, a bramble round the brow. Silkwood's spiders give it a wide berth; so does everyone else.",
+							"A shroud of overlapping leaves over a bramble-wound jerkin. Stand still in a hedge and you are the hedge. The berries are for the birds. Mostly.",
+							"Leaf-shingled chaps over bound leggings, and bramble at the knee. Whatever crawls out of Silkwood has to get past these first.", null,
+							"Boots bound in wicker to the shin. Spiders won't climb what bites back.", "Bark bracers with the thorns left on. Put them on carefully." }),
+			new Style("Saltgilt", "saltgilt", Kind.COAT, Motif.SALTGILT, 30, hsl(28, 1, 52), hsl(28, 1, 38), hsl(28, 1, 64), GOLD, GOLD_DARK, BARNACLE,
 					hsl(9, 2, 120), hsl(36, 2, 24), hsl(36, 2, 16), HAS_ALL,
-					new String[] { "Saltgilt med helm", "Saltgilt chainbody", "Saltgilt platelegs", "Saltgilt sq shield", "Saltgilt boots", "Saltgilt gloves" },
-					new String[] { "An officer's tricorn on a mail cap. The barnacles have served aboard the Drowned Maiden longer than anyone.",
-							"Sea-green mail and gilt epaulettes. Captain Blackbrine liked his officers to shine, even underwater.",
-							"A gold stripe down each leg, for rank. The Maiden kept her officers in style, if not in air.",
-							"The Maiden's anchor in gilt. It held her fast to the cove floor for a hundred years.",
-							"Gold-buckled sea boots. They still pour out a little seawater every morning.", "Gilt-cuffed gloves, for saluting a captain who isn't there." }),
+					new String[] { "Saltgilt diving full helm", "Saltgilt diving platebody", "Saltgilt diving legs", "Saltgilt hatch shield", "Saltgilt lead boots",
+							"Saltgilt diving gloves" },
+					new String[] { "A brass diving helmet, barnacled, the glass still fogged. Something inside it is still breathing, slowly.",
+							"Waterlogged canvas and a gilt breastplate. Captain Blackbrine liked his officers to shine, even a hundred years under.",
+							"Baggy diving canvas, patched at the knee. The Maiden kept her officers in style, if not in air.",
+							"A brass hatch off the Drowned Maiden, porthole, wheel and all. It held the sea out for a while.",
+							"Lead boots for walking the cove floor. They still pour out a little seawater every morning.",
+							"Swollen rubber gloves with brass cuffs, for saluting a captain who isn't there." }),
 			new Style("Tidecaller", "tidecaller", Kind.MANTLE, Motif.TIDE, 35, hsl(37, 5, 40), hsl(37, 5, 26), hsl(35, 3, 86), hsl(34, 2, 106), hsl(36, 3, 64),
 					PEARL, CORAL, hsl(36, 2, 26), hsl(36, 2, 18), NO_SHIELD,
 					new String[] { "Tidecaller bell", "Tidecaller robe top", "Tidecaller robe bottom", null, "Tidecaller slippers", "Tidecaller fin gloves" },
@@ -121,51 +124,6 @@ final class DraftArmourA {
 		double top = bb[1], bottom = bb[4], h = bottom - top;
 		ModelData add = new ModelData();
 		switch (st.motif) {
-		case ASHEN: { // a wide travelling brim, a dark band with a brass shrine-token, red beads hanging at the side
-			double by = bottom - h * 0.3 - 2.5;
-			double[] s = slab(m, by - 2, by + 2);
-			brim(add, s[0], by + 1, s[1], s[2] * 0.9, s[3] * 0.9, s[2] * 2.0, s[3] * 1.8, 3.5, 1.2, 10, st.trim, st.trimDark);
-			ring(add, new double[] { s[0], by + 0.5, s[1] }, UP, X, s[2] * 1.0, s[3] * 1.0, 0, 3.0, 10, st.trimDark);
-			double[] p = { s[0], by - 1.5, s[1] - s[3] - 0.8 };
-			add.tube(p, add(p, new double[] { 0, 0, -1.4 }), 2.2, 2.2, 6, 0, BRASS, BRASS_DARK);
-			ball(add, add(p, new double[] { 0, 0, -1.8 }), 0.9, st.core);
-			for (int k = 0; k < 4; k++) { // a short string of beads from the brim, at the left
-				ball(add, new double[] { s[0] + s[2] * 1.45, by + 4 + k * 2.6, s[1] - s[3] * 0.5 }, 1.2, 3, k == 3 ? BRASS : st.accent);
-			}
-			break;
-		}
-		case THORN: { // a crown of bramble wound round the headband: thorns standing up, berries and leaves at the side
-			double by = top + 2.2;
-			double[] s = slab(m, top - 1, top + 3.5); // the band (the wrap's helm is a headband: its top is the band's)
-			ring(add, new double[] { s[0], by, s[1] }, UP, X, s[2] * 1.06, s[3] * 1.06, -1.6, 1.6, 8, st.trim);
-			for (int k = 0; k < 9; k++) {
-				double a = Math.PI * 2 * k / 9 - Math.PI / 2;
-				double[] o = { Math.cos(a), 0, Math.sin(a) };
-				double[] r = { s[0] + o[0] * s[2] * 1.04, by, s[1] + o[2] * s[3] * 1.04 };
-				double tall = k % 2 == 0 ? 10 : 6.5;
-				blade(add, r, add(r, new double[] { o[0] * 3.5, -tall, o[2] * 3.5 }), new double[] { -o[2], 0, o[0] }, 1.8, 1.0, k % 2 == 0 ? THORN : THORN_DARK);
-			}
-			double[] c = { s[0] - s[2] * 0.95, by + 1, s[1] - s[3] * 0.35 };
-			ball(add, add(c, new double[] { -1.2, 0, -1 }), 1.5, BERRY);
-			ball(add, add(c, new double[] { -1.2, 2.2, 1 }), 1.5, BERRY_LIGHT);
-			ball(add, add(c, new double[] { -1.0, -1.0, 2.2 }), 1.3, BERRY);
-			blade(add, add(c, new double[] { 0, 0, 2 }), add(c, new double[] { -4, -3, 9 }), Y, 2.0, 0.4, LEAF);
-			blade(add, add(c, new double[] { 0, 1, 3 }), add(c, new double[] { -3, 4, 10 }), Y, 1.8, 0.4, LEAF_DARK);
-			break;
-		}
-		case SALTGILT: { // a tricorn brim, gold-laced and turned up; barnacles crusted on the crown at one side
-			double by = top + h * 0.34;
-			double[] s = slab(m, by - 2, by + 2);
-			tricorn(add, s[0], by, s[1], s[2] * 0.95, s[3] * 0.95, s[2] * 1.8, s[3] * 1.65, st.leather, st.trim);
-			for (int k = 0; k < 4; k++) {
-				double a = Math.PI * (0.72 + k * 0.2), y = top + h * (0.14 + (k % 2) * 0.1);
-				double[] q = surface(m, new double[] { s[0] + Math.cos(a) * 40, y, s[1] + Math.sin(a) * 40 }, new double[] { -Math.cos(a), 0, -Math.sin(a) });
-				if (q != null) {
-					barnacle(add, q, new double[] { Math.cos(a), -0.4, Math.sin(a) }, k % 2 == 0 ? 1.9 : 1.4);
-				}
-			}
-			break;
-		}
 		default:
 			break;
 		}
@@ -183,79 +141,6 @@ final class DraftArmourA {
 		ModelData add = new ModelData();
 		Frame F = ArmourSets.FRONT, B = ArmourSets.BACK;
 		switch (st.motif) {
-		case ASHEN: { // red prayer beads round the neck, a scrip-strap across, a brass censer with an ember hung from it at the hip
-			double ny = top + h * 0.22;
-			// the strap first, so the beads lie over it: over the left shoulder, down to the right hip, front and back
-			for (Frame f : new Frame[] { F, B }) {
-				decal(add, m, f, new double[][] { { hw * 0.5, top + h * 0.2 }, { hw * 0.78, top + h * 0.2 }, { -hw * 0.72, bottom - 3 }, { -hw * 1.0, bottom - 3 } }, 0.6,
-						1.6, st.leather, st.leatherDark);
-			}
-			for (int k = 0; k <= 8; k++) {
-				double a = Math.PI * k / 8;
-				double x = -Math.cos(a) * hw * 0.42, y = ny + Math.sin(a) * h * 0.34;
-				decal(add, m, F, diamond(x, y, 1.7, 1.7), 0.4, 2.8, k % 4 == 0 ? BRASS : st.accent, BEAD_DARK);
-			}
-			decal(add, m, F, polygon(0, ny + h * 0.42, 2.6, 2.6, 6), 0.4, 3.0, BRASS, BRASS_DARK);
-			decal(add, m, F, diamond(0, ny + h * 0.42, 1.2, 1.2), 0.3, 3.6, st.core, BRASS);
-			// the censer, on a short chain from the strap's end at the right hip: a brass pot, its lid, the ember in its slots
-			double lx = -halfWidth(m, bottom - 6, bottom) - 3.8, ly = bottom + 4, lz = cz - 2;
-			add.tube(new double[] { lx + 2, bottom - 4, lz }, new double[] { lx, ly - 5, lz }, 0.6, 0.6, 3, 0, BRASS_DARK, BRASS_DARK);
-			add.tube(new double[] { lx, ly - 5.5, lz }, new double[] { lx, ly - 3, lz }, 1.0, 4.2, 6, 0, BRASS_LIGHT, BRASS);
-			add.tube(new double[] { lx, ly - 3, lz }, new double[] { lx, ly + 2.5, lz }, 4.2, 4.0, 6, 0, BRASS, BRASS_DARK);
-			add.tube(new double[] { lx, ly + 2.5, lz }, new double[] { lx, ly + 4.5, lz }, 4.0, 0, 6, 0, BRASS_DARK, BRASS_DARK);
-			for (int k = 0; k < 3; k++) { // the ember, glowing through the slots
-				double a = Math.PI * 2 * k / 3 - Math.PI / 2;
-				add.tube(new double[] { lx + Math.cos(a) * 3.6, ly, lz + Math.sin(a) * 3.6 }, new double[] { lx + Math.cos(a) * 4.5, ly, lz + Math.sin(a) * 4.5 }, 1.4,
-						1.4, 4, 0, st.core, st.core);
-			}
-			break;
-		}
-		case THORN: { // bramble wound along the bandolier, thorns and berries on it; a spray of leaves over the shoulder guard
-			double[] sl = BaseWrap.strapLine(m), dir = norm(new double[] { sl[2] - sl[0], sl[3] - sl[1], 0 });
-			double[] across = { -dir[1], dir[0] };
-			for (Frame f : new Frame[] { F, B }) { // the vine winds over and under the strap
-				double[][] path = new double[13][];
-				for (int i = 0; i < path.length; i++) {
-					double t = i / (path.length - 1.0), w = Math.sin(t * Math.PI * 5) * 2.6;
-					path[i] = new double[] { sl[0] + (sl[2] - sl[0]) * t + across[0] * w, sl[1] + (sl[3] - sl[1]) * t + across[1] * w };
-				}
-				BaseWrap.ribbon(add, m, f, path, 0.9, 1.9, st.trim, -1);
-				for (int k = 1; k <= 5; k++) {
-					double t = k / 6.0, w = (k % 2 == 0 ? 1 : -1) * 2.4;
-					thornAt(add, m, f, sl[0] + (sl[2] - sl[0]) * t + across[0] * w, sl[1] + (sl[3] - sl[1]) * t + across[1] * w, 4.2,
-							k % 2 == 0 ? THORN : THORN_DARK);
-				}
-			}
-			for (double[] b : new double[][] { { 0.3, -2.8 }, { 0.34, -0.8 }, { 0.27, 0.6 }, { 0.78, 3.0 }, { 0.82, 1.2 } }) {
-				double x = sl[0] + (sl[2] - sl[0]) * b[0] + across[0] * b[1], y = sl[1] + (sl[3] - sl[1]) * b[0] + across[1] * b[1];
-				decal(add, m, F, diamond(x, y, 1.7, 1.7), 0.4, 3.4, BERRY, hsl(0, 6, 28));
-			}
-			double[] g = BaseWrap.guardCap(m); // leaves fanned over the guard's cap, front to back
-			for (int k = 0; k < 5; k++) {
-				double[] r = { g[0] - 1, g[1] + 1.5, g[2] - 6 + k * 3 };
-				blade(add, r, add(r, new double[] { 7 + (k % 2) * 2.5, 4 + (k % 2), (k - 2) * 2.2 }), Y, 2.8, 0.5, k % 2 == 0 ? LEAF : LEAF_DARK);
-			}
-			break;
-		}
-		case SALTGILT: { // gold epaulettes, an officer's gold buttons, barnacles crusted on the left shoulder, the Maiden's anchor on the back
-			for (int side = -1; side <= 1; side += 2) {
-				double[] c = { side * sx, sy, cz - 1 };
-				double[] axis = norm(new double[] { side * 0.5, -0.86, 0 });
-				dome(add, c, axis, Z, hw * 0.46, hw * 0.4, hw * 0.16, 5, st.trimDark, st.trim);
-			}
-			for (int k = 0; k < 3; k++) {
-				double a = Math.PI * (1.25 + k * 0.25);
-				double[] c = { sx * 1.05 + Math.cos(a) * 4, sy - 2.5, cz + Math.sin(a) * 6 };
-				barnacle(add, c, norm(new double[] { 0.4, -1, Math.sin(a) * 0.4 }), k % 2 == 0 ? 2.0 : 1.5);
-			}
-			for (int side = -1; side <= 1; side += 2) {
-				for (int k = 0; k < 2; k++) {
-					decal(add, m, F, diamond(side * hw * 0.28, top + h * (0.4 + k * 0.24), 1.8, 1.8), 0.6, 2.8, st.trim, st.trimDark);
-				}
-			}
-			anchor(add, m, B, 0, cy + 1, h * 0.62, st.trim, st.trimDark);
-			break;
-		}
 		default:
 			break;
 		}
@@ -276,68 +161,11 @@ final class DraftArmourA {
 			double x = side * kneeX;
 			ModelData one = knees[i];
 			switch (st.motif) {
-			case THORN: { // bramble wound round each leg above the knee, between the kilt and the greave
-				double y = top + h * 0.64 - 7;
-				double[] s = legRing(m, side, y, 2.6);
-				ring(one, new double[] { s[0], y, s[1] }, norm(new double[] { 0, -1, -0.25 }), X, s[2], s[3], -1.3, 1.3, 6, st.trim);
-				for (int k = 0; k < 5; k++) {
-					double a = Math.PI * 2 * k / 5 + 0.6;
-					double[] o = { Math.cos(a), 0, Math.sin(a) }, r = { s[0] + o[0] * s[2], y - o[2] * 1.5, s[1] + o[2] * s[3] };
-					one.tube(r, add(r, new double[] { o[0] * 4, -1.2, o[2] * 4 }), 1.0, 0, 3, 0, k % 2 == 0 ? THORN : THORN_DARK, THORN);
-				}
-				break;
-			}
-			case SALTGILT: // gilt knee-cops, a barnacle crusted on the right
-				LowArmour.kneePlate(one, m, x, kneeY, st.trim, st.trimDark);
-				if (side < 0) {
-					double[] p = project(m, F, x + 3.5, kneeY + 6);
-					barnacle(one, p, new double[] { 0.3, 0, -1 }, 1.6);
-					barnacle(one, add(p, new double[] { -2.4, -2, 0 }), new double[] { 0, 0, -1 }, 1.2);
-				}
-				break;
 			default:
 				break;
 			}
 		}
 		switch (st.motif) {
-		case ASHEN: { // a knotted cord at the waist, its ends hanging; a hem gone ragged on the road
-			double[] p = project(m, F, -hw * 0.12, top + 3);
-			fr.tube(add(p, new double[] { 1, 0, -0.5 }), add(p, new double[] { -1, 0, -2.5 }), 1.8, 1.8, 5, 0, st.light, st.dark);
-			for (int k = 0; k < 2; k++) {
-				double x0 = -hw * 0.12 + (k == 0 ? -1.5 : 1.5), y1 = top + h * (0.34 + k * 0.08);
-				double[] a = project(m, F, x0, top + 5), b = project(m, F, x0 + (k == 0 ? -2 : 1), y1);
-				fr.tube(add(a, new double[] { 0, 0, -1.2 }), add(b, new double[] { 0, 0, -1.2 }), 0.7, 0.7, 4, 0, st.light, st.light);
-				fr.tube(add(b, new double[] { 0, -1.2, -1.2 }), add(b, new double[] { 0, 1.2, -1.2 }), 1.3, 1.3, 5, 0, st.dark, st.dark);
-			}
-			double[] hem = LowArmour.hem(m, bottom);
-			for (int k = 0; k < 12; k++) {
-				double a = Math.PI * 2 * k / 12 + 0.2;
-				double x = hem[0] + Math.cos(a) * hem[2] * 0.95, z = hem[1] + Math.sin(a) * hem[3] * 0.95;
-				blade(fr, new double[] { x, bottom - 5, z }, new double[] { x * 1.05, bottom + 2 + (k % 3), z + Math.sin(a) * 1.5 },
-						new double[] { -Math.sin(a), 0, Math.cos(a) }, 2.8, 0.6, k % 2 == 0 ? st.dark : hsl(6, 1, 30));
-			}
-			break;
-		}
-		case THORN: // berries and a leaf at the belt
-			for (double[] b : new double[][] { { hw * 0.45, top + 5 }, { hw * 0.55, top + 7.5 }, { hw * 0.36, top + 8 } }) {
-				decal(fr, m, F, diamond(b[0], b[1], 1.5, 1.5), 0.4, 3.0, BERRY, hsl(0, 6, 28));
-			}
-			for (int k = 0; k < 2; k++) {
-				double[] p = project(m, F, hw * 0.5, top + 4);
-				blade(fr, add(p, new double[] { 0, 0, -1 }), add(p, new double[] { 3 + k * 2, 6 + k * 4, -2 }), Z, 2.2, 0.4, k == 0 ? LEAF : LEAF_DARK);
-			}
-			break;
-		case SALTGILT: // a sword-belt with a doubloon buckle, the gold stripe down each leg
-			for (Frame f : new Frame[] { F, B }) {
-				decal(fr, m, f, rect(-hw * 1.02, top + 1, hw * 1.02, top + 5), 0.7, 1.6, st.leather, st.leatherDark);
-			}
-			decal(fr, m, F, polygon(0, top + 3, 3.2, 3.2, 8), 0.6, 2.6, st.trim, st.trimDark);
-			decal(fr, m, F, polygon(0, top + 3, 1.6, 1.6, 6), 0.3, 3.2, st.core, st.trim);
-			for (int side = -1; side <= 1; side += 2) {
-				Frame sf = new Frame(new double[] { 0, 0, cz }, new double[] { 0, 0, side }, Y, new double[] { side, 0, 0 });
-				decal(fr, m, sf, rect(-1.2, top + 6, 1.2, kneeY - 8), 0.5, 1.6, st.trim, st.trimDark);
-			}
-			break;
 		default:
 			break;
 		}
@@ -346,19 +174,9 @@ final class DraftArmourA {
 
 	/* ------------------------------------------------------------- the shield */
 
+	/** Nothing: the one shield here, Saltgilt's porthole hatch, is all BaseDiver's. */
 	static ModelData shield(Style st, ModelData m, Frame f) {
-		double[] e = LowArmour.extent(m, f); // u0, u1, v0, v1
-		double w = (e[1] - e[0]) / 2, hgt = (e[3] - e[2]) / 2, cu = (e[0] + e[1]) / 2, cv = (e[2] + e[3]) / 2;
-		double s = Math.min(w, hgt);
-		ModelData add = new ModelData();
-		if (st.motif == Motif.SALTGILT) { // the Maiden's anchor in gold, a coil of rope round it, barnacles in the corner
-			anchor(add, m, f, cu, cv + s * 0.04, s * 1.55, st.trim, st.trimDark);
-			for (int k = 0; k < 4; k++) {
-				double[] p = project(m, f, cu + w * (0.66 + (k % 2) * 0.16), cv - hgt * (0.6 + (k / 2) * 0.17));
-				barnacle(add, p, f.n, k % 2 == 0 ? 2.2 : 1.6);
-			}
-		}
-		return add;
+		return new ModelData();
 	}
 
 	/* ------------------------------------------------------------- boots, gloves */
@@ -370,31 +188,6 @@ final class DraftArmourA {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * hw * 0.56;
 			switch (st.motif) {
-			case ASHEN: // road-worn wrappings
-				LowArmour.cuff(add, m, side, top, top + 2.5, 0.6, st.trim, st.trimDark);
-				LowArmour.cuff(add, m, side, top + 5, top + 7, 0.6, st.trimDark, st.trimDark);
-				break;
-			case THORN: { // bramble round the ankle, under the greave, thorns out; two more thorns up the greave's face
-				double ground = bb[4], y = ground - 17;
-				double[] s = limbSlab(m, side, y - 1.5, y + 1.5);
-				ring(add, new double[] { s[0], y, s[1] }, UP, X, s[2] * 1.12, s[3] * 1.12, -1.2, 1.2, 6, st.trim);
-				for (int k = 0; k < 4; k++) {
-					double a = Math.PI * 2 * k / 4 + 0.5;
-					double[] o = { Math.cos(a), 0, Math.sin(a) }, r = { s[0] + o[0] * s[2] * 1.1, y, s[1] + o[2] * s[3] * 1.1 };
-					add.tube(r, add(r, new double[] { o[0] * 3.5, -1.5, o[2] * 3.5 }), 1.0, 0, 3, 0, k % 2 == 0 ? THORN : THORN_DARK, THORN);
-				}
-				double gx = BaseWrap.layer(m, BaseWrap.PRIO_GREAVE, side, top + 12).cx;
-				for (int k = 0; k < 2; k++) {
-					thornAt(add, m, ArmourSets.FRONT, gx + (k == 0 ? -1 : 1) * side * 1.5, top + 11 + k * 9, 3.6, k == 0 ? THORN : THORN_DARK);
-				}
-				break;
-			}
-			case SALTGILT: // folded sea-boot tops and a gold buckle
-				LowArmour.cuff(add, m, side, top, top + 4, 1.0, st.dark, st.leatherDark);
-				double[] q = surface(m, new double[] { x, top + 9, -100 }, Z);
-				double bz = q == null ? front + 4.5 : q[2];
-				add.tube(new double[] { x, top + 9, bz + 1 }, new double[] { x, top + 9, bz - 1.5 }, 1.8, 1.8, 4, 0.78, st.trim, st.trimDark);
-				break;
 			default:
 				break;
 			}
@@ -409,28 +202,6 @@ final class DraftArmourA {
 		for (int side = -1; side <= 1; side += 2) {
 			double x = side * (hw - 6.5);
 			switch (st.motif) {
-			case ASHEN: // a bracelet of prayer beads round the wrist
-				for (int k = 0; k < 6; k++) {
-					double a = Math.PI * 2 * k / 6;
-					ball(add, new double[] { x + Math.cos(a) * 5.6, top + 8, 1 + Math.sin(a) * 5.6 }, 1.5, 3, k == 0 ? BRASS : st.accent);
-				}
-				break;
-			case THORN: { // a bramble band round the bracer under the elbow, thorns and a leaf tucked in
-				double y = top + 5;
-				double[] s = limbSlab(m, side, y - 1, y + 3.5);
-				double r = Math.max(s[2], s[3]) + 0.7, bx = s[0], bz = s[1];
-				add.tube(new double[] { bx, y, bz }, new double[] { bx, y + 2.5, bz }, r, r, 6, 0.26, st.trim, st.trimDark);
-				for (int k = 0; k < 3; k++) {
-					double a = Math.PI * 2 * k / 3 + 0.4;
-					add.tube(new double[] { bx + Math.cos(a) * (r - 0.6), y + 1, bz + Math.sin(a) * (r - 0.6) },
-							new double[] { bx + Math.cos(a) * (r + 3), y - 0.5, bz + Math.sin(a) * (r + 3) }, 0.9, 0, 3, 0, THORN, THORN);
-				}
-				blade(add, new double[] { bx + side * (r - 1.5), y + 1, bz }, new double[] { bx + side * (r + 1.5), y - 5, bz + 3 }, Z, 2.0, 0.4, LEAF);
-				break;
-			}
-			case SALTGILT:
-				LowArmour.gauntlet(add, x, top, 6.6, st.leather, st.leatherDark, st.trim);
-				break;
 			default:
 				break;
 			}
