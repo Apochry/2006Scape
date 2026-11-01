@@ -3592,6 +3592,10 @@ public class Game extends RSApplet {
 		if (i < 0) {
 			return;
 		}
+		if (i == makeAllRow) {
+			// The server may now ask how many; answer it in the packet 27 handler
+			makeAllRequestedAt = System.currentTimeMillis();
+		}
 		if (inputDialogState != 0) {
 			inputDialogState = 0;
 			inputTaken = true;
@@ -5706,6 +5710,101 @@ public class Game extends RSApplet {
 		}
 	}
 
+	/** Skill verbs whose "how many" options get an all-by-default left click. */
+	private static final java.util.regex.Pattern MAKE_OPTION = java.util.regex.Pattern.compile(
+			"(?i)^(cook|make|smelt|fletch|craft|spin|cut|string|mix|bake|brew|blow|tan|weave|smith) (\\d+|all|x)\\b");
+	private static final int BUTTON_OPTION_ID = 315;
+	private static final int[] ITEM_OPTION_IDS = {632, 78, 867, 431, 53};
+	/** Item option that sends the "All" packet; the server makes as many as it can for these interfaces. */
+	private static final int ITEM_ALL_OPTION_ID = 431;
+	private static final int[] ITEM_MAKE_ALL_INTERFACES = {1119, 1120, 1121, 1122, 1123, 4233, 4239, 4245};
+	/** Amount sent for "All" when the server asks how many: a full inventory. */
+	private static final int MAKE_ALL_AMOUNT = 28;
+
+	/** Menu row of a "... All" option that answers the server's amount prompt itself. */
+	private int makeAllRow = -1;
+	private long makeAllRequestedAt;
+
+	/**
+	 * In skill "how many" menus (Cook 1/5/X/All, Smelt 1/5/10/X, smithing's
+	 * Make 1/5/10...), makes the left click do as many as possible: the All
+	 * option where there is one, otherwise an added "All" that sends X and
+	 * answers the amount prompt with a full inventory, otherwise the largest.
+	 */
+	private void applyMakeAllDefault() {
+		makeAllRow = -1;
+		int top = menuActionRow - 1;
+		if (!leftClickSwaps || top < 1) {
+			return;
+		}
+		boolean button = menuActionID[top] == BUTTON_OPTION_ID;
+		boolean item = contains(ITEM_OPTION_IDS, menuActionID[top]);
+		java.util.regex.Matcher topMatch = MAKE_OPTION.matcher(stripColours(menuActionName[top]));
+		if (!button && !item || !topMatch.find()) {
+			return;
+		}
+		String verb = topMatch.group(1);
+		int best = -1;
+		int bestRank = -1;
+		for (int j = top; j >= 1; j--) {
+			if (!sameMakeMenu(j, top, button)) {
+				continue;
+			}
+			java.util.regex.Matcher m = MAKE_OPTION.matcher(stripColours(menuActionName[j]));
+			if (!m.find() || !m.group(1).equalsIgnoreCase(verb)) {
+				continue;
+			}
+			String qty = m.group(2).toLowerCase();
+			int rank = qty.equals("all") ? Integer.MAX_VALUE : qty.equals("x") ? Integer.MAX_VALUE - 1 : Integer.parseInt(qty);
+			if (rank > bestRank) {
+				best = j;
+				bestRank = rank;
+			}
+		}
+		if (best == -1) {
+			return;
+		}
+		if (bestRank == Integer.MAX_VALUE - 1) {
+			// Only "X": add an "All" that sends X and fills in the amount
+			addMenuCopy(best, menuActionName[best].replaceFirst("(?i) X\\b", " All"));
+			makeAllRow = menuActionRow - 1;
+		} else if (bestRank != Integer.MAX_VALUE && item && contains(ITEM_MAKE_ALL_INTERFACES, menuActionCmd3[top])) {
+			addMenuCopy(best, menuActionName[best].replaceFirst("\\b\\d+\\b", "All"));
+			menuActionID[menuActionRow - 1] = ITEM_ALL_OPTION_ID;
+		} else if (best != top) {
+			swapMenuEntries(best, top);
+		}
+	}
+
+	private boolean sameMakeMenu(int a, int b, boolean button) {
+		if (button) {
+			if (menuActionID[a] != BUTTON_OPTION_ID) {
+				return false;
+			}
+			RSInterface ia = RSInterface.interfaceCache[menuActionCmd3[a]];
+			RSInterface ib = RSInterface.interfaceCache[menuActionCmd3[b]];
+			return ia != null && ib != null && ia.parentID == ib.parentID;
+		}
+		return contains(ITEM_OPTION_IDS, menuActionID[a]) && menuActionCmd2[a] == menuActionCmd2[b] && menuActionCmd3[a] == menuActionCmd3[b];
+	}
+
+	/** Adds a copy of a menu row as the new left-click option. */
+	private void addMenuCopy(int row, String name) {
+		if (menuActionRow >= menuActionName.length) {
+			return;
+		}
+		menuActionName[menuActionRow] = name;
+		menuActionID[menuActionRow] = menuActionID[row];
+		menuActionCmd1[menuActionRow] = menuActionCmd1[row];
+		menuActionCmd2[menuActionRow] = menuActionCmd2[row];
+		menuActionCmd3[menuActionRow] = menuActionCmd3[row];
+		menuActionRow++;
+	}
+
+	private static String stripColours(String s) {
+		return s.replaceAll("@[a-z0-9]{3}@", "");
+	}
+
 	private static boolean contains(int[] values, int value) {
 		for (int v : values) {
 			if (v == value) {
@@ -6189,6 +6288,7 @@ public class Game extends RSApplet {
 
 		}
 		applyLeftClickSwaps();
+		applyMakeAllDefault();
 	}
 
 	public int method83(int i, int j, int k) {
@@ -11830,6 +11930,14 @@ public class Game extends RSApplet {
 				return true;
 			}
 			if (pktType == 27) {
+				if (System.currentTimeMillis() - makeAllRequestedAt < 3000) {
+					// "All" chosen from a menu that only offered X: send a full inventory
+					makeAllRequestedAt = 0;
+					stream.createFrame(208);
+					stream.writeDWord(MAKE_ALL_AMOUNT);
+					pktType = -1;
+					return true;
+				}
 				messagePromptRaised = false;
 				inputDialogState = 1;
 				amountOrNameInput = "";
