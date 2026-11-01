@@ -21,7 +21,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <ol start="25">
  * <li>Ashen pilgrim (Magic 15): The wandering pilgrims who walk Nythera's roads to the old shrines, a walking haystack under a hat (its own base, BasePilgrim): a huge woven conical road-hat, a three-tier straw rain-cape over an ash-grey wrap jacket, a bedroll across the shoulders, red prayer beads, a rope belt with the little brass censer hung from it, loose trousers tied over leg-wraps, straw sandals and hand-wraps.</li>
  * <li>Thornwarden (Ranged 20): Silkwood's edge-keepers, who tend the bramble hedges that keep the spiders in and vanish into them: a ghillie suit of leaf shingles sticking out at angles, a walking shrub with a face (its own base, BaseGhillie): a leaf hood flaring over a shadowed face, a hunched leaf shroud longer at the back over a bramble-wound jerkin, leaf-shingled chaps over bound leggings, wicker-bound boots, bark bracers with thorn spurs; red-berried bramble wound through it all.</li>
- * <li>Saltgilt (Defence 30): The Drowned Maiden's officers (Skullbrine): sea-weathered mail trimmed in tarnished doubloon-gold, barnacles crusted on the shoulders and helm, a tricorn-ish brim or an anchor on the shield, the Maiden's gilt figurehead.</li>
+ * <li>Saltgilt (Defence 30): The Drowned Maiden's officers (Skullbrine), drowned and come back up still in their brass diving suits (their own base, BaseDiver): a round brass diving helmet with a grilled porthole and a bolted collar, a bulky canvas suit with a gilt breastplate bolted on and a belt of lead weights, baggy canvas legs, massive lead boots, swollen rubber gloves, a round brass hatch for a shield; barnacles and doubloon-gold trim.</li>
  * <li>Tidecaller (Magic 35): Sea-mages of Smugglers' Cove who call the tide for the night crews: deep sea-blue robes, coral branches, a scallop-shell hat ornament, pearls, a wave pattern at the hem.</li>
  * <li>Shardhide (Ranged 40): Made from the Shardback, the crater-rim bear whose back bristles with the fallen star's glass: brown bear-hide wraps (the WRAP base), dark fur ruffs, pale glass shards jutting from the shoulders and spine, a bear's skull worn over the headband.</li>
  * </ol>
@@ -58,14 +58,16 @@ final class DraftArmourA {
 							"A shroud of overlapping leaves over a bramble-wound jerkin. Stand still in a hedge and you are the hedge. The berries are for the birds. Mostly.",
 							"Leaf-shingled chaps over bound leggings, and bramble at the knee. Whatever crawls out of Silkwood has to get past these first.", null,
 							"Boots bound in wicker to the shin. Spiders won't climb what bites back.", "Bark bracers with the thorns left on. Put them on carefully." }),
-			new Style("Saltgilt", "saltgilt", Kind.COAT, Motif.SALTGILT, 30, hsl(30, 1, 60), hsl(30, 1, 40), hsl(30, 1, 80), GOLD, GOLD_DARK, BARNACLE,
+			new Style("Saltgilt", "saltgilt", Kind.COAT, Motif.SALTGILT, 30, hsl(28, 1, 52), hsl(28, 1, 38), hsl(28, 1, 64), GOLD, GOLD_DARK, BARNACLE,
 					hsl(9, 2, 120), hsl(36, 2, 24), hsl(36, 2, 16), HAS_ALL,
-					new String[] { "Saltgilt med helm", "Saltgilt chainbody", "Saltgilt platelegs", "Saltgilt sq shield", "Saltgilt boots", "Saltgilt gloves" },
-					new String[] { "An officer's tricorn on a mail cap. The barnacles have served aboard the Drowned Maiden longer than anyone.",
-							"Sea-green mail and gilt epaulettes. Captain Blackbrine liked his officers to shine, even underwater.",
-							"A gold stripe down each leg, for rank. The Maiden kept her officers in style, if not in air.",
-							"The Maiden's anchor in gilt. It held her fast to the cove floor for a hundred years.",
-							"Gold-buckled sea boots. They still pour out a little seawater every morning.", "Gilt-cuffed gloves, for saluting a captain who isn't there." }),
+					new String[] { "Saltgilt diving full helm", "Saltgilt diving platebody", "Saltgilt diving legs", "Saltgilt hatch shield", "Saltgilt lead boots",
+							"Saltgilt diving gloves" },
+					new String[] { "A brass diving helmet, barnacled, the glass still fogged. Something inside it is still breathing, slowly.",
+							"Waterlogged canvas and a gilt breastplate. Captain Blackbrine liked his officers to shine, even a hundred years under.",
+							"Baggy diving canvas, patched at the knee. The Maiden kept her officers in style, if not in air.",
+							"A brass hatch off the Drowned Maiden, porthole, wheel and all. It held the sea out for a while.",
+							"Lead boots for walking the cove floor. They still pour out a little seawater every morning.",
+							"Swollen rubber gloves with brass cuffs, for saluting a captain who isn't there." }),
 			new Style("Tidecaller", "tidecaller", Kind.MANTLE, Motif.TIDE, 35, hsl(38, 4, 46), hsl(38, 4, 30), hsl(38, 3, 64), hsl(31, 4, 46), hsl(31, 4, 32),
 					PEARL, hsl(36, 0, 124), hsl(36, 2, 26), hsl(36, 2, 18), NO_SHIELD,
 					new String[] { "Tidecaller hat", "Tidecaller robe top", "Tidecaller robe bottom", null, "Tidecaller boots", "Tidecaller gloves" },
@@ -124,19 +126,7 @@ final class DraftArmourA {
 		switch (st.motif) {
 		// ASHEN: nothing here; BasePilgrim builds it all
 		// THORN: nothing here; BaseGhillie builds it all
-		case SALTGILT: { // a tricorn brim, gold-laced and turned up; barnacles crusted on the crown at one side
-			double by = top + h * 0.34;
-			double[] s = slab(m, by - 2, by + 2);
-			tricorn(add, s[0], by, s[1], s[2] * 0.95, s[3] * 0.95, s[2] * 1.8, s[3] * 1.65, st.leather, st.trim);
-			for (int k = 0; k < 4; k++) {
-				double a = Math.PI * (0.72 + k * 0.2), y = top + h * (0.14 + (k % 2) * 0.1);
-				double[] q = surface(m, new double[] { s[0] + Math.cos(a) * 40, y, s[1] + Math.sin(a) * 40 }, new double[] { -Math.cos(a), 0, -Math.sin(a) });
-				if (q != null) {
-					barnacle(add, q, new double[] { Math.cos(a), -0.4, Math.sin(a) }, k % 2 == 0 ? 1.9 : 1.4);
-				}
-			}
-			break;
-		}
+		// SALTGILT: nothing here; BaseDiver builds it all
 		case TIDE: { // a string of pearls round the hat, a scallop shell at the front, coral branching up the side
 			double by = bottom - h * 0.3;
 			double[] s = slab(m, by - 2, by + 2);
@@ -192,25 +182,7 @@ final class DraftArmourA {
 		switch (st.motif) {
 		// ASHEN: nothing here; BasePilgrim builds it all
 		// THORN: nothing here; BaseGhillie builds it all
-		case SALTGILT: { // gold epaulettes, an officer's gold buttons, barnacles crusted on the left shoulder, the Maiden's anchor on the back
-			for (int side = -1; side <= 1; side += 2) {
-				double[] c = { side * sx, sy, cz - 1 };
-				double[] axis = norm(new double[] { side * 0.5, -0.86, 0 });
-				dome(add, c, axis, Z, hw * 0.46, hw * 0.4, hw * 0.16, 5, st.trimDark, st.trim);
-			}
-			for (int k = 0; k < 3; k++) {
-				double a = Math.PI * (1.25 + k * 0.25);
-				double[] c = { sx * 1.05 + Math.cos(a) * 4, sy - 2.5, cz + Math.sin(a) * 6 };
-				barnacle(add, c, norm(new double[] { 0.4, -1, Math.sin(a) * 0.4 }), k % 2 == 0 ? 2.0 : 1.5);
-			}
-			for (int side = -1; side <= 1; side += 2) {
-				for (int k = 0; k < 2; k++) {
-					decal(add, m, F, diamond(side * hw * 0.28, top + h * (0.4 + k * 0.24), 1.8, 1.8), 0.6, 2.8, st.trim, st.trimDark);
-				}
-			}
-			anchor(add, m, B, 0, cy + 1, h * 0.62, st.trim, st.trimDark);
-			break;
-		}
+		// SALTGILT: nothing here; BaseDiver builds it all
 		case TIDE: { // a string of pearls and a scallop on the breast, coral grown over the left shoulder, waves breaking round the back
 			double ny = top + h * 0.22;
 			for (int k = 0; k <= 8; k++) {
@@ -274,14 +246,7 @@ final class DraftArmourA {
 			ModelData one = knees[i];
 			switch (st.motif) {
 			// THORN: nothing here; BaseGhillie builds it all
-			case SALTGILT: // gilt knee-cops, a barnacle crusted on the right
-				LowArmour.kneePlate(one, m, x, kneeY, st.trim, st.trimDark);
-				if (side < 0) {
-					double[] p = project(m, F, x + 3.5, kneeY + 6);
-					barnacle(one, p, new double[] { 0.3, 0, -1 }, 1.6);
-					barnacle(one, add(p, new double[] { -2.4, -2, 0 }), new double[] { 0, 0, -1 }, 1.2);
-				}
-				break;
+			// SALTGILT: nothing here; BaseDiver builds it all
 			case SHARDHIDE: { // a ruff of fur bound round the leg above the knee, a shard at the outside of it
 				double y = top + h * 0.64 - 8;
 				double[] s = legRing(m, side, y, 2.2);
@@ -302,17 +267,7 @@ final class DraftArmourA {
 		switch (st.motif) {
 		// ASHEN: nothing here; BasePilgrim builds it all
 		// THORN: nothing here; BaseGhillie builds it all
-		case SALTGILT: // a sword-belt with a doubloon buckle, the gold stripe down each leg
-			for (Frame f : new Frame[] { F, B }) {
-				decal(fr, m, f, rect(-hw * 1.02, top + 1, hw * 1.02, top + 5), 0.7, 1.6, st.leather, st.leatherDark);
-			}
-			decal(fr, m, F, polygon(0, top + 3, 3.2, 3.2, 8), 0.6, 2.6, st.trim, st.trimDark);
-			decal(fr, m, F, polygon(0, top + 3, 1.6, 1.6, 6), 0.3, 3.2, st.core, st.trim);
-			for (int side = -1; side <= 1; side += 2) {
-				Frame sf = new Frame(new double[] { 0, 0, cz }, new double[] { 0, 0, side }, Y, new double[] { side, 0, 0 });
-				decal(fr, m, sf, rect(-1.2, top + 6, 1.2, kneeY - 8), 0.5, 1.6, st.trim, st.trimDark);
-			}
-			break;
+		// SALTGILT: nothing here; BaseDiver builds it all
 		case TIDE: { // waves breaking round the hem, pearls at the belt
 			double[] hem = LowArmour.hem(m, bottom);
 			for (Frame f : new Frame[] { F, B }) {
@@ -343,20 +298,11 @@ final class DraftArmourA {
 
 	/* ------------------------------------------------------------- the shield */
 
+	/** Nothing: the one shield here, Saltgilt's porthole hatch, is all BaseDiver's. */
 	static ModelData shield(Style st, ModelData m, Frame f) {
-		double[] e = LowArmour.extent(m, f); // u0, u1, v0, v1
-		double w = (e[1] - e[0]) / 2, hgt = (e[3] - e[2]) / 2, cu = (e[0] + e[1]) / 2, cv = (e[2] + e[3]) / 2;
-		double s = Math.min(w, hgt);
-		ModelData add = new ModelData();
-		if (st.motif == Motif.SALTGILT) { // the Maiden's anchor in gold, a coil of rope round it, barnacles in the corner
-			anchor(add, m, f, cu, cv + s * 0.04, s * 1.55, st.trim, st.trimDark);
-			for (int k = 0; k < 4; k++) {
-				double[] p = project(m, f, cu + w * (0.66 + (k % 2) * 0.16), cv - hgt * (0.6 + (k / 2) * 0.17));
-				barnacle(add, p, f.n, k % 2 == 0 ? 2.2 : 1.6);
-			}
-		}
-		return add;
+		return new ModelData();
 	}
+
 
 	/* ------------------------------------------------------------- boots, gloves */
 
@@ -369,12 +315,7 @@ final class DraftArmourA {
 			switch (st.motif) {
 			// ASHEN: nothing here; BasePilgrim builds it all
 			// THORN: nothing here; BaseGhillie builds it all
-			case SALTGILT: // folded sea-boot tops and a gold buckle
-				LowArmour.cuff(add, m, side, top, top + 4, 1.0, st.dark, st.leatherDark);
-				double[] q = surface(m, new double[] { x, top + 9, -100 }, Z);
-				double bz = q == null ? front + 4.5 : q[2];
-				add.tube(new double[] { x, top + 9, bz + 1 }, new double[] { x, top + 9, bz - 1.5 }, 1.8, 1.8, 4, 0.78, st.trim, st.trimDark);
-				break;
+			// SALTGILT: nothing here; BaseDiver builds it all
 			case TIDE: // a sea-green cuff with a pearl
 				LowArmour.cuff(add, m, side, top, top + 2.5, 0.6, st.trim, st.trimDark);
 				double[] s = limbSlab(m, side, top, top + 3);
@@ -406,9 +347,7 @@ final class DraftArmourA {
 			switch (st.motif) {
 			// ASHEN: nothing here; BasePilgrim builds it all
 			// THORN: nothing here; BaseGhillie builds it all
-			case SALTGILT:
-				LowArmour.gauntlet(add, x, top, 6.6, st.leather, st.leatherDark, st.trim);
-				break;
+			// SALTGILT: nothing here; BaseDiver builds it all
 			case TIDE: // a coral bracelet with a pearl
 				add.tube(new double[] { x, top + 7, 1 }, new double[] { x, top + 9.5, 1 }, 6.2, 6.2, 6, 0.26, CORAL, CORAL_DARK);
 				ball(add, new double[] { x, top + 8.2, -5.8 }, 1.3, PEARL);
@@ -652,64 +591,9 @@ final class DraftArmourA {
 		add.tube(c, new double[] { c[0], c[1] + r, c[2] }, r, 0, sides, Math.PI / 4, col, col);
 	}
 
-	/**
-	 * A hat brim: a flat ring from the crown (rxIn, rzIn) out to (rxOut, rzOut), its outer edge dropping by {@code droop}
-	 * (negative: turned up), {@code th} thick, with a top and an underside.
-	 */
-	private static void brim(ModelData add, double cx, double y, double cz, double rxIn, double rzIn, double rxOut, double rzOut, double droop, double th,
-			int sides, int top, int under) {
-		int[] in = new int[sides], out = new int[sides], inB = new int[sides], outB = new int[sides];
-		for (int s = 0; s < sides; s++) {
-			double a = Math.PI * 2 * s / sides + Math.PI / sides, ca = Math.cos(a), sa = Math.sin(a);
-			in[s] = add.vertex(cx + ca * rxIn, y, cz + sa * rzIn);
-			out[s] = add.vertex(cx + ca * rxOut, y + droop, cz + sa * rzOut);
-			inB[s] = add.vertex(cx + ca * rxIn, y + th, cz + sa * rzIn);
-			outB[s] = add.vertex(cx + ca * rxOut, y + droop + th, cz + sa * rzOut);
-		}
-		double[] below = { cx, y + 60, cz }, above = { cx, y - 60, cz }, mid = { cx, y + droop / 2, cz };
-		for (int s = 0; s < sides; s++) {
-			int t = (s + 1) % sides;
-			add.quadOut(in[s], in[t], out[t], out[s], top, below);
-			add.quadOut(inB[s], inB[t], outB[t], outB[s], under, above);
-			add.quadOut(out[s], out[t], outB[t], outB[s], under, mid);
-		}
-	}
 
-	/** A tricorn's brim: turned up between three points (front, and back at either side), gold-laced at the edge. */
-	private static void tricorn(ModelData add, double cx, double y, double cz, double rxIn, double rzIn, double rxOut, double rzOut, int felt, int lace) {
-		int n = 12;
-		int[] in = new int[n], out = new int[n], edge = new int[n], inB = new int[n];
-		for (int s = 0; s < n; s++) {
-			double a = Math.PI * 2 * s / n - Math.PI / 2, ca = Math.cos(a), sa = Math.sin(a); // s = 0 at the front (-z)
-			double corner = Math.pow(Math.max(0, Math.cos(3 * (a + Math.PI / 2))), 2); // 1 at the three points
-			double r = 0.8 + 0.2 * corner, rise = 5.5 * (1 - corner) + 1;
-			in[s] = add.vertex(cx + ca * rxIn, y, cz + sa * rzIn);
-			inB[s] = add.vertex(cx + ca * rxIn, y + 1.2, cz + sa * rzIn);
-			out[s] = add.vertex(cx + ca * rxOut * r, y - rise, cz + sa * rzOut * r);
-			edge[s] = add.vertex(cx + ca * (rxOut * r + 0.8), y - rise - 1.6, cz + sa * (rzOut * r + 0.8));
-		}
-		double[] c = { cx, y, cz };
-		for (int s = 0; s < n; s++) {
-			int t = (s + 1) % n;
-			add.quadOut(in[s], in[t], out[t], out[s], felt, c); // the inside face, towards the crown
-			add.quadOut(inB[s], inB[t], out[t], out[s], felt, new double[] { cx, y - 40, cz }); // the outside, seen from below and around
-			add.quadOut(out[s], out[t], edge[t], edge[s], lace, c);
-			add.quadOut(out[s], out[t], edge[t], edge[s], lace, new double[] { cx, y + 40, cz });
-		}
-	}
 
-	/** A barnacle: a squat pale cone standing on the surface at p, along n. */
-	private static void barnacle(ModelData add, double[] p, double[] n, double r) {
-		double[] d = norm(n);
-		add.tube(add(p, scale(d, -0.6)), add(p, scale(d, r * 1.1)), r, r * 0.45, 4, 0.3, BARNACLE, BARNACLE_DARK);
-	}
 
-	/** A thorn standing out of the surface at frame point (x, y). */
-	private static void thornAt(ModelData add, ModelData m, Frame f, double x, double y, double len, int col) {
-		double[] p = project(m, f, x, y);
-		double[] o = norm(add(f.n, new double[] { x > 0 ? 0.5 : -0.5, -0.3, 0 }));
-		add.tube(add(p, scale(f.n, -0.5)), add(p, scale(o, len)), 0.9, 0, 3, 0, col, col);
-	}
 
 	/** A branch of coral from p along d: a tapering limb that forks twice. */
 	private static void coral(ModelData add, double[] p, double[] d, double len, double r, int depth, int col, int col2) {
@@ -743,19 +627,6 @@ final class DraftArmourA {
 		decal(add, m, f, rect(x - r * 0.4, hy - r * 0.18, x + r * 0.4, hy + r * 0.12), 0.4, 2.6, col2, col2);
 	}
 
-	/** A ship's anchor: ring, stock, shank, curved arms and flukes. */
-	private static void anchor(ModelData add, ModelData m, Frame f, double x, double y, double size, int col, int col2) {
-		double s = size, w = Math.max(0.6, s * 0.05);
-		decal(add, m, f, diamond(x, y - s * 0.42, s * 0.08, s * 0.08), 0.4, 2.4, col, col2);
-		decal(add, m, f, rect(x - s * 0.22, y - s * 0.33, x + s * 0.22, y - s * 0.27), 0.4, 2.6, col, col2);
-		decal(add, m, f, rect(x - w, y - s * 0.36, x + w, y + s * 0.4), 0.4, 2.2, col, col2);
-		for (int k = -1; k <= 1; k += 2) {
-			decal(add, m, f, LowArmour.bar(x + k * s * 0.33, y + s * 0.1, x + k * s * 0.22, y + s * 0.34, w), 0.4, 2.2, col, col2);
-			decal(add, m, f, LowArmour.bar(x + k * s * 0.23, y + s * 0.33, x, y + s * 0.42, w), 0.4, 2.2, col, col2);
-			decal(add, m, f, new double[][] { { x + k * s * 0.33, y + s * 0.0 }, { x + k * s * 0.42, y + s * 0.2 }, { x + k * s * 0.25, y + s * 0.16 } }, 0.4, 2.4,
-					col, col2);
-		}
-	}
 
 	/** A breaking wave: a crest leaning forward over its own trough, curling at the top. */
 	private static void waveCrest(ModelData add, ModelData m, Frame f, double x, double y, double w, double h, int col, int col2) {
