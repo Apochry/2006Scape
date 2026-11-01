@@ -132,6 +132,12 @@ final class BaseJellyfish {
 		tri(me, a, c, d, col, inside);
 	}
 
+	/** A lining quad: it faces towards {@code toward} (a point inside the garment, e.g. on its axis). */
+	static void lining(Mesh me, int a, int b, int c, int d, int col, double[] toward) {
+		double[] g = scale(add(add(me.p(a), me.p(b)), add(me.p(c), me.p(d))), 0.25);
+		quad(me, a, b, c, d, col, add(g, sub(g, toward)));
+	}
+
 	/**
 	 * A quad seen from both sides: its front (colour {@code front}) faces along {@code n}, its back ({@code back}, or
 	 * none if negative) the other way. Both sides share the vertices.
@@ -338,7 +344,7 @@ final class BaseJellyfish {
 		}
 		for (int i = 0; i < n; i++) {
 			int j = (i + 1) % n;
-			quad(me, in3[i], in3[j], inR[j], inR[i], st.trimDark, sub(mid, pt(0, -60, 0)));
+			lining(me, in3[i], in3[j], inR[j], inR[i], st.trimDark, pt(0, (me.p(in3[i])[1] + rimY[i]) / 2, cz));
 		}
 		// the frill: scallops flaring under the rim, a little longer at the sides and back
 		me.prio = 1;
@@ -562,7 +568,7 @@ final class BaseJellyfish {
 			quad(me, g[R - 1][i], notch[i], notch[j], g[R - 1][j], st.trimDark, outside);
 			quad(me, notch[i], notch[j], c, a, st.trimDark, outside);
 			// under the dome, from the rim in to the shoulders
-			quad(me, g[R - 2][i], g[R - 1][i], g[R - 1][j], g[R - 2][j], st.trimDark, pt(0, top - 40, cz));
+			lining(me, g[R - 2][i], g[R - 1][i], g[R - 1][j], g[R - 2][j], st.trimDark, pt(0, rimY[i] + 15, cz));
 		}
 		me.prio = 0;
 	}
@@ -665,7 +671,7 @@ final class BaseJellyfish {
 		}
 		for (int i = 0; i < n; i++) {
 			int j = (i + 1) % n;
-			quad(me, l4[i], l5[i], l5[j], l4[j], st.dark, pt(0, hem - 40, cz));
+			lining(me, l4[i], l5[i], l5[j], l4[j], st.dark, pt(0, (rings[4][0] + rings[5][0]) / 2, cz));
 		}
 		// the hem's frill: rounded scallops flaring out, each with a fringe of tendrils
 		me.prio = 1;
