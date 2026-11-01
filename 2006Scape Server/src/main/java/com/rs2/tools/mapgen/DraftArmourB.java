@@ -23,7 +23,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <li>Gravescale (Defence 45): Scale mail from the Gravecoil, the barrow serpent (see Gravecoil.java for its real palette and match it): overlapping serpent scales, a fanged snake-head visor, a coiled serpent on the shield, venom-yellow eyes.</li>
  * <li>Gatehold sentinel (Defence 50): The guard on Gatehold's wall: bright steel plate, a Gatehold-blue tabard with the gate-tower crest in gold, a tall plume, a tower-shaped kiteshield boss.</li>
  * <li>Broodkeeper (Magic 50): the keepers of the Silkwood broodmother's brood, on the mantle base (BaseMantle): many small eyes glowing in the hood's shadow and a spider on its crown, chitin lames down the tunic, a carapace on the mantle with a broodmother's legs over the shoulders, sickly glowing egg-sacs.</li>
- * <li>Rimeclaw hunter (Ranged 60): Hunters who took Rimeclaw (the Frostfang boss) and wear its hide: ice-blue hide, a claw necklace, big hooked claws at the shoulders and on the vambraces, a beast-head coif with frost.</li>
+ * <li>Rimeclaw hunter (Ranged 60): Hunters who took Rimeclaw (the Frostfang boss) and wear its hide, on a parka base of their own (BaseParka), round and bundled up: a deep hood in a huge white fur ruff with bone snow-goggles; a puffy quilted ice-blue parka to mid-thigh with a fur hem, Rimeclaw's hooked claws on the shoulders and round the neck; fur-lined trousers; broad-soled mukluks; clawed mittens; frost on the fur. The base carries it all, so it has no decorations.</li>
  * </ol>
  */
 final class DraftArmourB {
@@ -73,12 +73,12 @@ final class DraftArmourB {
 							"Chitin cuffs and hooked spurs on the wraps. The keepers handle the eggs gently, and everything else less so." }),
 			new Style("Rimeclaw hunter", "rimeclaw", Kind.WRAP, Motif.RIMECLAW, 60, hsl(36, 3, 74), hsl(36, 3, 54), hsl(36, 2, 94), hsl(38, 3, 36), hsl(38, 3, 24),
 					CLAW, hsl(36, 2, 120), hsl(36, 2, 34), hsl(36, 2, 22), NO_SHIELD,
-					new String[] { "Rimeclaw hunter coif", "Rimeclaw hunter body", "Rimeclaw hunter chaps", null, "Rimeclaw hunter boots", "Rimeclaw hunter vambraces" },
-					new String[] { "Rimeclaw's own head, worn as a hood. The frost on it has never melted, and nor has its expression.",
-							"Rimeclaw's hide and a necklace of its claws. The rake-marks on the back were made before you won.",
-							"Ice-blue chaps with a claw strapped over each knee, still sharp, still cold.", null,
-							"Fur-cuffed boots with Rimeclaw's claws over the toes. The Frostfang ice gives them a wide berth.",
-							"Vambraces hooked with Rimeclaw's claws. It tried them out on the hunters first." }),
+					new String[] { "Rimeclaw hunter hood", "Rimeclaw hunter parka top", "Rimeclaw hunter trousers", null, "Rimeclaw hunter mukluks", "Rimeclaw hunter mittens" },
+					new String[] { "A deep parka hood in a ruff of Rimeclaw's fur, bone goggles against the Frostfang glare. The frost on the fur has never melted.",
+							"Rimeclaw's hide, quilted thick, its claws on the shoulders and round the neck. Wearing it is like being hugged by something that lost.",
+							"Fur-lined hide trousers. The fur is on the inside, where it can do some good, and rolls out at the knee.", null,
+							"Wide mukluks on broad soles, for walking on top of the snow instead of in it. The Frostfang ice gives them a wide berth.",
+							"Mittens with Rimeclaw's claws for fingertips. It tried them out on the hunters first." }),
 	};
 
 	/** Each set's weapon, in set order (id 0: not in the game). */
@@ -195,26 +195,8 @@ final class DraftArmourB {
 			}
 			break;
 		}
-		case RIMECLAW: { // Rimeclaw's own head worn as a hood: the snout over the brow, fangs, ears laid back, frost on the crown
-			double[] brow = project(m, F, 0, top + h * 0.12);
-			double[] tip = plus(brow, new double[] { 0, 0.5, -12 }), wide = lerp(brow, tip, 0.3);
-			blade(add, plus(brow, new double[] { 0, 0, 1 }), tip, X, hw * 0.62, 3.0, st.main);
-			blade(add, plus(brow, new double[] { 0, -1.8, 1 }), plus(tip, new double[] { 0, -1.4, 1.5 }), X, hw * 0.2, 3.8, st.light);
-			add.tube(plus(tip, new double[] { 0, -0.5, 2.2 }), plus(tip, new double[] { 0, 0.5, -0.8 }), 1.8, 0.8, 4, Math.PI / 4, hsl(38, 4, 18), hsl(38, 4, 18));
-			for (int side = -1; side <= 1; side += 2) {
-				double[] fang = plus(lerp(brow, tip, 0.35), new double[] { side * hw * 0.45, 1.5, 0 });
-				blade(add, fang, plus(fang, new double[] { side * 0.3, 9, 0.8 }), X, 1.4, 0.9, st.accent);
-				double[] e = plus(wide, new double[] { side * hw * 0.42, -1.2, 0.5 });
-				add.tube(e, plus(e, new double[] { side * 1.0, -1.2, -0.8 }), 1.3, 0.4, 4, Math.PI / 4, st.core, st.core);
-				double[] ear = { side * hw * 0.6, top + h * 0.12, cz - 2 };
-				blade(add, ear, plus(ear, new double[] { side * 3.5, -7, 8 }), Z, 3.0, 1.1, st.main);
-			}
-			for (int k = 0; k < 3; k++) { // rime on the crown
-				double z = cz + dz * (k * 0.35 - 0.1), x = (k - 1) * 2.0;
-				add.tube(new double[] { x, top + 2 + k * 0.8, z }, new double[] { x * 1.8, top - 5 + k, z + 2 }, 1.6, 0, 4, 0.3, st.core, st.core);
-			}
+		case RIMECLAW: // the hood, ruff and goggles are the base's own (BaseParka)
 			break;
-		}
 		default:
 			break;
 		}
@@ -322,31 +304,8 @@ final class DraftArmourB {
 			}
 			break;
 		}
-		case RIMECLAW: { // a necklace of claws, Rimeclaw's great hooked claws over the shoulders, three rake-scars across the back
-			double ny = top + h * 0.14;
-			for (int k = -3; k <= 3; k++) {
-				double x = k * hw * 0.11, y = ny + (9 - k * k) * -0.35 + 3;
-				double[] p = project(m, F, x, y);
-				add.tube(plus(p, new double[] { 0, -0.5, -0.8 }), plus(p, new double[] { k * 0.3, 5.0 - Math.abs(k) * 0.4, -3.0 }), 1.3, 0, 4, Math.PI / 4,
-						k % 2 == 0 ? st.accent : CLAW_DARK, st.accent);
-			}
-			decal(add, m, F, new double[][] { { -hw * 0.38, ny - 2.5 }, { -hw * 0.2, ny + 1.2 }, { 0, ny + 2.3 }, { hw * 0.2, ny + 1.2 }, { hw * 0.38, ny - 2.5 }, { hw * 0.36, ny - 1.2 },
-					{ hw * 0.2, ny + 2.4 }, { 0, ny + 3.5 }, { -hw * 0.2, ny + 2.4 }, { -hw * 0.36, ny - 1.2 } }, 0.3, 1.3, st.trimDark, st.trimDark);
-			for (int side = -1; side <= 1; side += 2) {
-				for (int k = -1; k <= 1; k++) {
-					double[] r = { side * sx * (0.92 + 0.06 * Math.abs(k)), sy + 1, cz + k * 4.5 };
-					double[] mid = plus(r, new double[] { side * 5, -9.5 + Math.abs(k) * 2, k * 1.8 });
-					double[] tip = plus(mid, new double[] { side * 6.5, 4.5, k * 1.0 });
-					blade(add, r, mid, Z, 2.8, 1.7, k == 0 ? st.accent : CLAW_DARK);
-					blade(add, mid, tip, Z, 1.8, 1.1, st.accent);
-				}
-			}
-			for (int k = -1; k <= 1; k++) {
-				double x0 = -hw * 0.5 + k * hw * 0.32, x1 = hw * 0.2 + k * hw * 0.32;
-				decal(add, m, B, LowArmour.bar(x0, top + h * 0.22, x1, top + h * 0.66, 0.9), 0.3, 1.6, st.trimDark, st.trimDark);
-			}
+		case RIMECLAW: // the quilting, fur, shoulder claws and claw necklace are the base's own (BaseParka)
 			break;
-		}
 		default:
 			break;
 		}
@@ -376,15 +335,6 @@ final class DraftArmourB {
 				double[] hit = surface(m, new double[] { x, kneeY, -100 }, new double[] { 0, 0, 1 });
 				double[] p = hit == null ? new double[] { x, kneeY, -12 } : hit;
 				one.tube(plus(p, new double[] { 0, 0, -1.5 }), plus(p, new double[] { 0, 0, -4.5 }), 2.2, 0.8, 6, 0, st.accent, st.accent);
-				break;
-			}
-			case RIMECLAW: { // Rimeclaw's paw over each knee
-				for (int k = -1; k <= 1; k++) { // three claws, fanned down over the knee like a paw
-					double[] p = project(m, F, x + k * 2.6, kneeY - 8 + Math.abs(k) * 1.5);
-					double[] r = plus(p, new double[] { 0, 0, -1.2 }), mid = plus(r, new double[] { k * 1.2, 5.5 - Math.abs(k), -4.5 });
-					blade(one, r, mid, X, 1.6, 1.1, k == 0 ? st.accent : CLAW_DARK);
-					blade(one, mid, plus(mid, new double[] { k * 0.4, 4.5 - Math.abs(k), 2.2 }), X, 1.1, 0.8, st.accent);
-				}
 				break;
 			}
 			default:
@@ -459,13 +409,6 @@ final class DraftArmourB {
 			}
 			break;
 		}
-		case RIMECLAW: // a belt with a claw for a buckle
-			for (Frame f : new Frame[] { F, B }) {
-				decal(fr, m, f, rect(-hw * 1.02, top + 1, hw * 1.02, top + 5), 0.7, 1.6, st.trim, st.trimDark);
-			}
-			double[] p = project(m, F, -hw * 0.15, top + 3);
-			blade(fr, plus(p, new double[] { -2, -0.5, -1.5 }), plus(p, new double[] { 3, 1.5, -2.5 }), Y, 1.6, 0.9, st.accent);
-			break;
 		default:
 			break;
 		}
@@ -552,12 +495,6 @@ final class DraftArmourB {
 				}
 				break;
 			}
-			case RIMECLAW: // a frosted fur cuff, two claws over the toes
-				LowArmour.cuff(add, m, side, top, top + 4.5, 1.3, st.light, st.core);
-				for (int k = -1; k <= 1; k += 2) {
-					add.tube(new double[] { x + k * 1.8, -3, front + 5 }, new double[] { x + k * 2.2, -0.5, front - 3 }, 1.4, 0, 4, 0.78, st.accent, st.accent);
-				}
-				break;
 			default:
 				break;
 			}
@@ -601,15 +538,6 @@ final class DraftArmourB {
 				}
 				break;
 			}
-			case RIMECLAW: // a strap, and great hooked claws up the outside of each vambrace
-				add.tube(new double[] { x, top + 3, 0.5 }, new double[] { x, top + 5.5, 0.5 }, 5.4, 5.4, 6, 0.26, st.trim, st.trimDark);
-				for (int k = -1; k <= 1; k++) {
-					double[] r = { x + side * 4.5, top + 9 + Math.abs(k) * 1.5, 1 + k * 3.2 };
-					double[] mid = plus(r, new double[] { side * 5, -8 + Math.abs(k) * 2, k * 0.8 });
-					blade(add, r, mid, Z, 2.2, 1.3, k == 0 ? st.accent : CLAW_DARK);
-					blade(add, mid, plus(mid, new double[] { side * 0.5, -5.5, k * 0.5 + 3 }), Z, 1.3, 0.8, st.accent);
-				}
-				break;
 			default:
 				break;
 			}
