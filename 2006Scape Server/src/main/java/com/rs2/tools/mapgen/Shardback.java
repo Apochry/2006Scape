@@ -65,6 +65,8 @@ public final class Shardback {
 	static final int TORSO = 1, NECK = 2, HEAD = 3, JAW = 4, TAIL1 = 5, TAIL2 = 6;
 	/** Legs: 0 fore-left (+x), 1 fore-right (-x), 2 hind-left, 3 hind-right. Labels upper 10+i, lower 14+i, paw 18+i. */
 	static final int UPPER = 10, LOWER = 14, PAW = 18, SHARD = 22, SHARDS = 5;
+	/** The glass on its flanks: carried by the body (it has no joint of its own), but measured apart from the hull. */
+	static final int FLANK = 27;
 
 	/** A joint: the labels it moves (its own and its children's), and where it turns in the rest pose. */
 	static final class Bone {
@@ -114,7 +116,7 @@ public final class Shardback {
 	}
 
 	static final Leg[] LEGS = new Leg[4];
-	static final Bone ROOT, NECK_B, HEAD_B, JAW_B, TAIL1_B, TAIL2_B;
+	static final Bone ROOT, NECK_B, HEAD_B, JAW_B, TAIL1_B, TAIL2_B, FLANK_B;
 	static final Bone[] SHARD_B = new Bone[SHARDS];
 	/** Shard bases (x, y, z), heights and base radii, front to back. */
 	static final double[][] SHARD_AT = { { 0, -152, -50, 58, 15 }, { 0, -154, -20, 74, 18 }, { 0, -146, 12, 60, 15 },
@@ -140,6 +142,7 @@ public final class Shardback {
 		JAW_B = new Bone(JAW, HEAD_B, 0, -96, -98);
 		TAIL1_B = new Bone(TAIL1, ROOT, 0, -108, 84);
 		TAIL2_B = new Bone(TAIL2, TAIL1_B, 0, -101, 110);
+		FLANK_B = new Bone(FLANK, ROOT, 0, -130, 0); // no slot: it only moves with the body
 		for (int i = 0; i < SHARDS; i++) {
 			SHARD_B[i] = new Bone(SHARD + i, ROOT, SHARD_AT[i][0], SHARD_AT[i][1], SHARD_AT[i][2]);
 		}
@@ -283,6 +286,7 @@ public final class Shardback {
 		cap(m, rings[0], new double[] { 0, -108, -86 }, HIDE_DARK, new double[] { 0, -108, -60 });
 		cap(m, rings[st.length - 1], new double[] { 0, -100, 96 }, HIDE_2, new double[] { 0, -100, 60 });
 		// glass growing out of the shoulders and flanks, leaning outward
+		m.skin = FLANK;
 		for (int s = -1; s <= 1; s += 2) {
 			m.tube(new double[] { s * 48, -136, -30 }, new double[] { s * 80, -176, -16 }, 12, 0, 4, 0.4, SHARD_C, SHARD_C);
 			m.tube(new double[] { s * 44, -128, 14 }, new double[] { s * 68, -156, 28 }, 9, 0, 4, 0.2, SHARD_LIGHT, SHARD_C);
@@ -296,7 +300,7 @@ public final class Shardback {
 		boolean fore = l.fore();
 		double r1 = fore ? 27 : 27, r2 = fore ? 19 : 17, r3 = fore ? 16 : 13;
 		m.skin = l.upper.label;
-		double[] top = { x - s * 4, l.hip[1] - 16, l.hip[2] + (fore ? -2 : 4) };
+		double[] top = { x - s * 14, l.hip[1] - 12, l.hip[2] + (fore ? -2 : 4) }; // set into the body, so it lies flat on its side
 		m.tube(top, l.knee, r1, r2, 6, 0.3, fore ? LEG : HIDE_2, LEG);
 		m.skin = l.lower.label;
 		// the knee knob: a short fat ring, so the joint never opens up when it bends
@@ -417,6 +421,10 @@ public final class Shardback {
 		Ground ground = Ground.FEET;
 		/** for CONTACT: how far above the ground its lowest point should be (a bounce) */
 		double hover;
+		/** legs that must lie on the ground (lower leg and paw touching it), solved from their explicit angles */
+		final boolean[] rest = new boolean[4];
+		/** the head (and the tail) must rest on the ground */
+		boolean headDown, tailDown;
 
 		Pose(int delay) {
 			this.delay = delay;
@@ -447,6 +455,13 @@ public final class Shardback {
 		}
 
 		/** Explicit leg angles (no IK): upper pitch / roll and lower pitch; the paw is kept level with the ground. */
+		/** A leg that lies on the ground: these angles are where the search for the resting pose starts. */
+		Pose rest(int leg, double upper, double upperRoll, double lower) {
+			limb(leg, upper, upperRoll, lower);
+			rest[leg] = true;
+			return this;
+		}
+
 		Pose limb(int leg, double upper, double upperRoll, double lower) {
 			foot[leg] = null;
 			Leg l = LEGS[leg];
@@ -454,6 +469,16 @@ public final class Shardback {
 			set(l.lower, lower, 0, 0);
 			rot.remove(l.paw);
 			return this;
+		}
+
+		/** Takes these joints' angles from a solved frame (as whole angle steps). */
+		void keep(Solved s, Bone... bones) {
+			for (Bone b : bones) {
+				int[] a = s.rot.get(b);
+				if (a != null) {
+					set(b, a[0] * 360.0 / 256, a[1] * 360.0 / 256, a[2] * 360.0 / 256);
+				}
+			}
 		}
 
 		Pose head(double neck, double neckYaw, double head, double headYaw, double jaw) {
@@ -522,8 +547,10 @@ public final class Shardback {
 		for (Leg l : LEGS) {
 			double[] w = p.foot[l.index];
 			if (w == null) {
-				int[] u = s.rot.get(l.upper), lo = s.rot.get(l.lower);
-				setLeg(s, l, u[0], lo[0], u[2], 0);
+				if (!p.rot.containsKey(l.paw)) { // (one settled onto the ground has its paw placed already)
+					int[] u = s.rot.get(l.upper), lo = s.rot.get(l.lower);
+					setLeg(s, l, u[0], lo[0], u[2], 0);
+				}
 				continue;
 			}
 			// the target in the body's own (rest) frame
@@ -613,7 +640,9 @@ public final class Shardback {
 	 * (1.4 degrees) and the client's fixed-point rotations round every joint a little upward, so a straight IK
 	 * solution leaves planted paws hovering a few units and creeping from frame to frame. So for each frame the
 	 * neighbouring angle steps of every planted leg are tried, each posed exactly as the client poses it, and the one
-	 * that puts the sole closest to its target is kept. CLAMP / CONTACT poses are then settled onto the ground.
+	 * that puts the sole closest to its target is kept. Legs, head and tail that lie on the ground are then settled onto
+	 * it, a CONTACT body is put down on it under them (again, until it holds) and a CLAMP body is lifted out of it.
+	 * Every frame is then checked ({@link #check}), and the build fails if anything is off the ground or through it.
 	 */
 	static List<FxAnim.Key> compile(List<Pose> poses) {
 		ModelData base = model();
@@ -624,12 +653,32 @@ public final class Shardback {
 			off[leg] = new double[] { c[0] - LEGS[leg].ankle[0], c[1] - LEGS[leg].ankle[1], c[2] - LEGS[leg].ankle[2] };
 		}
 		List<FxAnim.Key> out = new ArrayList<>();
-		for (Pose p : poses) {
+		for (int i = 0; i < poses.size(); i++) {
+			Pose p = poses.get(i);
 			Solved s = solve(p);
-			for (int iter = 0; iter < 5; iter++) {
+			for (int iter = 0; iter < 16; iter++) {
 				s = solve(p);
 				refine(s, p, base, soles, off);
-				int low = lowest(FxAnim.pose(base, FxAnim.frames(SKINS, List.of(key(s, p))).get(0)));
+				settle(s, p, base); // legs, head and tail lying down come to rest on the ground under it
+				for (Leg l : LEGS) {
+					if (p.rest[l.index]) {
+						p.keep(s, l.upper, l.lower, l.paw);
+					}
+				}
+				if (p.headDown) {
+					p.keep(s, NECK_B, HEAD_B);
+				}
+				if (p.tailDown) {
+					p.keep(s, TAIL1_B, TAIL2_B);
+				}
+				if (p.ground == Ground.CONTACT) { // the body on the ground: its hull, its flank or a shoulder under it
+					int shift = bodyLow(posed(base, s, p), p) + (int) Math.round(p.hover);
+					if (shift != 0) {
+						p.rootT[1] -= shift;
+						continue;
+					}
+				}
+				int low = lowest(posed(base, s, p));
 				boolean lifted = false;
 				for (int leg = 0; leg < 4 && low > 1; leg++) {
 					if (p.foot[leg] != null && p.pawTilt[leg] != 0) {
@@ -640,18 +689,277 @@ public final class Shardback {
 				if (lifted) {
 					continue;
 				}
-				if (p.ground == Ground.FEET) {
-					break;
+				int free = lowestFree(posed(base, s, p), p);
+				if (p.ground == Ground.CLAMP && free > 0) {
+					p.rootT[1] -= free; // (not for a planted paw: the IK holds that, and lifting the body won't lift it)
+					continue;
 				}
-				int shift = p.ground == Ground.CONTACT ? low + (int) Math.round(p.hover) : Math.max(0, low);
-				if (shift == 0) {
-					break;
-				}
-				p.rootT[1] -= shift;
+				break;
+			}
+			List<String> bad = check(p, posed(base, s, p));
+			if (!bad.isEmpty()) {
+				throw new IllegalStateException("Shardback: frame " + i + " is off the ground: " + String.join("; ", bad));
 			}
 			out.add(key(s, p));
 		}
 		return out;
+	}
+
+	static ModelData posed(ModelData base, Solved s, Pose p) {
+		return FxAnim.pose(base, FxAnim.frames(SKINS, List.of(key(s, p))).get(0));
+	}
+
+	/** Vertex ids per label in the rest model. */
+	private static int[][] byLabel;
+
+	/** The lowest point (largest y) of the vertices on these labels. */
+	static int low(ModelData m, int... labels) {
+		if (byLabel == null) {
+			ModelData base = model();
+			List<List<Integer>> l = new ArrayList<>();
+			for (int i = 0; i < 256; i++) {
+				l.add(new ArrayList<>());
+			}
+			for (int v = 0; v < base.vertices.size(); v++) {
+				l.get(base.vertexSkins.get(v)).add(v);
+			}
+			byLabel = new int[256][];
+			for (int i = 0; i < 256; i++) {
+				byLabel[i] = l.get(i).stream().mapToInt(Integer::intValue).toArray();
+			}
+		}
+		int y = Integer.MIN_VALUE;
+		for (int label : labels) {
+			for (int v : byLabel[label]) {
+				y = Math.max(y, m.vertices.get(v)[1]);
+			}
+		}
+		return y;
+	}
+
+	/** The lowest point of the body proper: its hull and flank, and the upper legs of legs lying on the ground. */
+	static int bodyLow(ModelData m, Pose p) {
+		int y = low(m, TORSO, FLANK);
+		for (int i = 0; i < 4; i++) {
+			if (p.rest[i]) {
+				y = Math.max(y, low(m, UPPER + i));
+			}
+		}
+		return y;
+	}
+
+	/** The parts the contact report measures: name, labels. */
+	static final String[] PART_NAMES = { "hull", "flank", "head", "tail", "FL", "FR", "HL", "HR" };
+	static final int[][] PART_LABELS = { { TORSO }, { FLANK }, { HEAD, JAW }, { TAIL1, TAIL2 }, leg(0), leg(1), leg(2), leg(3) };
+
+	static int[] leg(int i) {
+		return new int[] { UPPER + i, LOWER + i, PAW + i };
+	}
+
+	/**
+	 * What should touch the ground in this pose and doesn't, or what has gone through it: planted paws, legs lying
+	 * down (both the lower leg and the paw), the hull of a body lying down and a head resting on the ground - each
+	 * within two units of it - and nothing anywhere more than two units under it. (Under a bounce, "the ground" is
+	 * {@code hover} units below where they rest.)
+	 */
+	static List<String> check(Pose p, ModelData m) {
+		List<String> bad = new ArrayList<>();
+		double t = -p.hover;
+		int all = lowest(m);
+		if (all > t + 2) {
+			bad.add("something is " + (int) Math.round(all - t) + " under the ground");
+		}
+		String[] names = { "FL", "FR", "HL", "HR" };
+		for (int i = 0; i < 4; i++) {
+			if (p.rest[i]) {
+				near(bad, names[i] + " lower leg", low(m, LOWER + i), t);
+				near(bad, names[i] + " paw", low(m, PAW + i), t);
+			} else if (p.foot[i] != null && p.pawTilt[i] == 0) {
+				near(bad, names[i] + " planted paw", low(m, PAW + i), t);
+			}
+		}
+		if (p.ground == Ground.CONTACT) {
+			near(bad, "body", bodyLow(m, p), t);
+		}
+		if (p.headDown) {
+			near(bad, "head", low(m, HEAD, JAW), t);
+		}
+		if (p.tailDown) {
+			near(bad, "tail", low(m, TAIL2), t);
+		}
+		return bad;
+	}
+
+	private static void near(List<String> bad, String what, int y, double t) {
+		if (Math.abs(y - t) > 2) {
+			bad.add(what + (y < t ? " floats " + Math.round(t - y) : " sinks " + Math.round(y - t)));
+		}
+	}
+
+	/**
+	 * Brings resting legs and a resting head down onto the ground: from the authored angles, steps each leg's hip
+	 * (pitch and roll), knee and paw (pitch and roll), and the neck and head, one angle step at a time while that gets
+	 * its lower leg and paw (or its head) closer to lying on the ground without going into it, and without wandering
+	 * far from the pose as authored. Legs and head are independent, so they are all searched at once.
+	 */
+	static void settle(Solved s, Pose p, ModelData base) {
+		int[][] prm = new int[6][];
+		for (Leg l : LEGS) {
+			if (p.rest[l.index]) {
+				int[] up = s.rot.get(l.upper), lo = s.rot.get(l.lower), pw = s.rot.get(l.paw);
+				prm[l.index] = new int[] { up[0], up[2], lo[0], pw[0], pw[2] };
+			}
+		}
+		if (p.headDown) {
+			int[] n = s.rot.getOrDefault(NECK_B, new int[3]), h = s.rot.getOrDefault(HEAD_B, new int[3]);
+			prm[4] = new int[] { n[0], n[1], h[0], h[1], h[2] };
+		}
+		if (p.tailDown) {
+			int[] t1 = s.rot.getOrDefault(TAIL1_B, new int[3]), t2 = s.rot.getOrDefault(TAIL2_B, new int[3]);
+			prm[5] = new int[] { t1[0], t1[1], t2[0], t2[1] };
+		}
+		if (Arrays.stream(prm).allMatch(x -> x == null)) {
+			return;
+		}
+		int[][] design = new int[6][];
+		for (int g = 0; g < 6; g++) {
+			design[g] = prm[g] == null ? null : prm[g].clone();
+		}
+		double t = -p.hover;
+		int[][] bestPrm = new int[6][];
+		double[] bestCost = new double[6];
+		Arrays.fill(bestCost, Double.MAX_VALUE);
+		java.util.Random rnd = new java.util.Random(4103);
+		for (int start = 0; start < 13; start++) {
+			int[][] cur = new int[6][];
+			for (int g = 0; g < 6; g++) {
+				if (design[g] != null) {
+					cur[g] = design[g].clone();
+					for (int k = 0; start > 0 && k < cur[g].length; k++) {
+						cur[g][k] += rnd.nextInt(49) - 24;
+					}
+				}
+			}
+			double[] c = descend(s, p, base, cur, design, t);
+			for (int g = 0; g < 6; g++) {
+				if (cur[g] != null && c[g] < bestCost[g]) {
+					bestCost[g] = c[g];
+					bestPrm[g] = cur[g];
+				}
+			}
+		}
+		apply(s, bestPrm);
+	}
+
+	/** The search's moves: one joint by 8, 4, 2 or 1 steps either way, or two joints by 4 or 1 steps together. */
+	private static final List<int[]> MOVES = new ArrayList<>();
+	static {
+		for (int k = 0; k < 5; k++) {
+			for (int st : new int[] { 8, -8, 4, -4, 2, -2, 1, -1 }) {
+				int[] d = new int[5];
+				d[k] = st;
+				MOVES.add(d);
+			}
+		}
+		for (int a = 0; a < 5; a++) {
+			for (int b = a + 1; b < 5; b++) {
+				for (int st : new int[] { 4, 1 }) {
+					for (int sa = -1; sa <= 1; sa += 2) {
+						for (int sb = -1; sb <= 1; sb += 2) {
+							int[] d = new int[5];
+							d[a] = sa * st;
+							d[b] = sb * st;
+							MOVES.add(d);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/** Coordinate descent on every group at once (they don't touch each other), in steps of 8, 4, 2 and 1. */
+	private static double[] descend(Solved s, Pose p, ModelData base, int[][] prm, int[][] design, double t) {
+		double[] best = new double[6];
+		apply(s, prm);
+		ModelData m = posed(base, s, p);
+		for (int g = 0; g < 6; g++) {
+			best[g] = prm[g] == null ? 0 : restCost(g, m, prm[g], design[g], t);
+		}
+		for (int iter = 0; iter < 200; iter++) {
+			boolean better = false;
+			for (int[] d : MOVES) {
+				int[][] trial = new int[6][];
+				for (int g = 0; g < 6; g++) {
+					if (prm[g] != null) {
+						trial[g] = prm[g].clone();
+						for (int k = 0; k < trial[g].length; k++) {
+							trial[g][k] += d[k];
+						}
+					}
+				}
+				apply(s, trial);
+				m = posed(base, s, p);
+				for (int g = 0; g < 6; g++) {
+					if (prm[g] != null) {
+						double c = restCost(g, m, trial[g], design[g], t);
+						if (c < best[g] - 1e-9) {
+							best[g] = c;
+							prm[g] = trial[g];
+							better = true;
+						}
+					}
+				}
+			}
+			if (!better) {
+				break;
+			}
+		}
+		apply(s, prm);
+		return best;
+	}
+
+	private static void apply(Solved s, int[][] prm) {
+		for (Leg l : LEGS) {
+			int[] q = prm[l.index];
+			if (q != null) {
+				s.rot.put(l.upper, new int[] { wrap(q[0]), 0, wrap(q[1]) });
+				s.rot.put(l.lower, new int[] { wrap(q[2]), 0, 0 });
+				s.rot.put(l.paw, new int[] { wrap(q[3]), 0, wrap(q[4]) });
+			}
+		}
+		if (prm[4] != null) {
+			s.rot.put(NECK_B, new int[] { wrap(prm[4][0]), wrap(prm[4][1]), 0 });
+			s.rot.put(HEAD_B, new int[] { wrap(prm[4][2]), wrap(prm[4][3]), wrap(prm[4][4]) });
+		}
+		if (prm[5] != null) {
+			s.rot.put(TAIL1_B, new int[] { wrap(prm[5][0]), wrap(prm[5][1]), 0 });
+			s.rot.put(TAIL2_B, new int[] { wrap(prm[5][2]), wrap(prm[5][3]), 0 });
+		}
+	}
+
+	/** How far a resting leg (or the head, g = 4, or the tail, g = 5) is from lying on the ground at t, and how far it strayed. */
+	private static double restCost(int g, ModelData m, int[] q, int[] design, double t) {
+		double c = 0;
+		int deepest;
+		if (g < 4) {
+			int yl = low(m, LOWER + g), yp = low(m, PAW + g);
+			deepest = Math.max(Math.max(yl, yp), low(m, UPPER + g));
+			c += (yl - t) * (yl - t) + (yp - t) * (yp - t);
+		} else if (g == 4) {
+			int yh = low(m, HEAD, JAW);
+			deepest = Math.max(yh, low(m, NECK));
+			c += (yh - t) * (yh - t);
+		} else {
+			int yt = low(m, TAIL2);
+			deepest = Math.max(yt, low(m, TAIL1));
+			c += (yt - t) * (yt - t);
+		}
+		double pen = Math.max(0, deepest - t);
+		c += 60 * pen * pen;
+		for (int k = 0; k < q.length; k++) {
+			c += 0.015 * (q[k] - design[k]) * (q[k] - design[k]);
+		}
+		return c;
 	}
 
 	/** Picks, per planted leg, the hip / knee / roll steps (near the IK answer) that land the sole best. */
@@ -733,6 +1041,22 @@ public final class Shardback {
 			low = Math.max(low, v[1]);
 		}
 		return low;
+	}
+
+	/** The lowest point of everything but the paws planted by IK. */
+	static int lowestFree(ModelData m, Pose p) {
+		low(m, TORSO); // (fills the label table)
+		int y = Integer.MIN_VALUE;
+		for (int label = 0; label < 256; label++) {
+			int leg = label - PAW;
+			if (leg >= 0 && leg < 4 && p.foot[leg] != null && p.pawTilt[leg] == 0) {
+				continue;
+			}
+			for (int v : byLabel[label]) {
+				y = Math.max(y, m.vertices.get(v)[1]);
+			}
+		}
+		return y;
 	}
 
 	/* ====================================================================== */
@@ -842,9 +1166,12 @@ public final class Shardback {
 	}
 
 	/**
-	 * Death: the killing blow rears it up; it comes down hard and staggers, its forelegs give and its chest hits the
-	 * dirt, then the hindquarters go and it settles on its belly, rolled half onto its side, head in the dust. (Not
-	 * over onto its back: the glass on its spine would prop it up.)
+	 * Death: the killing blow rears it up; it comes down hard and staggers, its forelegs give and its knees and chin
+	 * hit the dirt, then the hindquarters go and it rolls half onto its side: the thighs drape down, the lower legs and
+	 * paws lie along the ground, and the head and tail rest in the dust. Everything from the knees hitting the ground on
+	 * is placed by {@link #settle} and checked by {@link #check}. (It stops at about 40 degrees: it is wider across the
+	 * hips than its legs are long, so rolled much further the legs on top can't reach the ground and would hang in the
+	 * air, and further still the glass on its lower flank would prop it up.)
 	 */
 	static List<Pose> death() {
 		List<Pose> out = new ArrayList<>();
@@ -869,40 +1196,44 @@ public final class Shardback {
 		p.foot(1, LEGS[1].ankle[0] - 12, -17, LEGS[1].ankle[2] - 10, 0);
 		p.tail(-6, 10, 6, 14);
 		out.add(p);
-		// 3. the forelegs give: its chest goes down, rump still up
-		p = new Pose(5).body(16, 8, 11, -14, 34, 0);
-		p.ground = Ground.CLAMP;
-		p.head(26, 14, 14, 10, 24);
-		p.limb(0, -34, 12, 58).limb(1, -40, -16, 64);
+		// 3. the forelegs give: knees and paws hit the dirt, then its chin; the rump is still up on the hind legs
+		p = new Pose(5).body(11, 8, 10, -14, 30, 0);
+		p.head(24, 14, 12, 10, 24);
+		p.headDown = true;
+		p.rest(0, -30, 10, 70).rest(1, -34, -14, 74);
 		p.tail(-4, 14, 8, 18);
 		out.add(p);
-		// 4. the hindquarters fold under it and it drops onto its belly
-		p = new Pose(4).body(6, -6, 22, -18, 62, 4);
+		// 4. the hindquarters go and it drops, rolling over
+		p = new Pose(4).body(6, -4, 28, -18, 60, 4);
 		p.ground = Ground.CONTACT;
 		p.head(24, 18, 12, 12, 28);
-		p.limb(0, -70, -20, 40).limb(1, -88, -6, 42).limb(2, -30, -18, 70).limb(3, -33, -4, 84);
+		p.headDown = p.tailDown = true;
+		p.rest(0, -60, -18, 50).rest(1, -70, 6, 50).rest(2, -30, -18, 70).rest(3, -33, 6, 80);
 		p.tail(6, 18, 12, 22);
 		p.bristle = 0.96;
 		out.add(p);
-		// 5. it bounces once on the impact
-		p = new Pose(3).body(4, -8, 34, -20, 62, 4);
+		// 5. it hits the ground and bounces once
+		p = new Pose(3).body(4, -8, 30, -22, 60, 4);
 		p.ground = Ground.CONTACT;
 		p.hover = 5;
 		p.head(18, 24, 6, 14, 22);
-		p.limb(0, -56, -28, 34).limb(1, -86, -8, 40).limb(2, -24, -26, 56).limb(3, -31, -6, 82);
+		p.headDown = p.tailDown = true;
+		p.rest(0, -40, -40, 40).rest(1, -50, 14, 40).rest(2, -24, -40, 50).rest(3, -30, 14, 60);
 		p.tail(2, 20, 10, 24);
 		p.bristle = 0.96;
 		out.add(p);
-		// 6. it settles: a last breath out, the head lolls over, the jaw goes slack, one hind leg kicks and is still
-		double[][] settle = { { 4, 38, 26, 34, 0, 0 }, { 5, 41, 30, 30, 10, 6 }, { 6, 42, 32, 36, -5, 0 }, { 8, 44, 34, 40, 2, 0 },
-				{ 85, 44, 34, 42, 0, 0 } }; // (held past the 4 ticks the server keeps a dead npc, so it never stands back up)
+		// 6. it settles half on its side, every leg sprawled out along the ground,
+		// a last breath out, the head lolls, the jaw goes slack, one hind leg kicks and is still
+		double[][] settle = { { 4, 36, 34, 0, 0 }, { 5, 38, 30, 10, 6 }, { 6, 39, 36, -5, 0 }, { 8, 40, 40, 2, 0 },
+				{ 85, 40, 42, 0, 0 } }; // (held past the 4 ticks the server keeps a dead npc, so it never stands back up)
 		for (double[] st : settle) {
-			p = new Pose((int) st[0]).body(5, -10, st[1], -22, 62, 4);
+			p = new Pose((int) st[0]).body(5, -10, st[1], -26, 60, 4);
 			p.ground = Ground.CONTACT;
-			p.head(st[2], 30, 10, 18, st[3]);
+			p.head(20, 30, 10, 18, st[2]);
 			p.set(HEAD_B, 10, 18, 14); // the head lolls over on its side
-			p.limb(0, -50, -34, 30).limb(1, -86, -8, 40).limb(2, -20 + st[4], -32, 50 - st[4]).limb(3, -33, -6, 84 + st[5]);
-			p.tail(8, 24 - st[4], 14, 30 - st[4]);
+			p.headDown = p.tailDown = true;
+			p.rest(0, -30, -56, 30).rest(1, -40, 20, 30).rest(2, -20 + st[3], -56, 40 - st[3]).rest(3, -26, 20, 40 + st[4]);
+			p.tail(8, 24 - st[3], 14, 30 - st[3]);
 			p.bristle = 0.94;
 			out.add(p);
 		}
@@ -933,6 +1264,11 @@ public final class Shardback {
 		m.bristle = p.bristle;
 		m.ground = p.ground;
 		m.hover = p.hover;
+		m.headDown = p.headDown;
+		m.tailDown = p.tailDown;
+		for (int i = 0; i < 4; i++) {
+			m.rest[i] = p.rest[i ^ 1];
+		}
 		return m;
 	}
 
