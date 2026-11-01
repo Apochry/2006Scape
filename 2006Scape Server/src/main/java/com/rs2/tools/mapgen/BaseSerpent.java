@@ -224,6 +224,10 @@ final class BaseSerpent {
 		return BaseCoat.lerp(a, b, t);
 	}
 
+	static double dist(double[] a, double[] b) {
+		return ArmourForge.len(sub(a, b));
+	}
+
 	/** Catmull-Rom through (x, y) keys (x increasing): the value at x. */
 	static double spline(double[][] keys, double x) {
 		int n = keys.length;

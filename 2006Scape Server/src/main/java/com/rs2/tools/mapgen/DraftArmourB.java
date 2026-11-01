@@ -21,7 +21,7 @@ import com.rs2.tools.mapgen.LadderWeapons.Rung;
  * <ol start="30">
  * <li>Wildgrove (Magic 40): Druids of the deep woods, on the mantle base (BaseMantle): a leaf-wreathed hood with antlers grown through it, a leaf collar on the mantle, ivy and small golden flowers climbing the tunic, a bark sash, leaves trailing down the cape.</li>
  * <li>Gravescale (Defence 45): The Gravecoil, the barrow serpent, worn whole, on its own base (BaseSerpent), in the Gravecoil's colours: its head for a helm (jaws gaping round the face, hood spread, venom-yellow eyes), its body coiled round a scale shirt with the tail hanging behind, banded segmented greaves, scaled boots, gauntlets with fang claws, and a serpent coiled into a round shield with its head raised. The base carries the look; there are no decorations.</li>
- * <li>Gatehold sentinel (Defence 50): The guard on Gatehold's wall: bright steel plate, a Gatehold-blue tabard with the gate-tower crest in gold, a tall plume, a tower-shaped kiteshield boss.</li>
+ * <li>Gatehold sentinel (Defence 50): The guard on Gatehold's wall, built like the gate-tower he guards, on its own base (BaseBastion): blocky bright steel and Gatehold blue, a battlemented great helm with a portcullis visor and a tall blue plume, a squared breastplate with tower pauldrons and a blue tabard bearing the gold gate-tower, portcullis tassets, blocky sabatons, square-cuffed gauntlets, and a pavise shaped like the gate. The base carries the look; there are no decorations.</li>
  * <li>Broodkeeper (Magic 50): the keepers of the Silkwood broodmother's brood, on the mantle base (BaseMantle): many small eyes glowing in the hood's shadow and a spider on its crown, chitin lames down the tunic, a carapace on the mantle with a broodmother's legs over the shoulders, sickly glowing egg-sacs.</li>
  * <li>Rimeclaw hunter (Ranged 60): Hunters who took Rimeclaw (the Frostfang boss) and wear its hide: ice-blue hide, a claw necklace, big hooked claws at the shoulders and on the vambraces, a beast-head coif with frost.</li>
  * </ol>
@@ -59,12 +59,13 @@ final class DraftArmourB {
 							"Scaled gauntlets with a Gravecoil's fangs for fingers. Mind how you scratch." }),
 			new Style("Gatehold sentinel", "sentinel", Kind.COAT, Motif.SENTINEL, 50, hsl(38, 1, 76), hsl(38, 1, 56), hsl(38, 0, 98), hsl(40, 5, 40), hsl(40, 5, 28),
 					hsl(8, 5, 72), hsl(9, 2, 118), hsl(40, 3, 24), hsl(40, 3, 16), HAS_ALL,
-					new String[] { "Gatehold sentinel full helm", "Gatehold sentinel platebody", "Gatehold sentinel platelegs", "Gatehold sentinel kiteshield", "Gatehold sentinel boots", "Gatehold sentinel gauntlets" },
-					new String[] { "A plume you can see from the far end of Gatehold's wall. That's the point of it.",
-							"Bright steel under Gatehold blue, the gate-tower on the breast in gold. Polished every night, for whoever is left to see.",
-							"Plate for the wall walk: up the steps, along the wall, down the steps, for ever.",
-							"The gate-tower in gold. Anything that gets past it still has the real one to get past.", "Steel-capped boots, worn thin on the wall walk.",
-							"Gauntlets banded in Gatehold blue. They've held the gate shut more than once." }),
+					new String[] { "Gatehold sentinel full helm", "Gatehold sentinel platebody", "Gatehold sentinel tassets", "Gatehold sentinel pavise", "Gatehold sentinel sabatons",
+							"Gatehold sentinel gauntlets" },
+					new String[] { "A battlemented great helm with a portcullis for a visor, and a plume you can see from the far end of Gatehold's wall. That's the point of it.",
+							"Square steel under Gatehold blue, a tower on each shoulder and the gate-tower on the breast in gold. The sentinel is the wall's last tower.",
+							"Plate for the wall walk, with a portcullis hung over each thigh. It comes down when it has to.",
+							"A gate you carry: blue planks, iron bands, the gate-tower in gold. Anything that gets past it still has the real one to get past.",
+							"Square steel sabatons, worn flat on the wall walk.", "Square-cuffed gauntlets rimmed in gold. They've held the gate shut more than once." }),
 			new Style("Broodkeeper", "broodkeeper", Kind.MANTLE, Motif.BROOD, 50, hsl(51, 2, 42), hsl(51, 2, 28), hsl(51, 1, 56), CHITIN, CHITIN_DARK, hsl(14, 5, 80),
 					hsl(14, 3, 112), CHITIN, CHITIN_DARK, NO_SHIELD,
 					new String[] { "Broodkeeper hood", "Broodkeeper mantle top", "Broodkeeper leggings", null, "Broodkeeper shoes", "Broodkeeper handwraps" },
@@ -142,16 +143,8 @@ final class DraftArmourB {
 		}
 		case GRAVESCALE: // BaseSerpent carries the whole look
 			break;
-		case SENTINEL: { // a tall plume in a gold socket, the gate-tower on the brow
-			double[] s = { 0, top + 2, cz + 2 };
-			add.tube(plus(s, new double[] { 0, 3, 0 }), plus(s, new double[] { 0, -4, 0 }), 3.6, 2.6, 6, 0, st.accent, st.accent);
-			for (int k = 0; k < 5; k++) {
-				double zt = -6 + k * 3.5, tall = 24 - Math.abs(k - 1.5) * 2.6;
-				blade(add, plus(s, new double[] { 0, -2, k - 2 }), plus(s, new double[] { 0, -tall, zt + 5 }), Z, 3.2, 1.2, k % 2 == 0 ? st.trim : st.core);
-			}
-			tower(add, m, F, 0, top + h * 0.3, 8, st.accent, hsl(8, 5, 46), st.trimDark, 1.0);
+		case SENTINEL: // BaseBastion carries the whole look
 			break;
-		}
 		case BROOD: { // the brood's eyes in the hood's shadow, and a spider crouched on the crown, its legs gripping round the cowl
 			double oy = top + h * 0.45;
 			double[][] eyes = { { -2.4, -1.8, 1.4 }, { 2.4, -1.8, 1.4 }, { -4.6, -3.8, 0.9 }, { 4.6, -3.8, 0.9 }, { -1.3, 1.8, 0.9 }, { 1.3, 1.8, 0.9 }, { -4.4, 1.0, 0.7 },
@@ -247,24 +240,8 @@ final class DraftArmourB {
 		}
 		case GRAVESCALE: // BaseSerpent carries the whole look
 			break;
-		case SENTINEL: { // pauldrons edged in Gatehold blue, the blue tabard front and back, the gate-tower in gold
-			for (int side = -1; side <= 1; side += 2) {
-				double[] c = { side * sx, sy, -1 };
-				double[] axis = norm(new double[] { side * 0.6, -0.8, 0 });
-				dome(add, c, axis, Z, hw * 0.55, hw * 0.44, hw * 0.34, 6, st.dark, st.main);
-				ring(add, c, axis, Z, hw * 0.6, hw * 0.49, -1.4, 2.2, 6, st.trim);
-				double[] tip = plus(c, scale(axis, hw * 0.34));
-				add.tube(tip, plus(tip, scale(axis, 2.5)), 1.8, 0.6, 4, Math.PI / 4, st.accent, st.accent);
-			}
-			for (Frame f : new Frame[] { F, B }) {
-				decal(add, m, f, rect(-hw * 0.38, top + h * 0.16, hw * 0.38, bottom - 1), 0.6, 1.5, st.trim, st.trimDark);
-				for (int side = -1; side <= 1; side += 2) {
-					decal(add, m, f, rect(side * hw * 0.38 - 0.9, top + h * 0.16, side * hw * 0.38 + 0.9, bottom - 1), 0.5, 1.9, st.accent, hsl(8, 5, 46));
-				}
-			}
-			tower(add, m, F, 0, cy + 1, h * 0.36, st.accent, hsl(8, 5, 46), st.trimDark, 1.0);
+		case SENTINEL: // BaseBastion carries the whole look
 			break;
-		}
 		case BROOD: { // chitin lames down the tunic, a carapace on the pelerine with a broodmother's legs hooked over the shoulders, the brood's sign on the cape, egg-sacs carried on the back
 			Mantle mm = new Mantle(m);
 			for (int k = 0; k < 3; k++) {
@@ -339,13 +316,8 @@ final class DraftArmourB {
 			switch (st.motif) {
 			case GRAVESCALE: // BaseSerpent carries the whole look
 				break;
-			case SENTINEL: { // bright knee-plates, a gold boss on each
-				LowArmour.kneePlate(one, m, x, kneeY, st.light, st.dark);
-				double[] hit = surface(m, new double[] { x, kneeY, -100 }, new double[] { 0, 0, 1 });
-				double[] p = hit == null ? new double[] { x, kneeY, -12 } : hit;
-				one.tube(plus(p, new double[] { 0, 0, -1.5 }), plus(p, new double[] { 0, 0, -4.5 }), 2.2, 0.8, 6, 0, st.accent, st.accent);
+			case SENTINEL: // BaseBastion carries the whole look
 				break;
-			}
 			case RIMECLAW: { // Rimeclaw's paw over each knee
 				for (int k = -1; k <= 1; k++) { // three claws, fanned down over the knee like a paw
 					double[] p = project(m, F, x + k * 2.6, kneeY - 8 + Math.abs(k) * 1.5);
@@ -387,9 +359,7 @@ final class DraftArmourB {
 		}
 		case GRAVESCALE: // BaseSerpent carries the whole look
 			break;
-		case SENTINEL: // the blue tasset, edged in gold, the tower small on it
-			decal(fr, m, F, rect(-hw * 0.3, top + 2, hw * 0.3, top + h * 0.3), 0.8, 1.7, st.trim, st.trimDark);
-			decal(fr, m, F, rect(-hw * 0.3, top + h * 0.3 - 1.4, hw * 0.3, top + h * 0.3), 0.6, 2.3, st.accent, hsl(8, 5, 46));
+		case SENTINEL: // BaseBastion carries the whole look
 			break;
 		case BROOD: { // chitin plates on the front flaps, a cluster of egg-sacs at the belt, chitin tatters at the flaps' hems
 			double waist = BaseMantle.cen(m, BaseMantle.WAIST)[1];
@@ -440,11 +410,8 @@ final class DraftArmourB {
 		switch (st.motif) {
 		case GRAVESCALE: // BaseSerpent carries the whole look
 			break;
-		case SENTINEL: { // the gate-tower raised as the boss over a field of Gatehold blue
-			decal(add, m, f, diamond(0, 2, 15, 26), 0.5, 1.6, st.trim, st.trimDark);
-			tower(add, m, f, 0, 1, 36, st.accent, hsl(8, 5, 46), st.trimDark, 1.7);
+		case SENTINEL: // BaseBastion carries the whole look
 			break;
-		}
 		default:
 			break;
 		}
@@ -471,9 +438,7 @@ final class DraftArmourB {
 			}
 			case GRAVESCALE: // BaseSerpent carries the whole look
 				break;
-			case SENTINEL:
-				LowArmour.toeCap(add, x, front, st.light);
-				LowArmour.cuff(add, m, side, top, top + 2.5, 0.6, st.accent, st.leather);
+			case SENTINEL: // BaseBastion carries the whole look
 				break;
 			case BROOD: { // a chitin cuff, two hooked chitin spurs over the toes
 				int s = side < 0 ? 0 : 1;
@@ -517,9 +482,7 @@ final class DraftArmourB {
 			}
 			case GRAVESCALE: // BaseSerpent carries the whole look
 				break;
-			case SENTINEL:
-				LowArmour.gauntlet(add, x, top, 7.6, st.main, st.dark, st.accent);
-				add.tube(new double[] { x, top + 4, 1 }, new double[] { x, top + 6, 1 }, 7.0, 7.2, 6, 0.26, st.trim, st.trim);
+			case SENTINEL: // BaseBastion carries the whole look
 				break;
 			case BROOD: { // a chitin cuff, a glowing egg on the back of the hand, hooked spurs on the cuff
 				int s = side < 0 ? 0 : 1;
