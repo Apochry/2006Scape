@@ -10,6 +10,7 @@ UNREACHABLE 2007,2879  (the wreck)
 UNREACHABLE 2009,2866  (the wreck)
 UNREACHABLE 2024,2869  (the wreck)
 UNREACHABLE 2027,2873  (the wreck)
+UNREACHABLE 2030,2878  an older wreck's mast poking out of the cove: set dressing in the water, like the others
 STEEP-FOOTPRINT 2004,2884  the wreck's broken hull lies tilted on the beach
 
 # Nythera
@@ -30,6 +31,8 @@ STEEP-FOOTPRINT 1696,9701  the Vault's ward-seal fills the passage between its r
 
 # Design (DesignLint): composed on purpose
 COPY-PASTE 2022,2940          Skull Rock's two eye sockets: a face is symmetrical, so its ghostfires mirror each other
+UNSERVED 2022,2938            Skull Rock's eyes are reached by climbing the bare bone face from the jaw plaza: a trodden path up the face would deface the sculpture, and the quest says where to go
+UNSERVED 2009,2938            (Skull Rock's west eye, the same)
 STRAIGHT-FLOOR-EDGE 2015,2928 the shadow under Skull Rock's jaw: the sculpted teeth make its edge, and the model stands over it
 STRAIGHT-FLOOR-EDGE 1314,9681 the Sunken Barrow's processional hall: built, and laid straight as halls are
 STRAIGHT-FLOOR-EDGE 1314,9698 the Sunken Barrow's processional hall, its north half

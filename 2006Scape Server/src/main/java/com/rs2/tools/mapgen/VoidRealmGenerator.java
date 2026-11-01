@@ -84,9 +84,9 @@ final class VoidRealmGenerator {
 		oren.recolor(new int[] { 25238, 8741, 6798 }, new int[] { hsl(8, 1, 76), hsl(8, 2, 58), 127 });
 		// the people of Nythera's camps (ids must stay contiguous after Oren)
 		g.npc(npcs, 219, BRAM).name("Bram Netwright").examine("His hands smell of lake-weed and pipe smoke.")
-				.npcActions("Talk-to", "Trade", null, null, null);
+				.npcActions("Talk-to", null, "Trade", null, null);
 		g.npc(npcs, 5, MARTA).name("Marta Tollan").examine("She looks like she could wrestle a ram. She probably has.")
-				.npcActions("Talk-to", "Trade", null, null, null);
+				.npcActions("Talk-to", null, "Trade", null, null);
 		g.npc(npcs, 231, HOB).name("Hob Ashby").examine("A woodcutter with arms like oak limbs.")
 				.npcActions("Talk-to", null, null, null, null);
 		g.npc(npcs, 649, KAEL).name("Warden Kael").examine("She hasn't taken her eyes off the Scar since you arrived.")
@@ -103,15 +103,15 @@ final class VoidRealmGenerator {
 		g.npc(npcs, 17, YSOLDE).name("Captain Ysolde").examine("Captain of Gatehold's watch. All six of them.")
 				.npcActions("Talk-to", null, null, null, null);
 		g.npc(npcs, 3, PELL).name("Pell the Trader").examine("He'll sell you anything. He'll buy most things, too.")
-				.npcActions("Talk-to", "Trade", null, null, null);
+				.npcActions("Talk-to", null, "Trade", null, null);
 		g.npc(npcs, 24, DORRIN).name("Dorrin Anvilhand").examine("A smith with forearms like hams and a voice like a bellows.")
-				.npcActions("Talk-to", "Trade", null, null, null);
+				.npcActions("Talk-to", null, "Trade", null, null);
 		g.npc(npcs, 25, TESS).name("Tess Quarryhand").examine("Covered in rock dust from boots to eyebrows.")
-				.npcActions("Talk-to", "Trade", null, null, null);
+				.npcActions("Talk-to", null, "Trade", null, null);
 		g.npc(npcs, 352, MORRA).name("Morra").examine("Keeper of the Last Hearth. The fire never goes out, and neither does she.")
-				.npcActions("Talk-to", "Trade", null, null, null);
+				.npcActions("Talk-to", null, "Trade", null, null);
 		g.npc(npcs, 359, NETTLE).name("Sly Nettle").examine("Smiles with every tooth he's got. That's not many.")
-				.npcActions("Talk-to", "Trade", null, null, null);
+				.npcActions("Talk-to", null, "Trade", null, null);
 		// the dungeon bosses: grown, tinted versions of the creatures around them
 		g.ghostly(g.npc(npcs, 93, BARROW_THANE), npcs, 93, GHOST_HUE, 3, 0.8, 4).name("The Barrow Thane")
 				.examine("He was buried a king. He doesn't seem to have accepted the demotion.").shorts(95, 68).shorts(97, 140)
@@ -804,9 +804,12 @@ final class VoidRealmGenerator {
 			g.removeObjectsAt(x, EYE_FIRE_Y);
 			g.object(EYE_FIRE, x, EYE_FIRE_Y, TYPE_SCENERY, 0);
 		}
-		// the east eye weeps: a trail of the cove's green water runs down the face to the jaw
+		// the east eye weeps: a trail of the cove's green water runs down the face to the jaw. It leaves from the lip's
+		// east corner, so the bone right under the ghostfire stays dry: the client only walks up to an object from one of
+		// its sides, and water there would leave the fire the quest needs out of reach
 		for (int y = FACE_Y0 + 3; y < EYE_FIRE_Y; y++) {
-			int x = RIGHT_EYE_X + ((y / 2) % 2 == 0 ? 0 : 1) - (y < FACE_Y0 + 6 ? 1 : 0);
+			int x = y == EYE_FIRE_Y - 1 ? RIGHT_EYE_X + 1
+					: RIGHT_EYE_X + ((y / 2) % 2 == 0 ? 0 : 1) - (y < FACE_Y0 + 6 ? 1 : 0);
 			if (g.overlayAt(x, y) == 0) {
 				g.setOverlay(x, y, GUNGY_WATER);
 			}

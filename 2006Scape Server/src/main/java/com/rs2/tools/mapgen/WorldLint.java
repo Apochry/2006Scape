@@ -750,17 +750,41 @@ public final class WorldLint {
 	 * beside the whole of any object standing on it, since a big object is used from any of its sides.
 	 */
 	boolean reachable(int x, int y) {
-		List<int[]> boxes = new ArrayList<>();
-		boxes.add(new int[] { x, y, 1, 1 });
-		for (Obj o : objectsAt(x, y)) {
-			boxes.add(new int[] { o.x, o.y, Math.max(1, o.sx), Math.max(1, o.sy) });
+		// the things on the spot a player would use (not, say, a big sculpted model that happens to overlap it)
+		List<Obj> here = new ArrayList<>(objectsAt(x, y));
+		if (here.stream().anyMatch(o -> o.actions)) {
+			here.removeIf(o -> !o.actions);
 		}
-		for (int[] b : boxes) {
-			for (int i = b[0] - 1; i <= b[0] + b[2]; i++) {
-				for (int j = b[1] - 1; j <= b[1] + b[3]; j++) {
+		if (here.isEmpty()) { // a bare spot (an npc's post): any neighbour will do
+			for (int i = x - 1; i <= x + 1; i++) {
+				for (int j = y - 1; j <= y + 1; j++) {
 					if (reached != null && in(i, j) && reached[i - x0][j - y0]) {
 						return true;
 					}
+				}
+			}
+			return false;
+		}
+		for (Obj o : here) {
+			if (besideReached(o)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether a reached tile lies along one of the object's sides. The client walks up to an object only from a side,
+	 * never a corner (Game.doWalkTo is called with no walk-to-nearest fallback for object clicks), so an object whose
+	 * only open neighbours are diagonal can be seen and clicked but never used.
+	 */
+	boolean besideReached(Obj o) {
+		int sx = Math.max(1, o.sx), sy = Math.max(1, o.sy);
+		for (int i = o.x - 1; i <= o.x + sx; i++) {
+			for (int j = o.y - 1; j <= o.y + sy; j++) {
+				boolean corner = (i == o.x - 1 || i == o.x + sx) && (j == o.y - 1 || j == o.y + sy);
+				if (!corner && reached != null && in(i, j) && reached[i - x0][j - y0]) {
+					return true;
 				}
 			}
 		}
@@ -834,13 +858,7 @@ public final class WorldLint {
 			if (!o.actions) {
 				continue;
 			}
-			boolean ok = false;
-			for (int x = o.x - 1; x <= o.x + o.sx && !ok; x++) {
-				for (int y = o.y - 1; y <= o.y + o.sy && !ok; y++) {
-					ok = in(x, y) && reached[x - x0][y - y0];
-				}
-			}
-			if (!ok && !edgeOfArea(o.x, o.y, 2)) {
+			if (!besideReached(o) && !edgeOfArea(o.x, o.y, 2)) {
 				report("UNREACHABLE", o.x, o.y, o + " can't be walked up to from " + sx + "," + sy);
 			}
 		}

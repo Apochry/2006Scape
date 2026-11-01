@@ -68,8 +68,16 @@ public final class ConfigDefinitions {
 			return set(3, string(text));
 		}
 
-		/** NPC right-click options (opcodes 30-34). Null entries hide that slot. */
+		/**
+		 * NPC right-click options (opcodes 30-34). Null entries hide that slot. The client sends each slot as a different
+		 * packet: 0 first click, 1 ATTACK, 2 second click, 3 third click, 4 fourth click - so slot 1 is only ever
+		 * "Attack" (a "Trade" there sends an attack and never reaches the shop handlers in secondClickNpc).
+		 */
 		public Definition npcActions(String... actions) {
+			if (actions.length > 1 && actions[1] != null && !actions[1].equalsIgnoreCase("Attack")) {
+				throw new IllegalArgumentException("npc option \"" + actions[1] + "\" in slot 1, which the client sends as an attack:"
+						+ " put it in slot 2 (second click) or later");
+			}
 			for (int i = 0; i < 5; i++) {
 				remove(30 + i);
 			}

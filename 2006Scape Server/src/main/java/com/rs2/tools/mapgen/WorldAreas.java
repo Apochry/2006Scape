@@ -140,7 +140,10 @@ final class WorldAreas {
 						"Skull Rock: a giant sculpted skull on the north of the island, staring south over the town, with the cave in its mouth."),
 				spot("jetty end, where the boat ties up", 2016, 2879), spot("the cave in Skull Rock's mouth", SkullbrineConstants.CAVE_OUTSIDE_X,
 						SkullbrineConstants.CAVE_OUTSIDE_Y), spot("Ilsabet", ILSABET_X, ILSABET_Y),
-				spot("Mad Pete's camp", 2029, 2905), spot("the graveyard", 1993, 2916)).landmarkAt(2016, 2932));
+				spot("Mad Pete's camp", 2029, 2905), spot("the graveyard", 1993, 2916),
+				// Echoes of the Void: the player reaches into the ghostfire at each eye's lower lip
+				spot("the weeping (east) eye's ghostfire", RIGHT_EYE_X, EYE_FIRE_Y),
+				spot("the west eye's ghostfire", LEFT_EYE_X, EYE_FIRE_Y)).landmarkAt(2016, 2932));
 		ALL.add(new Area("Blackbrine's Hold", 1984, 9280, 2047, 9343, SkullbrineConstants.DUNGEON_ARRIVAL_X,
 				SkullbrineConstants.DUNGEON_ARRIVAL_Y,
 				new Brief("The smugglers' cave under Skull Rock: a winding pirate dungeon whose far end holds the dormant void portal.",
