@@ -757,6 +757,31 @@ flinch (4104) sequences into frame file 1100 (frames 34000-34049). The legs are 
 ground. `regen-world.sh` installs it after the world is written: it pads the npc table up to 4000 with empty entries,
 and refuses if anything else already holds its ids. `ShardbackPreview` renders the GIFs, contact sheets and card.
 
+### The Gravecoil
+
+The barrow-folk sealed a serpent into every king's grave to guard the grave-goods. The Thane's curse would not let his
+household die, and it did not let the serpents die either: centuries in the dark have made them huge, and they still
+wear the kings' bronze arm-rings they slid into as hatchlings, grown deep into the hide. **Gravecoil** (npc 4001):
+combat 52, 60 hp, max hit 7 (a strike), 2x2, attack speed 4 ticks, aggressive. It is weak to ranged (+12: arrows find
+the hide between its rings) and resists magic (+80: grave-wards are cut into the bronze). It drops big bones and rolls
+Nythera's loot tiers. **It is defined but not placed anywhere yet**: its home would be the graves round the Sunken
+Barrow's mound.
+
+It's the second creature with its own model and animations, and the first that isn't a quadruped. `tools/mapgen/Gravecoil.java`
+builds a 670-triangle serpent on an 18-bone chain (model 16001): one skin of eight-sided rings, one ring per joint, so
+the body bends without seams; a hood that flares and folds (a scale joint), a hinged jaw and a forked tongue that slides
+out to taste the air. Every ring's belly is flat at y = 0, so the lying body is posed by turning about the vertical
+alone and never leaves the ground; the reared neck is posed by pitch. Its sequences are in frame file 1101 (frames
+34100-34163): stand (4110: a cobra's sway, hood breathing, tongue flicks), walk (4111: a slither that lays each body
+joint on a fixed track in the ground's frame, so nothing slips sideways), strike (4112), death (4113: rears, topples
+onto its side, thrashes once, goes slack) and recoil (4114).
+
+The rig is the shared `CreatureRig` (joints to a skin list, poses quantised to frames, the cache installer), which is
+the Shardback's approach made general for the next creature. `GravecoilPreview outDir` renders the GIFs, a captioned
+showcase, contact sheets and a card through `CreaturePreview`, and measures every frame against the ground: nothing
+under it, every part that should be resting on it within a unit of it (the body always; everything once it has died),
+seams between bones, and the walk's distance from its track. It exits non-zero if a frame fails.
+
 ## Where things live
 
 | What | Where |
