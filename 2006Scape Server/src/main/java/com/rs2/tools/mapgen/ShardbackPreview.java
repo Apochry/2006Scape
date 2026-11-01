@@ -175,6 +175,46 @@ public final class ShardbackPreview {
 		System.out.print(sb);
 	}
 
+	/**
+	 * Per frame, how far above the ground each part's lowest point is (negative: under it), with a * on each part the
+	 * frame lays on the ground ({@link Shardback#check} fails the build if one of those is more than two units off, or
+	 * if anything at all is more than two under). Legs are lower leg / paw; "body" is the hull, the flank or the upper
+	 * leg it is lying on, whichever is lowest.
+	 */
+	static void contact(String name, List<ModelData> frames, List<Shardback.Pose> poses) {
+		StringBuilder sb = new StringBuilder(name + " ground contact (units above the ground; * = lying on it):\n");
+		sb.append("  fr   body   hull  flank   head   tail |       FL       FR       HL       HR\n");
+		for (int fi = 0; fi < frames.size(); fi++) {
+			ModelData m = frames.get(fi);
+			Shardback.Pose p = poses.get(fi);
+			double t = -p.hover;
+			boolean lying = p.ground == Shardback.Ground.CONTACT;
+			sb.append(String.format("  %2d", fi));
+			sb.append(cell(t, Shardback.bodyLow(m, p), lying));
+			sb.append(cell(t, Shardback.low(m, Shardback.TORSO), false));
+			sb.append(cell(t, Shardback.low(m, Shardback.FLANK), false));
+			sb.append(cell(t, Shardback.low(m, Shardback.HEAD, Shardback.JAW), p.headDown));
+			sb.append(cell(t, Shardback.low(m, Shardback.TAIL2), p.tailDown)).append(" |");
+			for (int leg = 0; leg < 4; leg++) {
+				boolean planted = p.foot[leg] != null && p.pawTilt[leg] == 0;
+				String lower = fmt(t, Shardback.low(m, Shardback.LOWER + leg), p.rest[leg]);
+				String paw = fmt(t, Shardback.low(m, Shardback.PAW + leg), p.rest[leg] || planted);
+				sb.append(String.format(" %8s", lower.trim() + "/" + paw.trim()));
+			}
+			sb.append(String.format("   lowest %d%s%n", Math.round(t - Shardback.lowest(m)),
+					p.hover > 0 ? "   (bouncing: measured from " + Math.round(p.hover) + " up)" : ""));
+		}
+		System.out.print(sb);
+	}
+
+	private static String cell(double t, int y, boolean onGround) {
+		return String.format(" %6s", fmt(t, y, onGround));
+	}
+
+	private static String fmt(double t, int y, boolean onGround) {
+		return Math.round(t - y) + (onGround ? "*" : "");
+	}
+
 	/* ------------------------------------------------------------ the card */
 
 	static BufferedImage card(ModelData still) {
@@ -262,6 +302,9 @@ public final class ShardbackPreview {
 			List<FxAnim.Key> keys = seqs.get(s);
 			List<ModelData> posed = posed(base, keys);
 			report(NAMES[s], posed, keys, s == 1 ? walkSpeed : 0);
+			if (s == 3) {
+				contact(NAMES[s], posed, Shardback.death());
+			}
 			List<BufferedImage> imgs = new ArrayList<>();
 			List<Integer> delays = new ArrayList<>();
 			int elapsed = 0;
