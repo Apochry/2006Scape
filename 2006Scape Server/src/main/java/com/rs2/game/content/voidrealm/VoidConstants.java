@@ -30,6 +30,8 @@ public final class VoidConstants {
 			HOLLOW_KNIGHT = 3887, AUREL_SPIRIT = 3888, THE_STARLESS = 3889, STARLESS_SPAWN = 3890;
 	/* The five kit-wearers: each wears one of the middle armour sets and carries its matching weapon (VoidLoot.KITS) */
 	public static final int SILKWOOD_STALKER = 3891, SCAR_REAVER = 3892, MOONMOURNER = 3893, RIMEBOUND_WARRIOR = 3894, COVE_NIGHTRUNNER = 3895;
+	/* the Shardback, a crater beast with its own model and animations (tools/mapgen/Shardback): defined, not yet placed */
+	public static final int SHARDBACK = 4000;
 
 	/* ---------------- items (new definitions) ---------------- */
 	public static final int EYE_SPLINTER = 7961;

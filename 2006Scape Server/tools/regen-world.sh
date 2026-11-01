@@ -15,3 +15,6 @@ cd "$(dirname "$0")/.."
 git checkout 7f1dc47 -- data/cache && git reset -q data/cache   # the cache as it was before any of the generated world
 java -Dworldgate="${WORLDGATE:-enforce}" $GENOPTS -cp target/server-1.0-jar-with-dependencies.jar \
 	com.rs2.tools.mapgen.CursedIslandGenerator 2>&1 | grep -v -e JAVA_TOOL -e '^Wrote region'
+# Creatures defined but not placed anywhere yet (model, frames, sequences and npc definition at fixed ids clear of
+# everything above): written into the cache the world was just built into. Placing one is a generator change.
+java -cp target/server-1.0-jar-with-dependencies.jar com.rs2.tools.mapgen.Shardback data/cache 2>&1 | grep -v JAVA_TOOL

@@ -739,6 +739,24 @@ the whole set. If a piece's decorations would spill out of its 32x32 sprite, the
 slots and recipes are in `game/content/voidrealm/VoidArmoury.java`. `::vt armour n` puts set n (1-24) into your
 inventory.
 
+### The Shardback
+
+When the star fell on Nythera, the rock-bears denning on that hill weren't killed. They were fused with it: their hides
+went to slag and the star's violet glass grew up through their backs. Gatehold's miners won't work the crater rim
+without a watchman. **Shardback** (npc 4000): combat 47, 48 hp, max hit 6 (a bite), 2x2, attack speed 4 ticks,
+aggressive. It resists ranged (+75: arrows glance off the glass) and is weak to magic (+10). It drops big bones, and
+rolls Nythera's loot tiers like any other monster there.
+
+Four live on the crater rim, away from the stone road, Oren's camp and the landing inside the crater: 1556,2715 (north),
+1565,2712 (north-east), 1569,2699 (east) and 1567,2693 (south-east). Each is the south-west tile of a 2x2 that is open
+on the map. They are written by `tools/nythera_data.py`.
+
+It's the first creature with its own model and its own animations. `tools/mapgen/Shardback.java` builds the
+710-triangle model (16000) on a 23-bone rig, and authors the stand (4100), walk (4101), bite (4102), death (4103) and
+flinch (4104) sequences into frame file 1100 (frames 34000-34049). The legs are posed by IK so planted paws stay on the
+ground. `regen-world.sh` installs it after the world is written: it pads the npc table up to 4000 with empty entries,
+and refuses if anything else already holds its ids. `ShardbackPreview` renders the GIFs, contact sheets and card.
+
 ## Where things live
 
 | What | Where |

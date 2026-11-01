@@ -16912,5 +16912,11 @@
     "name": "Cove nightrunner",
     "combat": 54,
     "id": 3895
+  },
+  {
+    "hitpoints": 48,
+    "name": "Shardback",
+    "combat": 47,
+    "id": 4000
   }
 ]

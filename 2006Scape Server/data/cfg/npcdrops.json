@@ -173164,35 +173164,6 @@
     ]
   },
   {
-    "id": 4000,
-    "items": [
-      {
-        "item_id": 526,
-        "chance": 0,
-        "amounts": [
-          1,
-          1
-        ]
-      },
-      {
-        "item_id": 995,
-        "chance": 3,
-        "amounts": [
-          1,
-          10
-        ]
-      },
-      {
-        "item_id": 2677,
-        "chance": 512,
-        "amounts": [
-          1,
-          1
-        ]
-      }
-    ]
-  },
-  {
     "id": 3868,
     "items": [
       {
@@ -173249,6 +173220,19 @@
     "items": [
       {
         "item_id": 526,
+        "chance": 0,
+        "amounts": [
+          1,
+          1
+        ]
+      }
+    ]
+  },
+  {
+    "id": 4000,
+    "items": [
+      {
+        "item_id": 532,
         "chance": 0,
         "amounts": [
           1,

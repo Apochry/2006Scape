@@ -63,6 +63,12 @@ people = [
     npcdef(3894, 'Rimebound warrior', 'A warrior of the Frostfang deeps, armoured in ice that never melts.', 55, 65, 7, 1, 4000, 401, 1156, 836, 55, 55, True, True),
     npcdef(3895, 'Cove nightrunner', "One of the Cove's night crew. Whatever they're smuggling, they'd rather you didn't see it.", 54, 55, 6, 1, 4000, 426, 424, 836, 55, 45, True, True),
 ]
+# the Shardback (tools/mapgen/Shardback): a 2x2 crater beast, hard to shoot, soft to magic; replaces the stock row
+# "Combat stone" that happened to sit at id 4000
+shardback = npcdef(4000, 'Shardback', 'Its back bristles with the glass the star left behind. So does its temper.',
+                   47, 48, 6, 2, 2400, 4102, 4104, 4103, 45, 50, True, True)
+shardback.update({'respawn': 30, 'defenceRange': 75, 'defenceMage': 10})
+people.append(shardback)
 ids = {p['id'] for p in people}
 
 # npcDefinitions.json: drop placeholder "Suspect" rows for our ids, replace any earlier version of ours
@@ -87,6 +93,9 @@ for i, bones in ((3868, 2859), (3869, 526), (3882, 592), (3883, 532), (3884, 526
 # the kit-wearers: bones here, VoidLoot's tiers and their 15% kit roll in the server. Their ids already have tables in
 # this file (stock placeholders); add the bones to the front and keep the rest (VoidLoot skips their 1-in-N rolls on Nythera)
 BONES = {'item_id': 526, 'chance': 0, 'amounts': [1, 1]}
+# the Shardback: big bones always (it was a bear), then Nythera's tiers like any monster there
+drops = [x for x in drops if x['id'] != 4000]
+drops.append({'id': 4000, 'items': [{'item_id': 532, 'chance': 0, 'amounts': [1, 1]}]})
 for i in (3891, 3892, 3893, 3894, 3895):
     have = [x for x in drops if x['id'] == i]
     if not have:
@@ -553,5 +562,10 @@ KIT = {3891: (3, 28, [(1376, 2688), (1378, 2685), (1386, 2683), (1384, 2686),   
 for i, (mh, at, tiles) in KIT.items():
     for x, y in tiles:
         spawn(i, x, y, 1, mh, at, at)
+# Shardbacks on the crater rim, where the star's glass is (the crater: VoidConstants.CRATER 1556,2702, radius 13): north,
+# north-east, east and south-east, clear of the stone road and Oren's camp on the west rim and of the landing inside it.
+# Each is the south-west corner of a 2x2 checked open on the map.
+for x, y in ((1556, 2715), (1565, 2712), (1569, 2699), (1567, 2693)):
+    spawn(4000, x, y, 1, 6, 45, 42)
 save('spawns.json', sp)
 print('wildlife spawns', count, 'total spawns', len(sp))
