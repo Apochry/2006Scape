@@ -14,6 +14,7 @@ import com.rs2.game.content.quests.impl.EchoesOfTheVoid;
 import com.rs2.game.content.skullbrine.SkullbrineConstants;
 import com.rs2.game.dialogues.ChatEmotes;
 import com.rs2.game.dialogues.DialogueHandler;
+import com.rs2.game.items.ItemConstants;
 import com.rs2.game.npcs.Npc;
 import com.rs2.game.npcs.NpcHandler;
 import com.rs2.game.players.Player;
@@ -820,11 +821,13 @@ public final class VoidRealm {
 			});
 			return true;
 		}
-		if (p.voidVeil >= BeyondTheVeil.STARTED && p.getItemAssistant().playerHasItem(VOID_SIGIL)) {
+		// carried or worn round the neck
+		boolean sigil = p.getItemAssistant().playerHasItem(VOID_SIGIL) || p.playerEquipment[ItemConstants.AMULET] == VOID_SIGIL;
+		if (p.voidVeil >= BeyondTheVeil.STARTED && sigil) {
 			dialogue(p, D_PORTAL, -1);
 			return true;
 		}
-		if (p.getItemAssistant().playerHasItem(VOID_SIGIL)) {
+		if (sigil) {
 			p.getPacketSender().sendMessage("The sigil burns cold in your hand and the portal shivers. Ilsabet will know what this means.");
 			return true;
 		}
@@ -873,6 +876,8 @@ public final class VoidRealm {
 		p.gfx0(86);
 		later(p, 3, () -> {
 			p.getPlayerAssistant().movePlayer(ARENA_ARRIVAL_X, ARENA_ARRIVAL_Y, 0);
+			// 714 leaves the player shrunk away to nothing: every teleport ends with 715 to bring them back
+			p.startAnimation(715);
 			later(p, 2, () -> startScene(p));
 		});
 	}
@@ -976,6 +981,8 @@ public final class VoidRealm {
 
 	private static void land(Player p) {
 		p.getPlayerAssistant().movePlayer(LANDING_X, LANDING_Y, 0);
+		// the fall began with 714 (shrinking away): land with 715, or the player stays shrunk and rooted to the spot
+		p.startAnimation(715);
 		// the jump from the void to Nythera is a long one; re-send it so a client still fetching the crater's map retries
 		later(p, 1, () -> p.getPlayerAssistant().movePlayer(LANDING_X, LANDING_Y, 0));
 		p.voidVeil = BeyondTheVeil.FELL;

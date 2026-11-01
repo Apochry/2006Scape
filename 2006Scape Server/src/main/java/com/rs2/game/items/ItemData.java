@@ -347,6 +347,8 @@ public class ItemData {
 		// rewards from the Void quest series (ids past the end of equipment.dat)
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOW_CAPE] = ItemConstants.CAPE;
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOWFANG] = ItemConstants.WEAPON;
+		// the sigil is a cloned holy symbol, but its id's old byte in equipment.dat says weapon
+		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.VOID_SIGIL] = ItemConstants.AMULET;
 		// Nythera boss uniques
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.HOLLOWHEART_AMULET] = ItemConstants.AMULET;
 		targetSlots[com.rs2.game.content.voidrealm.VoidConstants.BARROWSTEEL_LONGSWORD] = ItemConstants.WEAPON;
