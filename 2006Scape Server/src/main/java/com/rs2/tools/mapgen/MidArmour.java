@@ -112,16 +112,25 @@ final class MidArmour {
 
 	/** The square shield's face and rim colours. */
 	static int shieldFace(Style st) {
+		if (st.motif.draft()) {
+			return DraftArmour.shieldFace(st);
+		}
 		return st.motif == Motif.QUARRY ? st.leather : st.main;
 	}
 
 	static int shieldRim(Style st) {
+		if (st.motif.draft()) {
+			return DraftArmour.shieldRim(st);
+		}
 		return st.motif == Motif.RIME ? st.trim : st.dark;
 	}
 
 	/* ------------------------------------------------------------- the helm */
 
 	static ModelData helm(Style st, ModelData m) {
+		if (st.motif.draft()) {
+			return DraftArmour.helm(st, m);
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top, front = bb[2], back = bb[5], cz = (front + back) / 2, dz = (back - front) / 2;
 		ModelData add = new ModelData();
@@ -246,6 +255,9 @@ final class MidArmour {
 	/* ------------------------------------------------------------- the body */
 
 	static ModelData body(Style st, ModelData m) {
+		if (st.motif.draft()) {
+			return DraftArmour.body(st, m);
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top, front = bb[2], back = bb[5], cz = (front + back) / 2;
 		double cy = top + h * 0.42, sx = hw * 0.7, sy = top + h * 0.12;
@@ -417,6 +429,9 @@ final class MidArmour {
 
 	/** Right knee, left knee and the front (any may be empty). */
 	static ModelData[] legs(Style st, ModelData m) {
+		if (st.motif.draft()) {
+			return DraftArmour.legs(st, m);
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1], bottom = bb[4], h = bottom - top, front = bb[2], back = bb[5], cz = (front + back) / 2;
 		double kneeY = top + h * 0.55, kneeX = hw * 0.53;
@@ -518,6 +533,9 @@ final class MidArmour {
 	/* ------------------------------------------------------------- the shield */
 
 	static ModelData shield(Style st, ModelData m, Frame f) {
+		if (st.motif.draft()) {
+			return DraftArmour.shield(st, m, f);
+		}
 		double[] e = LowArmour.extent(m, f); // u0, u1, v0, v1
 		double w = (e[1] - e[0]) / 2, hgt = (e[3] - e[2]) / 2, cu = (e[0] + e[1]) / 2, cv = (e[2] + e[3]) / 2;
 		double s = Math.min(w, hgt);
@@ -561,6 +579,9 @@ final class MidArmour {
 	/* ------------------------------------------------------------- boots, gloves */
 
 	static ModelData boots(Style st, ModelData m) {
+		if (st.motif.draft()) {
+			return DraftArmour.boots(st, m);
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], front = bb[2], top = bb[1];
 		ModelData add = new ModelData();
@@ -607,6 +628,9 @@ final class MidArmour {
 	}
 
 	static ModelData gloves(Style st, ModelData m) {
+		if (st.motif.draft()) {
+			return DraftArmour.gloves(st, m);
+		}
 		int[] bb = m.bounds();
 		double hw = bb[3], top = bb[1];
 		ModelData add = new ModelData();

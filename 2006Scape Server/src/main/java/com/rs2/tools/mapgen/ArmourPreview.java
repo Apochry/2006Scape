@@ -184,11 +184,16 @@ public final class ArmourPreview {
 		return out;
 	}
 
+	/** What wearing the piece takes: a draft set's comes from its kind and level, since it has no item ids. */
+	static String requirement(ArmourSets.Style st, int slot) {
+		return st.motif.draft() ? DraftArmour.requirement(st) : VoidArmoury.requirement(st.ids[slot]);
+	}
+
 	public static void main(String[] args) throws Exception {
 		File out = new File(args[1]);
 		out.mkdirs();
 		int set = Integer.parseInt(args[2]);
-		ArmourSets.Style st = ArmourSets.SETS[set - 1];
+		ArmourSets.Style st = set >= DraftArmour.FIRST ? DraftArmour.set(set) : ArmourSets.SETS[set - 1]; // 25-39: the drafts
 		Map<Integer, String> stats = armourStats(new File("data/cfg/ItemDefinitions.json"));
 		try (CacheEditor c = new CacheEditor(java.nio.file.Paths.get(args[0]))) {
 			ModelForge f = new ModelForge(c);
@@ -206,7 +211,7 @@ public final class ArmourPreview {
 						}
 					}
 					ModelData male = dressed(f, st, wm, false), female = dressed(f, st, wf, true);
-					String req = VoidArmoury.requirement(st.ids[1]);
+					String req = requirement(st, 1);
 					BufferedImage img = card(tagBase, st.name + " - the full set", st.kind.name().toLowerCase() + "  -  " + req, "", null, male, female, null);
 					// the set's icons along the left
 					Graphics2D g = img.createGraphics();
@@ -240,7 +245,7 @@ public final class ArmourPreview {
 				int[] cam = ArmourSets.fitCamera(itemCam(obj.decode(ArmourSets.base(st, s)[4])), inv);
 				int tris = wm[s][0].faces.size() + (wm[s][1] == null ? 0 : wm[s][1].faces.size());
 				String tag = String.format("%s-%02d", tagBase, n);
-				BufferedImage img = card(tag, st.names[s], SLOT_NAMES[s] + "  -  " + VoidArmoury.requirement(st.ids[s]) + "  -  " + tris + " tris",
+				BufferedImage img = card(tag, st.names[s], SLOT_NAMES[s] + "  -  " + requirement(st, s) + "  -  " + tris + " tris",
 						stats.get(st.ids[s]), icon(inv, cam, 4), dressed(f, st, wm, false), dressed(f, st, wf, true), region(wm[s]));
 				File file = new File(out, tag + "-" + st.slug + "-" + SLOT_NAMES[s] + ".png");
 				ImageIO.write(img, "png", file);

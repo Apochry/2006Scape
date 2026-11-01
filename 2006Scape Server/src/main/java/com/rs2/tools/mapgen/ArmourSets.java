@@ -33,7 +33,10 @@ final class ArmourSets {
 	enum Motif {
 		OATH, DUSK, SCAR, STAR, VOID, HEART, //
 		RECRUIT, WOODSMAN, CROFT, RATTLE, BRINE, INITIATE, BARROW, VEIL, // the low sets (LowArmour)
-		QUARRY, SILK, STONE, RIDGE, RAVAGER, MOON, RIME, NIGHT, SEER, KNIGHT; // the middle sets (MidArmour)
+		QUARRY, SILK, STONE, RIDGE, RAVAGER, MOON, RIME, NIGHT, SEER, KNIGHT, // the middle sets (MidArmour)
+		// the draft sets (DraftArmour, A25-A39): built and previewed, but not in SETS, so not in the game
+		ASHEN, THORN, SALTGILT, TIDE, SHARDHIDE, WILDGROVE, GRAVESCALE, SENTINEL, BROOD, RIMECLAW, HERALD, EMBERFORGED, SHROUD,
+		RIFTWALKER, DAWNGUARD;
 
 		/** Built by LowArmour (which hands the middle sets on to MidArmour). */
 		boolean low() {
@@ -42,6 +45,11 @@ final class ArmourSets {
 
 		boolean mid() {
 			return ordinal() >= QUARRY.ordinal();
+		}
+
+		/** A draft set (DraftArmour): MidArmour hands these on. */
+		boolean draft() {
+			return ordinal() >= ASHEN.ordinal();
 		}
 	}
 

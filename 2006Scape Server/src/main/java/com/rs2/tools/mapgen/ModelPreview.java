@@ -305,7 +305,7 @@ public final class ModelPreview {
 		g.fillRect(0, 0, 600, 300);
 		ModelData inv = r.weapon.inventoryModel(), wld = r.weapon.wieldedModel();
 		label(g, tag + "  " + r.name, 12, 24, GOLD, 17, true);
-		label(g, r.type + "  -  " + VoidArsenal.requirementFor(r.id) + "  -  " + wld.faces.size() + " tris", 12, 44, TEXT, 12, false);
+		label(g, r.type + "  -  " + requirement(r) + "  -  " + wld.faces.size() + " tris", 12, 44, TEXT, 12, false);
 		label(g, stats == null ? "" : stats, 12, 62, DIM, 12, false);
 		g.setColor(PANEL);
 		g.fillRect(8, 72, 584, 220);
@@ -323,11 +323,21 @@ public final class ModelPreview {
 		return img;
 	}
 
+	/** What wielding it takes (a draft set's weapon has no id, so it comes from the set). */
+	static String requirement(LadderWeapons.Rung r) {
+		for (int i = 0; i < DraftArmour.WEAPONS.length; i++) {
+			if (DraftArmour.WEAPONS[i] == r) {
+				return DraftArmour.weaponRequirement(i);
+			}
+		}
+		return VoidArsenal.requirementFor(r.id);
+	}
+
 	public static void main(String[] args) throws Exception {
 		File out = new File(args[1]);
 		out.mkdirs();
 		java.util.Set<Integer> only = new java.util.HashSet<>();
-		String set = args.length > 2 && args[2].matches("S1|S2|G|K") ? args[2] : null;
+		String set = args.length > 2 && args[2].matches("S1|S2|G|K|D") ? args[2] : null;
 		for (int i = set == null ? 2 : 3; i < args.length; i++) {
 			only.add(Integer.parseInt(args[i]));
 		}
@@ -337,14 +347,14 @@ public final class ModelPreview {
 			CacheEditor.Archive cfg = CacheEditor.Archive.decode(c.read(0, ConfigDefinitions.CONFIG_ARCHIVE));
 			ConfigDefinitions.Table obj = ConfigDefinitions.load(cfg, "obj", false);
 			ModelData body = body(f);
-			boolean god = "G".equals(set), kit = "K".equals(set);
+			boolean god = "G".equals(set), kit = "K".equals(set), draft = "D".equals(set);
 			int[] kitSets = { 16, 19, 20, 21, 22 }; // the armour set each kit weapon belongs to (A16-W-..., next to the set's cards)
 			LadderWeapons.Rung[] all = set == null ? LadderWeapons.LADDER
-					: god ? GodWeapons.GOD : kit ? KitWeapons.KIT : set.equals("S1") ? WeaponSets.STARMETAL_SET : WeaponSets.VOIDSTEEL_SET;
+					: god ? GodWeapons.GOD : kit ? KitWeapons.KIT : draft ? DraftArmour.WEAPONS : set.equals("S1") ? WeaponSets.STARMETAL_SET : WeaponSets.VOIDSTEEL_SET;
 			String prefix = set == null || god ? "" : set + "-";
 			int first = god ? LadderWeapons.LADDER.length : 0; // the god tier carries on the ladder's numbering (31-45)
 			String title = set == null ? "The weapon ladder"
-					: kit ? "The kit-wearers' weapons" : god ? "The god tier (ladder 31-45)" : set.equals("S1") ? "The starmetal set (Attack 50)" : "The voidsteel set (Attack 70)";
+					: kit ? "The kit-wearers' weapons" : draft ? "The draft sets' weapons (A25-A39, not in the game)" : god ? "The god tier (ladder 31-45)" : set.equals("S1") ? "The starmetal set (Attack 50)" : "The voidsteel set (Attack 70)";
 			int cols = 5, cw = 360, ch = 300, rows = (all.length + cols - 1) / cols;
 			BufferedImage sheet = new BufferedImage(cols * cw, 50 + rows * ch, BufferedImage.TYPE_INT_RGB);
 			Graphics2D sg = sheet.createGraphics();
@@ -363,7 +373,7 @@ public final class ModelPreview {
 				}
 				System.out.printf("%02d %-28s wield %3d tris, inv %3d tris, %d colours, grip s=%.0f of %.0f%n", rank, r.name, wld.faces.size(),
 						inv.faces.size(), new java.util.TreeSet<>(wld.colors).size(), r.weapon.pose.gripS(), r.weapon.pose.length);
-				String tag = kit ? "A" + kitSets[i] + "-W" : prefix + String.format("%02d", rank + first);
+				String tag = draft ? "A" + (DraftArmour.FIRST + i) + "-W" : kit ? "A" + kitSets[i] + "-W" : prefix + String.format("%02d", rank + first);
 				if (only.isEmpty() || only.contains(rank)) {
 					String slug = r.name.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
 					ImageIO.write(card(r, tag, body, cam, stats.get(r.id), f.read(r.weapon.pose.baseInv)), "png", new File(out, tag + "-" + slug + ".png"));
@@ -372,7 +382,7 @@ public final class ModelPreview {
 				sg.setColor((i % cols + i / cols) % 2 == 0 ? PANEL : new Color(46, 50, 48));
 				sg.fillRect(x0, y0, cw, ch);
 				label(sg, tag + " " + r.name, x0 + 8, y0 + 18, GOLD, 13, true);
-				label(sg, r.type + " - " + VoidArsenal.requirementFor(r.id), x0 + 8, y0 + 34, TEXT, 11, false);
+				label(sg, r.type + " - " + requirement(r), x0 + 8, y0 + 34, TEXT, 11, false);
 				sg.drawImage(icon(inv, cam, 2), x0 + 8, y0 + 42, null);
 				inventoryView(sg, inv, x0 + 8, y0 + 110, 140, 180);
 				wieldedView(sg, body, wld, x0 + 150, y0 + 40, 205, 255);
