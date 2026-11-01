@@ -139,6 +139,15 @@ final class BasePilgrim {
 		return safe(lab);
 	}
 
+	/** As {@link #nearest}, but the chest over the trunk and never below the elbow: a cape over the shoulders rides the chest and the upper arms. */
+	static int shoulderLabel(ModelData ref, double[] p, double trunkHW) {
+		if (Math.abs(p[0]) < trunkHW) {
+			return CHEST; // over the trunk, front or back: the chest, whatever is nearest
+		}
+		int l = nearest(ref, p);
+		return l == FORE[0] || l == 18 ? UPPER[0] : l == FORE[1] || l == 24 ? UPPER[1] : l;
+	}
+
 	/** A model being built: each vertex takes its label as it is made, each face the current priority. */
 	static final class Mesh {
 		final ModelData m = new ModelData();
@@ -679,7 +688,7 @@ final class BasePilgrim {
 	 */
 	static void cape(Mesh me, Style st, Body b, double cz) {
 		ModelData ref = ArmourForge.mergeAll(b.torso, b.arms);
-		ToIntFunction<double[]> shoulders = p -> nearest(ref, p);
+		ToIntFunction<double[]> shoulders = p -> shoulderLabel(ref, p, b.torsoHW);
 		ToIntFunction<double[]> chain = p -> capeLabel(b, p[1]);
 		double ao = b.armOuter, sTop = b.shoulderTop, fr = -b.chestZ, bk = b.backZ, hipBk = b.hipsBackZ;
 		int[] outer = { THATCH, THATCH_DARK }, lining = { THATCH_DARK };
